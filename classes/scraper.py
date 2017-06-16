@@ -10,6 +10,7 @@ from classes.selector import Selector
 from classes.proxy import Proxy
 import time
 from classes.user_agents import USER_AGENTS
+import shutil
 
 class Scraper(object):
 
@@ -29,8 +30,8 @@ class Scraper(object):
     parent = None
     session = None
     login_url = None
-    min_timeout_between_requests = 0.5
-    max_timeout_between_requests = 1.5
+    min_timeout_between_requests = 0
+    max_timeout_between_requests = 0.1
     webdriver = 'requests'
 
     def __init__(self, parent=None,
@@ -55,7 +56,7 @@ class Scraper(object):
             return None
         if self.retries < self.max_retries:
             self.retries += 1
-        cache_file_path = self.getCacheFilePath(url)
+        cache_file_path = self.getCachefile_path(url)
         if (not no_cache and not self.no_cache and
                 os.path.exists(cache_file_path)):
             # print('will load from cache')
@@ -103,14 +104,14 @@ class Scraper(object):
             if selector.xpath('//body'):
                 if self.parent:
                     self.parent.loaded_urls_from_cache += 1
-                # print(url, 'loaded from cache', os.path.abspath(cache_file_path))
+                print(url, 'loaded from cache', os.path.abspath(cache_file_path))
                 return selector
             else:
                 # Cached file is corrupt. Should reload.
                 self.retries += 1
                 return self.loadUrl(url, no_cache=True)
 
-    def getCacheFilePath(self, url):
+    def getCachefile_path(self, url):
         login = 'true' if self.use_fake_accounts else ''
         cache_file_name = hashlib.md5((url + '&login=' + login).encode('utf-8')).hexdigest() + '.html.gz'
         cache_file_path = os.path.join('cache', cache_file_name[:2], cache_file_name)
@@ -122,7 +123,7 @@ class Scraper(object):
 
     def saveUrlToDiscCache(self, url, html):
         # db cached will be used instead. Hopefully bloated disk cache no loner needed
-        cache_file_path = self.getCacheFilePath(url)
+        cache_file_path = self.getCachefile_path(url)
         dirname = os.path.dirname(cache_file_path)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -270,3 +271,21 @@ class Scraper(object):
         else:
             print('proxy does not work')
             return False
+
+    def downloadFile(self, src, dest):
+        if not src or not dest:
+            return -1
+        print('prepare to download', src, 'to', dest)
+        session = self.getSession()
+        self.waitBetweenRequests()
+        response = session.get(src, headers=self.headers, timeout=3, stream=True)
+        if response.status_code == 200:
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            with open(dest, 'wb') as f:
+                for chunk in response.iter_content(4096):
+                    f.write(chunk)
+            print('File', dest, 'saved.')
+        else:
+            # raise Exception('Failed to download file:'+str(response.status_code))
+            print('Failed to download file:'+str(response.status_code))
+        return response.status_code
