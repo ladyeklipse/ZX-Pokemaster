@@ -21,6 +21,11 @@ class TestDatabase(unittest.TestCase):
         self.db.addGame(game)
         self.db.commit()
 
+    def test_adding_broken_wos_id(self):
+        game = Game()
+        with self.assertRaises(Exception):
+            self.db.addGame(game)
+
     def test_getting_game_by_wos_id(self):
         game = self.db.getGameByWosID(5448)
         self.check_if_game_is_tujad(game)
@@ -73,14 +78,14 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByFileName(filename)
         self.assertEqual(game.wos_id, 2040)
 
-    def test_appending_tosec_file_info(self):
-        filename = "Gonzzalezz (1989)(Opera Soft)(es)(Side B).zip"
-        file_path = os.path.join('tosec_games', '[TAP]', filename)
-        game_file = GameFile(file_path)
-        file_md5_zipped = game_file.getMD5(zipped=True)
-        print(file_md5_zipped)
-        game = self.db.getGameByFileMD5(file_md5_zipped, zipped=True)
-        self.assertEqual(game.wos_id, 2097)
+    # def test_appending_tosec_file_info(self):
+    #     filename = "Gonzzalezz (1989)(Opera Soft)(es)(Side B).zip"
+    #     file_path = os.path.join('tosec_games', '[TAP]', filename)
+    #     game_file = GameFile(file_path)
+    #     file_md5_zipped = game_file.getMD5(zipped=True)
+    #     print(file_md5_zipped)
+    #     game = self.db.getGameByFileMD5(file_md5_zipped, zipped=True)
+    #     self.assertEqual(game.wos_id, 2097)
 
     def test_adding_multipart_files(self):
         game = Game('19 Part 1: Boot Camp', 16)

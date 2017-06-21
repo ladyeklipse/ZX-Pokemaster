@@ -34,6 +34,8 @@ class Database():
         return self.cur.execute(sql, params).fetchall()
 
     def addGame(self, game):
+        if not game.wos_id or not game.name:
+            raise Exception('Cannot add game with corrupt data:'+game.getWosID()+','+game.getTOSECName())
         values = [game.wos_id,
                   game.name,
                   game.publisher,
