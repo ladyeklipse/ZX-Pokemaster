@@ -111,8 +111,28 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByFile(gamefile)
         self.assertEqual(game.name, 'Alien 8')
 
+    def test_alta_tension(self):
+        game = Game('Alta tension', 6)
+        ws = WosScraper()
+        ws.scrapeGameData(game)
+        ws.downloadFiles(game)
+        game.getInfoFromLocalFiles()
+        self.db.addGame(game)
+        self.db.commit()
+        game = Game('alta tension', 6)
+        game.getInfoFromDB(self.db)
+        self.assertGreater(len(game.files), 2)
+
+    def test_jswilly_3(self):
+        game_file = GameFile('tosec_games//[Z80]//Jet Set Willy III (1985)(MB - APG Software).zip')
+        game = self.db.getGameByFile(game_file)
+        self.assertEqual(game.name, 'JetSet Willy III')
 
     def get_file_from_game_by_wos_name(self, game, filename):
         for file in game.files:
             if file.wos_name==filename:
                 return file
+
+    def test_find_game_file_with_article_and_alias(self):
+        game = self.db.getGameByFileName('Time of the End, The (1986)(Mandarin Software).zip')
+        self.assertEqual(game.name, 'Time of the End')

@@ -1,6 +1,7 @@
 LOCAL_GAME_FILES_DIRECTORY = 'wos_games'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
+    'http://spectrumcomputing.co.uk',
     WOS_SITE_ROOT,
     'https://wos.meulie.net',
 ]

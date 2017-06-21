@@ -13,5 +13,7 @@ class TestScrapingTOSEC(unittest.TestCase):
         scrapeTOSEC(paths)
         db = Database()
         game = db.getGameByWosID(9302)
-        self.assertEqual(len(game.files), 3)
+        for file in game.files:
+            if file.format=='tap':
+                self.assertGreater(file.size, 0)
 

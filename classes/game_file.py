@@ -20,6 +20,7 @@ class GameFile(object):
     # zipped = False
     format = ''
     size = 0
+    size_zipped = 0
     md5 = ''
     md5_zipped = ''
     wos_path = ''
@@ -156,11 +157,13 @@ class GameFile(object):
         elif self.side == SIDE_B:
             return 'B'
 
-    def setSize(self, size):
-        if type(size)==int:
-            self.size = size
+    def setSize(self, size, zipped=False):
+        if type(size)!=int:
+            size = int(size.replace(',',''))
+        if zipped:
+            self.size_zipped = size
         else:
-            self.size = int(size.replace(',',''))
+            self.size = size
 
     def getSize(self):
         return '{:,}'.format(self.size)
@@ -196,6 +199,8 @@ class GameFile(object):
                 for zfname in zf.namelist():
                     zfname_ext = zfname.split('.')[-1].lower()
                     if zfname_ext == self.format:
+                        if not self.size:
+                            self.setSize(zf.getinfo(zfname).file_size)
                         return zf.read(zfname)
         else:
             return open(local_path, 'rb').read()

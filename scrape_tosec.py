@@ -15,17 +15,9 @@ def generateTOSECPathsArray():
 
 def scrapeTOSEC(paths):
     db = Database()
-    # tosec_folders = ['[TAP]', '[TRD]', '[TZX]', '[Z80]', '[SCL]', '[DSK]']
     games_found = 0
-    # games_not_found = 0
     current_game = None
     current_tosec_name = ''
-    # for folder in tosec_folders:
-    #     for root, dirs, files in os.walk(os.path.join('tosec_games', folder)):
-    #         for filename in files:
-    #             if not filename.endswith('.zip'):
-    #                 continue
-                # file_path = os.path.join('tosec_games', folder, filename)
     for file_path in paths:
         game_file = GameFile(file_path)
         print(file_path)
@@ -44,13 +36,29 @@ def scrapeTOSEC(paths):
         if not current_game:
             current_game = game_file.game
             current_tosec_name = current_game.getTOSECName()
-        game_from_db = db.getGameByFile(game_file)
-        if game_from_db and current_game!=game_from_db:
-            game_from_db.addFiles(current_game.files)
-            current_game = game_from_db
+        if not current_game.wos_id:
+            game_from_db = db.getGameByFile(game_file)
+            if game_from_db and current_game!=game_from_db:
+                game_from_db.addFiles(current_game.files)
+                current_game = game_from_db
         current_game.addFile(game_file)
     db.addGame(current_game)
     db.commit()
+
+def showUnscraped(tosec_paths):
+    db = Database()
+    sql = 'SELECT tosec_name, format FROM game_file WHERE tosec_name!="" AND format!=""'
+    db_tosec_files = db.execute(sql, [])
+    db_paths = []
+    unscraped = 0
+    for file in db_tosec_files:
+        path = os.path.join('tosec_games', '['+file['format'].upper()+']', file['tosec_name'])
+        db_paths.append(path)
+    for path in tosec_paths:
+        if path not in db_paths:
+            print(path)
+            unscraped += 1
+    print('Total:', len(tosec_paths), 'Unscraped:', unscraped)
 
 if __name__=='__main__':
     paths = generateTOSECPathsArray()
@@ -59,4 +67,5 @@ if __name__=='__main__':
     #     'tosec_games\[TAP]\Alien 8 (1985)(Ultimate Play The Game)[a].zip',
     #     'tosec_games\[TAP]\Alien 8 (1985)(Ultimate Play The Game)[t IQ Soft].zip',
     # ]
-    scrapeTOSEC(paths)
+    scrapeTOSEC(paths[:100])
+    # showUnscraped(paths)
