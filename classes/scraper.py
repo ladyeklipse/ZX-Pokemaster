@@ -12,6 +12,8 @@ import time
 from classes.user_agents import USER_AGENTS
 import shutil
 
+ITER_CONTENT_CHUNK_SIZE = 1024*1014
+
 class Scraper(object):
 
     time_started = time.time()
@@ -282,7 +284,7 @@ class Scraper(object):
         if response.status_code == 200:
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             with open(dest, 'wb') as f:
-                for chunk in response.iter_content(4096):
+                for chunk in response.iter_content(ITER_CONTENT_CHUNK_SIZE):
                     f.write(chunk)
             print('File', dest, 'saved.')
         else:

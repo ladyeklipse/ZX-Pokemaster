@@ -1,16 +1,19 @@
+# from classes.game_release import GameRelease
+# from classes.game_file import GameFile
 from classes.cheat import *
 from classes.poke import *
 from settings import *
 import os
 import glob
 import re
-import zipfile
-import hashlib
+# import zipfile
+# import hashlib
 
 publisher_regex = re.compile('inc[ .]|ltd|plc', re.IGNORECASE)
+filepath_regex = re.compile('\*|\?|\:|\||\\|\/|\"|<|>')
 
-def getWosSubfolder(filename):
-    return '123' if filename[0].isdigit() else filename[0].lower()
+def getWosSubfolder(filepath):
+    return '123' if filepath[0].isdigit() else filepath[0].lower()
 
 class Game(object):
 
@@ -22,35 +25,37 @@ class Game(object):
     number_of_players = 1
     machine_type = ''
     language = 'en'
+    releases = []
     files = []
     cheats = []
     wos_has_files = False
     help_txt_url = None
     manual_url = None
-    loading_screen_filename = None
-    ingame_screen_filename = None
-    manual_filename = None
+    loading_screen_gif_filepath = None
+    ingame_screen_gif_filepath = None
+    loading_screen_scr_filepath = None
+    ingame_screen_scr_filepath = None
+    manual_filepath = None
     loading_screen_gif_size = 0
     loading_screen_scr_size = 0
     ingame_screen_gif_size = 0
+    ingame_screen_scr_size = 0
     manual_size = 0
     parts = 1
     availability = AVAILABILITY_AVAILABLE
     has_tipshop_page = False
     tipshop_multiface_pokes_section = ''
     pok_file_contents = ''
-    alternate_names = []
 
     def __init__(self, name='', wos_id=0, db=None):
-        name_and_aliases = name.split(';')
-        self.name = name_and_aliases[0]
-        self.aliases = name_and_aliases
+        self.name=name
         if type(wos_id)!=int:
             raise ValueError('wos_id is not integer')
         self.wos_id = wos_id
         self.files, self.cheats = [], []
         if db:
             self.getInfoFromDB(db)
+        self.releases = []
 
     def __repr__(self):
         return '<Game '+self.getWosID()+':'+self.getTOSECName()+'>'
@@ -66,7 +71,9 @@ class Game(object):
         return False
 
     def getTOSECName(self):
-        return self.name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
+        filepath = self.name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
+        filepath = filepath_regex.sub('', filepath).strip()
+        return filepath
 
     def getInfoFromDB(self, db):
         game_from_db = db.getGameByWosID(self.wos_id)
@@ -78,27 +85,27 @@ class Game(object):
             self.number_of_players = game_from_db.number_of_players
             self.machine_type = game_from_db.machine_type
             self.language = game_from_db.language
-            self.ingame_screen_filename = game_from_db.ingame_screen_filename
-            self.loading_screen_filename = game_from_db.ingame_screen_filename
-            self.manual_filename = game_from_db.manual_filename
+            self.ingame_screen_filepath = game_from_db.ingame_screen_filepath
+            self.loading_screen_filepath = game_from_db.ingame_screen_filepath
+            self.manual_filepath = game_from_db.manual_filepath
             self.files = game_from_db.files
             self.cheats = game_from_db.cheats
             self.pok_file_contents = game_from_db.pok_file_contents
 
 
-    def getTOSECName(self, part=1):
-        tosec_name = self.name
-        if self.year:
-            tosec_name += ' ('+str(self.year)+')'
-        if self.publisher:
-            tosec_name += ' ('+self.publisher+')'
-        if self.machine_type:
-            tosec_name += ' ('+self.machine_type+')'
-        if self.language!='en':
-            tosec_name += ' ('+self.language+')'
-        if self.parts>1 and part:
-            tosec_name += ' (Part '+str(part)+str(' of ')+str(self.parts)+')'
-        return tosec_name
+    # def getTOSECName(self, part=1):
+    #     tosec_name = self.name
+    #     if self.year:
+    #         tosec_name += ' ('+str(self.year)+')'
+    #     if self.publisher:
+    #         tosec_name += ' ('+self.publisher+')'
+    #     if self.machine_type:
+    #         tosec_name += ' ('+self.machine_type+')'
+    #     if self.language!='en':
+    #         tosec_name += ' ('+self.language+')'
+    #     if self.parts>1 and part:
+    #         tosec_name += ' (Part '+str(part)+str(' of ')+str(self.parts)+')'
+    #     return tosec_name
 
     def getWosID(self):
         return str(self.wos_id).zfill(7)
@@ -148,7 +155,7 @@ class Game(object):
         self.name = title
 
     def setPublisher(self, publisher):
-        if publisher=='unknown':
+        if publisher=='unknown' or not publisher:
             publisher = ''
         publisher = publisher_regex.sub('', publisher).strip()
         self.publisher = publisher
@@ -162,13 +169,16 @@ class Game(object):
     def setNumberOfPlayers(self, n_players):
         if type(n_players)==int:
             self.number_of_players = n_players
-        else:
+        elif n_players:
             self.number_of_players = int(n_players.split(' ')[0])
 
     def setMachineType(self, machine_type):
-        self.machine_type = machine_type.replace('ZX Spectrum', '').strip()
+        if machine_type:
+            self.machine_type = machine_type.replace('ZX-Spectrum', '').strip()
 
     def setLanguage(self, language):
+        if not language:
+            language='en'
         self.language = language.lower()[:2]
 
     def setGenre(self, genre):
@@ -177,29 +187,41 @@ class Game(object):
     def setmanualUrl(self, url):
         self.manual_url = url
 
-    def addFiles(self, files):
-        for file in files:
-            self.addFile(file)
+    def addRelease(self, release=None):
+        if release:
+            self.releases.append(release)
 
-    def addFile(self, new_file):
+    # def addFiles(self, files):
+    #     for file in files:
+    #         self.addFile(file)
+
+    def addFile(self, new_file, release_seq=0):
         if not new_file:
             return
-        for file in self.files:
-            if file==new_file:
-                file.tosec_name = new_file.tosec_name
-                if new_file.size:
-                    file.size = new_file.size
-                if new_file.language:
-                    file.language = new_file.language
-                if new_file.machine_type:
-                    file.machine_type = new_file.machine_type
-                if new_file.part:
-                    file.part = new_file.part
-                if new_file.side:
-                    file.side = new_file.side
-                return
-        new_file.game = self
-        self.files.append(new_file)
+        self.releases[release_seq].addFile(new_file)
+        # for file in self.files:
+        #     if file==new_file:
+        #         file.tosec_name = new_file.tosec_name
+        #         if new_file.size:
+        #             file.size = new_file.size
+        #         if new_file.language:
+        #             file.language = new_file.language
+        #         if new_file.machine_type:
+        #             file.machine_type = new_file.machine_type
+        #         if new_file.part:
+        #             file.part = new_file.part
+        #         if new_file.side:
+        #             file.side = new_file.side
+        #         return
+        # new_file.game = self
+        # new_file.release_seq = release_seq
+        # self.files.append(new_file)
+
+    def getFiles(self):
+        files = []
+        for release in self.releases:
+            files.extend(release.files)
+        return files
 
     def addCheat(self, cheat, cheat_source=CHEAT_SOURCE_SCRAPE):
         if type(cheat)!=Cheat:
@@ -258,7 +280,7 @@ class Game(object):
                     return pok_file
 
     def exportPokFile(self, file_path):
-        with open(file_path, 'w+') as f:
+        with open(file_path, 'w+', encoding='utf-8') as f:
             pok_file_contents = self.getPokFileContents()
             f.write(pok_file_contents)
 
@@ -273,100 +295,121 @@ class Game(object):
         pok_file_contents += 'Y'
         return pok_file_contents
 
-    def setLoadingScreenUrl(self, url, size):
-        if not url:
-            return
-        self.loading_screen_filename, format = os.path.splitext(os.path.basename(url))
-        if format == '.gif':
-            self.loading_screen_gif_size = int(size.replace(',', ''))
-        elif format == '.scr':
-            self.loading_screen_scr_size = int(size.replace(',', ''))
+    # def setLoadingScreenUrl(self, url, size):
+    #     if not url:
+    #         return
+    #     self.loading_screen_filepath, format = os.path.splitext(os.path.basename(url))
+    #     if format == '.gif':
+    #         self.loading_screen_gif_size = int(size.replace(',', ''))
+    #     elif format == '.scr':
+    #         self.loading_screen_scr_size = int(size.replace(',', ''))
+    #
+    # def setIngameScreenUrl(self, url, size):
+    #     if not url:
+    #         return
+    #     self.ingame_screen_filepath = os.path.splitext(os.path.basename(url))[0]
+    #     self.ingame_screen_gif_size = int(size.replace(',', ''))
 
-    def setIngameScreenUrl(self, url, size):
-        if not url:
-            return
-        self.ingame_screen_filename = os.path.splitext(os.path.basename(url))[0]
-        self.ingame_screen_gif_size = int(size.replace(',', ''))
+    # def setManualUrl(self, url, size):
+    #     if not url:
+    #         return
+    #     self.manual_filepath = os.path.basename(url)
+    #     self.manual_size = int(size.replace(',',''))
 
+    def getRemoteIngameScreenUrl(self, format='gif',
+                                 wos_mirror_root = WOS_SITE_ROOT,
+                                 release_seq=0):
+        ingame_screen_filepath = self.releases[release_seq].getIngameScreenFilePath(format)
+        if not ingame_screen_filepath and release_seq>0:
+            ingame_screen_filepath = self.releases[0].getIngameScreenFilePath(format)
+        return '/'.join(wos_mirror_root, ingame_screen_filepath)
+        # return '/'.join((wos_mirror_root, WOS_INGAME_SCREENS_DIRECTORY,
+        #         getWosSubfolder(self.ingame_screen_filepath),
+        #         self.ingame_screen_filepath+'.'+format))
 
-    def setManualUrl(self, url, size):
-        if not url:
-            return
-        self.manual_filename = os.path.basename(url)
-        self.manual_size = int(size.replace(',',''))
+    def getRemoteLoadingScreenUrl(self, format='gif',
+                                    wos_mirror_root = WOS_SITE_ROOT,
+                                    release_seq = 0):
+        loading_screen_filepath = self.releases[release_seq].getLoadingScreenFilePath(format)
+        if not loading_screen_filepath and release_seq>0:
+            loading_screen_filepath = self.releases[0].getLoadingScreenFilePath(format)
+        return '/'.join(wos_mirror_root, loading_screen_filepath)
+        # return '/'.join((wos_mirror_root, WOS_LOADING_SCREENS_DIRECTORY,
+        #         getWosSubfolder(self.loading_screen_filepath),
+        #         format,
+        #         self.loading_screen_filepath+'.'+format))
 
-    def getRemoteIngameScreenUrl(self, format='gif', wos_mirror_root = WOS_SITE_ROOT):
-        return '/'.join((wos_mirror_root, WOS_INGAME_SCREENS_DIRECTORY,
-                getWosSubfolder(self.ingame_screen_filename),
-                self.ingame_screen_filename+'.'+format))
+    def getRemoteManualUrl(self,
+                            wos_mirror_root = WOS_SITE_ROOT,
+                            release_seq = 0):
+        manual_filepath = self.releases[release_seq].getManualFilePath(format)
+        if not manual_filepath and release_seq>0:
+            manual_filepath = self.releases[0].getManualFilePath(format)
+        return '/'.join(wos_mirror_root, manual_filepath)
+        # return '/'.join((wos_mirror_root, WOS_MANUALS_DIRECTORY,
+        #         getWosSubfolder(self.manual_filepath),
+        #         self.manual_filepath))
 
-    def getRemoteLoadingScreenUrl(self, format='gif', wos_mirror_root = WOS_SITE_ROOT):
-        return '/'.join((wos_mirror_root, WOS_LOADING_SCREENS_DIRECTORY,
-                getWosSubfolder(self.loading_screen_filename),
-                format,
-                self.loading_screen_filename+'.'+format))
+    def getLocalManualPath(self, release_seq=0):
+        return self.getRemoteManualUrl(wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+        # if not self.manual_filepath:
+        #     return ''
+        # subfolder = getWosSubfolder(self.manual_filepath)
+        # return os.path.join('wos_manuals', subfolder, self.manual_filepath)
 
-    def getRemoteManualUrl(self, wos_mirror_root = WOS_SITE_ROOT):
-        return '/'.join((wos_mirror_root, WOS_MANUALS_DIRECTORY,
-                getWosSubfolder(self.manual_filename),
-                self.manual_filename))
+    def getLocalLoadingScreenPath(self, format='scr', release_seq=0):
+        return self.getRemoteLoadingScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+        # if not self.loading_screen_filepath:
+        #     return ''
+        # ext = '.'+format
+        # subfolder = getWosSubfolder(self.loading_screen_filepath)
+        # return os.path.join('wos_loading_screens', format, subfolder,
+        #                     self.loading_screen_filepath+ext)
 
-    def getLocalManualPath(self):
-        if not self.manual_filename:
-            return ''
-        subfolder = getWosSubfolder(self.manual_filename)
-        return os.path.join('wos_manuals', subfolder, self.manual_filename)
+    def getLocalIngameScreenPath(self, format='scr', release_seq=0):
+        return self.getRemoteIngameScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+        # if not self.ingame_screen_filepath:
+        #     return ''
+        # ext = '.'+format
+        # subfolder = getWosSubfolder(self.ingame_screen_filepath)
+        # return os.path.join('wos_ingame_screens', format, subfolder,
+        #                     self.ingame_screen_filepath+ext)
 
-    def getLocalLoadingScreenPath(self, format='scr'):
-        if not self.loading_screen_filename:
-            return ''
-        ext = '.'+format
-        subfolder = getWosSubfolder(self.loading_screen_filename)
-        return os.path.join('wos_loading_screens', format, subfolder,
-                            self.loading_screen_filename+ext)
-
-    def getLocalIngameScreenPath(self, format='scr'):
-        if not self.ingame_screen_filename:
-            return ''
-        ext = '.'+format
-        subfolder = getWosSubfolder(self.ingame_screen_filename)
-        return os.path.join('wos_ingame_screens', format, subfolder,
-                            self.ingame_screen_filename+ext)
-
-    def getInfoFromLocalFiles(self):
-        extra_files = []
-        for file in self.files:
-            # if not file.zipped:
-            #     continue
-            file_path = file.getLocalPath(zipped=True)
-            file.md5_zipped = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
-            with zipfile.ZipFile(file_path) as z:
-                for zfname in z.namelist():
-                    zfext = os.path.splitext(zfname)[1].lower()[1:]
-                    if zfext == 'pok':
-                        with z.open(zfname) as pok_file:
-                            pok_file_contents = pok_file.read().decode('utf-8')
-                            self.importPokFile(text=pok_file_contents)
-                    elif zfext in GAME_EXTENSIONS:
-                        unzipped_file = z.read(zfname)
-                        new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
-                        if not file.md5:
-                            file.md5 = new_file_md5
-                            file.wos_name = os.path.basename(zfname)
-                            file.setSize(z.getinfo(zfname).file_size)
-                            file.setMachineType(zfname)
-                            file.setPart(zfname)
-                            file.setSide(zfname)
-                        else:
-                            second_file = file.copy()
-                            second_file.md5 = new_file_md5
-                            second_file.md5_zipped = file.md5_zipped
-                            second_file.setSize(z.getinfo(zfname).file_size)
-                            second_file.wos_name = os.path.basename(zfname)
-                            second_file.wos_zipped_name = file.wos_zipped_name
-                            second_file.setMachineType(zfname)
-                            second_file.setPart(zfname)
-                            second_file.setSide(zfname)
-                            extra_files.append(second_file)
-        self.addFiles(extra_files)
-        self.files = [file for file in self.files if file.md5]
+    # def getInfoFromLocalFiles(self):
+    #     extra_files = []
+    #     for file in self.getFiles():
+    #         # if not file.zipped:
+    #         #     continue
+    #         file_path = file.getLocalPath(zipped=True)
+    #         file.md5_zipped = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
+    #         with zipfile.ZipFile(file_path) as z:
+    #             for zfname in z.namelist():
+    #                 zfext = os.path.splitext(zfname)[1].lower()[1:]
+    #                 #DEPRECATED
+    #                 # if zfext == 'pok':
+    #                 #     with z.open(zfname) as pok_file:
+    #                 #         pok_file_contents = pok_file.read().decode('utf-8')
+    #                 #         self.importPokFile(text=pok_file_contents)
+    #                 if zfext in GAME_EXTENSIONS:
+    #                     unzipped_file = z.read(zfname)
+    #                     new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
+    #                     if not file.md5:
+    #                         file.md5 = new_file_md5
+    #                         file.wos_name = os.path.basename(zfname)
+    #                         file.setSize(z.getinfo(zfname).file_size)
+    #                         file.setMachineType(zfname)
+    #                         file.setPart(zfname)
+    #                         file.setSide(zfname)
+    #                     else:
+    #                         second_file = file.copy()
+    #                         second_file.md5 = new_file_md5
+    #                         second_file.md5_zipped = file.md5_zipped
+    #                         second_file.setSize(z.getinfo(zfname).file_size)
+    #                         second_file.wos_name = os.path.basename(zfname)
+    #                         second_file.wos_zipped_name = file.wos_zipped_name
+    #                         second_file.setMachineType(zfname)
+    #                         second_file.setPart(zfname)
+    #                         second_file.setSide(zfname)
+    #                         extra_files.append(second_file)
+    #     self.addFiles(extra_files)
+    #     self.files = [file for file in self.files if file.md5]

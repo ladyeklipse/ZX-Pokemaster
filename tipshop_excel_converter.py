@@ -36,13 +36,12 @@ def xlsx2db():
         game = Game()
         try:
             game.importPokFile(text=pok_file_contents)
-        # except IndexError as e:
-        #     print('Could not import pok file:', wos_id)
-        #     print(pok_file_contents)
+            for cheat in game.cheats:
+                if cheat.description.isdigit():
+                    raise(ValueError('Cheat desc is digit!'))
         except Exception as e:
-            # print(pok_file_contents)
             print(str(wos_id).zfill(7))
-            raise e
+            #raise e
         sql = 'UPDATE game SET pok_file_contents = ? WHERE wos_id=?'
         params = [pok_file_contents, wos_id]
         db.execute(sql, params)

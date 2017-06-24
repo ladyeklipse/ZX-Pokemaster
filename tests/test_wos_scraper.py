@@ -1,3 +1,7 @@
+#
+#   DEPRECATED
+#
+
 from classes.wos_scraper import *
 from settings import *
 import unittest

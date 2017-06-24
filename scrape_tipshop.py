@@ -1,5 +1,6 @@
 from classes.tipshop_scraper import *
 from classes.database import *
+from classes.game import *
 
 def chunks(l, n):
     for i in range(0, len(l), n):
@@ -37,6 +38,17 @@ def getAllPokes():
         print('left=', len(games)-i)
     db.commit()
 
+def extractPokFiles():
+    db = Database()
+    games = db.getAllGames('pok_file_contents!=""')
+    for game in games:
+        print(game)
+        filename = game.getTOSECName()+'.pok'
+        path = os.path.join('AllTipshopPokes', getWosSubfolder(filename), filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        game.exportPokFile(path)
+
+
 def generateZXDBUpdate(wos_ids):
     with open('relatedlinks.update.sql', 'w+', encoding='utf-8') as f:
         f.write('INSERT INTO relatedlinks (website_id, entry_id, link) VALUES (\n')
@@ -67,20 +79,16 @@ def convertHexes(text):
 
 if __name__=='__main__':
     # wos_ids = getWosIDsOfTipshopGames()
+    # update_has_tipshop_page_column(wos_ids)
     # generateZXDBUpdate(wos_ids)
     # print('total wos_ids = ', len(wos_ids))
     # update_has_tipshop_page_column(wos_ids)
     # getAllPokes()
-    text = convertHexes('''
-    [128K]Fix Sinclair joysticks
-$9636,$01
-$9638,$02
-$963a,$04
-$963c,$10
-$963e,$08
-''')
-    print(text)
-    scrapePokesFromText(text)
-    text = '''
-'''
-    scrapePokesFromText(text)
+    # db = Database()
+    # game = db.getGameByWosID(5149)
+    # game.exportPokFile('test.pok')
+    extractPokFiles()
+    # text = convertHexes('''''')
+    # scrapePokesFromText(text)
+    # text = ''''''
+    # scrapePokesFromText(text)

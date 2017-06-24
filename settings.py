@@ -1,9 +1,10 @@
 LOCAL_GAME_FILES_DIRECTORY = 'wos_games'
+LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'http://spectrumcomputing.co.uk',
-    WOS_SITE_ROOT,
     'https://wos.meulie.net',
+    WOS_SITE_ROOT,
 ]
 WOS_GAME_FILES_DIRECTORY = 'pub/sinclair/games'
 WOS_TRDOS_GAME_FILES_DIRECTORY = 'pub/sinclair/trdos/games'

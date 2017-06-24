@@ -1,3 +1,7 @@
+#
+#   DEPRECATED
+#
+
 from classes.scraper import Scraper
 from classes.game import Game
 from classes.game_file import GameFile
