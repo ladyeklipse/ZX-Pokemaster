@@ -1,8 +1,11 @@
 from settings import *
 from classes.game import Game
+from classes.game_release import GameRelease
 from classes.game_file import GameFile, TOSEC_REGEX
 import re
+import os
 import sqlite3
+import traceback
 
 GAME_PREFIXES = ['3D',
                  'A', 'The',
@@ -24,6 +27,10 @@ SELECT_GAME_SQL_START = 'SELECT *, ' \
 
 class Database():
 
+    cache_by_wos_id = {}
+    cache_by_name = {}
+    cache_by_md5 = {}
+
     def __init__(self):
         self.conn = sqlite3.connect('pokemaster.db')
         self.conn.row_factory = sqlite3.Row
@@ -33,6 +40,22 @@ class Database():
     def execute(self, sql, params=[]):
         return self.cur.execute(sql, params).fetchall()
 
+    def loadCache(self):
+        print('started loading cache')
+        games = self.getAllGames()
+        print('got ', len(games), 'games')
+        for game in games:
+            self.cache_by_wos_id[game.wos_id]=game
+            for release in game.releases:
+                for name in release.getAllAliases():
+                    if not self.cache_by_name.get(name):
+                        self.cache_by_name[name]=[game]
+                    else:
+                        self.cache_by_name[name].append(game)
+                for file in release.files:
+                    self.cache_by_md5[file.md5]=game
+        print('cache loaded')
+
     def addGame(self, game):
         if not game.wos_id or not game.name:
             raise Exception('Cannot add game with corrupt data:'+game.getWosID()+','+game.getTOSECName())
@@ -41,11 +64,12 @@ class Database():
                   game.publisher,
                   game.year,
                   game.genre,
+                  game.x_rated,
                   game.number_of_players,
                   game.machine_type,
                   game.language,
                   game.availability,
-                  game.has_tipshop_page,
+                  game.tipshop_page,
                   game.getPokFileContents(),
                   game.tipshop_multiface_pokes_section]
         sql = "INSERT OR REPLACE INTO game VALUES " \
@@ -73,10 +97,17 @@ class Database():
                   "({})".format(','.join(['?'] * len(values)))
             self.cur.execute(sql, values)
             for file in release.files:
+                try:
+                    file.getMD5()
+                    file.getMD5(zipped=True)
+                except:
+                    print('Bad file:', file, 'for game:', game)
+                    print(traceback.format_exc())
+                    continue
                 values = [game.wos_id,
                           release.release_seq,
                           file.wos_name,
-                          file.path,
+                          file.path if file.wos_name else '',
                           file.tosec_name,
                           file.machine_type,
                           file.format,
@@ -102,17 +133,40 @@ class Database():
         games = self.getGamesFromRawData(raw_data)
         return games
 
+    def getGameByName(self, game_name):
+        if self.cache_by_name:
+            games = self.cache_by_name.get(game_name)
+        else:
+            sql = SELECT_GAME_SQL_START + \
+                'WHERE game.name=?'
+            raw_data = self.cur.execute(sql, [game_name]).fetchall()
+            games = self.getGamesFromRawData(raw_data)
+        if not games:
+            print('Game', game_name, 'not found')
+            return None
+        elif len(games)==1:
+            return games[0]
+        else:
+            print('Ambiguity not resolved')
+            for game in games:
+                print(game)
+            return None
+
     def getGameByFilePath(self, filepath):
-        game_release = re.sub(TOSEC_REGEX, '', filepath).strip()
-        game_release = game_release.replace(' ', '%')
+        filename = os.path.basename(filepath)
+        game_release = re.sub(TOSEC_REGEX, '', filename).strip()
         for prefix in GAME_PREFIXES:
             if game_release.startswith(prefix+' '):
                 game_release = ' '.join(game_release.split(' ')[1:]) + ', ' + prefix
                 break
-        sql = SELECT_GAME_SQL_START + \
-            'where game.name LIKE ?'
-        raw_data = self.cur.execute(sql, [game_release]).fetchall()
-        games = self.getGamesFromRawData(raw_data)
+        if self.cache_by_name:
+            games = self.cache_by_name.get(game_release)
+        else:
+            game_release = game_release.replace(' ', '%')
+            sql = SELECT_GAME_SQL_START + \
+                'where game.name LIKE ?'
+            raw_data = self.cur.execute(sql, [game_release]).fetchall()
+            games = self.getGamesFromRawData(raw_data)
         if not games:
             return None
         if len(games)==1:
@@ -143,6 +197,8 @@ class Database():
         return games
 
     def getGameByWosID(self, wos_id):
+        if self.cache_by_wos_id:
+            return self.cache_by_wos_id.get(wos_id)
         sql = SELECT_GAME_SQL_START + \
               'WHERE game.wos_id=?'
         raw_data = self.cur.execute(sql, [wos_id]).fetchall()
@@ -155,10 +211,12 @@ class Database():
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
         if not game:
-            game = self.getGameByFilePath(file.getFilePath())
+            game = self.getGameByFilePath(file.path)
         return game
 
     def getGameByFileMD5(self, md5, zipped=False):
+        if self.cache_by_md5:
+            return self.cache_by_md5.get(md5)
         sql = SELECT_GAME_SQL_START
         if zipped:
             sql += 'WHERE game_file.md5_zipped="{}"'.format(md5)
@@ -185,29 +243,34 @@ class Database():
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])
-        if row.get('ingame_screen_gif_filepath'):
-            game.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
-            game.ingame_screen_gif_size = row['ingame_screen_gif_size']
-        if row.get('ingame_screen_scr_filepath'):
-            game.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
-            game.ingame_screen_scr_size = row['ingame_screen_scr_size']
-        if row.get('loading_screen_gif_filepath'):
-            game.loading_screen_gif_filepath = row['loading_screen_gif_filepath']
-            game.loading_screen_gif_size = row['loading_screen_gif_size']
-        if row.get('loading_screen_scr_filepath'):
-            game.loading_screen_scr_filepath = row['loading_screen_scr_filepath']
-            game.loading_screen_scr_size = row['loading_screen_scr_size']
-        if row.get('manual_filepath'):
-            game.manual_filepath = row['manual_filepath']
-            game.manual_size = row['manual_size']
-        if row.get('has_tipshop_page'):
-            game.has_tipshop_page = row['has_tipshop_page']
-        if game.has_tipshop_page:
+        game.x_rated = row['x_rated']
+        game.addRelease(self.releaseFromRow(row, game))
+        game.tipshop_page = row['tipshop_page']
+        if game.tipshop_page:
             game.importPokFile(text=str(row['pok_file_contents']))
             game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
-        if row.get('md5'):
+        if row['md5']:
             game.addFile(self.fileFromRow(row))
         return game
+
+    def releaseFromRow(self, row, game):
+        release = GameRelease(row['release_seq'],
+                              row['year'],
+                              row['publisher'],
+                              row['country'],
+                              game)
+        release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
+        release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
+        release.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
+        release.ingame_screen_scr_size = row['ingame_screen_scr_filesize']
+        release.loading_screen_gif_filepath = row['loading_screen_gif_filepath']
+        release.loading_screen_gif_size = row['loading_screen_gif_filesize']
+        release.loading_screen_scr_filepath = row['loading_screen_scr_filepath']
+        release.loading_screen_scr_size = row['loading_screen_scr_filesize']
+        release.manual_filepath = row['manual_filepath']
+        release.manual_size = row['manual_filesize']
+        return release
+
 
     def fileFromRow(self, row):
         if not row['md5']:

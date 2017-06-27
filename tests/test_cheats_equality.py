@@ -47,6 +47,18 @@ class TestCheatsEquality(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.addPoke(22222, 257)
 
+    def test_cheat_arrays(self):
+        array =[]
+        c = Cheat('Cheat 1')
+        c.addPoke(22222, 255)
+        c.addPoke(22223, 255)
+        array.append(c)
+        c1 = Cheat('Cheat 2')
+        c1.addPoke(22222, 255)
+        c2 = Cheat('Cheat 3')
+        c2.addPoke(33333,233)
+        self.assertTrue(c1 in array)
+        self.assertFalse(c2 in array)
 
-
-
+if __name__=='__main__':
+    unittest.main()

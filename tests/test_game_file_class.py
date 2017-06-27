@@ -12,7 +12,7 @@ class GameFileTests(unittest.TestCase):
     def test_md5(self):
         print(os.getcwd())
         game = Game(wos_id=1660)
-        game_file = GameFile('wos_games\e\E.T.X..tap.zip', game=game)
+        game_file = GameFile('ftp\pub\sinclair\games\e\E.T.X..tap.zip', game=game)
         expected_md5 = '1C057504487D076514C19CA181498590'.lower()
         game_file_md5 = game_file.getMD5(zipped=True)
         self.assertEqual(expected_md5, game_file_md5)

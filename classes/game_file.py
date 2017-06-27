@@ -159,7 +159,7 @@ class GameFile(object):
         elif self.side == SIDE_B:
             return 'B'
 
-    def setSize(self, size, zipped=False):
+    def setSize(self, size=0, zipped=False):
         if type(size)==str:
             size = int(size.replace(',',''))
         if zipped:
@@ -222,7 +222,12 @@ class GameFile(object):
         # return wos_path
 
     def getLocalPath(self, zipped=False):
-        return self.getWosPath(LOCAL_FTP_ROOT)
+        if self.wos_name:
+            local_path = self.getWosPath(LOCAL_FTP_ROOT)
+            if os.path.exists(local_path):
+                return local_path
+        return self.path
+
         # if zipped and self.wos_zipped_name:
         #     subfolder = getWosSubfolder(self.wos_zipped_name)
         #     local_path = os.path.join(LOCAL_GAME_FILES_DIRECTORY, subfolder, self.wos_zipped_name)

@@ -27,14 +27,14 @@ class GameRelease(object):
     files = []
 
 
-    def __init__(self, release_seq=0, year=None, publisher=None, country=None, game=Game()):
+    def __init__(self, release_seq=0, year=None, publisher=None, country=None, game=Game(), aliases=[]):
         self.release_seq = release_seq
         self.year = year
         self.publisher = publisher
         self.country = country
         self.game = game
         self.files = []
-        self.aliases = []
+        self.aliases = aliases
         # self.loading_screen_gif_filepath = game.loading_screen_gif_filepath
         # self.loading_screen_scr_filepath = game.loading_screen_scr_filepath
         # self.ingame_screen_gif_filepath = game.ingame_screen_gif_filepath
@@ -56,6 +56,9 @@ class GameRelease(object):
         if aliases:
             return '/'.join(aliases)
         return self.game.name
+
+    def getAllAliases(self):
+        return [x.name for x in self.aliases]+[self.game.name]
 
     def getIngameScreenFilePath(self, format='scr'):
         if format=='scr':

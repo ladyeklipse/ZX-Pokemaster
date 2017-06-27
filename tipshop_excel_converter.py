@@ -52,7 +52,6 @@ if __name__=='__main__':
     if not os.path.exists(XLSX_FILENAME):
         print('db to xlsx')
         db2xlsx()
-
         os.startfile(XLSX_FILENAME)
     else:
         print('xlsx to db')
