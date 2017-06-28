@@ -7,7 +7,7 @@ import os
 import glob
 import re
 
-publisher_regex = re.compile('inc[ .]|ltd|plc', re.IGNORECASE)
+publisher_regex = re.compile('inc[ .]|ltd|plc|S.A.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|')
 
 def getWosSubfolder(filepath):
@@ -301,8 +301,15 @@ class Game(object):
     def findReleaseByFile(self, game_file):
         if len(self.releases)==1:
             return self.releases[0]
+        game_file_publisher = game_file.game.publisher.lower().replace('.','')
         for release in self.releases:
-            if game_file.game.name in release.getAllAliases() and \
-                game_file.game.year==release.year:
-                return release.release_seq
+            release_publisher = release.publisher.lower().replace('.', '')
+            # if game_file.game.publisher==release.publisher:
+            if game_file_publisher==release_publisher:
+                return release
+            # if game_file.game.name in release.getAllAliases() and \
+            #     game_file.game.year==release.year:
+            #     return release.release_seq
+        print(self, 'Not found proper release for:', game_file)
+        return self.releases[0]
         return None

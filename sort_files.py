@@ -13,4 +13,4 @@ def sortFiles(input_locations,
     pass
 
 if __name__=='__main__':
-    sortFiles(['wos_games', 'tosec_games'])
+    sortFiles(['ftp', 'tosec_games'])

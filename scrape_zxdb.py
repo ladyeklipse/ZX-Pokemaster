@@ -66,7 +66,8 @@ class ZXDB():
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
-              '(publisher_seq IS NULL OR publisher_seq=1) ' \
+              '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
+              'entries.id=7220 ' \
               'ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT 1000000'
               # 'WHERE (downloads.filetype_id IS NULL OR ' \
@@ -169,7 +170,8 @@ class ZXDB():
                               row['year'],
                               row['publisher'],
                               row['country'],
-                              game)
+                              game,
+                              [row['alt_name'] if row['alt_name'] else game.name])
         return release
 
     def gameFileFromRow(self, row, game):

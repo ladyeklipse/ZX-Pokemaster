@@ -18,12 +18,18 @@ GAME_PREFIXES = ['3D',
 SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game.wos_id AS wos_id, ' \
                         'game_file.machine_type AS file_machine_type, ' \
-                        'game_file.language AS file_language ' \
+                        'game_file.language AS file_language, ' \
+                        'game_release.name AS aliases, ' \
+                        'game_release.year AS release_year, ' \
+                        'game_release.publisher AS release_publisher, ' \
+                        'game_release.country AS release_country ' \
                         'FROM game ' \
               'LEFT JOIN game_release ' \
               'ON game_release.wos_id==game.wos_id ' \
               'LEFT JOIN game_file ' \
-              'ON game_file.game_wos_id==game.wos_id ' \
+              'ON game_file.game_wos_id==game.wos_id AND ' \
+              'game_file.game_release_seq=game_release.release_seq '
+SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
 
 class Database():
 
@@ -33,6 +39,7 @@ class Database():
 
     def __init__(self):
         self.conn = sqlite3.connect('pokemaster.db')
+        self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
         self.cur.execute('PRAGMA JOURNAL_MODE = OFF')
@@ -129,6 +136,7 @@ class Database():
         sql = SELECT_GAME_SQL_START
         if condition:
             sql += 'WHERE '+condition
+        sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
         games = self.getGamesFromRawData(raw_data)
         return games
@@ -138,7 +146,8 @@ class Database():
             games = self.cache_by_name.get(game_name)
         else:
             sql = SELECT_GAME_SQL_START + \
-                'WHERE game.name=?'
+                'WHERE game.name=? '
+            sql += SELECT_GAME_SQL_END
             raw_data = self.cur.execute(sql, [game_name]).fetchall()
             games = self.getGamesFromRawData(raw_data)
         if not games:
@@ -155,16 +164,20 @@ class Database():
     def getGameByFilePath(self, filepath):
         filename = os.path.basename(filepath)
         game_release = re.sub(TOSEC_REGEX, '', filename).strip()
-        for prefix in GAME_PREFIXES:
-            if game_release.startswith(prefix+' '):
-                game_release = ' '.join(game_release.split(' ')[1:]) + ', ' + prefix
-                break
         if self.cache_by_name:
             games = self.cache_by_name.get(game_release)
         else:
-            game_release = game_release.replace(' ', '%')
-            sql = SELECT_GAME_SQL_START + \
-                'where game.name LIKE ?'
+            # for prefix in GAME_PREFIXES:
+            #     if game_release.startswith(prefix + ' '):
+            #         game_release = ' '.join(game_release.split(' ')[1:]) + ', ' + prefix
+            #         break
+            game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
+            sql = SELECT_GAME_SQL_START
+                  # 'where game_release.name LIKE ? ' + \
+            sql += 'WHERE game.wos_id=' \
+                   '(SELECT wos_id FROM game_release ' \
+                   'WHERE game_release.name LIKE ?)'
+            sql += SELECT_GAME_SQL_END
             raw_data = self.cur.execute(sql, [game_release]).fetchall()
             games = self.getGamesFromRawData(raw_data)
         if not games:
@@ -187,20 +200,42 @@ class Database():
     def getGamesFromRawData(self, raw_data):
         games = []
         game = Game()
+        release = GameRelease()
         for row in raw_data:
-            if game.wos_id == row['wos_id']:
-                file = self.fileFromRow(row)
-                game.addFile(file)
-            else:
+            if game.wos_id != row['wos_id']:
+                if game.wos_id:
+                    games.append(game)
                 game = self.gameFromRow(row)
-                games.append(game)
+                game.releases = []
+                release = self.releaseFromRow(row, game)
+                game.addRelease(release)
+            if release.release_seq!=row['release_seq']:
+                release = self.releaseFromRow(row, game)
+                game.addRelease(release)
+            file = self.fileFromRow(row)
+            if file:
+                game.addFile(file, release_seq = row['release_seq'])
+            # if game.wos_id == row['wos_id']:
+            #     if release.release_seq!=row['release_seq']:
+            #         release = self.releaseFromRow(row, game)
+            #         game.addRelease(release)
+            #     file = self.fileFromRow(row)
+            #     if file:
+            #         game.addFile(file, release_seq=release.release_seq)
+            # else:
+            #     game = self.gameFromRow(row)
+            #     release = self.releaseFromRow(row, game)
+            #     game.addRelease(release)
+            #     games.append(game)
+        games.append(game)
         return games
 
     def getGameByWosID(self, wos_id):
         if self.cache_by_wos_id:
             return self.cache_by_wos_id.get(wos_id)
         sql = SELECT_GAME_SQL_START + \
-              'WHERE game.wos_id=?'
+              'WHERE game.wos_id=? ' + \
+            SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql, [wos_id]).fetchall()
         return self.gameFromRawData(raw_data)
 
@@ -218,10 +253,14 @@ class Database():
         if self.cache_by_md5:
             return self.cache_by_md5.get(md5)
         sql = SELECT_GAME_SQL_START
-        if zipped:
-            sql += 'WHERE game_file.md5_zipped="{}"'.format(md5)
-        else:
-            sql += 'WHERE game_file.md5="{}"'.format(md5)
+        # if zipped:
+        #     sql += 'WHERE game_file.md5_zipped="{}"'.format(md5)
+        # else:
+        #     sql += 'WHERE game_file.md5="{}"'.format(md5)
+        sql += 'WHERE game.wos_id=' \
+               '(SELECT game_wos_id FROM game_file ' \
+               'WHERE game_file.md5="{}")'.format(md5)
+        sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
         return self.gameFromRawData(raw_data)
 
@@ -230,9 +269,17 @@ class Database():
             return None
         game = self.gameFromRow(raw_data[0])
         for row in raw_data:
+            if len(game.releases)==row['release_seq']:
+                release = self.releaseFromRow(row, game)
+                game.addRelease(release)
             file = self.fileFromRow(row)
-            game.addFile(file)
+            if file:
+                game.addFile(file, release_seq=len(game.releases)-1)
         return game
+        # for row in raw_data:
+        #     file = self.fileFromRow(row)
+        #     game.addFile(file)
+        # return game
 
     def gameFromRow(self, row):
         game = Game(row['name'], int(row['wos_id']))
@@ -255,9 +302,9 @@ class Database():
 
     def releaseFromRow(self, row, game):
         release = GameRelease(row['release_seq'],
-                              row['year'],
-                              row['publisher'],
-                              row['country'],
+                              row['release_year'],
+                              row['release_publisher'],
+                              row['release_country'],
                               game)
         release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
         release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
@@ -269,6 +316,9 @@ class Database():
         release.loading_screen_scr_size = row['loading_screen_scr_filesize']
         release.manual_filepath = row['manual_filepath']
         release.manual_size = row['manual_filesize']
+        if row['aliases']:
+            aliases = row['aliases'].split('/')
+            release.aliases = aliases
         return release
 
 

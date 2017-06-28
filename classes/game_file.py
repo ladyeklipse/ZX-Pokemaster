@@ -26,6 +26,8 @@ class GameFile(object):
     wos_path = ''
 
     def __init__(self, path='', size=0, game=Game()):
+        if not path:
+            return
         filename = os.path.basename(path)
         # if filename.endswith('.zip'):
         #     filename = filename[:-4]
@@ -222,7 +224,7 @@ class GameFile(object):
         # return wos_path
 
     def getLocalPath(self, zipped=False):
-        if self.wos_name:
+        if self.wos_path:
             local_path = self.getWosPath(LOCAL_FTP_ROOT)
             if os.path.exists(local_path):
                 return local_path

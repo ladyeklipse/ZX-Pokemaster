@@ -135,12 +135,12 @@ def convertHexes(text):
     return text.replace('$', '').replace('#', '')
 
 if __name__=='__main__':
-    # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    # updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
+    wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
     # print('total wos_ids = ', len(wos_ids))
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
-    extractPokFiles()
+    # extractPokFiles()
     # TEMPORARY BELOW
     # text = convertHexes('''''')
     # scrapePokesFromText(text)

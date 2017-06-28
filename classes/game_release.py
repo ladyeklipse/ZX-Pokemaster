@@ -1,5 +1,5 @@
-from classes.game import Game
-from classes.game_alias import GameAlias
+from classes.game import Game, publisher_regex
+# from classes.game_alias import GameAlias
 import zipfile
 import hashlib
 import os
@@ -30,11 +30,11 @@ class GameRelease(object):
     def __init__(self, release_seq=0, year=None, publisher=None, country=None, game=Game(), aliases=[]):
         self.release_seq = release_seq
         self.year = year
-        self.publisher = publisher
+        self.setPublisher(publisher)
         self.country = country
         self.game = game
         self.files = []
-        self.aliases = aliases
+        self.aliases = aliases if aliases else []
         # self.loading_screen_gif_filepath = game.loading_screen_gif_filepath
         # self.loading_screen_scr_filepath = game.loading_screen_scr_filepath
         # self.ingame_screen_gif_filepath = game.ingame_screen_gif_filepath
@@ -51,14 +51,16 @@ class GameRelease(object):
         )
 
     def getName(self, language=None):
-        aliases = [x.name for x in self.aliases if x.language==language] if language else \
-            [x.name for x in self.aliases]
-        if aliases:
-            return '/'.join(aliases)
-        return self.game.name
+        return '/'.join(self.aliases) if self.aliases else self.game.name
+        # aliases = [x.name for x in self.aliases if x.language==language] if language else \
+        #     [x.name for x in self.aliases]
+        # if aliases:
+        #     return '/'.join(aliases)
+        # return self.game.name
 
     def getAllAliases(self):
-        return [x.name for x in self.aliases]+[self.game.name]
+        return self.aliases
+        # return [x.name for x in self.aliases]+[self.game.name]
 
     def getIngameScreenFilePath(self, format='scr'):
         if format=='scr':
@@ -75,11 +77,19 @@ class GameRelease(object):
     def getManualFilePath(self):
         return self.manual_filepath
 
+    def setPublisher(self, publisher):
+        if publisher=='unknown' or not publisher:
+            publisher = ''
+        publisher = publisher_regex.sub('', publisher).strip()
+        self.publisher = publisher
+
     def addAlias(self, alias, language):
-        alias = GameAlias(alias, language)
-        if alias.name != self.name and \
-           alias not in self.aliases:
+        if alias not in self.aliases:
             self.aliases.append(alias)
+        # alias = GameAlias(alias, language)
+        # if alias.name != self.name and \
+        #    alias not in self.aliases:
+        #     self.aliases.append(alias)
 
     def addFiles(self, files):
         for file in files:
