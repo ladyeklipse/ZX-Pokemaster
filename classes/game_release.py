@@ -1,5 +1,5 @@
 from classes.game import Game, publisher_regex
-# from classes.game_alias import GameAlias
+import re
 import zipfile
 import hashlib
 import os
@@ -57,6 +57,13 @@ class GameRelease(object):
         #     return '/'.join(aliases)
         # return self.game.name
 
+    # def `rchString(self):
+    #     names = self.getName().split('/')
+    #     for i, name in names:
+    #         for prefix in GAME_PREFIXES:
+    #             if release_name.startswith(prefix + ' '):
+    #                 return ''.join(filter(str.isalnum, self.getName().lower()))
+
     def getAllAliases(self):
         return self.aliases
         # return [x.name for x in self.aliases]+[self.game.name]
@@ -97,7 +104,7 @@ class GameRelease(object):
     def addFile(self, new_file):
         for file in self.files:
             if file == new_file:
-                file.tosec_name = new_file.tosec_name
+                file.tosec_path = new_file.tosec_path
                 if new_file.size:
                     file.size = new_file.size
                 if new_file.language:

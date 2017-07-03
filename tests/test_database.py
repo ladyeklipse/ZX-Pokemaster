@@ -7,11 +7,18 @@ import  unittest
 if (os.getcwd().endswith('tests')):
     os.chdir('..')
 
+db = Database()
+db.loadCache()
+
 class TestDatabase(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(TestDatabase, self).__init__(*args, **kwargs)
-        self.db = Database()
+        self.db = db
+        # self.db = Database()
+    #
+    # def setUp(self):
+    #     self.db.loadCache()
 
     # def test_adding_game(self):
     #     game = Game(name='Tujad', wos_id=5448)
@@ -22,6 +29,12 @@ class TestDatabase(unittest.TestCase):
     #     ts.scrapePokes(game)
     #     self.db.addGame(game)
     #     self.db.commit()
+
+    def test_search_string(self):
+        game_name = 'La Abadia Del Crimen'
+        self.assertEqual(getSearchString(game_name), 'abadiadelcrimen')
+        game_name = 'Abadia Del Crimen, La'
+        self.assertEqual(getSearchString(game_name), 'abadiadelcrimen')
 
     def test_adding_broken_wos_id(self):
         game = Game()
@@ -40,13 +53,6 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(game.genre, 'Arcade: Maze')
         self.assertEqual(game.machine_type, '48K')
         self.assertTrue(len(game.getFiles())>0)
-        self.assertEqual(game.getRemoteLoadingScreenUrl('scr'),
-                         'http://www.worldofspectrum.org/pub/sinclair/screens/load/t/scr/Tujad.scr')
-        self.assertEqual(game.getRemoteLoadingScreenUrl('gif'),
-                         'http://www.worldofspectrum.org/pub/sinclair/screens/load/t/gif/Tujad.gif')
-        self.assertEqual(game.getRemoteIngameScreenUrl('gif'),
-                         'http://www.worldofspectrum.org/pub/sinclair/screens/in-game/t/Tujad.gif')
-        self.assertEqual(game.getRemoteManualUrl(), 'http://www.worldofspectrum.org/pub/sinclair/games-info/t/Tujad.txt')
 
     def test_getting_game_by_md5(self):
         file = GameFile('ftp/pub/sinclair/games/t/Tujad.tap.zip')
@@ -73,10 +79,10 @@ class TestDatabase(unittest.TestCase):
 
     def test_getting_game_by_file_name(self):
         filename = '66 (19xx)(Stankinsoft)(de).zip'
-        game = self.db.getGameByFileName(filename)
+        game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.wos_id, 39)
         filename = "Giant's Revenge (1984)(Thor Computer Software).zip"
-        game = self.db.getGameByFileName(filename)
+        game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.wos_id, 2040)
 
     # def test_appending_tosec_file_info(self):
@@ -174,14 +180,14 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(game.releases), 1)
 
 if __name__=='__main__':
-    t = TestDatabase()
+#     t = TestDatabase()
     # t.test_zzzz()
     # t.test_multiple_releases()
     # t.test_9hole_golf()
-    t.db.loadCache()
-    t.test_zzzz()
-    t.test_multiple_releases()
-    t.test_9hole_golf()
+    # t.db.loadCache()
+    # t.test_zzzz()
+    # t.test_multiple_releases()
+    # t.test_9hole_golf()
     # t.test_zzzz()
     # t.test_find_game_file_with_article_and_alias()
-    # unittest.main()
+    unittest.main()

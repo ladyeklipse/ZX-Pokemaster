@@ -5,14 +5,14 @@ import zipfile
 import hashlib
 from settings import *
 import re
-TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|.zip|'+'|'.join(['.'+x for x in GAME_EXTENSIONS]))
+TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GAME_EXTENSIONS]))
 
 class GameFile(object):
 
     game = None
     wos_name = ''
     wos_zipped_name = ''
-    tosec_name = ''
+    tosec_path = ''
     machine_type = ''
     language = ''
     part = 0
@@ -65,10 +65,10 @@ class GameFile(object):
         return new
 
     def getFileName(self):
-        return self.tosec_name if self.tosec_name else os.path.basename(self.path)
+        return self.tosec_path if self.tosec_path else os.path.basename(self.path)
 
     def getGameFromFileName(self):
-        filename = os.path.basename(self.path)
+        filename = os.path.basename(self.path).replace('(demo)', '')
         matches = re.findall(TOSEC_REGEX, filename)
         game_name = re.sub(TOSEC_REGEX, '', filename).strip()
         if not self.game:
@@ -131,8 +131,8 @@ class GameFile(object):
         return self.language if self.language else self.game.language
 
     def getFullTOSECName(self, zipped=False):
-        if self.tosec_name:
-            return self.tosec_name
+        if self.tosec_path:
+            return self.tosec_path
         game = self.game
         basename =  game.name
         params = []

@@ -12,7 +12,7 @@ import time
 from classes.user_agents import USER_AGENTS
 import shutil
 
-ITER_CONTENT_CHUNK_SIZE = 1024*1014
+ITER_CONTENT_CHUNK_SIZE = 1024*1024
 
 class Scraper(object):
 

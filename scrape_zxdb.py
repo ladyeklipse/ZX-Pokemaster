@@ -72,14 +72,11 @@ class ZXDB():
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
-              '(publisher_seq IS NULL OR publisher_seq=1) ' \
+              '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
+              'downloads.filetype_id!=-1 ' \
               'ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT 1000000'
-              # 'WHERE (downloads.filetype_id IS NULL OR ' \
-              # 'downloads.filetype_id IN (-1, 0, 1, 2, 8, 10, 11, 17, 20, 21, 28)) AND ' \
-              # '(publisher_seq IS NULL OR publisher_seq=1) ' \
-              # 'ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
-              # 'LIMIT 500000'
+              # 'downloads.filetype_id IN (0, 1, 2, 8, 10, 11, 17, 20, 21, 28)) AND ' \
         print(sql)
         self.cur.execute(sql)
         game = Game()

@@ -7,7 +7,7 @@ import os
 import glob
 import re
 
-publisher_regex = re.compile('inc[ .]|ltd|plc|S.A.', re.IGNORECASE)
+publisher_regex = re.compile('inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>')
 
 def getWosSubfolder(filepath):
@@ -265,38 +265,38 @@ class Game(object):
         pok_file_contents += 'Y'
         return pok_file_contents
 
-    def getRemoteIngameScreenUrl(self, format='gif',
-                                 wos_mirror_root = WOS_SITE_ROOT,
-                                 release_seq=0):
-        ingame_screen_filepath = self.releases[release_seq].getIngameScreenFilePath(format)
-        if not ingame_screen_filepath and release_seq>0:
-            ingame_screen_filepath = self.releases[0].getIngameScreenFilePath(format)
-        return '/'.join(wos_mirror_root, ingame_screen_filepath)
-
-    def getRemoteLoadingScreenUrl(self, format='gif',
-                                    wos_mirror_root = WOS_SITE_ROOT,
-                                    release_seq = 0):
-        loading_screen_filepath = self.releases[release_seq].getLoadingScreenFilePath(format)
-        if not loading_screen_filepath and release_seq>0:
-            loading_screen_filepath = self.releases[0].getLoadingScreenFilePath(format)
-        return '/'.join(wos_mirror_root, loading_screen_filepath)
-
-    def getRemoteManualUrl(self,
-                            wos_mirror_root = WOS_SITE_ROOT,
-                            release_seq = 0):
-        manual_filepath = self.releases[release_seq].getManualFilePath(format)
-        if not manual_filepath and release_seq>0:
-            manual_filepath = self.releases[0].getManualFilePath(format)
-        return '/'.join(wos_mirror_root, manual_filepath)
-
-    def getLocalManualPath(self, release_seq=0):
-        return self.getRemoteManualUrl(wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
-
-    def getLocalLoadingScreenPath(self, format='scr', release_seq=0):
-        return self.getRemoteLoadingScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
-
-    def getLocalIngameScreenPath(self, format='scr', release_seq=0):
-        return self.getRemoteIngameScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+    # def getRemoteIngameScreenUrl(self, format='gif',
+    #                              wos_mirror_root = WOS_SITE_ROOT,
+    #                              release_seq=0):
+    #     ingame_screen_filepath = self.releases[release_seq].getIngameScreenFilePath(format)
+    #     if not ingame_screen_filepath and release_seq>0:
+    #         ingame_screen_filepath = self.releases[0].getIngameScreenFilePath(format)
+    #     return '/'.join(wos_mirror_root, ingame_screen_filepath)
+    #
+    # def getRemoteLoadingScreenUrl(self, format='gif',
+    #                                 wos_mirror_root = WOS_SITE_ROOT,
+    #                                 release_seq = 0):
+    #     loading_screen_filepath = self.releases[release_seq].getLoadingScreenFilePath(format)
+    #     if not loading_screen_filepath and release_seq>0:
+    #         loading_screen_filepath = self.releases[0].getLoadingScreenFilePath(format)
+    #     return '/'.join((wos_mirror_root, loading_screen_filepath))
+    #
+    # def getRemoteManualUrl(self,
+    #                         wos_mirror_root = WOS_SITE_ROOT,
+    #                         release_seq = 0):
+    #     manual_filepath = self.releases[release_seq].getManualFilePath(format)
+    #     if not manual_filepath and release_seq>0:
+    #         manual_filepath = self.releases[0].getManualFilePath(format)
+    #     return '/'.join(wos_mirror_root, manual_filepath)
+    #
+    # def getLocalManualPath(self, release_seq=0):
+    #     return self.getRemoteManualUrl(wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+    #
+    # def getLocalLoadingScreenPath(self, format='scr', release_seq=0):
+    #     return self.getRemoteLoadingScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+    #
+    # def getLocalIngameScreenPath(self, format='scr', release_seq=0):
+    #     return self.getRemoteIngameScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
 
     def findReleaseByFile(self, game_file):
         if len(self.releases)==1:

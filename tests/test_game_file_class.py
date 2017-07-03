@@ -35,5 +35,16 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.game.name, "007 - Lord Bromley's Estate")
         self.assertEqual(file.game.getYear(), '1990')
 
+    def test_cascade_games(self):
+        file = GameFile('Spectral Skiing (1983)(Cascade Games)[16K].zip')
+        self.assertEqual(file.game.publisher, 'Cascade Games')
+        self.assertEqual(file.game.getPublisher(), 'Cascade Games')
+
+    def test_demo(self):
+        file = GameFile('A Treat! (demo) (1985)(Firebird Software).zip')
+        self.assertEqual(file.game.getPublisher(), 'Firebird Software')
+        self.assertEqual(file.game.getYear(), '1985')
+        self.assertEqual(file.game.name, 'A Treat!')
+
 if __name__=='__main__':
     unittest.main()
