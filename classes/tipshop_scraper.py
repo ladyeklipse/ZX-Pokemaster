@@ -33,7 +33,7 @@ class TipshopScraper(Scraper):
 
     def __init__(self):
         self.name_replace_dict = {}
-        with open('tipshop_missing.txt', 'r', encoding='utf-8') as f:
+        with open('tipshop_aliases.txt', 'r', encoding='utf-8') as f:
             for line in f.readlines():
                 line = line.split('|')
                 if len(line)==1:

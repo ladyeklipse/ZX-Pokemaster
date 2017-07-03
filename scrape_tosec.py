@@ -28,6 +28,7 @@ def generateTOSECPathsArray():
     return [path[1] for path in paths]
 
 def scrapeTOSEC(paths, cache=True):
+    manually_entered_tosec_alieases = getTOSECAliases()
     db = Database()
     if cache:
         db.loadCache()
@@ -53,7 +54,12 @@ def scrapeTOSEC(paths, cache=True):
             current_game = game_file.game
             current_tosec_name = current_game.getTOSECName()
         if not current_game.wos_id:
-            game_from_db = db.getGameByFile(game_file)
+            game_name = game_file.game.getTOSECName()
+            if game_name in manually_entered_tosec_alieases.keys():
+                game_wos_id = int(manually_entered_tosec_alieases[game_name])
+                game_from_db = db.getGameByWosID(game_wos_id)
+            else:
+                game_from_db = db.getGameByFile(game_file)
             if game_from_db and current_game!=game_from_db:
                 current_release = game_from_db.findReleaseByFile(game_file)
                 current_release.addFiles([file for file in current_game.files])
@@ -84,13 +90,23 @@ def getGameFileFromFilePathDict(file_path):
     game_file.md5 = file_path['md5']
     game_file.setSize()
 
+def getTOSECAliases():
+    with open('tosec_aliases.txt', 'r', encoding='utf-8') as f:
+        tosec_aliases = {}
+        for line in f.readlines():
+            line = line.strip().split('|')
+            if len(line)<2:
+                continue
+            tosec_aliases[line[0]]=line[1]
+    return tosec_aliases
+
 def showUnscraped(tosec_paths):
     print('Will show unscraped TOSEC files')
     db = Database()
     sql = 'SELECT tosec_name, format FROM game_file WHERE tosec_name!="" AND format!=""'
     db_tosec_files = db.execute(sql, [])
     db_paths = []
-    unscraped = 0
+    unscraped_paths = []
     for file in db_tosec_files:
         path = os.path.join('['+file['format'].upper()+']', file['tosec_name'])
         db_paths.append(path)
@@ -103,44 +119,72 @@ def showUnscraped(tosec_paths):
                 continue
             elif 'ZZZ-UNK' in shortened_path:
                 continue
+            elif 'Games Compilation' in shortened_path:
+                continue
             elif shortened_path.endswith('(CSSCGC).zip'):
                 continue
-            print('Unscraped:', path)
+            # elif 'Games' not in path:
+            #     continue
+            print('Unscraped:', 'file:\\\\\\'+os.path.abspath(path))
+            unscraped_paths.append(path)
             game_file = GameFile(path)
             game_name = game_file.game.getTOSECName()
             game_names.append(game_name)
-            unscraped += 1
-    print('Total:', len(tosec_paths), 'Unscraped:', unscraped)
+    print('Total:', len(tosec_paths), 'Unscraped:', len(unscraped_paths))
     game_names = sorted(set(game_names))
     for game_name in game_names:
         print(game_name)
+    return unscraped_paths
+
+def refresh_tosec_aliases():
+    with open('tosec_aliases.bak', 'r', encoding='utf-8') as f:
+        with open('tosec_aliases.txt', 'w', encoding='utf-8') as fn:
+            for line in f.readlines():
+                if '|' in line:
+                    fn.write(line)
+    os.rename('tosec_aliaes.bak', 'tosec_aliases.bak.bak')
 
 if __name__=='__main__':
     paths = generateTOSECPathsArray()
+    for path in paths:
+        if 'Abadia del Crimen' in path:
+            print(path)
     # for path in paths[:10]:
     #     print(path)
-    paths = [
+    # paths = [
+    #     "tosec\Games\[DSK]\Abadia del Crimen, La (1988)(Opera Soft)(es).zip",
+        # "tosec\Games\[DSK]\Xybots (1989)(Domark).zip",
+    #     "tosec\Games\[TAP]\Zenji (1984)(Activision).zip",
+
+        # "tosec\Games\[TZX]\Gilbert - Escape from Drill (1989)(Alternative Software)[128K][re-release].zip",
+        # "tosec\Games\[TZX]\Gilbert - Escape from Drill (1989)(Alternative Software)[re-release].zip",
+
+        # "tosec\Compilations\Games\[TZX]\Fists 'n' Throttles - Buggy Boy + Thundercats (1989)(Elite Systems)[48-128K].zip",
+        # "tosec\Games\[TZX]\Fists 'n' Throttles - Dragon's Lair (1989)(Elite Systems)(Side A).zip",
+        # "tosec\Games\[TZX]\Fists 'n' Throttles - Dragon's Lair (1989)(Elite Systems)(Side B).zip",
+
+        # 'tosec\Games\[TAP]\Q-Bertus (19xx)(-)(de).zip',
+        # "tosec\Games\[TZX]\Indoor Soccer (1986)(Magnificent 7 Software).zip", #Error in ZXDB!!!
+        # "tosec\Games\[TZX]\Falcon - The Renegade Lord (1987)(Virgin Games)[h].zip", #":" symbol!d
         # "tosec\Games\[TAP]\\3D Starfighter (1988)(Codemasters).zip",
-# "tosec\Games\[TZX]\\3D Starfighter (1988)(Codemasters).zip",
-# "tosec\Games\[Z80]\\3D Starfighter (1988)(Codemasters).zip",
-# "tosec\Games\[SCL]\\3D Starfighter (1988)(Codemasters)[h Flash][t].zip",
-#         "tosec\Games\[TZX]\Indoor Soccer (1986)(Alternative Software)[re-release].zip",
-# "tosec\Games\[TAP]\Indoor Soccer (1986)(Magnificent 7 Software).zip",
-"tosec\Games\[TZX]\Indoor Soccer (1986)(Magnificent 7 Software).zip", #Error in ZXDB!!!
-"tosec\Games\[TZX]\Falcon - The Renegade Lord (1987)(Virgin Games)[h].zip", #":" symbol!d
-# "tosec\Games\[Z80]\Indoor Soccer (1986)(Magnificent 7 Software).zip",
+        # "tosec\Games\[TZX]\\3D Starfighter (1988)(Codemasters).zip",
+        # "tosec\Games\[Z80]\\3D Starfighter (1988)(Codemasters).zip",
+        # "tosec\Games\[SCL]\\3D Starfighter (1988)(Codemasters)[h Flash][t].zip",
+        #         "tosec\Games\[TZX]\Indoor Soccer (1986)(Alternative Software)[re-release].zip",
+        # "tosec\Games\[TAP]\Indoor Soccer (1986)(Magnificent 7 Software).zip",
+        # "tosec\Games\[Z80]\Indoor Soccer (1986)(Magnificent 7 Software).zip",
         # "tosec\Games\[Z80]\9-Hole Golf (1986)(Galileo).zip",
         # "tosec\Covertapes\[TZX]\Ajedrez (1985)(Load 'n' Run)(es)[aka Cyrus IS Chess].zip",
-        # 'tosec\Games\[TAP]\Zzzz (1986)(Mastertronic).zip',
-        # 'tosec\Games\[TZX]\Zzzz (1986)(Mastertronic).zip',
-        # 'tosec\Games\[Z80]\Zzzz (1986)(Mastertronic).zip',
-        # 'tosec\Games\[TZX]\Zzzz (1986)(Mastertronic)[a].zip',
-        # 'tosec\Games\[Z80]\Zzzz (1986)(Mastertronic)[a].zip',
-        # 'tosec\Games\[TZX]\Zzzz (1986)(Zenobi Software)[re-release].zip',
-        # 'tosec\Games\[Z80]\Zzzz (1986)(Zenobi Software)[re-release].zip',
-        # 'tosec\Games\[DSK]\Zzzz (1986)(Zenobi Software)[re-release].zip'
-        ]
-    scrapeTOSEC(paths, cache=False)
-    showUnscraped(paths)
+    #     'tosec\Games\[TAP]\Zzzz (1986)(Mastertronic).zip',
+    #     'tosec\Games\[TZX]\Zzzz (1986)(Mastertronic).zip',
+    #     'tosec\Games\[Z80]\Zzzz (1986)(Mastertronic).zip',
+    #     'tosec\Games\[TZX]\Zzzz (1986)(Mastertronic)[a].zip',
+    #     'tosec\Games\[Z80]\Zzzz (1986)(Mastertronic)[a].zip',
+    #     'tosec\Games\[TZX]\Zzzz (1986)(Zenobi Software)[re-release].zip',
+    #     'tosec\Games\[Z80]\Zzzz (1986)(Zenobi Software)[re-release].zip',
+    #     'tosec\Games\[DSK]\Zzzz (1986)(Zenobi Software)[re-release].zip'
+    #     ]
     # scrapeTOSEC(paths, cache=True)
-    # showUnscraped(paths)
+    # paths = showUnscraped(paths)
+    scrapeTOSEC(paths, cache=True)
+    showUnscraped(paths)

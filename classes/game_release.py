@@ -12,7 +12,6 @@ class GameRelease(object):
     year = None
     publisher=None
     country=None
-    name = None
     aliases = []
     loading_screen_gif_filepath = None
     loading_screen_scr_filepath = None
@@ -83,7 +82,7 @@ class GameRelease(object):
         publisher = publisher_regex.sub('', publisher).strip()
         self.publisher = publisher
 
-    def addAlias(self, alias, language):
+    def addAlias(self, alias):
         if alias not in self.aliases:
             self.aliases.append(alias)
         # alias = GameAlias(alias, language)

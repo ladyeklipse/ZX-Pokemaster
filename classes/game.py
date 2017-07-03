@@ -8,7 +8,7 @@ import glob
 import re
 
 publisher_regex = re.compile('inc[ .]|ltd|plc|S.A.', re.IGNORECASE)
-filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|')
+filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>')
 
 def getWosSubfolder(filepath):
     return '123' if filepath[0].isdigit() else filepath[0].lower()
@@ -301,6 +301,10 @@ class Game(object):
     def findReleaseByFile(self, game_file):
         if len(self.releases)==1:
             return self.releases[0]
+        for release in self.releases:
+            for file in release.files:
+                if file.md5 == game_file.md5:
+                    return release
         game_file_publisher = game_file.game.publisher.lower().replace('.','')
         for release in self.releases:
             release_publisher = release.publisher.lower().replace('.', '')

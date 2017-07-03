@@ -1,11 +1,17 @@
 from classes.database import *
-from classes.game import Game
+from classes.game import Game, filepath_regex
 from classes.game_release import GameRelease
 from classes.game_file import GameFile
 from classes.game_alias import GameAlias
 from classes.scraper import *
 from mysql import connector
 import time
+
+def get_win_friendly_alias(alias):
+    alias = ' '.join([x for x in alias.replace(':', ' : ').split(' ') if x])
+    win_friendly_alias = filepath_regex.sub('-', alias)
+    return win_friendly_alias
+
 
 class RowConverter(connector.conversion.MySQLConverter):
 
@@ -66,8 +72,7 @@ class ZXDB():
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
-              '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
-              'entries.id=7220 ' \
+              '(publisher_seq IS NULL OR publisher_seq=1) ' \
               'ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT 1000000'
               # 'WHERE (downloads.filetype_id IS NULL OR ' \
@@ -149,7 +154,17 @@ class ZXDB():
                     game_file = self.gameFileFromRow(row, game)
                     release.addFile(game_file)
                 if row['alt_name']:
-                    release.addAlias(row['alt_name'], row['alt_language'])
+                    release.addAlias(row['alt_name'])
+                    for prefix in GAME_PREFIXES:
+                        if row['alt_name'].startswith(prefix+' '):
+                            alias = ' '.join(row['alt_name'].split(' ')[1:]) + ', ' + prefix
+                            release.addAlias(alias)
+                            win_friendly_alias = get_win_friendly_alias(alias)
+                            release.addAlias(win_friendly_alias)
+                            break
+                    win_friendly_alias = get_win_friendly_alias(row['alt_name'])
+                    release.addAlias(win_friendly_alias)
+
         games.append(game)
         return games
 
@@ -166,12 +181,22 @@ class ZXDB():
         return game
 
     def releaseFromRow(self, row, game):
+        release_name = row['alt_name'] if row['alt_name'] else game.name
         release = GameRelease(row['release_seq'],
                               row['year'],
                               row['publisher'],
                               row['country'],
                               game,
                               [row['alt_name'] if row['alt_name'] else game.name])
+        for prefix in GAME_PREFIXES:
+            if release_name.startswith(prefix+' '):
+                alias = ' '.join(release_name.split(' ')[1:]) + ', ' + prefix
+                release.addAlias(alias)
+                win_friendly_alias = get_win_friendly_alias(alias)
+                release.addAlias(win_friendly_alias)
+                break
+        win_friendly_alias = get_win_friendly_alias(release_name)
+        release.addAlias(win_friendly_alias)
         return release
 
     def gameFileFromRow(self, row, game):

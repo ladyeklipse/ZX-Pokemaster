@@ -39,7 +39,7 @@ class Database():
 
     def __init__(self):
         self.conn = sqlite3.connect('pokemaster.db')
-        self.conn.set_trace_callback(print)
+        # self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
         self.cur.execute('PRAGMA JOURNAL_MODE = OFF')
@@ -57,7 +57,7 @@ class Database():
                 for name in release.getAllAliases():
                     if not self.cache_by_name.get(name):
                         self.cache_by_name[name]=[game]
-                    else:
+                    elif game not in self.cache_by_name[name]:
                         self.cache_by_name[name].append(game)
                 for file in release.files:
                     self.cache_by_md5[file.md5]=game
@@ -156,9 +156,11 @@ class Database():
         elif len(games)==1:
             return games[0]
         else:
-            print('Ambiguity not resolved')
             for game in games:
-                print(game)
+                if game.name.split('-')[0]==game_name:
+                    return [game]
+            print('Ambiguity not resolved')
+            print(game)
             return None
 
     def getGameByFilePath(self, filepath):
@@ -166,6 +168,8 @@ class Database():
         game_release = re.sub(TOSEC_REGEX, '', filename).strip()
         if self.cache_by_name:
             games = self.cache_by_name.get(game_release)
+            if not games:
+                games = self.cache_by_name.get(game_release.split('-')[0].strip())
         else:
             # for prefix in GAME_PREFIXES:
             #     if game_release.startswith(prefix + ' '):
@@ -188,13 +192,13 @@ class Database():
             game_file = GameFile(filepath)
             candidates = []
             for game in games:
-                if game.getYear()==game_file.game.getYear():
+                if game.getPublisher() == game_file.game.getPublisher():
                     candidates.append(game)
             if len(candidates)==1:
                 return candidates[0]
             else:
                 for game in games:
-                    if game.getPublisher()==game_file.game.getPublisher():
+                    if game.getYear() == game_file.game.getYear():
                         return game
 
     def getGamesFromRawData(self, raw_data):
@@ -227,7 +231,8 @@ class Database():
             #     release = self.releaseFromRow(row, game)
             #     game.addRelease(release)
             #     games.append(game)
-        games.append(game)
+        if game.wos_id:
+            games.append(game)
         return games
 
     def getGameByWosID(self, wos_id):

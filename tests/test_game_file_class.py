@@ -30,5 +30,10 @@ class GameFileTests(unittest.TestCase):
         file = GameFile('Gonzzalezz.zip')
         self.assertEqual(file.game.name, 'Gonzzalezz')
 
+    def test_lord_bromleys_estate(self):
+        file = GameFile("007 - Lord Bromley's Estate (1990)(Domark).zip")
+        self.assertEqual(file.game.name, "007 - Lord Bromley's Estate")
+        self.assertEqual(file.game.getYear(), '1990')
+
 if __name__=='__main__':
     unittest.main()
