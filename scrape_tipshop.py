@@ -7,10 +7,10 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def getWosIDsOfTipshopGames():
+def getWosIDsOfTipshopGames(db=None):
     wos_ids_tipshop_pages_pairs = []
     ts = TipshopScraper()
-    db = Database()
+    db = db if db else Database()
     db.loadCache()
     letters = ['0123']+[x for x in 'abcdefghijklmnopqrstuvwxyz']
     # letters='a'
@@ -57,8 +57,8 @@ def games2xlsx(games, xlsx_filename='new_tipshop_pokes.xlsx', new_only=False):
         ], mformat)
     workbook.close()
 
-def updateTipshopPageColumn(wos_ids_tipshop_pages_pairs):
-    db = Database()
+def updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db=None):
+    db = db if db else Database()
     # for chunk in chunks(wos_ids_tipshop_pages_pairs, 500):
     #     sql = 'UPDATE game SET has_tipshop_page=1 WHERE wos_id in ('+','.join(['?']*len(chunk))+')'
     #     print(sql, chunk)

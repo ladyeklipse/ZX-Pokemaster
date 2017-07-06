@@ -2,13 +2,13 @@
 007 - Lord Bromley's Estate (1990)(Domark)|15904
 007 - Q's Armoury (1990)(Domark)|15905
 10 Adventure Game Pack (1986)(Central Solutions)|11162
-100 km Race (1990)(Coyote Software)
+100 km Race (19xx)(Coyote Software)|10
 12 Mysterious Books (1998)(Demiurge Ash)|12370
 128 Colour (1998)(-)
 15 OS Betu Puzzle (1998)(Laszlo Nyitrai)
 1st Division Manager (1991)(Codemasters)|9345
 3D-Labyrinth (1983)(-)
-48 Irons (1995)(Galaxy)
+48 Irons (1995)(Galaxy)|12735
 500 Millas Indianapolis (1995)(-)
 A Right Pair of... (2002)(Naffsoft)|18662
 A Treat! (1985)(Firebird Software)
@@ -466,6 +466,7 @@ Skladacka (1989)(Deltasoft)|4548
 Slaine - The Celtic Barbarian (1989)(1987)|4562
 Smagly 2 (1996)(Crystal Dream)|13052
 Smagly 3 (1997)(Crystal Dream)|13053
+Smiths Super Champs (1984)(Torchraven)|5004
 Smiths Super Champs (1989)(Torchraven)|5004
 Smiths Super Champs (1997)(Torchraven)|5004
 Snare! (1991)(Beyond Belief)|4594
@@ -507,7 +508,7 @@ Splash (1983)(-)
 Squad Quick Reaction (1994)(Chip - Rocky)
 Sryednyevyekovaya Istoriya (1996)(Human Soft)|21544
 Stalker v1.02 (1997)(Evgeny Nesterenko)|13068
-Stan Stalnoj Krysoj (1997)(1997)|21235
+Stan Stalnoj Krysoj (1997)(Rome'r Software - Bloody Skull Ent.)|21235
 Steg (1992)(Codemasters)|9424
 Street Gang + Mega Rotating Demo (1989)(Players Software)|4935
 Stryker - In the Crypts of Trogan (1992)(Codemasters)|9429

@@ -40,4 +40,4 @@ if __name__=='__main__':
     # paths = ts.showUnscraped()
     # ts.paths = paths
     ts.scrapeTOSEC()
-    ts.showUnscraped()
+    # ts.showUnscraped()

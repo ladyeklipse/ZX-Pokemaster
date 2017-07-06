@@ -1,4 +1,4 @@
-from classes.game import Game, publisher_regex
+from classes.game import Game, publisher_regex, remove_square_brackets_regex
 import re
 import zipfile
 import hashlib
@@ -34,6 +34,8 @@ class GameRelease(object):
         self.game = game
         self.files = []
         self.aliases = aliases if aliases else []
+        if release_seq==0 and game.name not in self.aliases:
+            self.aliases.append(game.name)
         # self.loading_screen_gif_filepath = game.loading_screen_gif_filepath
         # self.loading_screen_scr_filepath = game.loading_screen_scr_filepath
         # self.ingame_screen_gif_filepath = game.ingame_screen_gif_filepath
@@ -57,12 +59,10 @@ class GameRelease(object):
         #     return '/'.join(aliases)
         # return self.game.name
 
-    # def `rchString(self):
-    #     names = self.getName().split('/')
-    #     for i, name in names:
-    #         for prefix in GAME_PREFIXES:
-    #             if release_name.startswith(prefix + ' '):
-    #                 return ''.join(filter(str.isalnum, self.getName().lower()))
+    def getPublisher(self):
+        if self.publisher:
+            return self.publisher.replace('/', '-')
+
 
     def getAllAliases(self):
         return self.aliases
@@ -86,7 +86,9 @@ class GameRelease(object):
     def setPublisher(self, publisher):
         if publisher=='unknown' or not publisher:
             publisher = ''
-        publisher = publisher_regex.sub('', publisher).strip()
+        publisher = publisher.replace('/', '-')
+        publisher = publisher_regex.sub('', publisher)
+        publisher = remove_square_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher
 
     def addAlias(self, alias):
@@ -128,28 +130,33 @@ class GameRelease(object):
             file_path = file.getLocalPath(zipped=True)
             if not os.path.exists(file_path):
                 print(file_path, 'does not exist. Cannot get MD5 hashes.')
+                continue
             file.md5_zipped = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
             with zipfile.ZipFile(file_path) as z:
                 for zfname in z.namelist():
                     zfext = os.path.splitext(zfname)[1].lower()[1:]
-                    # DEPRECATED
-                    # if zfext == 'pok':
-                    #     with z.open(zfname) as pok_file:
-                    #         pok_file_contents = pok_file.read().decode('utf-8')
-                    #         self.importPokFile(text=pok_file_contents)
                     if zfext in GAME_EXTENSIONS:
                         unzipped_file = z.read(zfname)
                         new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
+                        new_file_sha1 = hashlib.sha1(unzipped_file).hexdigest()
+                        new_file_crc32 = hex(z.getinfo(zfname).CRC)[2:]
                         if not file.md5:
                             file.md5 = new_file_md5
+                            file.sha1 = new_file_sha1
+                            file.crc32 = new_file_crc32
                             file.wos_name = os.path.basename(zfname)
+                            if file.format!=zfext:
+                                print('FORMAT MISMATCH:', file.path, zfname)
+                                file.format = zfext
                             file.setSize(z.getinfo(zfname).file_size)
                             file.setMachineType(zfname)
                             file.setPart(zfname)
                             file.setSide(zfname)
                         else:
                             second_file = file.copy()
+                            second_file.crc32 = new_file_crc32
                             second_file.md5 = new_file_md5
+                            second_file.sha1 = new_file_sha1
                             second_file.md5_zipped = file.md5_zipped
                             second_file.setSize(z.getinfo(zfname).file_size)
                             second_file.size_zipped = file.size_zipped

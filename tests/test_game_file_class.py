@@ -9,16 +9,24 @@ if (os.getcwd().endswith('tests')):
 
 class GameFileTests(unittest.TestCase):
 
-    def test_md5(self):
+    def test_hashsums(self):
         print(os.getcwd())
         game = Game(wos_id=1660)
         game_file = GameFile('ftp\pub\sinclair\games\e\E.T.X..tap.zip', game=game)
-        expected_md5 = '1C057504487D076514C19CA181498590'.lower()
-        game_file_md5 = game_file.getMD5(zipped=True)
-        self.assertEqual(expected_md5, game_file_md5)
-        expected_md5 = 'B04C5D9BF88EB5A008696D83EEEE69AC'.lower()
-        game_file_md5 = game_file.getMD5(zipped=False)
-        self.assertEqual(expected_md5, game_file_md5)
+        expected_md5 = 'b04c5d9bf88eb5a008696d83eeee69ac'
+        self.assertEqual(expected_md5, game_file.getMD5())
+        expected_sha1 = 'a879037fd3ba64170e83d4d44652681b1eb097e3'
+        self.assertEqual(expected_sha1, game_file.getSHA1())
+        expected_crc32 = '3699934d'
+        self.assertEqual(expected_crc32, game_file.getCRC32())
+
+    def test_weird_md5(self):
+        game_file = GameFile('ftp/pub/sinclair/utils/3DGameMaker(GraphicEditor3D).tap.zip')
+        self.assertTrue(os.path.exists(game_file.getLocalPath()))
+        self.assertGreater(len(game_file.getMD5()), 0)
+        game_file = GameFile('ftp\zxdb\sinclair\entries\\0030083\DogmoleTuppowski.scl.zip')
+        self.assertTrue(os.path.exists(game_file.getLocalPath()))
+        self.assertGreater(len(game_file.getMD5()), 0)
 
     def test_getting_info_from_tosec_name(self):
         file = GameFile('Gonzzalezz (1989)(Opera Soft)(es)(Side B).zip')
@@ -34,6 +42,18 @@ class GameFileTests(unittest.TestCase):
         file = GameFile("007 - Lord Bromley's Estate (1990)(Domark).zip")
         self.assertEqual(file.game.name, "007 - Lord Bromley's Estate")
         self.assertEqual(file.game.getYear(), '1990')
+
+    def test_mod_flags(self):
+        file = GameFile("Test (19xx)(Publisher)[a]")
+        self.assertEqual(file.mod_flags, '')
+        file = GameFile("Test (19xx)(Publisher)[m]")
+        self.assertEqual(file.mod_flags, '[m]')
+        file = GameFile("Test (19xx)(Publisher)[a][m][hacked]")
+        self.assertEqual(file.mod_flags, '[m][hacked]')
+        file = GameFile("Test (19xx)(Publisher)[a][re-release]")
+        self.assertEqual(file.mod_flags, '')
+        file = GameFile("Test (19xx)(Publisher)[t][a]")
+        self.assertEqual(file.mod_flags, '[t]')
 
     def test_cascade_games(self):
         file = GameFile('Spectral Skiing (1983)(Cascade Games)[16K].zip')

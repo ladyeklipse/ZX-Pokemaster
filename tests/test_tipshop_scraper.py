@@ -77,7 +77,6 @@ class TipshopScraperTests(unittest.TestCase):
     def test_multipart_desc(self):
         game = Game(name='Senda Salvaje', wos_id=4395)
         self.ts.scrapePokes(game)
-        # game.mergeDescriptionsWithOldDBFile()
         pp.pprint(game.cheats)
         self.assertEquals(len(game.cheats), 5)
         self.assertEquals(game.cheats[0].description, "PART 1 Infinite lives")
@@ -85,7 +84,6 @@ class TipshopScraperTests(unittest.TestCase):
     def test_variable_poke(self):
         game = Game(name="Pinball", wos_id=3718)
         self.ts.scrapePokes(game)
-        # game.mergeDescriptionsWithOldDBFile()
         cheat = game.cheats[1]
         pp.pprint(game.cheats)
         self.assertEqual(cheat.description, 'Lives')
@@ -96,7 +94,6 @@ class TipshopScraperTests(unittest.TestCase):
     def test_jet_set_willy(self):
         game = Game(name="Jet Set WIlly", wos_id=2589)
         self.ts.scrapePokes(game)
-        # game.mergeDescriptionsWithOldDBFile()
         game.exportPokFile('test.pok')
         game.importPokFile('test.pok')
 
@@ -143,7 +140,7 @@ class TipshopScraperTests(unittest.TestCase):
     def test_cowboy(self):
         #THIS SHOULD BE FIXED MANUALLY
         game = Game(name='Cowboy', wos_id=15419, db=self.db)
-        game.getInfoFromDB(self.db)
+        game = self.db.getGameByWosID(game.wos_id)
         print(game.cheats)
         self.assertEqual(len(game.cheats), 2)
         self.ts.scrapePokes(game)
@@ -192,18 +189,5 @@ class TipshopScraperTests(unittest.TestCase):
         self.ts.scrapePokes()
         self.assertEqual(len(game.cheats), 4)
 
-    # def test_getting_possible_description(self):
-    #     string = '(infinite lives)'
-    #     desc = self.ts.getPossibleDescriptionFromString(string)
-    #     self.assertEqual(desc, 'infinite lives')
-    #     string = 'Lives (x = 1-255)'
-    #     self.assertEqual(desc, 'Lives (x = 1-255)')
-
 if __name__=='__main__':
-    t = TipshopScraperTests()
-    # t.test_simple_pokes_scraping()
-    # t.test_medium_pokes_scraping()
-    # t.test_complex_pokes_scraping()
-    # t.test_multipoke_cheats_scraping()
-    # t.test_variable_poke()
     unittest.main()

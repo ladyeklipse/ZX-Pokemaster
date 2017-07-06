@@ -1,4 +1,5 @@
 from classes.game import Game, getWosSubfolder
+from classes.game_release import GameRelease
 import requests
 import os
 import zipfile
@@ -10,6 +11,7 @@ TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GA
 class GameFile(object):
 
     game = None
+    release = None
     wos_name = ''
     wos_zipped_name = ''
     tosec_path = ''
@@ -17,15 +19,18 @@ class GameFile(object):
     language = ''
     part = 0
     side = 0
+    mod_flags = ''
     # zipped = False
     format = ''
     size = 0
     size_zipped = 0
     md5 = ''
     md5_zipped = ''
+    crc32 = ''
+    sha1 = ''
     wos_path = ''
 
-    def __init__(self, path='', size=0, game=Game()):
+    def __init__(self, path='', size=0, game=Game(), release=GameRelease()):
         if not path:
             return
         filename = os.path.basename(path)
@@ -35,6 +40,7 @@ class GameFile(object):
         self.setSize(size)
         self.format = self.getFormat(path)
         self.game = game
+        self.release = release
         self.setMachineType(filename)
         if game.wos_id:
             if filename.endswith('.zip'):
@@ -60,6 +66,18 @@ class GameFile(object):
             return True
         return False
 
+    def existsIn(self, collection=[]):
+        for other_file in collection:
+            if self.game.wos_id==other_file.game.wos_id and \
+                self.release.release_seq == other_file.release.release_seq and \
+                self.machine_type == other_file.machine_type and \
+                self.side == other_file.side and \
+                self.part == other_file.part and \
+                self.language == other_file.language and \
+                self.mod_flags == other_file.mod_flags:
+                return True
+        return False
+
     def copy(self):
         new = GameFile(self.path, self.size, self.game)
         return new
@@ -82,12 +100,14 @@ class GameFile(object):
             return
         self.game.setPublisher(matches[1])
         for each in matches[2:]:
-            if len(each)==2:
+            if len(each)==2 and each.isalpha():
                 self.setLanguage(each)
             elif 'Side' in each:
                 self.setSide(each)
             elif 'Part' in each or 'Disk' in each:
                 self.setPart(each)
+            elif each and each[0].lower() in ['m', 'h', 'c', 'f']:
+                self.mod_flags += '[%s]' % each
 
     def setMachineType(self, filename):
         if not filename:
@@ -108,7 +128,7 @@ class GameFile(object):
             return self.game.machine_type
 
     def setLanguage(self, language):
-        self.language = language
+        self.language = language.lower()
 
     def setPart(self, part):
         part = part.split(' ')
@@ -178,7 +198,7 @@ class GameFile(object):
         if format in GAME_EXTENSIONS:
             return format
         else:
-            format = os.path.dirname(path).split('/')[-1].replace('[', '').replace(']', '').lower()
+            format = os.path.split(os.path.dirname(path))[-1].replace('[', '').replace(']', '').lower()
             if format in GAME_EXTENSIONS:
                 return format
 
@@ -187,10 +207,12 @@ class GameFile(object):
             return self.md5_zipped
         elif not zipped and self.md5:
             return self.md5
-
         local_path = self.getLocalPath(zipped=zipped)
         if os.path.exists(local_path):
             file_handle = self.getFileHandle(local_path, zipped=zipped)
+            if not file_handle:
+                print(self, 'has no valid file handle!')
+                return ''
             md5 = hashlib.md5(file_handle).hexdigest()
             if zipped:
                 self.md5_zipped = md5
@@ -198,17 +220,47 @@ class GameFile(object):
                 self.md5 = md5
             return md5
 
-    def getFileHandle(self, local_path, zipped):
+    def getCRC32(self):
+        return self.crc32
+
+    def getSHA1(self):
+        if self.sha1:
+            return self.sha1
+        local_path = self.getLocalPath()
+        if os.path.exists(local_path):
+            file_handle = self.getFileHandle(local_path)
+            if not file_handle:
+                print(self, 'has no valid file handle!')
+                return ''
+            self.sha1 = hashlib.sha1(file_handle).hexdigest()
+            return self.sha1
+
+    def getFileHandle(self, local_path, zipped=False):
         if local_path.endswith('.zip') and not zipped:
             with zipfile.ZipFile(local_path, 'r') as zf:
                 for zfname in zf.namelist():
                     zfname_ext = zfname.split('.')[-1].lower()
+                    if zfname_ext != self.format and zfname_ext in GAME_EXTENSIONS:
+                        print('FORMAT MISMATCH:', self, zfname)
+                        self.format = zfname_ext
                     if zfname_ext == self.format:
                         if not self.size:
                             self.setSize(zf.getinfo(zfname).file_size)
+                        if not self.crc32:
+                            self.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
                         return zf.read(zfname)
         else:
             return open(local_path, 'rb').read()
+
+    def getSubfoldersDict(self):
+        return {
+            'Genre':self.game.getGenre(),
+            'Year':str(self.release.year),
+            'Letter':getWosSubfolder(self.game.name),
+            'MachineType':self.getMachineType(),
+            'Publisher':self.release.getPublisher(),
+            'NumberOfPlayers':str(self.game.number_of_players)
+        }
 
     def getWosPath(self, wos_mirror_root = WOS_SITE_ROOT):
         return wos_mirror_root+self.path
@@ -229,7 +281,6 @@ class GameFile(object):
             if os.path.exists(local_path):
                 return local_path
         return self.path
-
         # if zipped and self.wos_zipped_name:
         #     subfolder = getWosSubfolder(self.wos_zipped_name)
         #     local_path = os.path.join(LOCAL_GAME_FILES_DIRECTORY, subfolder, self.wos_zipped_name)

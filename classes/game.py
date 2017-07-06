@@ -9,6 +9,7 @@ import re
 
 publisher_regex = re.compile('inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>')
+remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
 def getWosSubfolder(filepath):
     return '123' if filepath[0].isdigit() else filepath[0].lower()
@@ -48,14 +49,13 @@ class Game(object):
     pok_file_contents = ''
 
     def __init__(self, name='', wos_id=0, db=None):
-        self.name=name
+        self.setName(name)
         if type(wos_id)!=int:
             raise ValueError('wos_id is not integer')
         self.wos_id = wos_id
-        self.files, self.cheats = [], []
+        self.files, self.cheats, self.releases = [], [], []
         if db:
-            self.getInfoFromDB(db)
-        self.releases = []
+            self = db.getGameByWosID(wos_id)
 
     def __repr__(self):
         return '<Game '+self.getWosID()+':'+self.getTOSECName()+'>'
@@ -75,23 +75,6 @@ class Game(object):
         filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
         return filepath
 
-    def getInfoFromDB(self, db):
-        game_from_db = db.getGameByWosID(self.wos_id)
-        if game_from_db:
-            self.name = game_from_db.name
-            self.publisher = game_from_db.publisher
-            self.year = game_from_db.year
-            self.genre = game_from_db.genre
-            self.number_of_players = game_from_db.number_of_players
-            self.machine_type = game_from_db.machine_type
-            self.language = game_from_db.language
-            self.ingame_screen_filepath = game_from_db.ingame_screen_filepath
-            self.loading_screen_filepath = game_from_db.ingame_screen_filepath
-            self.manual_filepath = game_from_db.manual_filepath
-            self.files = game_from_db.files
-            self.cheats = game_from_db.cheats
-            self.pok_file_contents = game_from_db.pok_file_contents
-
     def getWosID(self):
         return str(self.wos_id).zfill(7)
 
@@ -99,30 +82,35 @@ class Game(object):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
 
     def getTipshopUrl(self):
-        return self.tipshop_page
+        if self.tipshop_page:
+            return self.tipshop_page
+        else:
+            self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
+            return self.tipshop_page
 
     def getManualUrl(self):
         return self.manual_url
 
     def getYear(self):
-        return str(self.year) if self.year else '19--'
+        return str(self.year) if self.year else '19xx'
 
     def getPublisher(self):
         return self.publisher if self.publisher else '-'
 
     def setAvailability(self, value):
-        if value == 'D':
-            self.availability = AVAILABILITY_DISTRIBUTION_DENIED
-        elif value == 'd':
-            self.availability = AVAILABILITY_DISTRIBUTION_DENIED_STILL_FOR_SALE
-        elif value == '?':
-            self.availability = AVAILABILITY_MISSING_IN_ACTION
-        elif value == 'N':
-            self.availability = AVAILABILITY_NEVER_RELEASED
-        elif value == 'R':
-            self.availability = AVAILABILITY_RECOVERED
-        else:
-            self.availability = AVAILABILITY_AVAILABLE
+        self.availability = value
+        # if value == 'D':
+        #     self.availability = AVAILABILITY_DISTRIBUTION_DENIED
+        # elif value == 'd':
+        #     self.availability = AVAILABILITY_DISTRIBUTION_DENIED_STILL_FOR_SALE
+        # elif value == '?':
+        #     self.availability = AVAILABILITY_MISSING_IN_ACTION
+        # elif value == 'N':
+        #     self.availability = AVAILABILITY_NEVER_RELEASED
+        # elif value == 'R':
+        #     self.availability = AVAILABILITY_RECOVERED
+        # else:
+        #     self.availability = AVAILABILITY_AVAILABLE
 
     def setParams(self, **kwargs):
         self.setPublisher(kwargs['publisher'])
@@ -142,13 +130,17 @@ class Game(object):
             name not in [x[0] for x in self.alternate_names]:
                 self.alternate_names.append((name, publisher))
 
-    def setTitle(self, title):
-        self.name = title
+    def setName(self, name):
+        if name:
+            name = remove_square_brackets_regex.sub('', name).strip()
+            self.name = name
 
     def setPublisher(self, publisher):
         if publisher=='unknown' or not publisher:
             publisher = ''
-        publisher = publisher_regex.sub('', publisher).strip()
+        publisher = publisher.replace('/', '-')
+        publisher = publisher_regex.sub('', publisher)
+        publisher = remove_square_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher
 
     def setYear(self, year):
@@ -173,7 +165,10 @@ class Game(object):
         self.language = language.lower()[:2]
 
     def setGenre(self, genre):
-        self.genre = genre #.replace(':', '')
+        if not genre:
+            self.genre = ''
+        else:
+            self.genre = genre.replace(':', ' -')
 
     def setmanualUrl(self, url):
         self.manual_url = url
@@ -185,7 +180,11 @@ class Game(object):
     def addFile(self, new_file, release_seq=0):
         if not new_file:
             return
-        self.releases[release_seq].addFile(new_file)
+        try:
+            self.releases[release_seq].addFile(new_file)
+        except Exception as e:
+            print(self)
+            raise e
 
     def getFiles(self):
         files = []
@@ -209,6 +208,8 @@ class Game(object):
         self.importPokFile()
 
     def importPokFile(self, file_path=None, text=None):
+        if not self.tipshop_page:
+            self.tipshop_page = TIPSHOP_SITE_ROOT + '/cgi-bin/info.pl?wosid='+self.getWosID()
         cheat_source = CHEAT_SOURCE_OLD_DB if not file_path and not text else CHEAT_SOURCE_WOS_FILE
         if text!=None:
             if type(text)!=str:

@@ -16,8 +16,8 @@ class TOSECScraper():
     manually_entered_tosec_aliases = {}
 
 
-    def __init__(self, cache=True):
-        self.db = Database()
+    def __init__(self, cache=True, db=None):
+        self.db = db if db else Database()
         if cache:
             self.db.loadCache()
 
@@ -34,7 +34,8 @@ class TOSECScraper():
                       'Educational',
                       # 'Magazines',
                       'Games']
-        tosec_folders = ['[TAP]', '[TRD]', '[TZX]', '[Z80]', '[SCL]', '[DSK]']
+        # tosec_folders = ['[TAP]', '[TRD]', '[TZX]', '[Z80]', '[SCL]', '[DSK]', '[SLT]', '[FDI]', '[ROM]', '[CSW]']
+        tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
         paths = []
         for category in categories:
             for folder in tosec_folders:
@@ -66,7 +67,7 @@ class TOSECScraper():
                     games_found += 1
                 current_game.files = []
                 current_game = None
-                if games_found % 100 == 0:
+                if games_found % 1000 == 0:
                     self.db.commit()
             if not current_game:
                 current_game = game_file.game
@@ -132,10 +133,10 @@ class TOSECScraper():
                     continue
                 elif path.endswith('(CSSCGC).zip'):
                     continue
-                # elif 'Compilations' in path:
-                #     continue
-                # elif 'Games' not in path:
-                #     continue
+                elif 'Compilations' in path:
+                    continue
+                elif 'Games' not in path:
+                    continue
                 print('Unscraped:', 'file:\\\\\\'+os.path.abspath(path))
                 unscraped_paths.append(path)
                 game_file = GameFile(path)

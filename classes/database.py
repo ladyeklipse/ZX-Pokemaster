@@ -57,6 +57,8 @@ class Database():
         return self.cur.execute(sql, params).fetchall()
 
     def loadCache(self):
+        if self.cache_by_name and self.cache_by_md5 and self.cache_by_wos_id:
+            return
         print('started loading cache')
         games = self.getAllGames()
         print('got ', len(games), 'games')
@@ -133,8 +135,12 @@ class Database():
                           file.part,
                           file.side,
                           file.language,
+                          file.mod_flags,
                           file.getMD5(),
-                          file.getMD5(zipped=True)]
+                          file.getMD5(zipped=True),
+                          file.getCRC32(),
+                          file.getSHA1()
+                          ]
                 sql = "INSERT OR REPLACE INTO game_file VALUES " \
                       "({})".format(','.join(['?'] * len(values)))
                 self.cur.execute(sql, values)
@@ -311,7 +317,7 @@ class Database():
         game.x_rated = row['x_rated']
         game.addRelease(self.releaseFromRow(row, game))
         game.tipshop_page = row['tipshop_page']
-        if game.tipshop_page:
+        if game.tipshop_page or row['pok_file_contents']:
             game.importPokFile(text=str(row['pok_file_contents']))
             game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
         if row['md5']:
@@ -356,6 +362,8 @@ class Database():
         file.language = row['file_language']
         file.md5 = row['md5']
         file.md5_zipped = row['md5_zipped']
+        file.crc32 = row['crc32']
+        file.sha1 = row['sha1']
         return file
 
 
