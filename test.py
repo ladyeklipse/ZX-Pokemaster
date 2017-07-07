@@ -1,0 +1,2 @@
+from settings import GAME_EXTENSIONS
+from classes.database import GAME_PREFIXES

@@ -81,6 +81,9 @@ class Game(object):
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
 
+    def getGenre(self):
+        return self.genre if self.genre else 'Unknown'
+
     def getTipshopUrl(self):
         if self.tipshop_page:
             return self.tipshop_page
@@ -88,8 +91,8 @@ class Game(object):
             self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
             return self.tipshop_page
 
-    def getManualUrl(self):
-        return self.manual_url
+    # def getManualUrl(self):
+    #     return self.manual_url
 
     def getYear(self):
         return str(self.year) if self.year else '19xx'
@@ -163,6 +166,9 @@ class Game(object):
         if not language:
             language='en'
         self.language = language.lower()[:2]
+
+    def getLanguage(self):
+        return self.language
 
     def setGenre(self, genre):
         if not genre:

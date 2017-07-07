@@ -63,6 +63,17 @@ class GameRelease(object):
         if self.publisher:
             return self.publisher.replace('/', '-')
 
+    def getLanguage(self):
+        if self.country in ['US', 'GB', 'AU', 'NZ']:
+            return 'en'
+        else:
+            return self.country.lower()
+
+    def getYear(self):
+        if not self.year:
+            return self.game.getYear()
+        else:
+            return str(self.year)
 
     def getAllAliases(self):
         return self.aliases

@@ -6,7 +6,15 @@ import zipfile
 import hashlib
 from settings import *
 import re
+
 TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GAME_EXTENSIONS]))
+
+def putPrefixToEnd(game_name):
+    for prefix in GAME_PREFIXES:
+        if game_name.startswith(prefix + ' '):
+            game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
+            return game_name
+    return game_name
 
 class GameFile(object):
 
@@ -30,7 +38,7 @@ class GameFile(object):
     sha1 = ''
     wos_path = ''
 
-    def __init__(self, path='', size=0, game=Game(), release=GameRelease()):
+    def __init__(self, path='', size=0, game=None, release=None):
         if not path:
             return
         filename = os.path.basename(path)
@@ -42,7 +50,7 @@ class GameFile(object):
         self.game = game
         self.release = release
         self.setMachineType(filename)
-        if game.wos_id:
+        if game:
             if filename.endswith('.zip'):
                 self.wos_zipped_name = filename
                 self.wos_path = path
@@ -66,17 +74,47 @@ class GameFile(object):
             return True
         return False
 
-    def existsIn(self, collection=[]):
+    def countAlternateDumpsIn(self, collection=[]):
+        count = 0
         for other_file in collection:
-            if self.game.wos_id==other_file.game.wos_id and \
-                self.release.release_seq == other_file.release.release_seq and \
+            # if self.game.wos_id and \
+            #     self.game.wos_id!=other_file.game.wos_id:
+            #     continue
+            # elif self.getGameName()!=other_file.getGameName():
+            #     continue
+            if not self.game and \
+                self.getGameName()==other_file.getGameName():
+                print(self.getGameName(),'==',other_file.getGameName())
+                print(self, other_file)
+                count += 1
+            elif self.game.wos_id==other_file.game.wos_id and \
+                self.getYear()==other_file.getYear() and \
+                self.getPublisher()==other_file.getPublisher() and \
+                self.getReleaseSeq() == other_file.getReleaseSeq() and \
                 self.machine_type == other_file.machine_type and \
                 self.side == other_file.side and \
                 self.part == other_file.part and \
                 self.language == other_file.language and \
                 self.mod_flags == other_file.mod_flags:
-                return True
-        return False
+                count += 1
+        return count
+
+    def addAlternateModFlag(self, copies_count):
+        if not copies_count:
+            return
+        dest = os.path.splitext(self.dest)
+        if copies_count == 1:
+            alt_mod_flag = '[a]'
+        else:
+            alt_mod_flag = '[a' + str(copies_count) + ']'
+        self.dest = dest[0]+alt_mod_flag+dest[1]
+        # self.mod_flags += alt_mod_flag
+
+    def isAlternate(self):
+        if '[a' in self.dest:
+            return True
+        else:
+            return False
 
     def copy(self):
         new = GameFile(self.path, self.size, self.game)
@@ -138,32 +176,30 @@ class GameFile(object):
                 part[i+1][0].isdigit():
                 self.part = int(part[i+1][0])
 
-    def getOutputPathFormatKwargs(self):
-        return {
-            'Genre':self.game.genre.replace(':', ''),
-            'Publisher':self.game.getPublisher(),
-            'Machine type':self.getMachineType(),
-            'Language':self.getLanguage(),
-            'Letter':getWosSubfolder(self.wos_name)
-        }
 
     def getLanguage(self):
-        return self.language if self.language else self.game.language
+        if self.language:
+            return self.language
+        elif self.release:
+            return self.release.getLanguage()
+        else:
+            return self.game.getLanguage()
 
     def getFullTOSECName(self, zipped=False):
         if self.tosec_path:
             return self.tosec_path
-        game = self.game
-        basename =  game.name
+        basename = self.getGameName()
         params = []
-        params.append('('+game.getYear()+')')
-        params.append('('+game.getPublisher()+')')
+        params.append('('+self.getYear()+')')
+        params.append('('+self.getPublisher()+')')
         if self.language:
             params.append('('+self.language+')')
         if self.side:
             params.append('(Side '+self.getSide()+')')
         elif self.part:
-            params.append('(Part '+str(self.part)+' of '+str(game.parts)+')')
+            params.append('(Part '+str(self.part)+' of '+str(self.game.parts)+')')
+        elif self.mod_flags:
+            params.append(self.mod_flags)
         # if self.tosec_info:
         #     params.append(self.tosec_info)
         ext = 'zip' if zipped else self.format
@@ -241,7 +277,8 @@ class GameFile(object):
                 for zfname in zf.namelist():
                     zfname_ext = zfname.split('.')[-1].lower()
                     if zfname_ext != self.format and zfname_ext in GAME_EXTENSIONS:
-                        print('FORMAT MISMATCH:', self, zfname)
+                        if self.format:
+                            print('FORMAT MISMATCH:', self, zfname)
                         self.format = zfname_ext
                     if zfname_ext == self.format:
                         if not self.size:
@@ -252,15 +289,38 @@ class GameFile(object):
         else:
             return open(local_path, 'rb').read()
 
-    def getSubfoldersDict(self):
+    def getOutputPathFormatKwargs(self):
+        game_name = self.getGameName()
         return {
             'Genre':self.game.getGenre(),
-            'Year':str(self.release.year),
-            'Letter':getWosSubfolder(self.game.name),
+            'Year':self.getYear(),
+            'Letter':getWosSubfolder(game_name),
             'MachineType':self.getMachineType(),
-            'Publisher':self.release.getPublisher(),
-            'NumberOfPlayers':str(self.game.number_of_players)
+            'Publisher':self.getPublisher(),
+            'NumberOfPlayers':str(self.game.number_of_players)+'P',
+            'GameName':self.release.aliases[0] if self.release else self.game.name,
+            'Language':self.getLanguage()
         }
+
+    def getGameName(self):
+        game_name = self.release.aliases[0] if self.release else self.game.name
+        game_name = putPrefixToEnd(game_name)
+        return game_name
+
+    def getYear(self):
+        if self.release:
+            return self.release.getYear()
+        else:
+            return self.game.getYear()
+
+    def getPublisher(self):
+        if self.release:
+            return self.release.getPublisher()
+        else:
+            return self.game.getPublisher()
+
+    def getReleaseSeq(self):
+        return self.release.release_seq if self.release else 0
 
     def getWosPath(self, wos_mirror_root = WOS_SITE_ROOT):
         return wos_mirror_root+self.path

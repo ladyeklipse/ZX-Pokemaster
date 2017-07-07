@@ -1,19 +1,12 @@
 from settings import *
 from classes.game import Game
 from classes.game_release import GameRelease
-from classes.game_file import GameFile, TOSEC_REGEX
+from classes.game_file import GameFile, TOSEC_REGEX, GAME_PREFIXES, putPrefixToEnd
 import re
 import os
 import sqlite3
 import traceback
 
-GAME_PREFIXES = ['3D',
-                 'A', 'The',
-                 'La', 'Le', 'De', "L'",
-                 'Les', 'Los', 'Las', 'El',
-                 'Une', 'Una', 'Uno',
-                 'Het',
-                 'Der', 'Die', 'Das']
 
 SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game.wos_id AS wos_id, ' \
@@ -39,6 +32,8 @@ def getSearchString(game_name):
         elif game_name.endswith(', '+prefix):
             game_name = game_name[:len(game_name)-len(prefix)-2]
     return ''.join(filter(str.isalnum, game_name.lower()))
+
+
 
 class Database():
 

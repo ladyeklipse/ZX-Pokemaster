@@ -27,6 +27,12 @@ ALPHABETIC_DIRNAMES = ['123', 'A', 'B', 'C', 'D', 'E', 'F',
                        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
                        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
                        'W', 'X', 'Y', 'Z']
+GAME_PREFIXES = ['A', 'The',
+                 'La', 'Le', 'De', "L'", "D'"
+                 'Les', 'Los', 'Las', 'El',
+                 'Une', 'Una', 'Uno',
+                 'Het',
+                 'Der', 'Die', 'Das']
 SIDE_A = 1
 SIDE_B = 2
 # IGNORE_CRACKED_NEVER = 0
