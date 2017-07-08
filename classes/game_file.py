@@ -1,4 +1,4 @@
-from classes.game import Game, getWosSubfolder
+from classes.game import Game, getWosSubfolder, filepath_regex
 from classes.game_release import GameRelease
 import requests
 import os
@@ -23,7 +23,7 @@ class GameFile(object):
     wos_name = ''
     wos_zipped_name = ''
     tosec_path = ''
-    machine_type = ''
+    machine_type = '48K'
     language = ''
     part = 0
     side = 0
@@ -37,6 +37,9 @@ class GameFile(object):
     crc32 = ''
     sha1 = ''
     wos_path = ''
+    src=''
+    dest=''
+    alt_dest=''
 
     def __init__(self, path='', size=0, game=None, release=None):
         if not path:
@@ -82,7 +85,11 @@ class GameFile(object):
             #     continue
             # elif self.getGameName()!=other_file.getGameName():
             #     continue
-            if not self.game and \
+            if self.dest:
+                if self.dest == other_file.dest:
+                    count += 1
+                continue
+            elif not self.game and \
                 self.getGameName()==other_file.getGameName():
                 print(self.getGameName(),'==',other_file.getGameName())
                 print(self, other_file)
@@ -107,14 +114,16 @@ class GameFile(object):
             alt_mod_flag = '[a]'
         else:
             alt_mod_flag = '[a' + str(copies_count) + ']'
-        self.dest = dest[0]+alt_mod_flag+dest[1]
-        # self.mod_flags += alt_mod_flag
+        self.alt_dest = dest[0]+alt_mod_flag+dest[1]
 
     def isAlternate(self):
-        if '[a' in self.dest:
+        if self.alt_dest:
             return True
         else:
             return False
+
+    def getDestination(self):
+        return self.alt_dest if self.alt_dest else self.dest
 
     def copy(self):
         new = GameFile(self.path, self.size, self.game)
@@ -198,12 +207,17 @@ class GameFile(object):
             params.append('(Side '+self.getSide()+')')
         elif self.part:
             params.append('(Part '+str(self.part)+' of '+str(self.game.parts)+')')
-        elif self.mod_flags:
+        if self.machine_type and self.machine_type!='48K':
+            params.append('[%s]' % self.machine_type)
+        if self.mod_flags:
             params.append(self.mod_flags)
         # if self.tosec_info:
         #     params.append(self.tosec_info)
         ext = 'zip' if zipped else self.format
-        return basename+' '+''.join(params)+'.'+ext
+        tosec_name = basename+' '+''.join(params)+'.'+ext
+        tosec_name = filepath_regex.sub('', tosec_name.replace('/', '-').replace(':', ' -')).strip()
+        return tosec_name
+
 
     def setSide(self, side):
         if 'Side A' in side or 'Side 1' in side:

@@ -294,6 +294,8 @@ class Database():
             file = self.fileFromRow(row)
             if file:
                 game.addFile(file, release_seq=len(game.releases)-1)
+                if file.part>game.parts:
+                    game.parts=file.part
         return game
         # for row in raw_data:
         #     file = self.fileFromRow(row)
@@ -351,10 +353,11 @@ class Database():
         file.tosec_path = row['tosec_path']
         file.size = row['size']
         file.size_zipped = row['size_zipped']
-        file.machine_type = row['file_machine_type']
+        file.setMachineType(row['file_machine_type'])
         file.part = row['part']
         file.side = row['side']
         file.language = row['file_language']
+        file.mod_flags = row['mod_flags']
         file.md5 = row['md5']
         file.md5_zipped = row['md5_zipped']
         file.crc32 = row['crc32']

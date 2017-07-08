@@ -5,6 +5,11 @@ from classes.sorter import *
 import argparse
 
 if __name__=='__main__':
-    s = Sorter(input_locations=['ftp', 'tosec'],
-               cache=False)
+    input_locations = ['ftp', 'tosec']
+    input_locations = ['ftp/pub/sinclair/utils']
+    input_locations = ['tosec']
+    s = Sorter(input_locations=input_locations,
+               output_location='sorted',
+               ignore_alternate=False,
+               cache=True)
     s.sortFiles()

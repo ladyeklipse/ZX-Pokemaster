@@ -52,15 +52,15 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es).tzx'
+        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(MCM Software)(es).tzx'
+        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[m].tzx'
+        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][m].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[a].tzx'
+        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[a2].tzx'
+        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a2].tzx'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_picking_best_candidate(self):
@@ -76,24 +76,30 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es).tap'
+        expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_alt_files_out/3D Master Game (1983)(Supersoft Systems).z80'
+        expected_file = 'tests/sort_best_candidates_out/3D Master Game (1983)(Supersoft Systems).z80'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es).tzx'
+        not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertFalse(os.path.exists(not_expected_file))
-        not_expected_file = 'tests/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es).z80'
+        #NOT SURE IF Z80 SHOULD BE DELETED IF .TAP IS FOUND
+        # not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80'
+        # self.assertFalse(os.path.exists(not_expected_file))
+        not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].z80'
         self.assertFalse(os.path.exists(not_expected_file))
 
     def test_sorting_unzipped_files(self):
         s = Sorter(input_locations=['tests/sort_unzipped_in'],
                    output_location='tests/sort_unzipped_out',
                    output_folder_structure='',
+                   ignore_alternate=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         expected_file = 'tests\sort_unzipped_out\WordSheep (1984)(ZX Computing).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests\sort_unzipped_out\Race, The (1990)(Players Premier).z80'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_collecting_info_for_files_with_unknown_hashsum(self):
@@ -111,8 +117,74 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_unknown_files_out/Unknown\Alchemist Research\en\\1992/Alchemist News - Issue 02 (1992)(Alchemist Research).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_unknown_files_out/Unknown\Alchemist Research\en\\1993/Alchemist News - Issue 09 (1993)(Alchemist Research).z80'
+        expected_file = 'tests/sort_unknown_files_out/Unknown\Alchemist Research\en\\1993/Alchemist News - Issue 09 (1993)(Alchemist Research)[128K].z80'
         self.assertTrue(os.path.exists(expected_file))
 
+    def test_doublesided_archive(self):
+        s = Sorter(input_locations=['tests/sort_doublesided_in'],
+                   output_location='tests/sort_doublesided_out',
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 1 of 3).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 2 of 3).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 3 of 3).tap'
+        self.assertTrue(os.path.exists(expected_file))
 
+    def test_ignore_rereleases(self):
+        s = Sorter(input_locations=['tests/sort_ignore_rereleases_in'],
+                   output_location='tests/sort_ignore_rereleases_out',
+                   output_folder_structure='',
+                   ignore_rereleases=True,
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = 'tests/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
+        self.assertFalse(os.path.exists(not_expected_file))
 
+    def test_ignore_hacks(self):
+        s = Sorter(input_locations=['tests/sort_ignore_hacks_in'],
+                   output_location='tests/sort_ignore_hacks_out',
+                   output_folder_structure='',
+                   ignore_hacks=True,
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = 'tests/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(Opera Soft)(ES)[128K][m].tzx'
+        self.assertFalse(os.path.exists(not_expected_file))
+
+    def test_winfriendly_filenames(self):
+        s = Sorter(input_locations=['tests/sort_winfriendly_in'],
+                   output_location='tests/sort_winfriendly_out',
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_winfriendly_out/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
+        self.assertTrue(os.path.exists(expected_file))
+
+    def test_permission_denied(self):
+        s = Sorter(input_locations=['tests/sort_permission_denied_in'],
+                   output_location='tests/sort_permission_denied_out',
+                   output_folder_structure='',
+                   cache=False)
+        s.sortFiles()
+        expected_file = 'tests/sort_permission_denied_out/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
+        self.assertTrue(os.path.exists(expected_file))
+
+#Fourth Protocol: Part 1 of 1
+#Too many files: filtering by prefered format should be implemented!
+#BUG in wos_id 26541: both Z80 and trd files are marked as trd.

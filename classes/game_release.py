@@ -11,7 +11,7 @@ class GameRelease(object):
     release_seq = 0
     year = None
     publisher=None
-    country=None
+    country='UK'
     aliases = []
     loading_screen_gif_filepath = None
     loading_screen_scr_filepath = None
@@ -30,12 +30,12 @@ class GameRelease(object):
         self.release_seq = release_seq
         self.year = year
         self.setPublisher(publisher)
-        self.country = country
+        self.country = country if country else 'UK'
         self.game = game
         self.files = []
         self.aliases = aliases if aliases else []
         if release_seq==0 and game.name not in self.aliases:
-            self.aliases.append(game.name)
+            self.aliases = [game.name]+self.aliases
         # self.loading_screen_gif_filepath = game.loading_screen_gif_filepath
         # self.loading_screen_scr_filepath = game.loading_screen_scr_filepath
         # self.ingame_screen_gif_filepath = game.ingame_screen_gif_filepath
@@ -62,6 +62,8 @@ class GameRelease(object):
     def getPublisher(self):
         if self.publisher:
             return self.publisher.replace('/', '-')
+        else:
+            return self.game.getPublisher()
 
     def getLanguage(self):
         if self.country in ['US', 'GB', 'AU', 'NZ']:

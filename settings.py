@@ -13,6 +13,7 @@ WOS_LOADING_SCREENS_DIRECTORY = 'pub/sinclair/screens/load'
 WOS_MANUALS_DIRECTORY = 'pub/sinclair/games-info'
 TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
 GAME_EXTENSIONS = ['tzx', 'tap', 'z80', 'sna', 'dsk', 'trd', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
+MAX_ZIP_FILE_SIZE = 8858353
 AVAILABILITY_AVAILABLE = 'A'
 AVAILABILITY_DISTRIBUTION_DENIED = 'D'
 AVAILABILITY_DISTRIBUTION_DENIED_STILL_FOR_SALE = 'd'

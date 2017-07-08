@@ -8,7 +8,7 @@ import glob
 import re
 
 publisher_regex = re.compile('inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
-filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>')
+filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
 def getWosSubfolder(filepath):
@@ -304,6 +304,11 @@ class Game(object):
     #
     # def getLocalIngameScreenPath(self, format='scr', release_seq=0):
     #     return self.getRemoteIngameScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
+
+    def findFileByMD5(self, md5):
+        for file in self.getFiles():
+            if file.md5 == md5:
+                return file
 
     def findReleaseByFile(self, game_file):
         if len(self.releases)==1:
