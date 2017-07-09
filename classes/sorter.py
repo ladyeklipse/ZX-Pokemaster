@@ -28,6 +28,7 @@ class Sorter():
         self.files_per_folder = kwargs.get('files_per_folder')
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
         self.ignore_alternate = kwargs.get('ignore_alternate', True)
+        self.ignore_alternate_formats = kwargs.get('ignore_alternate_formats', False)
         self.ignore_rereleases = kwargs.get('ignore_rereleases', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
         if kwargs.get('cache', True):
@@ -127,6 +128,18 @@ class Sorter():
                     collected_files[game_wos_id][i] = None
                 if self.ignore_hacks and file.mod_flags:
                     collected_files[game_wos_id][i] = None
+            files = [file for file in files if file]
+            if self.ignore_alternate_formats and files:
+                files = sorted(files, key=lambda file: file.getSortIndex(self.formats_preference))
+                preferred_files = []
+                preferred_format = files[0].format
+                for file in files:
+                    if file.format == preferred_format:
+                        preferred_files.append(file)
+                    else:
+                        break
+                collected_files[game_wos_id] = preferred_files
+
         return collected_files
 
     def redistributeFiles(self, collected_files):

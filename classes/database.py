@@ -233,7 +233,9 @@ class Database():
             file = self.fileFromRow(row)
             if file:
                 game.addFile(file, release_seq = row['release_seq'])
-            # if game.wos_id == row['wos_id']:
+                if file.part > game.parts:
+                    game.parts = file.part
+                # if game.wos_id == row['wos_id']:
             #     if release.release_seq!=row['release_seq']:
             #         release = self.releaseFromRow(row, game)
             #         game.addRelease(release)
@@ -318,7 +320,10 @@ class Database():
             game.importPokFile(text=str(row['pok_file_contents']))
             game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
         if row['md5']:
-            game.addFile(self.fileFromRow(row))
+            file = self.fileFromRow(row)
+            game.addFile(file)
+            if file.part > game.parts:
+                game.parts = file.part
         return game
 
     def releaseFromRow(self, row, game):

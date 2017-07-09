@@ -64,14 +64,12 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
 
     def test_picking_best_candidate(self):
-        #This is format preference for DivIDE firmwares, which have poor TZX support. TZX files will be ignored.
-        #In the later version of ZX Pokemaster, this test will be modified to convert TZX to TAP if no other candidates found.
-        #This will happen only if there will turn out to be a lot of games which are represented by TZX format only.
         s = Sorter(input_locations=['tests/sort_best_candidates_in'],
                    output_location='tests/sort_best_candidates_out',
                    output_folder_structure='',
                    formats_preference=['tap', 'z80', 'dsk', 'trd'],
                    ignore_alternate=True,
+                   ignore_alternate_formats=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -80,12 +78,35 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_best_candidates_out/3D Master Game (1983)(Supersoft Systems).z80'
         self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80'
+        self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertFalse(os.path.exists(not_expected_file))
-        #NOT SURE IF Z80 SHOULD BE DELETED IF .TAP IS FOUND
-        # not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80'
-        # self.assertFalse(os.path.exists(not_expected_file))
         not_expected_file = 'tests/sort_best_candidates_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].z80'
+        self.assertFalse(os.path.exists(not_expected_file))
+
+    def test_ignoring_alternate_formats(self):
+        #This is format preference for DivIDE firmwares, which have poor TZX support. TZX files will be ignored
+        #unless the game is available only in TZX format.
+        s = Sorter(input_locations=['tests/sort_best_candidates_in'],
+                   output_location='tests/sort_ignoring_alternate_formats_out',
+                   output_folder_structure='',
+                   formats_preference=['tap', 'z80', 'dsk', 'trd', 'tzx'],
+                   ignore_alternate=True,
+                   ignore_alternate_formats=True,
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_ignoring_alternate_formats_out/3D Master Game (1983)(Supersoft Systems).z80'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = 'tests/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
+        self.assertFalse(os.path.exists(not_expected_file))
+        not_expected_file = 'tests/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80'
+        self.assertFalse(os.path.exists(not_expected_file))
+        not_expected_file = 'tests/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].z80'
         self.assertFalse(os.path.exists(not_expected_file))
 
     def test_sorting_unzipped_files(self):
@@ -124,7 +145,8 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/sort_doublesided_in'],
                    output_location='tests/sort_doublesided_out',
                    output_folder_structure='',
-                   cache=False)
+                   ignore_alternate=False,
+                   cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -133,6 +155,8 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 2 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 3 of 3).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_doublesided_out/Fourth Protocol, The (1985)(Hutchinson Computer Publishing)(Part 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_ignore_rereleases(self):
@@ -185,6 +209,6 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/sort_permission_denied_out/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
         self.assertTrue(os.path.exists(expected_file))
 
-#Fourth Protocol: Part 1 of 1
+#Fourth Protocol: Part 3 of 1
 #Too many files: filtering by prefered format should be implemented!
 #BUG in wos_id 26541: both Z80 and trd files are marked as trd.

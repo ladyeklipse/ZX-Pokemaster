@@ -153,14 +153,14 @@ class GameRelease(object):
                         new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
                         new_file_sha1 = hashlib.sha1(unzipped_file).hexdigest()
                         new_file_crc32 = hex(z.getinfo(zfname).CRC)[2:]
+                        if file.format != zfext:
+                            print('FORMAT MISMATCH:', file.path, zfname)
                         if not file.md5:
                             file.md5 = new_file_md5
                             file.sha1 = new_file_sha1
                             file.crc32 = new_file_crc32
                             file.wos_name = os.path.basename(zfname)
-                            if file.format!=zfext:
-                                print('FORMAT MISMATCH:', file.path, zfname)
-                                file.format = zfext
+                            file.format = zfext
                             file.setSize(z.getinfo(zfname).file_size)
                             file.setMachineType(zfname)
                             file.setPart(zfname)
@@ -170,6 +170,7 @@ class GameRelease(object):
                             second_file.crc32 = new_file_crc32
                             second_file.md5 = new_file_md5
                             second_file.sha1 = new_file_sha1
+                            second_file.format = zfext
                             second_file.md5_zipped = file.md5_zipped
                             second_file.setSize(z.getinfo(zfname).file_size)
                             second_file.size_zipped = file.size_zipped

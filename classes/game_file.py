@@ -218,7 +218,6 @@ class GameFile(object):
         tosec_name = filepath_regex.sub('', tosec_name.replace('/', '-').replace(':', ' -')).strip()
         return tosec_name
 
-
     def setSide(self, side):
         if 'Side A' in side or 'Side 1' in side:
             self.side = SIDE_A
@@ -335,6 +334,12 @@ class GameFile(object):
 
     def getReleaseSeq(self):
         return self.release.release_seq if self.release else 0
+
+    def getSortIndex(self, preferred_formats_list=GAME_EXTENSIONS):
+        try:
+            return preferred_formats_list.index(self.format)
+        except IndexError:
+            return 99
 
     def getWosPath(self, wos_mirror_root = WOS_SITE_ROOT):
         return wos_mirror_root+self.path

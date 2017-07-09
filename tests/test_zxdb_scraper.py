@@ -50,3 +50,15 @@ class TestZXDBScraper(unittest.TestCase):
         for file in game.getFiles():
             self.assertGreater(len(file.crc32), 0)
             self.assertGreater(len(file.sha1), 0)
+
+    def test_games_with_format_mismatch(self):
+        where_clause = 'AND entries.id = 26541'
+        games= zxdb.getGames(where_clause)
+        for release in games[0].releases:
+            release.getInfoFromLocalFiles()
+        db.addGame(games[0])
+        db.commit()
+        game = db.getGameByWosID(26541)
+        for file in game.getFiles():
+            if file.md5 == '4c279cc851f59bcffffd6a34c7236b75':
+                self.assertEqual(file.format, 'z80')
