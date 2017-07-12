@@ -1,0 +1,1 @@
+for /r %%f in (*.ui) do pyuic4 -o %%~nf.py %%~nf.ui

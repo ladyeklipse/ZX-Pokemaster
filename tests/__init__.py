@@ -1,2 +1,3 @@
 import os
-os.chdir('..')
+if (os.getcwd().endswith('tests')):
+    os.chdir('..')

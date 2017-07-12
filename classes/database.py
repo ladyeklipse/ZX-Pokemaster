@@ -274,10 +274,6 @@ class Database():
         if self.cache_by_md5:
             return self.cache_by_md5.get(md5)
         sql = SELECT_GAME_SQL_START
-        # if zipped:
-        #     sql += 'WHERE game_file.md5_zipped="{}"'.format(md5)
-        # else:
-        #     sql += 'WHERE game_file.md5="{}"'.format(md5)
         sql += 'WHERE game.wos_id=' \
                '(SELECT game_wos_id FROM game_file ' \
                'WHERE game_file.md5="{}")'.format(md5)
@@ -299,10 +295,6 @@ class Database():
                 if file.part>game.parts:
                     game.parts=file.part
         return game
-        # for row in raw_data:
-        #     file = self.fileFromRow(row)
-        #     game.addFile(file)
-        # return game
 
     def gameFromRow(self, row):
         game = Game(row['name'], int(row['wos_id']))
@@ -368,6 +360,3 @@ class Database():
         file.crc32 = row['crc32']
         file.sha1 = row['sha1']
         return file
-
-
-

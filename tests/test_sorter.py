@@ -1,6 +1,10 @@
 from classes.sorter import *
 import unittest
 import shutil
+import os
+if (os.getcwd().endswith('tests')):
+    os.chdir('..')
+print(os.getcwd())
 
 class TestSorter(unittest.TestCase):
 
@@ -209,6 +213,23 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/sort_permission_denied_out/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
         self.assertTrue(os.path.exists(expected_file))
 
-#Fourth Protocol: Part 3 of 1
-#Too many files: filtering by prefered format should be implemented!
-#BUG in wos_id 26541: both Z80 and trd files are marked as trd.
+    def test_sort_false_alt(self):
+        s = Sorter(
+                   input_locations=['tests/sort_false_alt_in'],
+                   output_location='tests/sort_false_alt_out',
+                   formats_preference='tap,dsk,z80,sna,tzx,trd'.split(','),
+                   ignore_alternate_formats=True,
+                   ignore_alternate=False,
+                   ignore_rereleases=False,
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura).trd'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)[a].trd'
+        self.assertFalse(os.path.exists(not_expected_file))
+
+
+

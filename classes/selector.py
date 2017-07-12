@@ -1,3 +1,5 @@
+import bs4
+from bs4 import BeautifulSoup
 import lxml
 import lxml.html.soupparser
 from lxml.etree import HTMLParser, XMLParser
@@ -7,8 +9,6 @@ except ImportError:
     from io import StringIO as StringIO
 et = lxml.etree
 parser = HTMLParser(encoding='utf-8', recover=True)
-import bs4
-
 
 class Selector:
 

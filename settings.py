@@ -36,9 +36,12 @@ GAME_PREFIXES = ['A', 'The',
                  'Der', 'Die', 'Das']
 SIDE_A = 1
 SIDE_B = 2
-# IGNORE_CRACKED_NEVER = 0
-# IGNORE_CRACKED_ALWAYS = 1
-# IGNORE_ALTERNATE_NEVER = 0
-# IGNORE_ALTERNATE_ALWAYS = 1
-# IGNORE_RERELEASES_NEVER = 0
-# IGNORE_RERELEASES_ALWAYS = 1
+PREDEFINED_OUTPUT_FOLDER_STRUCTURES = [
+    '{Letter}',
+    '{Letter}/{Name}',
+    '{Genre}/{Year}/{Letter}',
+    '{Genre}/{Year}/{Letter}/{Name}',
+    '{Publisher}/{Year}/{Name}',
+    '{Genre}/{Publisher}/{Year}',
+    '{MachineType}/{NumberOfPlayers}/{Genre}'
+]

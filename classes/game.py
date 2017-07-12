@@ -12,7 +12,7 @@ filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
 def getWosSubfolder(filepath):
-    return '123' if filepath[0].isdigit() else filepath[0].lower()
+    return '123' if not filepath[0].isalpha() else filepath[0].lower()
 
 class Game(object):
 

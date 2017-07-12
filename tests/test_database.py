@@ -1,14 +1,14 @@
 from classes.database import *
 from classes.game import *
 from classes.game_file import *
-from classes.zxdb_scraper import *
-from classes.tipshop_scraper import *
+from classes.zxdb_scraper import ZXDBScraper
+from classes.tipshop_scraper import TipshopScraper
 import  unittest
 if (os.getcwd().endswith('tests')):
     os.chdir('..')
 
 db = Database()
-db.loadCache()
+# db.loadCache()
 
 class TestDatabase(unittest.TestCase):
 
@@ -162,6 +162,11 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByFileMD5(md5)
         self.assertEqual(game.name, '9-Hole Golf')
         self.assertEqual(len(game.releases), 1)
+
+    def test_olisa(self):
+        md5 = '61edae0e09709406bb3082bbeecb8b63'
+        game = self.db.getGameByFileMD5(md5)
+        self.assertGreaterEqual(len(game.getFiles()), 4)
 
 if __name__=='__main__':
     unittest.main()

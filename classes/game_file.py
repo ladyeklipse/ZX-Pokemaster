@@ -20,6 +20,7 @@ class GameFile(object):
 
     game = None
     release = None
+    release_seq = 0
     wos_name = ''
     wos_zipped_name = ''
     tosec_path = ''
@@ -68,8 +69,8 @@ class GameFile(object):
         return '<GameFile: '+self.path+' md5:'+self.md5+'>'
 
     def __eq__(self, other):
-        if self.wos_name and \
-            self.wos_name == other.wos_name and \
+        if self.wos_path and \
+            self.wos_path == other.wos_path and \
             self.size == other.size and \
             self.format == other.format:
             return True
