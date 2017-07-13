@@ -37,7 +37,7 @@ if __name__=='__main__':
         'tosec\Games\[Z80]\Zzzz (1986)(Zenobi Software)[re-release].zip',
         'tosec\Games\[DSK]\Zzzz (1986)(Zenobi Software)[re-release].zip'
         ]
-    # paths = ts.showUnscraped()
-    # ts.paths = paths
+    paths = ts.showUnscraped()
+    ts.paths = paths
     ts.scrapeTOSEC()
-    # ts.showUnscraped()
+    ts.showUnscraped()

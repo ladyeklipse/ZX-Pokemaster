@@ -10,6 +10,30 @@
     <height>527</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>470</width>
+    <height>527</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>470</width>
+    <height>527</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>470</width>
+    <height>527</height>
+   </size>
+  </property>
   <property name="contextMenuPolicy">
    <enum>Qt::DefaultContextMenu</enum>
   </property>
@@ -235,7 +259,20 @@
      </rect>
     </property>
     <property name="text">
-     <string>Custom pattern...</string>
+     <string>Add pattern...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnRemovePattern">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>50</y>
+      <width>131</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove pattern</string>
     </property>
    </widget>
   </widget>

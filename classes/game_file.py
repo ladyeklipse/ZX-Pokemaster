@@ -46,8 +46,6 @@ class GameFile(object):
         if not path:
             return
         filename = os.path.basename(path)
-        # if filename.endswith('.zip'):
-        #     filename = filename[:-4]
         self.path = path
         self.setSize(size)
         self.format = self.getFormat(path)
@@ -81,11 +79,6 @@ class GameFile(object):
     def countAlternateDumpsIn(self, collection=[]):
         count = 0
         for other_file in collection:
-            # if self.game.wos_id and \
-            #     self.game.wos_id!=other_file.game.wos_id:
-            #     continue
-            # elif self.getGameName()!=other_file.getGameName():
-            #     continue
             if self.dest:
                 if self.dest == other_file.dest:
                     count += 1
@@ -102,10 +95,25 @@ class GameFile(object):
                 self.machine_type == other_file.machine_type and \
                 self.side == other_file.side and \
                 self.part == other_file.part and \
-                self.language == other_file.language and \
+                self.getLanguage() == other_file.getLanguage() and \
                 self.mod_flags == other_file.mod_flags:
                 count += 1
         return count
+
+    def getEquals(self, collection):
+        equals = []
+        for other_file in collection:
+            if self.game.wos_id == other_file.game.wos_id and \
+                self.getYear() == other_file.getYear() and \
+                self.getPublisher() == other_file.getPublisher() and \
+                self.getReleaseSeq() == other_file.getReleaseSeq() and \
+                self.machine_type == other_file.machine_type and \
+                self.side == other_file.side and \
+                self.part == other_file.part and \
+                self.getLanguage() == other_file.getLanguage() and \
+                self.mod_flags == other_file.mod_flags:
+                equals.append(other_file)
+        return equals
 
     def addAlternateModFlag(self, copies_count):
         if not copies_count:
@@ -123,6 +131,21 @@ class GameFile(object):
         else:
             return False
 
+    def isHack(self):
+        if '[c' in self.mod_flags or \
+            '[h' in self.mod_flags or \
+            '[m' in self.mod_flags or \
+            '[f' in self.mod_flags:
+            return True
+        else:
+            return False
+
+    def isBadDump(self):
+        if '[b]' in self.mod_flags:
+            return True
+        else:
+            return False
+
     def getDestination(self):
         return self.alt_dest if self.alt_dest else self.dest
 
@@ -134,7 +157,7 @@ class GameFile(object):
         return self.tosec_path if self.tosec_path else os.path.basename(self.path)
 
     def getGameFromFileName(self):
-        filename = os.path.basename(self.path).replace('(demo)', '')
+        filename = os.path.splitext(os.path.basename(self.path).replace('(demo)', ''))[0]
         matches = re.findall(TOSEC_REGEX, filename)
         game_name = re.sub(TOSEC_REGEX, '', filename).strip()
         if not self.game:
@@ -154,7 +177,7 @@ class GameFile(object):
                 self.setSide(each)
             elif 'Part' in each or 'Disk' in each:
                 self.setPart(each)
-            elif each and each[0].lower() in ['m', 'h', 'c', 'f']:
+            elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o']:
                 self.mod_flags += '[%s]' % each
 
     def setMachineType(self, filename):
@@ -195,25 +218,28 @@ class GameFile(object):
         else:
             return self.game.getLanguage()
 
-    def getFullTOSECName(self, zipped=False):
+    def getTOSECName(self, zipped=False):
         if self.tosec_path:
             return self.tosec_path
-        basename = self.getGameName()
+        basename = self.getGameName()[:100]
         params = []
         params.append('('+self.getYear()+')')
         params.append('('+self.getPublisher()+')')
-        if self.language:
-            params.append('('+self.language+')')
+        language = self.getLanguage()
+        if language!='en':
+            params.append('('+language+')')
         if self.side:
-            params.append('(Side '+self.getSide()+')')
+            params.append('(Side %s)' % self.getSide())
         elif self.part:
-            params.append('(Part '+str(self.part)+' of '+str(self.game.parts)+')')
+            label = 'Disk' if self.format in ('dsk', 'trd') else 'Part'
+            if self.game.parts>1:
+                params.append('(%s %d of %d)' % (label, self.part, self.game.parts))
+            else:
+                params.append('(%s %d)' % (label, self.part))
         if self.machine_type and self.machine_type!='48K':
             params.append('[%s]' % self.machine_type)
         if self.mod_flags:
             params.append(self.mod_flags)
-        # if self.tosec_info:
-        #     params.append(self.tosec_info)
         ext = 'zip' if zipped else self.format
         tosec_name = basename+' '+''.join(params)+'.'+ext
         tosec_name = filepath_regex.sub('', tosec_name.replace('/', '-').replace(':', ' -')).strip()
@@ -306,15 +332,35 @@ class GameFile(object):
     def getOutputPathFormatKwargs(self):
         game_name = self.getGameName()
         return {
-            'Genre':self.game.getGenre(),
+            'Genre':self.getGenre(),
             'Year':self.getYear(),
             'Letter':getWosSubfolder(game_name),
             'MachineType':self.getMachineType(),
             'Publisher':self.getPublisher(),
-            'NumberOfPlayers':str(self.game.number_of_players)+'P',
+            'NumberOfPlayers':self.getNumberOfPlayers(),
             'GameName':self.release.aliases[0] if self.release else self.game.name,
             'Language':self.getLanguage()
         }
+
+    def getGenre(self):
+        if self.game.genre:
+            return self.game.getGenre()
+        else:
+            path = ''.join(os.path.split(self.src)[-3:]).lower()
+            if 'magazines' in path:
+                return 'Electronic Magazine'
+            elif 'covertapes' in path:
+                return 'Covertape'
+            elif 'demos' in path:
+                return 'Scene Demo'
+            elif 'educational' in path:
+                return 'General - Education'
+            elif 'compilation' in path:
+                return 'Compilation'
+            elif 'games' in path:
+                return 'Unknown Games'
+        return 'Unknown'
+
 
     def getGameName(self):
         game_name = self.release.aliases[0] if self.release else self.game.name
@@ -333,6 +379,14 @@ class GameFile(object):
         else:
             return self.game.getPublisher()
 
+    def getNumberOfPlayers(self):
+        result = str(self.game.number_of_players) + 'P'
+        return result
+        #FUTURE:
+        if self.game.multiplayer_type:
+            result += ' (%s)' % self.game.getMultiplayerType()
+        return result
+
     def getReleaseSeq(self):
         return self.release.release_seq if self.release else 0
 
@@ -344,16 +398,6 @@ class GameFile(object):
 
     def getWosPath(self, wos_mirror_root = WOS_SITE_ROOT):
         return wos_mirror_root+self.path
-        # return self.wos_path
-        # wos_folder = WOS_TRDOS_GAME_FILES_DIRECTORY if self.format=='trd' \
-        #     else WOS_GAME_FILES_DIRECTORY
-        # return '/'.join((wos_mirror_root,
-        #                  wos_folder,
-        #         getWosSubfolder(self.wos_name),
-        #         self.wos_name+'.zip'))
-        # subfolder = getWosSubfolder(self.wos_name[0])
-        # wos_path = os.path.join(WOS_GAME_FILES_DIRECTORY, subfolder, self.wos_name+'.zip')
-        # return wos_path
 
     def getLocalPath(self, zipped=False):
         if self.wos_path:
@@ -361,29 +405,9 @@ class GameFile(object):
             if os.path.exists(local_path):
                 return local_path
         return self.path
-        # if zipped and self.wos_zipped_name:
-        #     subfolder = getWosSubfolder(self.wos_zipped_name)
-        #     local_path = os.path.join(LOCAL_GAME_FILES_DIRECTORY, subfolder, self.wos_zipped_name)
-        #     return local_path
-        # elif not zipped and self.wos_name:
-        #     subfolder = getWosSubfolder(self.wos_name)
-        #     local_path = os.path.join(LOCAL_GAME_FILES_DIRECTORY, subfolder, self.wos_name)
-        #     return local_path
-        # else:
-        #     return self.path
 
     def getLocalFile(self):
         return open(self.getLocalPath())
-
-    # def getRemoteFile(self):
-    #     wos_path = self.getWosPath()
-    #     return wos_path
-
-    # def unzip(self):
-    #     try:
-    #         zf = self.getLocalFile()
-    #     except FileNotFoundError:
-    #         zf = self.getRemoteFile()
 
     def savePokesLocally(self):
         path = self.getLocalPath()

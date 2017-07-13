@@ -26,7 +26,7 @@ class MainDialog(QDialog):
         self.ui.btnRemovePaths.clicked.connect(self.removeSelectedInputPaths)
         self.ui.btnBrowseOutputPath.clicked.connect(self.browseOutputPath)
         self.ui.btnAddPattern.clicked.connect(self.addPattern)
-        # self.ui.btnRemovePattern.clicked.connect(self.removePattern)
+        self.ui.btnRemovePattern.clicked.connect(self.removePattern)
         self.ui.btnSortFiles.clicked.connect(self.sortFiles)
         self.loadSettings()
         self.exec()
@@ -56,7 +56,13 @@ class MainDialog(QDialog):
 
     def addPattern(self):
         dialog = PatternCreatorDialog()
-        if dialog.getPattern():
+        pattern = dialog.getPattern()
+        if pattern:
+            for i in range(self.ui.cmbOutputFolderStructure.count()):
+                old_pattern = self.ui.cmbOutputFolderStructure.itemText(i)
+                if pattern == old_pattern:
+                    self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
+                    return
             self.ui.cmbOutputFolderStructure.insertItem(0, dialog.getPattern())
             self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
 
@@ -79,14 +85,20 @@ class MainDialog(QDialog):
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)
+        self.bar.setWindowTitle('Sorting')
         self.bar.setLabelText(self.tr("Please wait"))
         self.bar.setFixedWidth(400)
         self.bar.setAutoClose(True)
         self.bar.show()
         s = Sorter(**kwargs)
+        self.bar.canceled.connect(s.cancel)
         s.sortFiles()
+        self.bar.hide()
+        if not s.should_cancel:
+            QMessageBox.information(self, self.tr('Done'), self.tr('Sorting successfully finished.'))
+        else:
+            QMessageBox.information(self, self.tr(''), self.tr('Operation was canceled.'))
         self.bar.close()
-        QMessageBox.information(self, self.tr('Done'), self.tr('Sorting successfully finished.'))
 
     def getInputLocations(self):
         input_locations = []
@@ -118,25 +130,35 @@ class MainDialog(QDialog):
         try:
             with open('settings.json', 'r', encoding='utf-8') as f:
                 settings = json.load(f)
-                self.ui.cmbOutputFolderStructure.addItems(settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES))
+                patterns = settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
+                if os.name=='nt':
+                    patterns = [pattern.replace('/', '\\') for pattern in patterns]
+                self.ui.cmbOutputFolderStructure.addItems(patterns)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
                 self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference', [])))
                 self.ui.chkIncludeAlternate.setChecked(not settings.get('ignore_alternate', True))
                 self.ui.chkIncludeAlternateFileFormats.setChecked(not settings.get('ignore_alternate_formats', False))
-                self.ui.chkIncludeRereleases.setChecked(not settings.get('ignore_rereleasese', False))
+                self.ui.chkIncludeRereleases.setChecked(not settings.get('ignore_rereleases', False))
                 self.ui.chkIncludeHacked.setChecked(not settings.get('ignore_hacks', False))
                 self.ui.chkPlacePokFilesIntoPOKESSubfolder.setChecked(settings.get('place_pok_files_in_pokes_subfolders', True))
         except:
             print(traceback.format_exc())
-            self.ui.cmbOutputFolderStructure.addItems(PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
+            patterns = PREDEFINED_OUTPUT_FOLDER_STRUCTURES
+            if os.name == 'nt':
+                patterns = [pattern.replace('/', '\\') for pattern in patterns]
+            self.ui.cmbOutputFolderStructure.addItems(patterns)
+            self.ui.txtOutputPath.setText(os.getcwd())
         self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
 
     def saveSettings(self, kwargs):
-        kwargs['patterns'] = [self.ui.cmbOutputFolderStructure.itemText(i) \
-                              for i in range(self.ui.cmbOutputFolderStructure.count())]
+        kwargs['patterns'] = self.getOutputFolderStructurePatterns()
         with open('settings.json', 'w+', encoding='utf-8') as f:
             json.dump(kwargs, f, indent=4)
+
+    def getOutputFolderStructurePatterns(self):
+        return [self.ui.cmbOutputFolderStructure.itemText(i) \
+         for i in range(self.ui.cmbOutputFolderStructure.count())]
 
 if __name__=='__main__':
     sys.excepthook = PyQtExceptHook

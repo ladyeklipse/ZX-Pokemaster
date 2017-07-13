@@ -80,6 +80,7 @@ class Database():
                   game.genre,
                   game.x_rated,
                   game.number_of_players,
+                  game.multiplayer_type,
                   game.machine_type,
                   game.language,
                   game.availability,
@@ -185,13 +186,8 @@ class Database():
                 search_string = getSearchString(game_release.split('-')[0].strip())
                 games = self.cache_by_name.get(search_string)
         else:
-            # for prefix in GAME_PREFIXES:
-            #     if game_release.startswith(prefix + ' '):
-            #         game_release = ' '.join(game_release.split(' ')[1:]) + ', ' + prefix
-            #         break
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
             sql = SELECT_GAME_SQL_START
-                  # 'where game_release.name LIKE ? ' + \
             sql += 'WHERE game.wos_id=' \
                    '(SELECT wos_id FROM game_release ' \
                    'WHERE game_release.name LIKE ?)'
@@ -235,18 +231,6 @@ class Database():
                 game.addFile(file, release_seq = row['release_seq'])
                 if file.part > game.parts:
                     game.parts = file.part
-                # if game.wos_id == row['wos_id']:
-            #     if release.release_seq!=row['release_seq']:
-            #         release = self.releaseFromRow(row, game)
-            #         game.addRelease(release)
-            #     file = self.fileFromRow(row)
-            #     if file:
-            #         game.addFile(file, release_seq=release.release_seq)
-            # else:
-            #     game = self.gameFromRow(row)
-            #     release = self.releaseFromRow(row, game)
-            #     game.addRelease(release)
-            #     games.append(game)
         if game.wos_id:
             games.append(game)
         return games
@@ -261,9 +245,6 @@ class Database():
         return self.gameFromRawData(raw_data)
 
     def getGameByFile(self, file):
-        # md5_zipped = file.getMD5(zipped=True)
-        # game = self.getGameByFileMD5(md5_zipped)
-        # if not game:
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
         if not game:
@@ -302,6 +283,7 @@ class Database():
         game.setYear(row['year'])
         game.setGenre(row['genre'])
         game.setNumberOfPlayers(row['number_of_players'])
+        game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])

@@ -15,10 +15,6 @@ class TestDatabase(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestDatabase, self).__init__(*args, **kwargs)
         self.db = db
-        # self.db = Database()
-    #
-    # def setUp(self):
-    #     self.db.loadCache()
 
     def test_adding_game(self):
         game = Game(name='Tujad', wos_id=5448)
@@ -167,6 +163,18 @@ class TestDatabase(unittest.TestCase):
         md5 = '61edae0e09709406bb3082bbeecb8b63'
         game = self.db.getGameByFileMD5(md5)
         self.assertGreaterEqual(len(game.getFiles()), 4)
+
+    def test_find_games_with_no_original_release(self):
+        games = db.getAllGames()
+        games_with_no_original_release = []
+        for game in games:
+            if not game.getFiles():
+                continue
+            if not game.releases[0].files:
+                games_with_no_original_release.append(game)
+        print(games_with_no_original_release)
+        self.assertEqual(len(games_with_no_original_release), 0)
+
 
 if __name__=='__main__':
     unittest.main()

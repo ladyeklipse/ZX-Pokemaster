@@ -66,7 +66,7 @@ class GameRelease(object):
             return self.game.getPublisher()
 
     def getLanguage(self):
-        if self.country in ['US', 'GB', 'AU', 'NZ']:
+        if self.country in ['US', 'UK', 'GB', 'AU', 'NZ']:
             return 'en'
         else:
             return self.country.lower()

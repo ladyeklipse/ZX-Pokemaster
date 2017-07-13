@@ -14,6 +14,15 @@ setup(
         'includes':['sip']
         }
     },
-    windows=[{'script': "pokemaster.py"}],
+    windows=[
+        {
+            'script': "pokemaster.py",
+            'icon_resources':[(0, 'pokemaster.ico')]
+        }
+    ],
+    data_files = [
+        ('', ['pokemaster.png',
+              'pokemaster.db'])
+    ],
     zipfile=None,
 )

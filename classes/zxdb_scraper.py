@@ -36,6 +36,26 @@ class ZXDBScraper():
                                 )
         self.cur = self.conn.cursor(dictionary=True, buffered=True)
 
+    def update(self, script_path):
+        self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
+        requests = self.cur.execute(
+            "SELECT concat('DROP TABLE IF EXISTS ', table_name, ';' "
+            "FROM information_schema.tables WHERE table_schema = 'zxdb'")
+        for request in requests:
+            print(request)
+            self.cur.execute(request)
+        self.cur.execute('COMMIT')
+        self.cur.execute('SET FOREIGN_KEY_CHECKS = 1')
+        with open(script_path, 'r', encoding='utf-8') as f:
+            sql = f.read().split(';\n')
+            for query in sql:
+                if not query or 'COMMIT' in query:
+                    continue
+                self.cur.execute(query)
+            self.cur.execute('COMMIT')
+        print('DB updated')
+
+
     def getAllGames(self):
         return self.getGames()
 
@@ -46,7 +66,7 @@ class ZXDBScraper():
               'entries.is_xrated AS x_rated, ' \
               'genretypes.text AS genre, ' \
               'entries.max_players AS number_of_players, ' \
-              'entries.multiplaytype_id AS multiplay_type, ' \
+              'entries.multiplaytype_id AS multiplayer_type, ' \
               'entries.idiom_id AS language, ' \
               'entries.availabletype_id AS availability, ' \
               'downloads.file_link AS file_link, ' \
@@ -177,6 +197,7 @@ class ZXDBScraper():
         game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
         game.setNumberOfPlayers(row['number_of_players'])
+        game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])

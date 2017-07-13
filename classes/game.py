@@ -23,8 +23,9 @@ class Game(object):
     genre = ''
     x_rated = False
     number_of_players = 1
+    multiplayer_type = ''
     machine_type = ''
-    language = 'en'
+    language = ''
     releases = []
     files = []
     cheats = []
@@ -42,7 +43,7 @@ class Game(object):
     ingame_screen_scr_size = 0
     manual_size = 0
     parts = 1
-    availability = AVAILABILITY_AVAILABLE
+    availability = 'A'
     tipshop_page = False
     has_new_pokes = False
     tipshop_multiface_pokes_section = ''
@@ -91,9 +92,6 @@ class Game(object):
             self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
             return self.tipshop_page
 
-    # def getManualUrl(self):
-    #     return self.manual_url
-
     def getYear(self):
         return str(self.year) if self.year else '19xx'
 
@@ -102,18 +100,6 @@ class Game(object):
 
     def setAvailability(self, value):
         self.availability = value
-        # if value == 'D':
-        #     self.availability = AVAILABILITY_DISTRIBUTION_DENIED
-        # elif value == 'd':
-        #     self.availability = AVAILABILITY_DISTRIBUTION_DENIED_STILL_FOR_SALE
-        # elif value == '?':
-        #     self.availability = AVAILABILITY_MISSING_IN_ACTION
-        # elif value == 'N':
-        #     self.availability = AVAILABILITY_NEVER_RELEASED
-        # elif value == 'R':
-        #     self.availability = AVAILABILITY_RECOVERED
-        # else:
-        #     self.availability = AVAILABILITY_AVAILABLE
 
     def setParams(self, **kwargs):
         self.setPublisher(kwargs['publisher'])
@@ -126,12 +112,12 @@ class Game(object):
         self.pok_file_contents = kwargs['pok_file_contents']
         self.tipshop_multiface_pokes_section = kwargs['tipshop_multiface_pokes_section']
 
-    def addAlternateName(self, name, publisher=None):
-        if not publisher:
-            publisher = self.publisher
-        if name!=self.name and \
-            name not in [x[0] for x in self.alternate_names]:
-                self.alternate_names.append((name, publisher))
+    # def addAlternateName(self, name, publisher=None):
+    #     if not publisher:
+    #         publisher = self.publisher
+    #     if name!=self.name and \
+    #         name not in [x[0] for x in self.alternate_names]:
+    #             self.alternate_names.append((name, publisher))
 
     def setName(self, name):
         if name:
@@ -158,6 +144,12 @@ class Game(object):
         elif n_players:
             self.number_of_players = int(n_players.split(' ')[0])
 
+    def setMultiplayerType(self, mp_type):
+        self.multiplayer_type = mp_type
+
+    def getMultiplayerType(self):
+        return MULTIPLAYER_TYPES.get(self.multiplayer_type, '')
+
     def setMachineType(self, machine_type):
         if machine_type:
             self.machine_type = machine_type.replace('ZX-Spectrum', '').strip()
@@ -168,7 +160,7 @@ class Game(object):
         self.language = language.lower()[:2]
 
     def getLanguage(self):
-        return self.language
+        return self.language if self.language else 'en'
 
     def setGenre(self, genre):
         if not genre:
@@ -272,39 +264,6 @@ class Game(object):
         pok_file_contents += 'Y'
         return pok_file_contents
 
-    # def getRemoteIngameScreenUrl(self, format='gif',
-    #                              wos_mirror_root = WOS_SITE_ROOT,
-    #                              release_seq=0):
-    #     ingame_screen_filepath = self.releases[release_seq].getIngameScreenFilePath(format)
-    #     if not ingame_screen_filepath and release_seq>0:
-    #         ingame_screen_filepath = self.releases[0].getIngameScreenFilePath(format)
-    #     return '/'.join(wos_mirror_root, ingame_screen_filepath)
-    #
-    # def getRemoteLoadingScreenUrl(self, format='gif',
-    #                                 wos_mirror_root = WOS_SITE_ROOT,
-    #                                 release_seq = 0):
-    #     loading_screen_filepath = self.releases[release_seq].getLoadingScreenFilePath(format)
-    #     if not loading_screen_filepath and release_seq>0:
-    #         loading_screen_filepath = self.releases[0].getLoadingScreenFilePath(format)
-    #     return '/'.join((wos_mirror_root, loading_screen_filepath))
-    #
-    # def getRemoteManualUrl(self,
-    #                         wos_mirror_root = WOS_SITE_ROOT,
-    #                         release_seq = 0):
-    #     manual_filepath = self.releases[release_seq].getManualFilePath(format)
-    #     if not manual_filepath and release_seq>0:
-    #         manual_filepath = self.releases[0].getManualFilePath(format)
-    #     return '/'.join(wos_mirror_root, manual_filepath)
-    #
-    # def getLocalManualPath(self, release_seq=0):
-    #     return self.getRemoteManualUrl(wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
-    #
-    # def getLocalLoadingScreenPath(self, format='scr', release_seq=0):
-    #     return self.getRemoteLoadingScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
-    #
-    # def getLocalIngameScreenPath(self, format='scr', release_seq=0):
-    #     return self.getRemoteIngameScreenUrl(format, wos_mirror_root=LOCAL_FTP_ROOT, release_seq=release_seq)
-
     def findFileByMD5(self, md5):
         for file in self.getFiles():
             if file.md5 == md5:
@@ -320,12 +279,7 @@ class Game(object):
         game_file_publisher = game_file.game.publisher.lower().replace('.','')
         for release in self.releases:
             release_publisher = release.publisher.lower().replace('.', '')
-            # if game_file.game.publisher==release.publisher:
             if game_file_publisher==release_publisher:
                 return release
-            # if game_file.game.name in release.getAllAliases() and \
-            #     game_file.game.year==release.year:
-            #     return release.release_seq
         print(self, 'Not found proper release for:', game_file)
         return self.releases[0]
-        return None

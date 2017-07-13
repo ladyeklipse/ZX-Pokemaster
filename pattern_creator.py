@@ -39,7 +39,7 @@ class PatternCreatorDialog(QDialog):
     def setExample(self):
         kwargs = self.example_game_file.getOutputPathFormatKwargs()
         pattern = self.ui.txtOutputPath.text()
-        example_path = os.path.join(pattern, self.example_game_file.getFullTOSECName())
+        example_path = os.path.join(pattern, self.example_game_file.getTOSECName())
         try:
             self.ui.lblExample.setText(example_path.format(**kwargs))
         except Exception as e:

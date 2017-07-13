@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Wed Jul 12 20:04:03 2017
+# Created: Thu Jul 13 19:15:39 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,6 +27,14 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(470, 527)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
+        Dialog.setSizePolicy(sizePolicy)
+        Dialog.setMinimumSize(QtCore.QSize(470, 527))
+        Dialog.setMaximumSize(QtCore.QSize(470, 527))
+        Dialog.setBaseSize(QtCore.QSize(470, 527))
         Dialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         Dialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         Dialog.setSizeGripEnabled(False)
@@ -84,6 +92,9 @@ class Ui_Dialog(object):
         self.btnAddPattern = QtGui.QPushButton(self.groupBox_2)
         self.btnAddPattern.setGeometry(QtCore.QRect(10, 50, 131, 28))
         self.btnAddPattern.setObjectName(_fromUtf8("btnAddPattern"))
+        self.btnRemovePattern = QtGui.QPushButton(self.groupBox_2)
+        self.btnRemovePattern.setGeometry(QtCore.QRect(150, 50, 131, 28))
+        self.btnRemovePattern.setObjectName(_fromUtf8("btnRemovePattern"))
         self.chkPlacePokFilesIntoPOKESSubfolder = QtGui.QCheckBox(Dialog)
         self.chkPlacePokFilesIntoPOKESSubfolder.setGeometry(QtCore.QRect(20, 470, 441, 20))
         self.chkPlacePokFilesIntoPOKESSubfolder.setChecked(True)
@@ -109,7 +120,8 @@ class Ui_Dialog(object):
         self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tzx,tap,z80,sna,dsk,trd,img,mgt,rom,scl,slt,szx", None))
         self.label_2.setText(_translate("Dialog", "Formats preference order:", None))
         self.groupBox_2.setTitle(_translate("Dialog", "Output folder structure pattern", None))
-        self.btnAddPattern.setText(_translate("Dialog", "Custom pattern...", None))
+        self.btnAddPattern.setText(_translate("Dialog", "Add pattern...", None))
+        self.btnRemovePattern.setText(_translate("Dialog", "Remove pattern", None))
         self.chkPlacePokFilesIntoPOKESSubfolder.setText(_translate("Dialog", "Place .POK files into POKES subfolder", None))
         self.btnBrowseOutputPath.setText(_translate("Dialog", "...", None))
 

@@ -62,3 +62,13 @@ class TestZXDBScraper(unittest.TestCase):
         for file in game.getFiles():
             if file.md5 == '4c279cc851f59bcffffd6a34c7236b75':
                 self.assertEqual(file.format, 'z80')
+
+    def test_multiplayer_type(self):
+        where_clause = 'AND entries.id = 30265'
+        games = zxdb.getGames(where_clause)
+        for release in games[0].releases:
+            release.getInfoFromLocalFiles()
+        db.addGame(games[0])
+        db.commit()
+        game = db.getGameByWosID(30265)
+        self.assertEqual(game.getMultiplayerType(), 'Vs')

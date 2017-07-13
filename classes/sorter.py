@@ -12,6 +12,7 @@ class Sorter():
     gui = None
     input_files = []
     collected_files = []
+    should_cancel = False
 
     def __init__(self, *args, **kwargs):
         self.input_locations = kwargs.get('input_locations', [])
@@ -26,6 +27,7 @@ class Sorter():
         self.ignore_alternate_formats = kwargs.get('ignore_alternate_formats', False)
         self.ignore_rereleases = kwargs.get('ignore_rereleases', False)
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
+        self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
         self.gui = kwargs.get('gui', None)
         if kwargs.get('cache', True):
@@ -53,6 +55,8 @@ class Sorter():
             self.gui.updateProgressBar(0, len(input_files), 'Examining files...')
         collected_files = {}
         for i, file_path in enumerate(input_files):
+            if self.should_cancel:
+                break
             if i % 100 == 0:
                 print('Examined', i, 'files of', len(input_files))
                 if self.gui:
@@ -79,8 +83,10 @@ class Sorter():
         input_files = []
         formats = ['zip']+GAME_EXTENSIONS
         for location in input_locations:
+            if self.should_cancel:
+                break
             if self.gui:
-                self.gui.updateProgressBar(0, 0, 'Traversing '+location+'...')
+                self.gui.updateProgressBar(0, 0, 'Traversing '+location)
             for root, dirs, files in os.walk(location):
                 for file in files:
                     if file[-3:].lower() in formats:
@@ -126,36 +132,61 @@ class Sorter():
     def getDestination(self, game_file):
         subfolders_dict = game_file.getOutputPathFormatKwargs()
         dest = self.output_folder_structure.format(**subfolders_dict)
-        dest = os.path.join(self.output_location, dest, game_file.getFullTOSECName())
+        dest = os.path.join(self.output_location, dest, game_file.getTOSECName())
         return dest
 
     def filterCollectedFiles(self):
         for game_wos_id, files in self.collected_files.items():
+            min_release = min([file.getReleaseSeq() for file in files])
             for i, file in enumerate(files):
-                if self.ignore_rereleases and file.getReleaseSeq():
+                if self.ignore_rereleases and file.getReleaseSeq()>min_release:
                     self.collected_files[game_wos_id][i] = None
                 if self.ignore_alternate and file.isAlternate():
                     self.collected_files[game_wos_id][i] = None
-                if self.ignore_hacks and file.mod_flags:
+                if self.ignore_hacks and file.isHack():
+                    self.collected_files[game_wos_id][i] = None
+                if self.ignore_bad_dumps and file.isBadDump():
                     self.collected_files[game_wos_id][i] = None
             files = [file for file in files if file]
-            if self.ignore_alternate_formats and files:
-                files = sorted(files, key=lambda file: file.getSortIndex(self.formats_preference))
-                preferred_files = []
-                preferred_format = files[0].format
-                for file in files:
-                    if file.format == preferred_format:
-                        preferred_files.append(file)
-                    else:
-                        break
-                self.collected_files[game_wos_id] = preferred_files
+
+            if self.ignore_alternate_formats and files and game_wos_id:
+                self.collected_files[game_wos_id] = self.filterOutAlternateFormats(files)
         return self.collected_files
+
+    def filterOutAlternateFormats(self, files):
+        equals_found_flag = True
+        while equals_found_flag == True:
+            equals_found_flag = False
+            best_candidate = None
+            equals = []
+            for file in files:
+                equals = file.getEquals(files)
+                if len(equals)==1:
+                    continue
+                elif equals==0:
+                    print(files)
+                    raise Exception('Equals not found!')
+                else:
+                    equals_found_flag = True
+                    best_candidate = self.getBestCandidate(equals)
+                    break
+            if best_candidate:
+                for file in equals:
+                    if file in files and file!=best_candidate:
+                        files.remove(file)
+        return files
+
+    def getBestCandidate(self, files):
+        files = sorted(files, key=lambda file: file.getSortIndex(self.formats_preference))
+        return files[0]
 
     def redistributeFiles(self):
         if self.gui:
             self.gui.updateProgressBar(0, self.getCollectedFilesCount(), 'Redistributing files...')
         files_array = self.getFilesArray(self.collected_files)
         for i, file in enumerate(files_array):
+            if self.should_cancel:
+                break
             if i % 100 == 0:
                 print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
@@ -212,3 +243,6 @@ class Sorter():
                         with open(game_file.getDestination(), 'wb') as output:
                             output.write(data)
                     break
+
+    def cancel(self):
+        self.should_cancel = True
