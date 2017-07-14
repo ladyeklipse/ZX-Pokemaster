@@ -102,7 +102,7 @@ class ZXDBScraper():
         sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT '+str(sql_limit)
               # 'downloads.filetype_id IN (0, 1, 2, 8, 10, 11, 17, 20, 21, 28)) AND ' \
-        print(sql)
+        # print(sql)
         self.cur.execute(sql)
         game = Game()
         release = GameRelease()

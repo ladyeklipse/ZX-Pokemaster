@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Thu Jul 13 19:15:39 2017
+# Created: Fri Jul 14 17:07:07 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,6 +36,9 @@ class Ui_Dialog(object):
         Dialog.setMaximumSize(QtCore.QSize(470, 527))
         Dialog.setBaseSize(QtCore.QSize(470, 527))
         Dialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/icon/pokemaster.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         Dialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         Dialog.setSizeGripEnabled(False)
         self.btnSortFiles = QtGui.QPushButton(Dialog)
@@ -125,3 +128,4 @@ class Ui_Dialog(object):
         self.chkPlacePokFilesIntoPOKESSubfolder.setText(_translate("Dialog", "Place .POK files into POKES subfolder", None))
         self.btnBrowseOutputPath.setText(_translate("Dialog", "...", None))
 
+import res_rc

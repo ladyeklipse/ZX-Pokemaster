@@ -40,6 +40,10 @@
   <property name="windowTitle">
    <string>ZX Pokemaster</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/icon/pokemaster.png</normaloff>:/icon/pokemaster.png</iconset>
+  </property>
   <property name="locale">
    <locale language="English" country="UnitedKingdom"/>
   </property>
@@ -205,7 +209,7 @@
     <string/>
    </property>
    <property name="placeholderText">
-    <string>tzx,tap,z80,sna,dsk,trd,img,mgt,rom,scl,slt,szx</string>
+    <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -306,6 +310,8 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

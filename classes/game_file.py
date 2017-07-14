@@ -67,8 +67,8 @@ class GameFile(object):
         return '<GameFile: '+self.path+' md5:'+self.md5+'>'
 
     def __eq__(self, other):
-        if self.wos_path and \
-            self.wos_path == other.wos_path and \
+        if self.wos_name and \
+            self.wos_name == other.wos_name and \
             self.size == other.size and \
             self.format == other.format:
             return True
@@ -78,14 +78,16 @@ class GameFile(object):
 
     def importCredentials(self, game):
         self.game = game
+        self.release = game.findReleaseByFile(self)
         other_file = game.findFileByMD5(self.md5)
-        self.part = other_file.part
-        self.language = other_file.language
-        self.release = other_file.release
-        self.mod_flags = other_file.mod_flags
-        self.side = other_file.side
-        self.machine_type = other_file.machine_type
-        self.format = other_file.format
+        if other_file:
+            self.part = other_file.part
+            self.language = other_file.language
+            self.release = other_file.release
+            self.mod_flags = other_file.mod_flags
+            self.side = other_file.side
+            self.machine_type = other_file.machine_type
+            self.format = other_file.format
 
     def countAlternateDumpsIn(self, collection=[]):
         count = 0

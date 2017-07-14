@@ -320,3 +320,4 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side B).dsk'
         self.assertTrue(os.path.exists(expected_file))
+

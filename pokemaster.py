@@ -1,10 +1,11 @@
+import sys
+sys.path.append("ui")
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 # from PyQt4.QtWidgets import *
 from ui.SorterLauncher import *
 from classes.sorter import *
 import traceback
-import sys
 import threading
 from pattern_creator import PatternCreatorDialog
 import json
@@ -82,6 +83,9 @@ class MainDialog(QDialog):
             'place_pok_files_in_pokes_subfolders':self.ui.chkPlacePokFilesIntoPOKESSubfolder.isChecked(),
         }
         self.saveSettings(kwargs)
+        if not kwargs['input_locations']:
+            QMessageBox.information(self, self.tr(''), self.tr('Please add one or more input path(s).'))
+            return
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)
@@ -136,7 +140,7 @@ class MainDialog(QDialog):
                 self.ui.cmbOutputFolderStructure.addItems(patterns)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
-                self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference', [])))
+                self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference', [','.join(GAME_EXTENSIONS)])))
                 self.ui.chkIncludeAlternate.setChecked(not settings.get('ignore_alternate', True))
                 self.ui.chkIncludeAlternateFileFormats.setChecked(not settings.get('ignore_alternate_formats', False))
                 self.ui.chkIncludeRereleases.setChecked(not settings.get('ignore_rereleases', False))
@@ -149,6 +153,7 @@ class MainDialog(QDialog):
                 patterns = [pattern.replace('/', '\\') for pattern in patterns]
             self.ui.cmbOutputFolderStructure.addItems(patterns)
             self.ui.txtOutputPath.setText(os.getcwd())
+            self.ui.txtFormatPreference.setText(','.join(GAME_EXTENSIONS))
         self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
 
     def saveSettings(self, kwargs):

@@ -5,6 +5,7 @@ import stat
 import shutil
 import zipfile
 import hashlib
+import time
 
 class Sorter():
 
@@ -34,6 +35,7 @@ class Sorter():
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
             self.db.loadCache()
+
 
     def sortFiles(self):
         if not self.input_files:
@@ -99,8 +101,6 @@ class Sorter():
             game_file = GameFile(file_path)
             game = self.db.getGameByFile(game_file)
             if game:
-                # game_file.game = game
-                # game_file.release = game.findReleaseByFile(game_file)
                 game_file.importCredentials(game)
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)

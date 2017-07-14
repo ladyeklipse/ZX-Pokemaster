@@ -72,3 +72,19 @@ class TestZXDBScraper(unittest.TestCase):
         db.commit()
         game = db.getGameByWosID(30265)
         self.assertEqual(game.getMultiplayerType(), 'Vs')
+
+    def test_side(self):
+        where_clause = 'AND entries.id = 5856'
+        games = zxdb.getGames(where_clause)
+        for release in games[0].releases:
+            release.getInfoFromLocalFiles()
+            pass
+        wos_names = [file.wos_name for file in games[0].getFiles()]
+        self.assertIn('Zip-Zap - Alternate - Side 1.tzx', wos_names)
+        self.assertIn('Zip-Zap - Alternate - Side 2.tzx', wos_names)
+        db.addGame(games[0])
+        db.commit()
+        game = db.getGameByWosID(5856)
+        wos_names = [file.wos_name for file in game.getFiles()]
+        self.assertIn('Zip-Zap - Alternate - Side 1.tzx', wos_names)
+        self.assertIn('Zip-Zap - Alternate - Side 2.tzx', wos_names)

@@ -36,10 +36,10 @@ class TestTOSECScraper(unittest.TestCase):
 
     def test_saboteur_2(self):
         paths = [
-            # "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1989)(Encore)[re-release].zip",
-            # "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)(Side A)[re-release].zip",
-            # "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)(Side B)[re-release].zip",
-            # "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)[re-release].zip",
+            "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1989)(Encore)[re-release].zip",
+            "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)(Side A)[re-release].zip",
+            "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)(Side B)[re-release].zip",
+            "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Erbe Software)[re-release].zip",
             "tosec\Games\[Z80]\Saboteur II - Avenging Angel (1987)(Durell Software)(pl)[a].zip",
             "tosec\Games\[TZX]\Saboteur II - Avenging Angel (1987)(Durell Software).zip",
             "tosec\Games\[TAP]\Saboteur II - Avenging Angel (1987)(Durell Software).zip",

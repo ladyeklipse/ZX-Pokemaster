@@ -166,7 +166,7 @@ class Game(object):
         if not genre:
             self.genre = ''
         else:
-            self.genre = genre.replace(':', ' -')
+            self.genre = genre.replace(':', ' -').replace('I/O', 'IO').replace('/', '-')
 
     def setmanualUrl(self, url):
         self.manual_url = url

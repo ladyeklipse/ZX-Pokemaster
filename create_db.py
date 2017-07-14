@@ -28,9 +28,12 @@ if __name__=='__main__':
     ts = TOSECScraper(db)
     paths = ts.generateTOSECPathsArray()
     ts.scrapeTOSEC()
-    paths = ts.showUnscraped()
-    ts.paths = paths
-    ts.scrapeTOSEC()
+    for i in range(2):
+        ts = TOSECScraper(db)
+        db.loadCache(force_reload=True)
+        paths = ts.showUnscraped()
+        ts.paths = paths
+        ts.scrapeTOSEC()
     updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db)
     xlsx2db()
 

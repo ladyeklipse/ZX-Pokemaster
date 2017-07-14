@@ -2,6 +2,7 @@ from classes.sorter import *
 from distutils.core import setup
 import py2exe
 import sys
+sys.path.append("ui")
 if __name__ == '__main__':
     sys.argv.append('py2exe')
 
@@ -21,7 +22,7 @@ setup(
         }
     ],
     data_files = [
-        ('', ['pokemaster.png',
+        ('', ['README.txt',
               'pokemaster.db'])
     ],
     zipfile=None,

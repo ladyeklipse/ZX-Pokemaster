@@ -51,7 +51,11 @@ class Database():
     def execute(self, sql, params=[]):
         return self.cur.execute(sql, params).fetchall()
 
-    def loadCache(self):
+    def loadCache(self, force_reload=False):
+        if force_reload:
+            self.cache_by_wos_id = {}
+            self.cache_by_name = {}
+            self.cache_by_md5 = {}
         if self.cache_by_name and self.cache_by_md5 and self.cache_by_wos_id:
             return
         print('started loading cache')
