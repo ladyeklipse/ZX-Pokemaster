@@ -304,4 +304,19 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/sort_saboteur_out/Saboteur II (1987)(Durell Software).tap'
         self.assertTrue(os.path.exists(expected_file))
-#
+
+    def test_two_disks_two_sides(self):
+        s = Sorter(
+                   input_locations=['tests/sort_two_disks_two_sides_in'],
+                   output_location='tests/sort_two_disks_two_sides_out',
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 2 of 2).dsk'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side A).dsk'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side B).dsk'
+        self.assertTrue(os.path.exists(expected_file))

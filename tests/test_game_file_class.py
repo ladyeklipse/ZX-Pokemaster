@@ -39,9 +39,11 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.game.name, 'Gonzzalezz')
 
     def test_lord_bromleys_estate(self):
-        file = GameFile("007 - Lord Bromley's Estate (1990)(Domark).zip")
+        file = GameFile("007 - Lord Bromley's Estate (1990)(Domark)[cr].zip")
         self.assertEqual(file.game.name, "007 - Lord Bromley's Estate")
         self.assertEqual(file.game.getYear(), '1990')
+        self.assertEqual(file.game.getLanguage(), 'en')
+        self.assertEqual(file.mod_flags, '[cr]')
 
     def test_mod_flags(self):
         file = GameFile("Test (19xx)(Publisher)[a]")

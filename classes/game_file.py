@@ -76,6 +76,17 @@ class GameFile(object):
             return True
         return False
 
+    def importCredentials(self, game):
+        self.game = game
+        other_file = game.findFileByMD5(self.md5)
+        self.part = other_file.part
+        self.language = other_file.language
+        self.release = other_file.release
+        self.mod_flags = other_file.mod_flags
+        self.side = other_file.side
+        self.machine_type = other_file.machine_type
+        self.format = other_file.format
+
     def countAlternateDumpsIn(self, collection=[]):
         count = 0
         for other_file in collection:
@@ -171,7 +182,7 @@ class GameFile(object):
             return
         self.game.setPublisher(matches[1])
         for each in matches[2:]:
-            if len(each)==2 and each.isalpha():
+            if len(each)==2 and each.isalpha() and each!='cr':
                 self.setLanguage(each)
             elif 'Side' in each:
                 self.setSide(each)
@@ -228,14 +239,14 @@ class GameFile(object):
         language = self.getLanguage()
         if language!='en':
             params.append('('+language+')')
-        if self.side:
-            params.append('(Side %s)' % self.getSide())
-        elif self.part:
+        if self.part:
             label = 'Disk' if self.format in ('dsk', 'trd') else 'Part'
             if self.game.parts>1:
                 params.append('(%s %d of %d)' % (label, self.part, self.game.parts))
             else:
                 params.append('(%s %d)' % (label, self.part))
+        if self.side:
+            params.append('(Side %s)' % self.getSide())
         if self.machine_type and self.machine_type!='48K':
             params.append('[%s]' % self.machine_type)
         if self.mod_flags:

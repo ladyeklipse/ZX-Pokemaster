@@ -99,8 +99,9 @@ class Sorter():
             game_file = GameFile(file_path)
             game = self.db.getGameByFile(game_file)
             if game:
-                game_file.game = game
-                game_file.release = game.findReleaseByFile(game_file)
+                # game_file.game = game
+                # game_file.release = game.findReleaseByFile(game_file)
+                game_file.importCredentials(game)
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)
             return [game_file]
