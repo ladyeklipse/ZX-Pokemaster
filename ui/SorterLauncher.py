@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Fri Jul 14 17:07:07 2017
+# Created: Mon Jul 17 03:00:01 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -120,7 +120,7 @@ class Ui_Dialog(object):
         self.chkIncludeRereleases.setText(_translate("Dialog", "Include re-releases", None))
         self.chkIncludeAlternateFileFormats.setText(_translate("Dialog", "Include alternate file formats (see formats preference order)", None))
         self.chkIncludeHacked.setText(_translate("Dialog", "Include files marked as cracked, hacked or modded", None))
-        self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tzx,tap,z80,sna,dsk,trd,img,mgt,rom,scl,slt,szx", None))
+        self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx", None))
         self.label_2.setText(_translate("Dialog", "Formats preference order:", None))
         self.groupBox_2.setTitle(_translate("Dialog", "Output folder structure pattern", None))
         self.btnAddPattern.setText(_translate("Dialog", "Add pattern...", None))

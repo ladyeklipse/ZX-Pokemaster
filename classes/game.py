@@ -1,5 +1,3 @@
-# from classes.game_release import GameRelease
-# from classes.game_file import GameFile
 from classes.cheat import *
 from classes.poke import *
 from settings import *
@@ -111,13 +109,6 @@ class Game(object):
         self.setAvailability(kwargs['availability'])
         self.pok_file_contents = kwargs['pok_file_contents']
         self.tipshop_multiface_pokes_section = kwargs['tipshop_multiface_pokes_section']
-
-    # def addAlternateName(self, name, publisher=None):
-    #     if not publisher:
-    #         publisher = self.publisher
-    #     if name!=self.name and \
-    #         name not in [x[0] for x in self.alternate_names]:
-    #             self.alternate_names.append((name, publisher))
 
     def setName(self, name):
         if name:

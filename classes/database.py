@@ -33,8 +33,6 @@ def getSearchString(game_name):
             game_name = game_name[:len(game_name)-len(prefix)-2]
     return ''.join(filter(str.isalnum, game_name.lower()))
 
-
-
 class Database():
 
     cache_by_wos_id = {}

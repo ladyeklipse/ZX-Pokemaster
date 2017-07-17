@@ -1,0 +1,13 @@
+cache
+/AllTipshopPokes
+/games
+/wos_manuals
+/wos_games
+/wos_ingame_screens
+/wos_loading_screens
+/tosec
+__pycache__
+.idea
+/ftp
+/sorted
+/tests/sort*out

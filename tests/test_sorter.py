@@ -196,12 +196,14 @@ class TestSorter(unittest.TestCase):
     def test_winfriendly_filenames(self):
         s = Sorter(input_locations=['tests/sort_winfriendly_in'],
                    output_location='tests/sort_winfriendly_out',
-                   output_folder_structure='',
+                   output_folder_structure='{Publisher}',
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/sort_winfriendly_out/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
+        expected_file = 'tests/sort_winfriendly_out/Cascade Games/19 Part 1 - Boot Camp (1988)(Cascade Games)[48-128K].tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_winfriendly_out/David Amigaman/Serpes (2003)(David Amigaman)(es).z80'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_permission_denied(self):
@@ -281,12 +283,12 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
                    input_locations=['tests/sort_extremely_long_in'],
                    output_location='tests/sort_extremely_long_out',
-                   output_folder_structure='',
+                   output_folder_structure='unnecessarily_long_subfolder_name\\{Publisher}\\{GameName}',
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/sort_extremely_long_out/Maritrini, Freelance Monster Slayer en - Las Increibles Vicisitudes de Despertarse Resacosa con Fred  (2012)(The Mojon Twins)(es).tap'
+        expected_file = 'tests/sort_extremely_long_out/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins)(es).tap'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_saboteur_2(self):
@@ -319,5 +321,76 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side A).dsk'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side B).dsk'
+        self.assertTrue(os.path.exists(expected_file))
+
+    def test_equal_input_and_output_paths(self):
+        initial_location = 'tests/sort_equal_in'
+        target_location = 'tests/sort_equal_in_out'
+        if os.path.exists(target_location):
+            shutil.rmtree(target_location)
+        os.makedirs(target_location)
+        os.makedirs(os.path.join(target_location, 'POKES'))
+        for root, dir, files in os.walk(initial_location):
+            for file in files:
+                src = os.path.join(initial_location, file)
+                dest = os.path.join(target_location, file)
+                shutil.copy(src, dest)
+        s = Sorter(
+                   input_locations=[target_location],
+                   output_location=target_location,
+                   output_folder_structure='',
+                   cache=False)
+        s.sortFiles()
+
+    def test_too_long_path(self):
+        s = Sorter(
+                   input_locations=['tests/sort_too_long_files_in'],
+                   output_location='tests/sort_too_long_files_out',
+                   output_folder_structure='{Publisher}/{GameName}',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+
+    def test_dot_in_filename(self):
+        s = Sorter(
+                   input_locations=['tests/sort_dots_in'],
+                   output_location='tests/sort_dots_out',
+                   output_folder_structure='{Publisher}/{GameName}',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_dots_out/H. de Groot/Spectrum Automatic Copier/Spectrum Automatic Copier (1985)(H. de Groot).z80'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_dots_out/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2/Super Advanced Lawnmower Simulator Adventure 2 (1993)(Creative Radical Alternative).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/sort_dots_out/Proxima Software/Fuxoft Uvadi/Fuxoft Uvadi (1992)(Proxima Software)(cz).tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests\sort_dots_out\Zenobi Software\Why is the World Round Anyway\Why is the World Round Anyway (1995)(Zenobi Software)(Side B).tzx'
+        self.assertTrue(os.path.exists(expected_file))
+
+    def test_weird_publisher(self):
+        s = Sorter(
+                   input_locations=['tests/sort_weird_publisher_in'],
+                   output_location='tests/sort_weird_publisher_out',
+                   output_folder_structure='{Publisher}',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_weird_publisher_out/A.A. Barulin/A.A. Barulin Utilities Collection (1992)(A.A. Barulin)(ru).trd'
+        self.assertTrue(os.path.exists(expected_file))
+
+    def test_die_hard(self):
+        s = Sorter(
+                   input_locations=['tests/sort_die_hard_in'],
+                   output_location='tests/sort_die_hard_out',
+                   output_folder_structure='{Format}',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/sort_die_hard_out/sna/Die Hard II (1999)(REMADE Corporation)(ru).sna'
         self.assertTrue(os.path.exists(expected_file))
 

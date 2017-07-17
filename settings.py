@@ -14,17 +14,7 @@ WOS_MANUALS_DIRECTORY = 'pub/sinclair/games-info'
 TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
 GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
 MAX_ZIP_FILE_SIZE = 8858353
-# AVAILABILITY_AVAILABLE = 'A'
-# AVAILABILITY_DISTRIBUTION_DENIED = 'D'
-# AVAILABILITY_DISTRIBUTION_DENIED_STILL_FOR_SALE = 'd'
-# AVAILABILITY_MISSING_IN_ACTION = '?'
-# AVAILABILITY_NEVER_RELEASED = 'N'
-# AVAILABILITY_RECOVERED = 'R'
-# MULTIPLAYER_TYPE_COOP = 'c'
-# MULTIPLAYER_TYPE_VS_COOP = 'm'
-# MULTIPLAYER_TYPE_VS_TEAM = 'n'
-# MULTIPLAYER_TYPE_TEAM = 't'
-# MULTIPLAYER_TYPE_VS = 'v'
+MAX_GAME_NAME_LENGTH = 50
 AVAILABILITY_TYPES = {
     'A':'Available',
     'D':'Distribution denied',
@@ -60,8 +50,9 @@ PREDEFINED_OUTPUT_FOLDER_STRUCTURES = [
     '{Letter}',
     '{Letter}/{Name}',
     '{Genre}/{Year}',
-    '{Publisher}/{Year}/{Name}',
+    '{Publisher}/{Year}/{GameName}',
     '{Genre}/{Publisher}',
     '{MachineType}/{NumberOfPlayers}/{Genre}',
     '{Genre}/{MultiplayerType}/{Letter}'
 ]
+MESSAGE_BOX_TITLE = 'ZX Pokemaster'

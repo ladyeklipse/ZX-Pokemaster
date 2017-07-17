@@ -1,5 +1,5 @@
 ===========================================================
-ZX Pokemaster 1.0 README
+ZX Pokemaster 1.01 README
 ===========================================================
 
 CONTENTS.
@@ -10,8 +10,9 @@ I. Introduction.
 II. How to use ZX Pokemaster.
 III. How ZX Pokemaster works.
 IV. FAQ.
-V. Planned features.
-VI. Contacts.
+V. Version history.
+VI. Planned features.
+VII. Contacts.
 
 ===========================================================
 I. Introduction.
@@ -153,7 +154,17 @@ A: This is a part of a screenshot from TUJAD by Ariolasoft - the first ZX Spectr
 Alas, my British friends seem to be oblivious of this awesome game, probably because it was not well received by the media back in 1986. So this is sort of a message to them - you ought to give it a try, it's an awesome game! I dare say that it's much better than Manic Miner: better graphics, more elaborate and easier gameplay and the game is actually beatable.
 
 ===========================================================
-V. Planned features.
+V. Version history
+===========================================================
+1.01. Fixed major bugs:
+ - Game names are restricted to 50 characters (currently hardcoded constant) to avoid 256 chars per path restriction in most operating systems.
+ - Output path can now be equal to one of the input paths - this use case is now handled properly.
+ - Proper error messages when output path or output folder structure pattern is entered incorrectly.
+ - Corrected one of the predefined output folder structure patterns, which was broken.
+ 
+1.0. First version.
+
+VI. Planned features.
 ===========================================================
 
 - Adding more MD5 hashes to the database. 
@@ -181,7 +192,7 @@ The folders will be named like volumes of huge dictionaries: e. g. if first game
 This is relatively easy, if not the fact that I have to install those operating systems on virtual machines. I use Windows 7 exclusively for all the work I'm doing.
 
 ===========================================================
-VI. Contacts.
+VII. Contacts.
 ===========================================================
 You can always download the latest version of ZX Pokemaster from Sourceforge:
 https://sourceforge.net/projects/zx-pokemaster/

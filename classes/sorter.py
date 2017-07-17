@@ -14,6 +14,8 @@ class Sorter():
     input_files = []
     collected_files = []
     should_cancel = False
+    original_output_location = None
+    too_long_path = None
 
     def __init__(self, *args, **kwargs):
         self.input_locations = kwargs.get('input_locations', [])
@@ -35,6 +37,9 @@ class Sorter():
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
             self.db.loadCache()
+        if self.output_location in self.input_locations:
+            self.original_output_location = self.output_location
+            self.output_location = os.path.join(os.path.dirname(self.output_location), 'temp')
 
 
     def sortFiles(self):
@@ -43,7 +48,8 @@ class Sorter():
         print('Got', len(self.input_files), 'raw input files')
         self.collected_files = self.collectFiles(self.input_files)
         print('Files collected')
-
+        if self.too_long_path:
+            return
         if self.ignore_hacks or \
             self.ignore_alternate or \
             self.ignore_rereleases:
@@ -51,6 +57,16 @@ class Sorter():
             print('Files filtered')
         print('Redistributing...')
         self.redistributeFiles()
+
+        if self.original_output_location:
+            backup_location_name = self.original_output_location+'_old'
+            if os.path.exists(backup_location_name):
+                i = 2
+                while os.path.exists(backup_location_name+'_'+str(i)):
+                    i += 1
+                backup_location_name = backup_location_name + '_' + str(i)
+            os.rename(self.original_output_location, backup_location_name)
+            os.rename(self.output_location, self.original_output_location)
 
     def collectFiles(self, input_files):
         if self.gui:
@@ -64,6 +80,8 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             game_files = self.getGameFilesFromInputPath(file_path)
+            if self.too_long_path:
+                break
             if not game_files:
                 print('Nothing found for', file_path)
                 continue
@@ -131,9 +149,15 @@ class Sorter():
             return game_files
 
     def getDestination(self, game_file):
-        subfolders_dict = game_file.getOutputPathFormatKwargs()
+        try:
+            subfolders_dict = game_file.getOutputPathFormatKwargs()
+        except Exception as e:
+            print(game_file.src)
+            raise e
         dest = self.output_folder_structure.format(**subfolders_dict)
         dest = os.path.join(self.output_location, dest, game_file.getTOSECName())
+        if len(dest)>255:
+            self.too_long_path = dest
         return dest
 
     def filterCollectedFiles(self):
@@ -192,6 +216,8 @@ class Sorter():
                 print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
+            # if self.too_long_path:
+            #     break
             try:
                 os.makedirs(os.path.dirname(file.dest), exist_ok=True)
             except OSError:
@@ -201,10 +227,18 @@ class Sorter():
             if file.src.lower().endswith('zip'):
                 self.unpackFile(file)
             else:
-                if self.delete_original_files:
-                    shutil.move(file.src, file.dest)
-                else:
-                    shutil.copy(file.src, file.dest)
+                try:
+                    if self.delete_original_files:
+                        shutil.move(file.src, file.dest)
+                    else:
+                        shutil.copy(file.src, file.dest)
+                except PermissionError:
+                    os.chmod(file.dest, stat.S_IWRITE)
+                    if self.delete_original_files:
+                        shutil.move(file.src, file.dest)
+                    else:
+                        shutil.copy(file.src, file.dest)
+
             if file.game.cheats:
                 pok_file_path = os.path.dirname(file.dest)
                 pok_file_name = os.path.splitext(os.path.basename(file.dest))[0]+'.pok'

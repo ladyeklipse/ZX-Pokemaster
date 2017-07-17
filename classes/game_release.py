@@ -61,7 +61,7 @@ class GameRelease(object):
 
     def getPublisher(self):
         if self.publisher:
-            return self.publisher.replace('/', '-')
+            return self.publisher.replace('/', '-').replace('"', '')
         else:
             return self.game.getPublisher()
 
@@ -107,10 +107,6 @@ class GameRelease(object):
     def addAlias(self, alias):
         if alias not in self.aliases:
             self.aliases.append(alias)
-        # alias = GameAlias(alias, language)
-        # if alias.name != self.name and \
-        #    alias not in self.aliases:
-        #     self.aliases.append(alias)
 
     def addFiles(self, files):
         for file in files:

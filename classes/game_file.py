@@ -10,6 +10,8 @@ import re
 TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GAME_EXTENSIONS]))
 
 def putPrefixToEnd(game_name):
+    if game_name.startswith('Die Hard'):
+        return game_name
     for prefix in GAME_PREFIXES:
         if game_name.startswith(prefix + ' '):
             game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
@@ -78,16 +80,15 @@ class GameFile(object):
 
     def importCredentials(self, game):
         self.game = game
-        self.release = game.findReleaseByFile(self)
         other_file = game.findFileByMD5(self.md5)
         if other_file:
             self.part = other_file.part
             self.language = other_file.language
-            self.release = other_file.release
             self.mod_flags = other_file.mod_flags
             self.side = other_file.side
             self.machine_type = other_file.machine_type
             self.format = other_file.format
+            self.release = game.findReleaseByFile(self)
 
     def countAlternateDumpsIn(self, collection=[]):
         count = 0
@@ -234,7 +235,7 @@ class GameFile(object):
     def getTOSECName(self, zipped=False):
         if self.tosec_path:
             return self.tosec_path
-        basename = self.getGameName()[:100]
+        basename = self.getGameName()
         params = []
         params.append('('+self.getYear()+')')
         params.append('('+self.getPublisher()+')')
@@ -344,15 +345,19 @@ class GameFile(object):
 
     def getOutputPathFormatKwargs(self):
         game_name = self.getGameName()
+        publisher = self.getPublisher()
+        if publisher == '-':
+            publisher = 'Unknown Publisher'
         return {
             'Genre':self.getGenre(),
             'Year':self.getYear(),
             'Letter':getWosSubfolder(game_name),
             'MachineType':self.getMachineType(),
-            'Publisher':self.getPublisher(),
+            'Publisher':publisher,
             'NumberOfPlayers':self.getNumberOfPlayers(),
-            'GameName':self.release.aliases[0] if self.release else self.game.name,
-            'Language':self.getLanguage()
+            'GameName':game_name,
+            'Language':self.getLanguage(),
+            'Format':self.format
         }
 
     def getGenre(self):
@@ -378,7 +383,20 @@ class GameFile(object):
     def getGameName(self):
         game_name = self.release.aliases[0] if self.release else self.game.name
         game_name = putPrefixToEnd(game_name)
-        return game_name
+        game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
+        # game_name = game_name[:MAX_GAME_NAME_LENGTH]
+        while game_name.endswith('.'):
+            game_name = game_name[:-1]
+        while len(game_name)>MAX_GAME_NAME_LENGTH:
+            game_name = [x for x in game_name.split(' ') if x][:-1]
+            game_name = ' '.join(game_name)
+        game_name = [x for x in game_name.split(' ') if x]
+        while len(game_name[-1])<2 and \
+                not game_name[-1][-1].isalnum():
+            game_name = ' '.join(game_name[:-1])
+            game_name = [x for x in game_name.split(' ') if x]
+        game_name = ' '.join(game_name).strip()
+        return game_name.strip()
 
     def getYear(self):
         if self.release:
@@ -388,9 +406,14 @@ class GameFile(object):
 
     def getPublisher(self):
         if self.release:
-            return self.release.getPublisher()
+            publisher =  self.release.getPublisher()
         else:
-            return self.game.getPublisher()
+            publisher = self.game.getPublisher()
+        publisher = [x for x in publisher.split(' ') if x][:3]
+        if len(publisher)==3 and len(publisher[-1])<3:
+            publisher = publisher[:-1]
+        publisher = ' '.join(publisher).strip()
+        return publisher
 
     def getNumberOfPlayers(self):
         result = str(self.game.number_of_players) + 'P'

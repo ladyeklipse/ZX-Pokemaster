@@ -5,10 +5,12 @@ from PyQt4.QtGui import *
 # from PyQt4.QtWidgets import *
 from ui.SorterLauncher import *
 from classes.sorter import *
+from scripts.is_pathname_valid import *
 import traceback
 import threading
 from pattern_creator import PatternCreatorDialog
 import json
+from settings import MESSAGE_BOX_TITLE
 
 def PyQtExceptHook(exc_cls, ex, tb):
     MESSAGE = str(ex)+'\n'
@@ -56,7 +58,7 @@ class MainDialog(QDialog):
         return dir_path
 
     def addPattern(self):
-        dialog = PatternCreatorDialog()
+        dialog = PatternCreatorDialog(parent=self)
         pattern = dialog.getPattern()
         if pattern:
             for i in range(self.ui.cmbOutputFolderStructure.count()):
@@ -82,10 +84,18 @@ class MainDialog(QDialog):
             'ignore_hacks':not self.ui.chkIncludeHacked.isChecked(),
             'place_pok_files_in_pokes_subfolders':self.ui.chkPlacePokFilesIntoPOKESSubfolder.isChecked(),
         }
+        if not is_pathname_valid(kwargs['output_location']):
+            QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Invalid output path'))
+            return
+        for format in kwargs['formats_preference']:
+            if format not in GAME_EXTENSIONS:
+                QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Format %s is not recognized') % format)
+                return
         self.saveSettings(kwargs)
         if not kwargs['input_locations']:
-            QMessageBox.information(self, self.tr(''), self.tr('Please add one or more input path(s).'))
+            QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Please add one or more input path(s).'))
             return
+
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)
@@ -98,10 +108,13 @@ class MainDialog(QDialog):
         self.bar.canceled.connect(s.cancel)
         s.sortFiles()
         self.bar.hide()
-        if not s.should_cancel:
-            QMessageBox.information(self, self.tr('Done'), self.tr('Sorting successfully finished.'))
+        if s.should_cancel:
+            QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Operation was canceled.'))
+        elif s.too_long_path:
+            QMessageBox.information(self, MESSAGE_BOX_TITLE,
+                                    self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
         else:
-            QMessageBox.information(self, self.tr(''), self.tr('Operation was canceled.'))
+            QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Sorting successfully finished.'))
         self.bar.close()
 
     def getInputLocations(self):
@@ -137,7 +150,10 @@ class MainDialog(QDialog):
                 patterns = settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
                 if os.name=='nt':
                     patterns = [pattern.replace('/', '\\') for pattern in patterns]
-                self.ui.cmbOutputFolderStructure.addItems(patterns)
+                for i, pattern in enumerate(patterns):
+                    self.ui.cmbOutputFolderStructure.addItem(pattern)
+                    if pattern == settings.get('output_folder_structure'):
+                        self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
                 self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference', [','.join(GAME_EXTENSIONS)])))
@@ -152,9 +168,9 @@ class MainDialog(QDialog):
             if os.name == 'nt':
                 patterns = [pattern.replace('/', '\\') for pattern in patterns]
             self.ui.cmbOutputFolderStructure.addItems(patterns)
+            self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
             self.ui.txtOutputPath.setText(os.getcwd())
             self.ui.txtFormatPreference.setText(','.join(GAME_EXTENSIONS))
-        self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
 
     def saveSettings(self, kwargs):
         kwargs['patterns'] = self.getOutputFolderStructurePatterns()

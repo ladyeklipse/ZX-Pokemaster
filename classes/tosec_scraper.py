@@ -27,12 +27,12 @@ class TOSECScraper():
                       'Compilations\Demos',
                       'Compilations\Educational',
                       'Compilations\Games',
-                      # 'Compilations\Magazines',
+                      'Compilations\Magazines',
                       'Covertapes',
                       'Demos',
-                      # 'Documentation',
+                      'Documentation',
                       'Educational',
-                      # 'Magazines',
+                      'Magazines',
                       'Games']
         # tosec_folders = ['[TAP]', '[TRD]', '[TZX]', '[Z80]', '[SCL]', '[DSK]', '[SLT]', '[FDI]', '[ROM]', '[CSW]']
         tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
@@ -133,10 +133,10 @@ class TOSECScraper():
                     continue
                 elif path.endswith('(CSSCGC).zip'):
                     continue
-                elif 'Compilations' in path:
-                    continue
-                elif 'Games' not in path:
-                    continue
+                # elif 'Compilations' in path:
+                #     continue
+                # elif 'Games' not in path:
+                #     continue
                 print('Unscraped:', 'file:\\\\\\'+os.path.abspath(path))
                 unscraped_paths.append(path)
                 game_file = GameFile(path)

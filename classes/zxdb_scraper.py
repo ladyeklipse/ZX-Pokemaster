@@ -111,6 +111,8 @@ class ZXDBScraper():
             # print(row['wos_id'], row['release_seq'])
             # continue
             # print(row['wos_id'], row['release_seq'])
+            if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
+                row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:
                 # if game.wos_id:
                 #     games.append(game)
@@ -177,15 +179,6 @@ class ZXDBScraper():
                     release.addFile(game_file)
                 if row['alt_name']:
                     release.addAlias(row['alt_name'])
-                    # for prefix in GAME_PREFIXES:
-                    #     if row['alt_name'].startswith(prefix+' '):
-                    #         alias = ' '.join(row['alt_name'].split(' ')[1:]) + ', ' + prefix
-                    #         release.addAlias(alias)
-                    #         win_friendly_alias = get_win_friendly_alias(alias)
-                    #         release.addAlias(win_friendly_alias)
-                    #         break
-                    # win_friendly_alias = get_win_friendly_alias(row['alt_name'])
-                    # release.addAlias(win_friendly_alias)
 
         games.append(game)
         return games
@@ -213,15 +206,6 @@ class ZXDBScraper():
                               [row['alt_name'] if row['alt_name'] else game.name])
         for i, alias in enumerate(release.aliases):
             release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
-        # for prefix in GAME_PREFIXES:
-        #     if release_name.startswith(prefix+' '):
-        #         alias = ' '.join(release_name.split(' ')[1:]) + ', ' + prefix
-        #         release.addAlias(alias)
-        #         win_friendly_alias = get_win_friendly_alias(alias)
-        #         release.addAlias(win_friendly_alias)
-        #         break
-        # win_friendly_alias = get_win_friendly_alias(release_name)
-        # release.addAlias(win_friendly_alias)
         return release
 
     def gameFileFromRow(self, row, game):
