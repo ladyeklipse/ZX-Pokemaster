@@ -14,7 +14,7 @@ WOS_MANUALS_DIRECTORY = 'pub/sinclair/games-info'
 TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
 GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
 MAX_ZIP_FILE_SIZE = 8858353
-MAX_GAME_NAME_LENGTH = 50
+MAX_GAME_NAME_LENGTH = 100
 AVAILABILITY_TYPES = {
     'A':'Available',
     'D':'Distribution denied',
@@ -34,10 +34,10 @@ CHEAT_SOURCE_SCRAPE = 0
 CHEAT_SOURCE_OLD_DB = 1
 CHEAT_SOURCE_WOS_FILE = 2
 CHEAT_SOURCE_NEW_DB = 99
-ALPHABETIC_DIRNAMES = ['123', 'A', 'B', 'C', 'D', 'E', 'F',
-                       'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-                       'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                       'W', 'X', 'Y', 'Z']
+ALPHABETIC_DIRNAMES = ['123', 'a', 'b', 'c', 'd', 'e', 'f',
+                       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                       'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+                       'w', 'x', 'y', 'z']
 GAME_PREFIXES = ['A', 'The',
                  'La', 'Le', 'De', "L'", "D'"
                  'Les', 'Los', 'Las', 'El',
@@ -56,3 +56,22 @@ PREDEFINED_OUTPUT_FOLDER_STRUCTURES = [
     '{Genre}/{MultiplayerType}/{Letter}'
 ]
 MESSAGE_BOX_TITLE = 'ZX Pokemaster'
+INCLUDED_TYPES_LIST = [
+    ''
+]
+INCLUDED_LANGUAGES_LIST = [
+    ('en', 'English'),
+    ('es', 'Spanish'),
+    ('ru', 'Russian'),
+    ('hr', 'Croatian'),
+    ('cz', 'Czech'),
+    ('nl', 'Dutch'),
+    ('de', 'German'),
+    ('fr', 'French'),
+    ('hu', 'Hungarian'),
+    ('no', 'Norwegian'),
+    ('pl', 'Polish'),
+    ('sr', 'Serbian'),
+    ('sl', 'Slovak'),
+    ('sv', 'Swedish')
+]

@@ -8,7 +8,8 @@ from tipshop_excel_converter import *
 from scrape_tosec import *
 
 if __name__=='__main__':
-    os.unlink('pokemaster.db')
+    if os.path.exists('pokemaster.db'):
+        os.unlink('pokemaster.db')
     db = Database()
     with open('pokemaster_db_schema.sql', 'r', encoding='utf-8') as f:
         sql = f.read().split(';\n')
@@ -24,17 +25,16 @@ if __name__=='__main__':
             release.getInfoFromLocalFiles()
         db.addGame(game)
     db.commit()
-    wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames(db)
     ts = TOSECScraper(db)
-    paths = ts.generateTOSECPathsArray()
+    # paths = ts.generateTOSECPathsArray()
+    ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
     ts.scrapeTOSEC()
-    for i in range(2):
-        ts = TOSECScraper(db)
-        db.loadCache(force_reload=True)
-        paths = ts.showUnscraped()
-        ts.paths = paths
-        ts.scrapeTOSEC()
-    updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db)
+    # for i in range(2):
+    #     ts = TOSECScraper(db)
+    #     db.loadCache(force_reload=True)
+    #     paths = ts.showUnscraped()
+    #     ts.paths = paths
+    #     ts.scrapeTOSEC()
     xlsx2db()
 
 

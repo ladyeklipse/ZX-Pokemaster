@@ -99,12 +99,20 @@ def getAllPokes(wos_ids=[]):
 def extractPokFiles():
     db = Database()
     games = db.getAllGames('pok_file_contents!=""')
+    csv_contents = ''
+    for letter in ALPHABETIC_DIRNAMES:
+        folder = os.path.join('AllTipshopPokes', letter)
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
     for game in games:
         print(game)
         filename = game.getTOSECName()+'.pok'
         path = os.path.join('AllTipshopPokes', getWosSubfolder(filename), filename)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         game.exportPokFile(path)
+        csv_contents += game.getWosID()+';'+'/zxdb/sinclair/pokes/'+getWosSubfolder(filename)+'/'+filename+'\n'
+    with open(os.path.join('AllTipshopPokes', 'zxdb_update.csv'), 'w', encoding='utf-8') as f:
+        f.write(csv_contents)
 
 def generateZXDBUpdate(wos_ids):
     with open('relatedlinks.update.sql', 'w+', encoding='utf-8') as f:
@@ -135,12 +143,12 @@ def convertHexes(text):
     return text.replace('$', '').replace('#', '')
 
 if __name__=='__main__':
-    wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
+    # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    # updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
     # print('total wos_ids = ', len(wos_ids))
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
-    # extractPokFiles()
+    extractPokFiles()
     # TEMPORARY BELOW
     # text = convertHexes('''''')
     # scrapePokesFromText(text)

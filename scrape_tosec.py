@@ -1,8 +1,12 @@
 from classes.tosec_scraper import *
-
+import sys
 if __name__=='__main__':
-    ts = TOSECScraper()
-    paths = ts.generateTOSECPathsArray()
+    # ts = TOSECScraper()
+    # paths = ts.generateTOSECPathsArray()
+    ts = TOSECScraper(cache=True)
+    ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
+    ts.scrapeTOSEC()
+    sys.exit()
     # for path in paths[:10]:
     #     print(path)
     paths = [

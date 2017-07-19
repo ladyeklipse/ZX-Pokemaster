@@ -1,7 +1,7 @@
 from settings import *
 from classes.game import Game
 from classes.game_release import GameRelease
-from classes.game_file import GameFile, TOSEC_REGEX, GAME_PREFIXES, putPrefixToEnd
+from classes.game_file import GameFile, TOSEC_REGEX #, GAME_PREFIXES, putPrefixToEnd
 import re
 import os
 import sqlite3
@@ -116,7 +116,7 @@ class Database():
             for file in release.files:
                 try:
                     file.getMD5()
-                    file.getMD5(zipped=True)
+                    # file.getMD5(zipped=True)
                 except:
                     print('Bad file:', file, 'for game:', game)
                     print(traceback.format_exc())
@@ -135,7 +135,7 @@ class Database():
                           file.language,
                           file.mod_flags,
                           file.getMD5(),
-                          file.getMD5(zipped=True),
+                          # file.getMD5(zipped=True),
                           file.getCRC32(),
                           file.getSHA1()
                           ]
@@ -340,7 +340,7 @@ class Database():
         file.language = row['file_language']
         file.mod_flags = row['mod_flags']
         file.md5 = row['md5']
-        file.md5_zipped = row['md5_zipped']
+        # file.md5_zipped = row['md5_zipped']
         file.crc32 = row['crc32']
         file.sha1 = row['sha1']
         return file

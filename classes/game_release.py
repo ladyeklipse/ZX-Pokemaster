@@ -33,14 +33,11 @@ class GameRelease(object):
         self.country = country if country else 'UK'
         self.game = game
         self.files = []
-        self.aliases = aliases if aliases else []
+        # self.aliases = aliases if aliases else []
+        self.aliases = []
+        self.addAliases(aliases)
         if release_seq==0 and game.name not in self.aliases:
             self.aliases = [game.name]+self.aliases
-        # self.loading_screen_gif_filepath = game.loading_screen_gif_filepath
-        # self.loading_screen_scr_filepath = game.loading_screen_scr_filepath
-        # self.ingame_screen_gif_filepath = game.ingame_screen_gif_filepath
-        # self.ingame_screen_scr_filepath = game.ingame_screen_scr_filepath
-        # self.manual_filepath = game.manual_filepath
 
     def __repr__(self):
         return '<Release {}: {}, ({})({}), {} files>'.format(
@@ -53,11 +50,6 @@ class GameRelease(object):
 
     def getName(self, language=None):
         return '/'.join(self.aliases) if self.aliases else self.game.name
-        # aliases = [x.name for x in self.aliases if x.language==language] if language else \
-        #     [x.name for x in self.aliases]
-        # if aliases:
-        #     return '/'.join(aliases)
-        # return self.game.name
 
     def getPublisher(self):
         if self.publisher:
@@ -79,7 +71,6 @@ class GameRelease(object):
 
     def getAllAliases(self):
         return self.aliases
-        # return [x.name for x in self.aliases]+[self.game.name]
 
     def getIngameScreenFilePath(self, format='scr'):
         if format=='scr':
@@ -104,8 +95,12 @@ class GameRelease(object):
         publisher = remove_square_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher
 
+    def addAliases(self, aliases=[]):
+        for alias in aliases:
+            self.addAlias(alias)
+
     def addAlias(self, alias):
-        if alias not in self.aliases:
+        if alias and alias not in self.aliases:
             self.aliases.append(alias)
 
     def addFiles(self, files):

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>470</width>
-    <height>527</height>
+    <height>577</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>470</width>
-    <height>527</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="baseSize">
@@ -54,7 +54,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>490</y>
+     <y>540</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -139,7 +139,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>390</y>
+     <y>420</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -152,7 +152,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>410</y>
+     <y>440</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -168,7 +168,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>430</y>
+     <y>460</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -184,7 +184,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>450</y>
+     <y>480</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -201,7 +201,7 @@
     <rect>
      <x>180</x>
      <y>250</y>
-     <width>281</width>
+     <width>241</width>
      <height>22</height>
     </rect>
    </property>
@@ -284,7 +284,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>470</y>
+     <y>520</y>
      <width>441</width>
      <height>20</height>
     </rect>
@@ -301,6 +301,139 @@
     <rect>
      <x>430</x>
      <y>220</y>
+     <width>27</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chkIncludeXRated">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>500</y>
+     <width>451</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Include x-rated games</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>390</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Preferred language:</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbOutputFolderStructure_2">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>390</y>
+     <width>161</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="editable">
+    <bool>false</bool>
+   </property>
+   <property name="currentText" stdset="0">
+    <string>All</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>All</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>English (en)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Spanish (es)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Russian (ru)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Croatian (hr)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Czech (cz)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Dutch (nl)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>German (de)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>French (fr)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Hungarian (hu)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Norwegian (no)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Polish (pl)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Serbian (sr)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Slovak (sl)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Swedish (sv)</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QToolButton" name="btnFormatPreferenceWindow">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>250</y>
      <width>27</width>
      <height>22</height>
     </rect>

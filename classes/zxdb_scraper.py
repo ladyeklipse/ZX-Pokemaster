@@ -12,7 +12,6 @@ def get_win_friendly_alias(alias):
     win_friendly_alias = filepath_regex.sub('-', alias)
     return win_friendly_alias
 
-
 class RowConverter(connector.conversion.MySQLConverter):
 
     def row_to_python(self, row, fields):
@@ -63,7 +62,9 @@ class ZXDBScraper():
         sql = 'SELECT entries.id AS wos_id, ' \
               'releases.release_seq AS release_seq, ' \
               'entries.title AS name, ' \
+              'entries.library_title AS tosec_compliant_name, ' \
               'entries.is_xrated AS x_rated, ' \
+              'relatedlinks.link AS tipshop_page, ' \
               'genretypes.text AS genre, ' \
               'entries.max_players AS number_of_players, ' \
               'entries.multiplaytype_id AS multiplayer_type, ' \
@@ -84,6 +85,7 @@ class ZXDBScraper():
               'releases.release_year AS year,' \
               'labels.country_id AS country ' \
               'FROM entries ' \
+              'LEFT JOIN relatedlinks ON entries.id=relatedlinks.entry_id AND relatedlinks.website_id=9 ' \
               'LEFT JOIN releases ON entries.id=releases.entry_id ' \
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
               'LEFT JOIN publishers ON publishers.entry_id=entries.id AND publishers.release_seq=releases.release_seq  ' \
@@ -177,6 +179,9 @@ class ZXDBScraper():
                          'tape' in row['file_format']):
                     game_file = self.gameFileFromRow(row, game)
                     release.addFile(game_file)
+                elif row['file_type']=='POK pokes file':
+                    pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
+                    game.importPokFile(file_path=pok_file_path)
                 if row['alt_name']:
                     release.addAlias(row['alt_name'])
 
@@ -184,7 +189,10 @@ class ZXDBScraper():
         return games
 
     def gameFromRow(self, row):
-        game = Game(row['name'], int(row['wos_id']))
+        game_name = row.get('tosec_compliant_name', row['name'])
+        if game_name.endswith(', 3D'):
+            game_name = '3D '+game_name[:-4]
+        game = Game(game_name, int(row['wos_id']))
         game.setPublisher(row['publisher'])
         game.setYear(row['year'])
         game.setGenre(row['genre'])
@@ -194,6 +202,7 @@ class ZXDBScraper():
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])
+        game.tipshop_page = row['tipshop_page']
         return game
 
     def releaseFromRow(self, row, game):
@@ -203,7 +212,9 @@ class ZXDBScraper():
                               row['publisher'],
                               row['country'],
                               game,
-                              [row['alt_name'] if row['alt_name'] else game.name])
+                              [release_name])
+        if row.get('name')!=game.name:
+            release.addAlias(row['name'])
         for i, alias in enumerate(release.aliases):
             release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
         return release

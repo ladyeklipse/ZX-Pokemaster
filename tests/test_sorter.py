@@ -122,7 +122,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests\sort_unzipped_out\ZXMASTER (19xx)(-).tap'
+        expected_file = 'tests\sort_unzipped_out\Mastering Machine Code (19xx)(ZX Computing).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests\sort_unzipped_out\Race, The (1990)(Players Premier).z80'
         self.assertTrue(os.path.exists(expected_file))
@@ -138,11 +138,11 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/sort_unknown_files_out/Unknown Games/Rebit Soft Bank/it/19xx/Air Fire (19xx)(Rebit Soft Bank)(it).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1991/Alchemist News - Issue 01 (1991)(Alchemist Research).z80'
+        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1991/AlchNews 01 (1991)(Alchemist Research).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1992/Alchemist News - Issue 02 (1992)(Alchemist Research).z80'
+        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1992/AlchNews 02 (1992)(Alchemist Research).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1993/Alchemist News - Issue 09 (1993)(Alchemist Research)[128K].z80'
+        expected_file = 'tests/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1993/AlchNews 09 (1993)(Alchemist Research)[128K].z80'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_doublesided_archive(self):
@@ -228,11 +228,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)(ru).trd'
+        expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura).trd'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)[a].trd'
-        self.assertFalse(os.path.exists(not_expected_file))
-        not_expected_file = 'tests/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)(ru)[a].trd'
         self.assertFalse(os.path.exists(not_expected_file))
 
     def test_sorting_multilang_games(self):
@@ -363,7 +361,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/sort_dots_out/H. de Groot/Spectrum Automatic Copier/Spectrum Automatic Copier (1985)(H. de Groot).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/sort_dots_out/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2/Super Advanced Lawnmower Simulator Adventure 2 (1993)(Creative Radical Alternative).tap'
+        expected_file = 'tests/sort_dots_out/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2 - The Sequel/Super Advanced Lawnmower Simulator Adventure 2 - The Sequel (1993)(Creative Radical Alternative).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/sort_dots_out/Proxima Software/Fuxoft Uvadi/Fuxoft Uvadi (1992)(Proxima Software)(cz).tzx'
         self.assertTrue(os.path.exists(expected_file))
@@ -387,10 +385,44 @@ class TestSorter(unittest.TestCase):
                    input_locations=['tests/sort_die_hard_in'],
                    output_location='tests/sort_die_hard_out',
                    output_folder_structure='{Format}',
+                   include_xrated=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         expected_file = 'tests/sort_die_hard_out/sna/Die Hard II (1999)(REMADE Corporation)(ru).sna'
         self.assertTrue(os.path.exists(expected_file))
+
+    def test_include_xrated(self):
+        input_location = 'tests/sort_include_xrated_in'
+        output_location = 'test/sort_include_xrated_out'
+        s = Sorter(
+                   input_locations=[input_location],
+                   output_location=output_location,
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation)(ru).sna'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = output_location+'/Hard II, Die (1999)(REMADE Corporation)(ru).sna'
+        self.assertFalse(os.path.exists(not_expected_file))
+
+    def test_preferred_language(self):
+        input_location = 'tests/sort_preferred_language_in'
+        output_location = 'test/sort_preferred_language_out'
+        s = Sorter(
+                   input_locations=[input_location],
+                   output_location=output_location,
+                   preferred_language='es',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.fail()
+        # expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation)(ru).sna'
+        # self.assertTrue(os.path.exists(expected_file))
+        # not_expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation)(ru).sna'
+        # self.assertTrue(os.path.exists(expected_file))
 

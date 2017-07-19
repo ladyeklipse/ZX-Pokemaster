@@ -69,6 +69,7 @@ if __name__=='__main__':
     zxdb = ZXDBScraper()
     start_time = time.clock()
     games = zxdb.getAllGames()
+    # scrapeGameFilesFromWosMirrors(games)
     end_time = time.clock()
     print('got in:', end_time - start_time)
     db = Database()

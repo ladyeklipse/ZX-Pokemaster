@@ -1,6 +1,7 @@
 from classes.game_file import *
 from classes.game import *
 from classes.database import *
+from lxml import etree
 
 def refresh_tosec_aliases():
     with open('tosec_aliases.bak', 'r', encoding='utf-8') as f:
@@ -14,7 +15,6 @@ class TOSECScraper():
 
     paths = []
     manually_entered_tosec_aliases = {}
-
 
     def __init__(self, cache=True, db=None):
         self.db = db if db else Database()
@@ -34,7 +34,6 @@ class TOSECScraper():
                       'Educational',
                       'Magazines',
                       'Games']
-        # tosec_folders = ['[TAP]', '[TRD]', '[TZX]', '[Z80]', '[SCL]', '[DSK]', '[SLT]', '[FDI]', '[ROM]', '[CSW]']
         tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
         paths = []
         for category in categories:
@@ -46,6 +45,43 @@ class TOSECScraper():
         paths = sorted(paths, key=lambda path: path[0])
         self.paths = [path[1] for path in paths]
         return self.paths
+
+    def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
+        paths = []
+        if not dat_files:
+            root, dirs, files = next(os.walk('tosec'))
+            dat_files = [file for file in files if file.endswith('.dat')]
+        for dat_file in dat_files:
+            dat_file = os.path.join(root, dat_file)
+            for ext in GAME_EXTENSIONS:
+                if '[%s]' % ext.upper() in dat_file:
+                    paths += self.getPathsFromDatFile(dat_file)
+        paths = sorted(paths, key=lambda path_dict: path_dict['name'])
+        paths = sorted(paths, key=lambda path_dict: 'Compilation' in path_dict['path'])
+        return paths
+
+    def getPathsFromDatFile(self, dat_file):
+        paths = []
+        with open(dat_file, 'r', encoding='utf-8') as f:
+            root = etree.fromstring(f.read())
+            header = root[0]
+            path = os.path.join(*header[0].text.split(' - ')[1:])
+            games = [tag for tag in root[1:] if tag.tag=='game']
+            for game in games:
+                roms = [tag for tag in game if tag.tag=='rom']
+                if len(roms)>1:
+                    print(path, game.attrib['name'], len(roms))
+                for rom in roms:
+                    file_path_dict = {}
+                    file_path_dict['name'] = rom.attrib['name']
+                    file_path_dict['path'] = os.path.join('tosec', path, rom.attrib['name'])
+                    file_path_dict['size'] = rom.attrib['size']
+                    file_path_dict['md5'] = rom.attrib['md5']
+                    file_path_dict['crc32'] = rom.attrib['crc']
+                    file_path_dict['sha1'] = rom.attrib['sha1']
+                    paths.append(file_path_dict)
+        return paths
+
 
     def scrapeTOSEC(self):
         self.getTOSECAliases()
@@ -107,7 +143,9 @@ class TOSECScraper():
         game_file.format = os.path.splitext(file_path['path'])[1][1:].lower()
         game_file.tosec_path = file_path['path']
         game_file.md5 = file_path['md5']
-        game_file.setSize()
+        game_file.crc32 = file_path['crc32']
+        game_file.sha1 = file_path['sha1']
+        game_file.setSize(file_path['size'])
         return game_file
 
     def getTOSECAliases(self):

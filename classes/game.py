@@ -70,7 +70,7 @@ class Game(object):
         return False
 
     def getTOSECName(self):
-        filepath = self.name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
+        filepath = self.name[:100] + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
         filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
         return filepath
 

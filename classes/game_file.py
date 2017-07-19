@@ -12,6 +12,8 @@ TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GA
 def putPrefixToEnd(game_name):
     if game_name.startswith('Die Hard'):
         return game_name
+    if game_name.endswith(', 3D'):
+        game_name = '3D '+game_name[:-4]
     for prefix in GAME_PREFIXES:
         if game_name.startswith(prefix + ' '):
             game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
@@ -149,7 +151,8 @@ class GameFile(object):
         if '[c' in self.mod_flags or \
             '[h' in self.mod_flags or \
             '[m' in self.mod_flags or \
-            '[f' in self.mod_flags:
+            '[f' in self.mod_flags or \
+            '[t' in self.mod_flags:
             return True
         else:
             return False
@@ -191,7 +194,7 @@ class GameFile(object):
                 self.setSide(each)
             elif 'Part' in each or 'Disk' in each:
                 self.setPart(each)
-            elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o']:
+            elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o', 't']:
                 self.mod_flags += '[%s]' % each
 
     def setMachineType(self, filename):

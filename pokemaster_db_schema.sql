@@ -49,12 +49,12 @@ CREATE TABLE "game_file" (
 	`language`	CHAR(2), -- TOSEC - 2-letter language code in round brackets "()"
 	`mod_flags`	VARCHAR(255), -- TOSEC - All data in square brackets "[]" except machine_type
 	`md5`	CHAR(32) UNIQUE, -- MD5 of unzipped file, retrieved by reading the file
-	`md5_zipped`	CHAR(32), -- MD5 of .zip file from WoS FTP or TOSEC. This field is DEPRECATED
+	-- `md5_zipped`	CHAR(32), -- MD5 of .zip file from WoS FTP or TOSEC. This field is DEPRECATED
 	`crc32`	TEXT, -- CRC32 of unzipped file, retrieved by reading the file
 	`sha1`	TEXT -- SHA1 of unzipped file, retrieved by reading the file
 );
 CREATE UNIQUE INDEX `unique_release` ON `game_release` (`wos_id` ,`release_seq` );
-CREATE UNIQUE INDEX `unique_alias` ON `game_alias` (`wos_id` ,`release_id` ,`name` );
+-- CREATE UNIQUE INDEX `unique_alias` ON `game_alias` (`wos_id` ,`release_id` ,`name` );
 CREATE VIEW `game_id_file_checker` AS select wos_id, game.name, game_file.tosec_path,
 game_file.wos_name, game_file.wos_path from game
 left join game_file on game_file.game_wos_id=game.wos_id
