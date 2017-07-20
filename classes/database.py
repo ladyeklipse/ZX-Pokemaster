@@ -73,9 +73,9 @@ class Database():
         print('cache loaded')
 
     def addGame(self, game):
-        if not game.wos_id or not game.name:
-            raise Exception('Cannot add game with corrupt data:'+game.getWosID()+','+game.getTOSECName())
-        values = [game.wos_id,
+        # if not game.wos_id or not game.name:
+        #     raise Exception('Cannot add game with corrupt data:'+game.getWosID()+','+game.getTOSECName())
+        values = [game.wos_id if game.wos_id else None,
                   game.name,
                   game.publisher,
                   game.year,
@@ -92,6 +92,8 @@ class Database():
         sql = "INSERT OR REPLACE INTO game VALUES " \
               "({})".format(','.join(['?']*len(values)))
         self.cur.execute(sql, values)
+        if not game.wos_id:
+            game.wos_id = self.cur.lastrowid
         for release in game.releases:
             values = [game.wos_id,
                       release.release_seq,
@@ -124,18 +126,19 @@ class Database():
                 values = [game.wos_id,
                           release.release_seq,
                           file.wos_name,
-                          file.path if file.wos_name else '',
+                          file.wos_path if file.wos_name else '',
                           file.tosec_path,
                           file.machine_type,
                           file.format,
                           file.size,
                           file.size_zipped,
+                          file.is_demo,
                           file.part,
                           file.side,
                           file.language,
                           file.mod_flags,
+                          file.notes,
                           file.getMD5(),
-                          # file.getMD5(zipped=True),
                           file.getCRC32(),
                           file.getSHA1()
                           ]
@@ -171,11 +174,12 @@ class Database():
         elif len(games)==1:
             return games[0]
         else:
-            for game in games:
-                if game.name.split('-')[0]==game_name:
-                    return [game]
-            print('Ambiguity not resolved')
-            print(game)
+            # ZxZVm - %REAL_GAME_NAME% (%YEAR%)(%PUBLISHER%) will have the same wos_id as ZxZVm
+            # for game in games:
+                # if game.name.split('-')[0]==game_name:
+                #     return [game]
+            print('Ambiguity not resolved for', game_name)
+            # print(game)
             return None
 
     def getGameByFilePath(self, filepath):
@@ -185,7 +189,9 @@ class Database():
             search_string = getSearchString(game_release)
             games = self.cache_by_name.get(search_string)
             if not games:
-                search_string = getSearchString(game_release.split('-')[0].strip())
+                # ZxZVm - %REAL_GAME_NAME% (%YEAR%)(%PUBLISHER%) will have the same wos_id as ZxZVm
+                # search_string = getSearchString(game_release.split('-')[0].strip())
+                search_string = getSearchString(game_release)
                 games = self.cache_by_name.get(search_string)
         else:
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
@@ -250,7 +256,7 @@ class Database():
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
         if not game:
-            game = self.getGameByFilePath(file.path)
+            game = self.getGameByFilePath(file.wos_path)
         return game
 
     def getGameByFileMD5(self, md5, zipped=False):
@@ -329,16 +335,18 @@ class Database():
             return None
         file = GameFile()
         file.wos_name = row['wos_name']
-        file.path = row['wos_path']
+        file.wos_path = row['wos_path']
         file.format = row['format']
         file.tosec_path = row['tosec_path']
         file.size = row['size']
         file.size_zipped = row['size_zipped']
+        file.is_demo = row['is_demo']
         file.setMachineType(row['file_machine_type'])
         file.part = row['part']
         file.side = row['side']
         file.language = row['file_language']
         file.mod_flags = row['mod_flags']
+        file.notes = row['notes']
         file.md5 = row['md5']
         # file.md5_zipped = row['md5_zipped']
         file.crc32 = row['crc32']

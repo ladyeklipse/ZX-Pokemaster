@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 CREATE TABLE "game" (
-	`wos_id`	INTEGER NOT NULL, -- ZXDB entries.entry_id
+	`wos_id`	INTEGER NOT NULL AUTO_INCREMENT, -- ZXDB entries.entry_id
 	`name`	VARCHAR(255), -- ZXDB entries.title
 	`publisher`	VARCHAR(255), -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == 0
 	`year`	INTEGER, -- ZXDB releases.release_year WHERE releases.release_seq == 0
@@ -16,6 +16,8 @@ CREATE TABLE "game" (
 	`tipshop_multiface_pokes_section` BLOB, -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
 	PRIMARY KEY(`wos_id`)
 );
+INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+DELETE FROM game WHERE wos_id = 9000000;
 CREATE TABLE "game_release" (
 	`wos_id`	INTEGER, -- ZXDB entries.entry_id
 	`release_seq`	INTEGER, -- ZXDB releases.release_seq
@@ -44,12 +46,13 @@ CREATE TABLE "game_file" (
 	`format`	TEXT, -- extension of UNZIPPED file, always lower case, retrieved by reading the file.
 	`size`	INTEGER, -- size of UNZIPPED file retrieved by reading the file
 	`size_zipped`	INTEGER, -- size of .zip file from FTP or TOSEC. This field is DEPRECATED
+	`is_demo` INTEGER, -- TOSEC - 1 if (demo) in name, else 0
 	`part`	INTEGER DEFAULT 1, -- TOSEC - %d if (Part %d) in name or (Disk %d) in name, 0 by default
 	`side`	INTEGER, -- TOSEC - 1 if (Side A) in name, 2 if (Side B) in name, 0 by default.
 	`language`	CHAR(2), -- TOSEC - 2-letter language code in round brackets "()"
-	`mod_flags`	VARCHAR(255), -- TOSEC - All data in square brackets "[]" except machine_type
+	`mod_flags`	VARCHAR(255), -- TOSEC - Data in square brackets, starting with c, m, f, h, b
+	`notes`	VARCHAR(255), -- TOSEC - All data in square brackets "[]" except machine_type and those in mod_flags
 	`md5`	CHAR(32) UNIQUE, -- MD5 of unzipped file, retrieved by reading the file
-	-- `md5_zipped`	CHAR(32), -- MD5 of .zip file from WoS FTP or TOSEC. This field is DEPRECATED
 	`crc32`	TEXT, -- CRC32 of unzipped file, retrieved by reading the file
 	`sha1`	TEXT -- SHA1 of unzipped file, retrieved by reading the file
 );

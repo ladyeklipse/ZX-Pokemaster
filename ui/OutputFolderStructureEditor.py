@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'OutputFolderStructureEditor.ui'
 #
-# Created: Mon Jul 17 21:15:47 2017
+# Created: Thu Jul 20 03:55:24 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!

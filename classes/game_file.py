@@ -28,11 +28,13 @@ class GameFile(object):
     wos_name = ''
     wos_zipped_name = ''
     tosec_path = ''
+    is_demo = 0
     machine_type = '48K'
     language = ''
     part = 0
     side = 0
     mod_flags = ''
+    notes = ''
     # zipped = False
     format = ''
     size = 0
@@ -50,12 +52,11 @@ class GameFile(object):
         if not path:
             return
         filename = os.path.basename(path)
-        self.path = path
+        self.wos_path = path
         self.setSize(size)
         self.format = self.getFormat(path)
         self.game = game
         self.release = release
-        self.setMachineType(filename)
         if game:
             if filename.endswith('.zip'):
                 self.wos_zipped_name = filename
@@ -63,12 +64,12 @@ class GameFile(object):
             else:
                 self.wos_name = filename
         else:
-            self.getGameFromFileName()
+            self.getGameFromFileName(path)
         if type(size)==str:
             size = int(size.replace(',',''))
 
     def __repr__(self):
-        return '<GameFile: '+self.path+' md5:'+self.md5+'>'
+        return '<GameFile: '+self.wos_path+' md5:'+self.md5+'>'
 
     def __eq__(self, other):
         if self.wos_name and \
@@ -167,14 +168,14 @@ class GameFile(object):
         return self.alt_dest if self.alt_dest else self.dest
 
     def copy(self):
-        new = GameFile(self.path, self.size, self.game)
+        new = GameFile(self.wos_path, self.size, self.game)
         return new
 
     def getFileName(self):
-        return self.tosec_path if self.tosec_path else os.path.basename(self.path)
+        return self.tosec_path if self.tosec_path else os.path.basename(self.wos_path)
 
-    def getGameFromFileName(self):
-        filename = os.path.splitext(os.path.basename(self.path).replace('(demo)', ''))[0]
+    def getGameFromFileName(self, path):
+        filename = os.path.splitext(os.path.basename(path).replace('(demo)', ''))[0]
         matches = re.findall(TOSEC_REGEX, filename)
         game_name = re.sub(TOSEC_REGEX, '', filename).strip()
         if not self.game:
@@ -187,27 +188,50 @@ class GameFile(object):
         if len(matches)==1:
             return
         self.game.setPublisher(matches[1])
+        self.release = GameRelease(game=self.game)
+        self.game.addRelease(self.release)
+        self.game.addFile(self)
+        self.getParamsFromTOSECPath(path)
+
+    def getParamsFromTOSECPath(self, tosec_path):
+        self.tosec_path = tosec_path
+        filename = os.path.splitext(os.path.basename(tosec_path).replace('(demo)', ''))[0]
+        self.setMachineType(filename)
+        matches = re.findall(TOSEC_REGEX, filename)
         for each in matches[2:]:
-            if len(each)==2 and each.isalpha() and each!='cr':
+            if len(re.findall('^a[0-9]?[0-9]?$', each)):
+                continue
+            elif len(re.findall('^M[0-9]$', each)):
+                self.setLanguage(each)
+            elif len(re.findall('^[0-9\-]+K?$', each)):
+                self.setMachineType(each)
+            elif len(each)==2 and each.isalpha() and each!='cr':
                 self.setLanguage(each)
             elif 'Side' in each:
                 self.setSide(each)
-            elif 'Part' in each or 'Disk' in each:
+            elif 'Part' in each or 'Disk' in each or 'Tape' in each:
                 self.setPart(each)
             elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o', 't']:
                 self.mod_flags += '[%s]' % each
+            elif each not in self.notes and \
+                self.machine_type not in each:
+                self.notes += '[%s]' % each
+        if '(demo' in tosec_path.lower():
+            self.is_demo = 1
+
 
     def setMachineType(self, filename):
         if not filename:
             return
         if '128' in filename and '48' in filename:
-            self.machine_type = '48/128K'
+            self.machine_type = '48-128K'
         elif '128' in filename:
             self.machine_type = '128K'
         elif '48' in filename:
             self.machine_type = '48K'
         elif '16' in filename:
             self.machine_type = '16K'
+
 
     def getMachineType(self):
         if self.machine_type:
@@ -216,13 +240,13 @@ class GameFile(object):
             return self.game.machine_type
 
     def setLanguage(self, language):
-        self.language = language.lower()
+        self.language = language.lower() if language.isalpha() else language.upper()
 
     def setPart(self, part):
         part = part.split(' ')
         for i, word in enumerate(part):
-            if (word in ['Part', 'Disk']) and \
-                len(part)>i and \
+            if (word in ['Part', 'Disk', 'Tape']) and \
+                len(part)>i+1 and \
                 part[i+1][0].isdigit():
                 self.part = int(part[i+1][0])
 
@@ -230,14 +254,14 @@ class GameFile(object):
     def getLanguage(self):
         if self.language:
             return self.language
-        elif self.release:
-            return self.release.getLanguage()
+        # elif self.release:
+        #     return self.release.getLanguage()
         else:
             return self.game.getLanguage()
 
     def getTOSECName(self, zipped=False):
-        if self.tosec_path:
-            return self.tosec_path
+        # if self.tosec_path:
+        #     return self.tosec_path
         basename = self.getGameName()
         params = []
         params.append('('+self.getYear()+')')
@@ -436,14 +460,14 @@ class GameFile(object):
             return 99
 
     def getWosPath(self, wos_mirror_root = WOS_SITE_ROOT):
-        return wos_mirror_root+self.path
+        return wos_mirror_root+self.wos_path
 
     def getLocalPath(self, zipped=False):
         if self.wos_path:
             local_path = self.getWosPath(LOCAL_FTP_ROOT)
             if os.path.exists(local_path):
                 return local_path
-        return self.path
+        return self.wos_path
 
     def getLocalFile(self):
         return open(self.getLocalPath())

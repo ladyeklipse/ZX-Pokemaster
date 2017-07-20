@@ -71,6 +71,23 @@ class TestTOSECScraper(unittest.TestCase):
             if 'Durell Software' in file.tosec_path:
                 self.assertEqual(file.getReleaseSeq(), 0)
 
+    def test_dat_files_scraping(self):
+        wos_id = 9
+        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        ts.db.execute(sql)
+        ts.db.commit()
+        ts.db.loadCache()
+        dat_files = ['tests/Sinclair ZX Spectrum - Games - [TAP] (test).dat',
+                     'tests/Sinclair ZX Spectrum - Games - [TZX] (test).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        unscraped = ts.showUnscraped()
+        self.assertEqual(len(unscraped), 0)
+
+
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
         ts.db.execute(sql)

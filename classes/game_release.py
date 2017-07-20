@@ -1,4 +1,4 @@
-from classes.game import Game, publisher_regex, remove_square_brackets_regex
+from classes.game import Game, publisher_regex, remove_square_brackets_regex, filepath_regex
 import re
 import zipfile
 import hashlib
@@ -26,18 +26,17 @@ class GameRelease(object):
     files = []
 
 
-    def __init__(self, release_seq=0, year=None, publisher=None, country=None, game=Game(), aliases=[]):
+    def __init__(self, release_seq=0, year=None, publisher=None, country=None, game=None, aliases=[]):
         self.release_seq = release_seq
-        self.year = year
-        self.setPublisher(publisher)
+        self.game = game if game else Game()
+        self.year = year if year else self.game.year
+        self.setPublisher(publisher if publisher else self.game.publisher)
         self.country = country if country else 'UK'
-        self.game = game
         self.files = []
-        # self.aliases = aliases if aliases else []
         self.aliases = []
         self.addAliases(aliases)
-        if release_seq==0 and game.name not in self.aliases:
-            self.aliases = [game.name]+self.aliases
+        if release_seq==0 and self.game.name not in self.aliases:
+            self.aliases = [self.game.name]+self.aliases
 
     def __repr__(self):
         return '<Release {}: {}, ({})({}), {} files>'.format(
@@ -47,6 +46,12 @@ class GameRelease(object):
             self.publisher,
             len(self.files)
         )
+
+    def getTOSECName(self):
+        name = self.game.name[:100].replace(': ', ' - ')
+        filepath = name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
+        filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
+        return filepath
 
     def getName(self, language=None):
         return '/'.join(self.aliases) if self.aliases else self.game.name
@@ -110,7 +115,10 @@ class GameRelease(object):
     def addFile(self, new_file):
         for file in self.files:
             if file == new_file:
-                file.tosec_path = new_file.tosec_path
+                if new_file.tosec_path:
+                    file.tosec_path = new_file.tosec_path
+                if new_file.is_demo:
+                    file.is_demo = new_file.is_demo
                 if new_file.size:
                     file.size = new_file.size
                 if new_file.language:
@@ -124,6 +132,7 @@ class GameRelease(object):
                 return
         new_file.game = self.game
         new_file.release_seq = self.release_seq
+        new_file.release = self
         self.files.append(new_file)
 
     def getInfoFromLocalFiles(self):
@@ -145,13 +154,14 @@ class GameRelease(object):
                         new_file_sha1 = hashlib.sha1(unzipped_file).hexdigest()
                         new_file_crc32 = hex(z.getinfo(zfname).CRC)[2:]
                         if file.format != zfext:
-                            print('FORMAT MISMATCH:', file.path, zfname)
+                            print('FORMAT MISMATCH:', file.wos_path, zfname)
                         if not file.md5:
                             file.md5 = new_file_md5
                             file.sha1 = new_file_sha1
                             file.crc32 = new_file_crc32
                             file.wos_name = os.path.basename(zfname)
                             file.format = zfext
+                            file.is_demo = '(demo' in file_path.lower()
                             file.setSize(z.getinfo(zfname).file_size)
                             file.setMachineType(zfname)
                             file.setPart(zfname)
@@ -163,6 +173,7 @@ class GameRelease(object):
                             second_file.sha1 = new_file_sha1
                             second_file.format = zfext
                             second_file.md5_zipped = file.md5_zipped
+                            second_file.is_demo = '(demo' in file_path.lower()
                             second_file.setSize(z.getinfo(zfname).file_size)
                             second_file.size_zipped = file.size_zipped
                             second_file.wos_name = os.path.basename(zfname)

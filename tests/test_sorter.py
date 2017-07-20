@@ -426,3 +426,21 @@ class TestSorter(unittest.TestCase):
         # not_expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation)(ru).sna'
         # self.assertTrue(os.path.exists(expected_file))
 
+    def test_not_traversing_subfolders(self):
+        input_location = 'tests/sort_not_traversing_subfolders_in'
+        output_location = 'tests/sort_not_traversing_subfolders_out'
+        s = Sorter(
+                   input_locations=[input_location],
+                   output_location=output_location,
+                   traverse_subfolders=False,
+                   output_folder_structure='',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = output_location+'/Zaxxon (1985)(US Gold).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        not_expected_file = output_location+'/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap'
+        self.assertFalse(os.path.exists(not_expected_file))
+
+

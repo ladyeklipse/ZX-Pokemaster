@@ -48,5 +48,9 @@ class GameTests(unittest.TestCase):
         g.setGenre("Arcade: Race 'n' Chase")
         self.assertEqual(g.genre, "Arcade - Race 'n' Chase")
 
+    def test_colon_in_name(self):
+        g = Game('Ace 2: Combat')
+        self.assertEqual(g.getTOSECName(), 'Ace 2 - Combat (19xx)(-)')
+
 if __name__=='__main__':
     unittest.main()

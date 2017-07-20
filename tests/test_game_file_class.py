@@ -57,6 +57,10 @@ class GameFileTests(unittest.TestCase):
         file = GameFile("Test (19xx)(Publisher)[t][a]")
         self.assertEqual(file.mod_flags, '[t]')
 
+    def test_notes(self):
+        file = GameFile("Test (19xx)(Publisher)[t][a][re-release]")
+        self.assertEqual(file.notes, '[re-release]')
+
     def test_cascade_games(self):
         file = GameFile('Spectral Skiing (1983)(Cascade Games)[16K].zip')
         self.assertEqual(file.game.publisher, 'Cascade Games')
@@ -67,6 +71,19 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.game.getPublisher(), 'Firebird Software')
         self.assertEqual(file.game.getYear(), '1985')
         self.assertEqual(file.game.name, 'A Treat!')
+
+    def test_tape_as_part(self):
+        file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)[Master Tape].zip')
+        self.assertEqual(file.part, 0)
+        file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)(Tape 1).zip')
+        self.assertEqual(file.part, 1)
+        file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)(Part 2).zip')
+        self.assertEqual(file.part, 2)
+
+    def test_multilanguage(self):
+        file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)(M3).zip')
+        self.assertEqual(file.language, 'M3')
+
 
 if __name__=='__main__':
     unittest.main()

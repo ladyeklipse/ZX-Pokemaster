@@ -19,6 +19,7 @@ class Sorter():
 
     def __init__(self, *args, **kwargs):
         self.input_locations = kwargs.get('input_locations', [])
+        self.traverse_subfolders= kwargs.get('traverse_subfolders', True)
         self.output_location = kwargs.get('output_location', 'sorted')
         self.formats_preference = kwargs.get('formats_preference', [])
         if not self.formats_preference:
@@ -111,6 +112,8 @@ class Sorter():
                 for file in files:
                     if file[-3:].lower() in formats:
                         input_files.append(os.path.join(root, file))
+                if not self.traverse_subfolders:
+                    break
         return input_files
 
     def getGameFilesFromInputPath(self, file_path):

@@ -6,6 +6,7 @@ from scrape_zxdb import *
 from scrape_tipshop import *
 from tipshop_excel_converter import *
 from scrape_tosec import *
+import sys
 
 if __name__=='__main__':
     if os.path.exists('pokemaster.db'):
@@ -25,16 +26,7 @@ if __name__=='__main__':
             release.getInfoFromLocalFiles()
         db.addGame(game)
     db.commit()
-    ts = TOSECScraper(db)
-    # paths = ts.generateTOSECPathsArray()
-    ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-    ts.scrapeTOSEC()
-    # for i in range(2):
-    #     ts = TOSECScraper(db)
-    #     db.loadCache(force_reload=True)
-    #     paths = ts.showUnscraped()
-    #     ts.paths = paths
-    #     ts.scrapeTOSEC()
-    xlsx2db()
-
-
+    # sys.exit()
+    # ts = TOSECScraper(db)
+    # ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
+    # ts.scrapeTOSEC()

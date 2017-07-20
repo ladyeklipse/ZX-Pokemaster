@@ -9,6 +9,13 @@ class TestGameRelease(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestGameRelease, self).__init__(*args, **kwargs)
 
+
+    def test_colon_in_name(self):
+        g = Game('Ace 2: Combat')
+        r = GameRelease(game=g)
+        self.assertEqual(r.getTOSECName(), 'Ace 2 - Combat (19xx)(-)')
+
+
     # def test_search_string(self):
     #     game = Game('La Abadia Del Crimen')
     #     release = GameRelease(game=game)

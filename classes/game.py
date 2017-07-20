@@ -70,7 +70,8 @@ class Game(object):
         return False
 
     def getTOSECName(self):
-        filepath = self.name[:100] + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
+        name = self.name[:100].replace(': ', ' - ')
+        filepath = name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
         filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
         return filepath
 
@@ -143,7 +144,7 @@ class Game(object):
 
     def setMachineType(self, machine_type):
         if machine_type:
-            self.machine_type = machine_type.replace('ZX-Spectrum', '').strip()
+            self.machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
 
     def setLanguage(self, language):
         if not language:
@@ -260,7 +261,7 @@ class Game(object):
             if file.md5 == md5:
                 return file
 
-    def findReleaseByFile(self, game_file):
+    def findReleaseByFile(self, game_file, strict=False):
         if len(self.releases)==1:
             return self.releases[0]
         for release in self.releases:
@@ -273,4 +274,7 @@ class Game(object):
             if game_file_publisher==release_publisher:
                 return release
         print(self, 'Not found proper release for:', game_file)
-        return self.releases[0]
+        if not strict:
+            return self.releases[0]
+        else:
+            return None

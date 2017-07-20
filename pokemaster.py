@@ -75,6 +75,7 @@ class MainDialog(QDialog):
     def sortFiles(self):
         kwargs = {
             'input_locations':self.getInputLocations(),
+            'traverse_subdirectories':self.ui.chkTraverseSubdirectories.isChecked(),
             'output_location':self.ui.txtOutputPath.text(),
             'formats_preference':self.getFormatsPreference(),
             'output_folder_structure':self.getOutputFolderStructure(),
@@ -155,6 +156,7 @@ class MainDialog(QDialog):
                     if pattern == settings.get('output_folder_structure'):
                         self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
+                self.ui.chkTraverseSubdirectories.setChecked(settings.get('traverse_subridrectories', True))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
                 self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference', [','.join(GAME_EXTENSIONS)])))
                 self.ui.chkIncludeAlternate.setChecked(not settings.get('ignore_alternate', True))
