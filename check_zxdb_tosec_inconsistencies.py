@@ -4,7 +4,7 @@ db = Database()
 games = db.getAllGames()
 inconsistencies = [[
     'TOSEC path',
-    'WoS FTP path'
+    'WoS FTP path',
     'Original TOSEC game name',
     'ZXDB-based TOSEC game name',
     'ZXDB ID',
