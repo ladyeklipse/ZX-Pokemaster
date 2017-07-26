@@ -22,6 +22,9 @@
      <height>32</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -90,6 +93,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{Genre}</string>
    </property>
@@ -102,6 +108,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{MachineType}</string>
@@ -116,6 +125,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{MaxPlayers}</string>
    </property>
@@ -128,6 +140,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{Publisher}</string>
@@ -142,6 +157,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{Year}</string>
    </property>
@@ -154,6 +172,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{Letter}</string>
@@ -168,6 +189,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{GameName}</string>
    </property>
@@ -180,6 +204,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{Language}</string>
@@ -194,6 +221,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>Slash (\)</string>
    </property>
@@ -206,6 +236,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{Format}</string>
@@ -246,6 +279,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>CamelCaseInsteadOfSpaces</string>
    </property>
@@ -258,6 +294,9 @@
      <width>291</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>Use 8.3 naming scheme</string>
@@ -272,6 +311,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{ModFlags}</string>
    </property>
@@ -284,6 +326,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{ZXDB_ID}</string>
@@ -298,6 +343,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>{Part}</string>
    </property>
@@ -310,6 +358,9 @@
      <width>93</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>{Side}</string>
@@ -324,6 +375,9 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>Hyphen ( - )</string>
    </property>
@@ -336,6 +390,9 @@
      <width>91</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>Underscore(_)</string>

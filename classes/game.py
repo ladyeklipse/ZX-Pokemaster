@@ -69,8 +69,8 @@ class Game(object):
             return True
         return False
 
-    def getTOSECName(self):
-        name = self.name[:100].replace(': ', ' - ')
+    def getTOSECName(self, game_name_length=MAX_GAME_NAME_LENGTH):
+        name = self.name[:game_name_length].replace(': ', ' - ')
         filepath = name + ' (' + self.getYear() + ')(' + self.getPublisher() + ')'
         filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
         return filepath

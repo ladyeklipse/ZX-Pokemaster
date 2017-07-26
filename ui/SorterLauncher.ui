@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>666</height>
+    <width>474</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -89,7 +89,7 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
      <width>441</width>
      <height>231</height>
@@ -155,7 +155,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>470</y>
+     <y>500</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -168,7 +168,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>510</y>
+     <y>540</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -184,7 +184,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>530</y>
+     <y>560</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -200,7 +200,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>550</y>
+     <y>580</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -295,12 +295,41 @@
      <string>Remove pattern</string>
     </property>
    </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>441</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Output folder structure pattern</string>
+    </property>
+    <widget class="QComboBox" name="cmbOutputFolderStructure_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>421</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <property name="currentText" stdset="0">
+      <string/>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QCheckBox" name="chkPlacePokFilesIntoPOKESSubfolder">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>610</y>
+     <y>640</y>
      <width>441</width>
      <height>20</height>
     </rect>
@@ -329,7 +358,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>570</y>
+     <y>600</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -340,110 +369,6 @@
    <property name="checked">
     <bool>true</bool>
    </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>430</y>
-     <width>121</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Preferred language:</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="cmbOutputFolderStructure_2">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>430</y>
-     <width>161</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="editable">
-    <bool>false</bool>
-   </property>
-   <property name="currentText" stdset="0">
-    <string>All</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>All</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>English (en)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Spanish (es)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Russian (ru)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Croatian (hr)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Czech (cz)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Dutch (nl)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>German (de)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>French (fr)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hungarian (hu)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Norwegian (no)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Polish (pl)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Serbian (sr)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Slovak (sl)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Swedish (sv)</string>
-    </property>
-   </item>
   </widget>
   <widget class="QToolButton" name="btnFormatPreferenceWindow">
    <property name="geometry">
@@ -462,7 +387,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>590</y>
+     <y>620</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -478,7 +403,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>490</y>
+     <y>520</y>
      <width>451</width>
      <height>20</height>
     </rect>
@@ -489,6 +414,48 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>430</y>
+     <width>441</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Languages</string>
+   </property>
+   <widget class="QLineEdit" name="txtFormatPreference_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>291</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>30</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select...</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources>

@@ -59,8 +59,8 @@ class TestDatabase(unittest.TestCase):
     def test_getting_game_by_md5(self):
         file = GameFile('ftp/pub/sinclair/games/t/Tujad.tap.zip')
         md5 = '200c35cb8984a40257dd8b317263d752'
-        self.assertEqual(md5, file.getMD5(zipped=False))
-        game = self.db.getGameByFileMD5(file.getMD5(zipped=False))
+        self.assertEqual(md5, file.getMD5())
+        game = self.db.getGameByFileMD5(file.getMD5())
         self.check_if_game_is_tujad(game)
 
     def test_importing_corrupt_pok_file(self):

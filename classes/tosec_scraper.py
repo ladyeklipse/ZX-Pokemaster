@@ -210,8 +210,8 @@ class TOSECScraper():
         game_file = GameFile(file_path)
         game_file.format = os.path.split(file_path)[0][-4:-1].lower()
         game_file.tosec_path = file_path
-        game_file.getMD5(zipped=False)
-        game_file.setSize(os.path.getsize(file_path), zipped=True)
+        game_file.getMD5()
+        game_file.setSize(os.path.getsize(file_path))
         return game_file
 
     def getGameFileFromFilePathDict(self, file_path):

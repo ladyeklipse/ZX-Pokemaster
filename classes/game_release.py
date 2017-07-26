@@ -138,9 +138,7 @@ class GameRelease(object):
     def getInfoFromLocalFiles(self):
         extra_files = []
         for file in self.files:
-            # if not file.zipped:
-            #     continue
-            file_path = file.getLocalPath(zipped=True)
+            file_path = file.getLocalPath()
             if not os.path.exists(file_path):
                 print(file_path, 'does not exist. Cannot get MD5 hashes.')
                 continue
@@ -175,7 +173,6 @@ class GameRelease(object):
                             second_file.md5_zipped = file.md5_zipped
                             second_file.is_demo = '(demo' in file_path.lower()
                             second_file.setSize(z.getinfo(zfname).file_size)
-                            second_file.size_zipped = file.size_zipped
                             second_file.wos_name = os.path.basename(zfname)
                             second_file.wos_zipped_name = file.wos_zipped_name
                             second_file.setMachineType(zfname)

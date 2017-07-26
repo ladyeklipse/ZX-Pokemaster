@@ -1,4 +1,5 @@
 from classes.database import *
+from functions.game_name_functions import *
 from settings import *
 import os
 import stat
@@ -24,14 +25,19 @@ class Sorter():
         self.formats_preference = kwargs.get('formats_preference', [])
         if not self.formats_preference:
             self.formats_preference = GAME_EXTENSIONS
+        self.languages = kwargs.get('languages', [])
         self.output_folder_structure = kwargs.get('output_folder_structure', '{Letter}')
+        self.output_filename_structure = kwargs.get('output_filename_structure', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
         self.delete_original_files = kwargs.get('delete_original_files', False)
-        self.files_per_folder = kwargs.get('files_per_folder')
+        self.files_per_folder = kwargs.get('files_per_folder', None)
         self.ignore_alternate = kwargs.get('ignore_alternate', True)
         self.ignore_alternate_formats = kwargs.get('ignore_alternate_formats', False)
         self.ignore_rereleases = kwargs.get('ignore_rereleases', False)
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
+        self.ignore_xrated = kwargs.get('ignore_xrated', False)
         self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
+        self.short_filenames = kwargs.get('short_filenames', False)
+        self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
         self.gui = kwargs.get('gui', None)
         if kwargs.get('cache', True):
@@ -40,7 +46,7 @@ class Sorter():
             self.db.loadCache()
         if self.output_location in self.input_locations:
             self.original_output_location = self.output_location
-            self.output_location = os.path.join(os.path.dirname(self.output_location), 'temp')
+            self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
 
 
     def sortFiles(self):
@@ -50,12 +56,16 @@ class Sorter():
         self.collected_files = self.collectFiles(self.input_files)
         print('Files collected')
         if self.too_long_path:
+            print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
             return
         if self.ignore_hacks or \
             self.ignore_alternate or \
-            self.ignore_rereleases:
+            self.ignore_rereleases or \
+            self.languages:
             self.collected_files = self.filterCollectedFiles()
             print('Files filtered')
+        if self.files_per_folder:
+            self.collected_files = self.bundleFilesInEqualFolders()
         print('Redistributing...')
         self.redistributeFiles()
 
@@ -73,6 +83,7 @@ class Sorter():
         if self.gui:
             self.gui.updateProgressBar(0, len(input_files), 'Examining files...')
         collected_files = {}
+        tosec_compliant = self.output_filename_structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE
         for i, file_path in enumerate(input_files):
             if self.should_cancel:
                 break
@@ -81,7 +92,11 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             game_files = self.getGameFilesFromInputPath(file_path)
+            if not self.short_filenames:
+                for game_file in game_files:
+                    self.shortenGameFileDestination(game_file)
             if self.too_long_path:
+                print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
                 break
             if not game_files:
                 print('Nothing found for', file_path)
@@ -94,9 +109,22 @@ class Sorter():
                     if game_file in collected_files[game_file.game.wos_id]:
                         continue
                     copies_count = game_file.countAlternateDumpsIn(collected_files[wos_id])
-                    game_file.addAlternateModFlag(copies_count)
+                    game_file.addAlternateModFlag(copies_count,
+                                                  tosec_compliant=tosec_compliant,
+                                                  short_filenames=self.short_filenames)
                 collected_files[game_file.game.wos_id].append(game_file)
         return collected_files
+
+    def shortenGameFileDestination(self, game_file):
+        abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+        if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
+            for game_name_length in range(MAX_GAME_NAME_LENGTH, MIN_GAME_NAME_LENGTH, -10):
+                game_file.dest = self.getDestination(game_file, game_name_length=game_name_length)
+                abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+                if len(abs_dest) <= MAX_DESTINATION_PATH_LENGTH:
+                    break
+        if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
+            self.too_long_path = abs_dest
 
     def getInputFiles(self, input_locations=None):
         if not input_locations:
@@ -117,6 +145,7 @@ class Sorter():
         return input_files
 
     def getGameFilesFromInputPath(self, file_path):
+        game_files = []
         ext = os.path.splitext(file_path)[1][1:].lower()
         if ext in self.formats_preference:
             game_file = GameFile(file_path)
@@ -125,11 +154,10 @@ class Sorter():
                 game_file.importCredentials(game)
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)
-            return [game_file]
+            game_files.append(game_file)
         elif ext=='zip':
             if os.path.getsize(file_path)>MAX_ZIP_FILE_SIZE:
                 return []
-            game_files = []
             with zipfile.ZipFile(file_path) as zf:
                 for zfname in zf.namelist():
                     zfext = os.path.splitext(zfname)[1][1:].lower()
@@ -149,18 +177,25 @@ class Sorter():
                     game_file.src = file_path
                     game_file.dest = self.getDestination(game_file)
                     game_files.append(game_file)
-            return game_files
+        return game_files
 
-    def getDestination(self, game_file):
-        try:
-            subfolders_dict = game_file.getOutputPathFormatKwargs()
-        except Exception as e:
-            print(game_file.src)
-            raise e
-        dest = self.output_folder_structure.format(**subfolders_dict)
-        dest = os.path.join(self.output_location, dest, game_file.getTOSECName())
-        if len(dest)>255:
-            self.too_long_path = dest
+    def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
+        #Publisher name will be cropped to 3 words if dest length is too long
+        subfolders_dict = game_file.getOutputPathFormatKwargs(
+            game_name_length=game_name_length)
+        dest_dir = self.output_folder_structure.format(**subfolders_dict)
+        dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
+                                                game_name_length=game_name_length)
+        if self.short_filenames:
+            dest_filename = os.path.splitext(dest_filename)
+            print(dest_filename)
+            dest_filename = ''.join((get_meaningful_8letter_name(game_file.getGameName()), '.', game_file.format.upper()))
+            dest_dir = dest_dir.split(os.sep)
+            print(dest_dir)
+            dest_dir = [get_meaningful_8letter_name(x) for x in dest_dir]
+            dest_dir = os.path.join(*dest_dir)
+        dest = os.path.join(dest_dir, dest_filename)
+        dest = os.path.join(self.output_location, dest)
         return dest
 
     def filterCollectedFiles(self):
@@ -175,10 +210,63 @@ class Sorter():
                     self.collected_files[game_wos_id][i] = None
                 if self.ignore_bad_dumps and file.isBadDump():
                     self.collected_files[game_wos_id][i] = None
+                if self.ignore_xrated and file.isXRated():
+                    self.collected_files[game_wos_id][i] = None
+                if self.languages and file.getLanguage() not in self.languages:
+                    self.collected_files[game_wos_id][i] = None
             files = [file for file in files if file]
-
             if self.ignore_alternate_formats and files and game_wos_id:
                 self.collected_files[game_wos_id] = self.filterOutAlternateFormats(files)
+        return self.collected_files
+
+    def bundleFilesInEqualFolders(self):
+        folders = {}
+        for game_wos_id, files in self.collected_files.items():
+            for i, file in enumerate(files):
+                if not file:
+                    continue
+                file_dest_dir = os.path.dirname(file.getDestPath())
+                if not folders.get(file_dest_dir):
+                    folders[file_dest_dir]=[]
+                folders[file_dest_dir].append(file)
+
+        bundles = {}
+        mini_bundles = {}
+        for folder_name, files in folders.items():
+            if len(files)<=self.files_per_folder:
+                continue
+            bundles = {}
+            mini_bundles = {}
+            for file in files:
+                mini_bundle_name = file.getBundleName()
+                if not mini_bundles.get(mini_bundle_name):
+                    mini_bundles[mini_bundle_name] = []
+                mini_bundles[mini_bundle_name].append(file)
+
+            current_bundle = []
+            mini_bundles = [{
+                'name':key,
+                'files':value
+            } for key, value in mini_bundles.items()]
+            mini_bundles = sorted(mini_bundles, key=lambda x: x['name'])
+            while True:
+                if mini_bundles:
+                    current_bundle.append(mini_bundles.pop(0)['files'])
+                files_in_current_bundle = sum([len(bundle) for bundle in current_bundle])
+                if not mini_bundles or \
+                    len(mini_bundles[0]['files'])+files_in_current_bundle>=self.files_per_folder:
+                    if current_bundle:
+                        current_bundle_name = '{}-{}'.format(current_bundle[0][0].getBundleName(),
+                                                             current_bundle[-1][-1].getBundleName())
+                        bundles[current_bundle_name] = [file for file in current_bundle]
+                    current_bundle = []
+                if not mini_bundles:
+                    break
+
+            for bundle_name, mini_bundles in bundles.items():
+                for mini_bundle in mini_bundles:
+                    for file in mini_bundle:
+                        file.setBundle(bundle_name)
         return self.collected_files
 
     def filterOutAlternateFormats(self, files):
@@ -219,12 +307,11 @@ class Sorter():
                 print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
-            # if self.too_long_path:
-            #     break
+            dest = file.getDestPath(camel_case=self.use_camel_case)
             try:
-                os.makedirs(os.path.dirname(file.dest), exist_ok=True)
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
             except OSError:
-                print('Could not make dires:', file.dest, 'for', file.src)
+                print('Could not make dirs:', dest, 'for', file.src)
                 print(traceback.format_exc())
                 continue
             if file.src.lower().endswith('zip'):
@@ -232,23 +319,23 @@ class Sorter():
             else:
                 try:
                     if self.delete_original_files:
-                        shutil.move(file.src, file.dest)
+                        shutil.move(file.src, dest)
                     else:
-                        shutil.copy(file.src, file.dest)
+                        shutil.copy(file.src, dest)
                 except PermissionError:
                     os.chmod(file.dest, stat.S_IWRITE)
                     if self.delete_original_files:
-                        shutil.move(file.src, file.dest)
+                        shutil.move(file.src, dest)
                     else:
-                        shutil.copy(file.src, file.dest)
+                        shutil.copy(file.src, dest)
 
             if file.game.cheats:
-                pok_file_path = os.path.dirname(file.dest)
-                pok_file_name = os.path.splitext(os.path.basename(file.dest))[0]+'.pok'
+                pok_dir_path = os.path.dirname(dest)
+                pok_file_name = os.path.splitext(os.path.basename(dest))[0]+'.pok'
                 if self.place_pok_files_in_pokes_subfolders:
-                    pok_file_path = os.path.join(pok_file_path, 'POKES')
-                    os.makedirs(pok_file_path, exist_ok=True)
-                pok_file_path = os.path.join(pok_file_path, pok_file_name)
+                    pok_dir_path = os.path.join(pok_dir_path, 'POKES')
+                    os.makedirs(pok_dir_path, exist_ok=True)
+                pok_file_path = os.path.join(pok_dir_path, pok_file_name)
                 file.game.exportPokFile(pok_file_path)
 
     def getFilesArray(self, collected_files):
@@ -270,15 +357,16 @@ class Sorter():
     def unpackFile(self, game_file):
         with zipfile.ZipFile(game_file.src) as zf:
             for zfname in zf.namelist():
-                crc32 = hex(zf.getinfo(zfname).CRC)[2:]
-                if crc32 == game_file.crc32:
+                crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
+                if crc32 == game_file.crc32.zfill(8):
                     data = zf.read(zfname)
+                    dest = game_file.getDestPath(camel_case=self.use_camel_case)
                     try:
-                        with open(game_file.getDestination(), 'wb') as output:
+                        with open(dest, 'wb') as output:
                             output.write(data)
                     except PermissionError:
-                        os.chmod(game_file.getDestination(), stat.S_IWRITE)
-                        with open(game_file.getDestination(), 'wb') as output:
+                        os.chmod(dest, stat.S_IWRITE)
+                        with open(dest, 'wb') as output:
                             output.write(data)
                     break
 

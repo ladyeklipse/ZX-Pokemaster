@@ -1,10 +1,10 @@
 BEGIN TRANSACTION;
 CREATE TABLE "game" (
-	`wos_id`	INTEGER NOT NULL AUTO_INCREMENT, -- ZXDB entries.entry_id
+	`wos_id`	INTEGER NOT NULL AUTO_INCREMENT, -- ZXDB entries.entry_id. Auto-created entries from TOSEC are assigned IDs > 9000000
 	`name`	VARCHAR(255), -- ZXDB entries.title
 	`publisher`	VARCHAR(255), -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == 0
 	`year`	INTEGER, -- ZXDB releases.release_year WHERE releases.release_seq == 0
-	`genre`	VARCHAR(255), -- ZXDB genretypes.text WHERE genretypes.id=entries.genretype_id
+	`genre`	VARCHAR(255), -- ZXDB genretypes.text WHERE genretypes.id=entries.genretype_id, or TOSEC if game not in ZXDB
 	`x_rated`	INTEGER DEFAULT 0, -- ZXDB entries.is_xrated
 	`number_of_players`	INTEGER DEFAULT 1, -- ZXDB entries.max_players
 	`multiplayer_type` CHAR(1), -- ZXDB entries.multiplaytype_id
@@ -45,7 +45,7 @@ CREATE TABLE "game_file" (
 	`machine_type`	INTEGER, -- ZXDB entry_machinetype.text WHERE download_machinetype.id=downloads.machinetype_id OR (if wos_path==NULL) - from TOSEC filename ([128K], [48K] or [48/128K])
 	`format`	TEXT, -- extension of UNZIPPED file, always lower case, retrieved by reading the file.
 	`size`	INTEGER, -- size of UNZIPPED file retrieved by reading the file
-	`size_zipped`	INTEGER, -- size of .zip file from FTP or TOSEC. This field is DEPRECATED
+	`content_desc` TEXT -- TOSEC - All data between end of game name and 1st bracket
 	`is_demo` INTEGER, -- TOSEC - 1 if (demo) in name, else 0
 	`part`	INTEGER DEFAULT 1, -- TOSEC - %d if (Part %d) in name or (Disk %d) in name, 0 by default
 	`side`	INTEGER, -- TOSEC - 1 if (Side A) in name, 2 if (Side B) in name, 0 by default.

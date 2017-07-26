@@ -73,6 +73,33 @@ class TestZXDBScraper(unittest.TestCase):
         game = db.getGameByWosID(30265)
         self.assertEqual(game.getMultiplayerType(), 'Vs')
 
+    def test_cousin_horace(self):
+        where_clause = 'AND entries.id = 30155'
+        games = zxdb.getGames(where_clause)
+        s = Scraper()
+        for game in games:
+            for file in game.getFiles():
+                local_path = file.getLocalPath()
+                if os.path.exists(local_path) and \
+                        os.path.getsize(local_path):
+                    continue
+                elif os.path.exists(local_path) and \
+                                os.path.getsize(local_path) != file.size:
+                    print('wrong file size:', local_path)
+                else:
+                    for mirror in WOS_MIRRORS:
+                        try:
+                            status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)
+                        except:
+                            print(traceback.format_exc())
+                        if status == 200:
+                            break
+        for release in games[0].releases:
+            release.getInfoFromLocalFiles()
+        # db.addGame(games[0])
+        # db.commit()
+        game = db.getGameByWosID(30265)
+
     def test_side(self):
         where_clause = 'AND entries.id = 5856'
         games = zxdb.getGames(where_clause)

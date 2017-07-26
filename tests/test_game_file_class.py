@@ -12,7 +12,7 @@ class GameFileTests(unittest.TestCase):
     def test_hashsums(self):
         print(os.getcwd())
         game = Game(wos_id=1660)
-        game_file = GameFile('ftp\pub\sinclair\games\e\E.T.X..tap.zip', game=game)
+        game_file = GameFile('\pub\sinclair\games\e\E.T.X..tap.zip', game=game)
         expected_md5 = 'b04c5d9bf88eb5a008696d83eeee69ac'
         self.assertEqual(expected_md5, game_file.getMD5())
         expected_sha1 = 'a879037fd3ba64170e83d4d44652681b1eb097e3'
@@ -21,7 +21,7 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(expected_crc32, game_file.getCRC32())
 
     def test_weird_md5(self):
-        game_file = GameFile('ftp/pub/sinclair/utils/3DGameMaker(GraphicEditor3D).tap.zip')
+        game_file = GameFile('/pub/sinclair/utils/3DGameMaker(GraphicEditor3D).tap.zip')
         self.assertTrue(os.path.exists(game_file.getLocalPath()))
         self.assertGreater(len(game_file.getMD5()), 0)
         game_file = GameFile('ftp\zxdb\sinclair\entries\\0030083\DogmoleTuppowski.scl.zip')
@@ -34,7 +34,7 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.game.getYear(), '1989')
         self.assertEqual(file.game.getPublisher(), 'Opera Soft')
         self.assertEqual(file.getLanguage(), 'es')
-        self.assertEqual(file.getSide(), 'B')
+        self.assertEqual(file.getSide(), 'Side B')
         file = GameFile('Gonzzalezz.zip')
         self.assertEqual(file.game.name, 'Gonzzalezz')
 

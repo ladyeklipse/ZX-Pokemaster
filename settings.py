@@ -1,5 +1,5 @@
 LOCAL_GAME_FILES_DIRECTORY = 'wos_games'
-LOCAL_FTP_ROOT = 'ftp'
+LOCAL_FTP_ROOT = ''
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'http://spectrumcomputing.co.uk',
@@ -15,6 +15,8 @@ TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
 GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
 MAX_ZIP_FILE_SIZE = 8858353
 MAX_GAME_NAME_LENGTH = 100
+MIN_GAME_NAME_LENGTH = 30
+MAX_DESTINATION_PATH_LENGTH = 240
 AVAILABILITY_TYPES = {
     'A':'Available',
     'D':'Distribution denied',
@@ -75,3 +77,7 @@ INCLUDED_LANGUAGES_LIST = [
     ('sl', 'Slovak'),
     ('sv', 'Swedish')
 ]
+TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
+    '{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}.{Format}'
+DEFAULT_MACHINE_TYPE = '48K'
+DEFAULT_GAME_LANGUAGE = 'en'

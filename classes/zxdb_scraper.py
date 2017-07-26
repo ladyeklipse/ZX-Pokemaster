@@ -221,6 +221,6 @@ class ZXDBScraper():
 
     def gameFileFromRow(self, row, game):
         game_file = GameFile(row['file_link'], game=game)
-        game_file.setSize(row['file_size'], zipped=True)
+        game_file.setSize(row['file_size'])
         game_file.setMachineType(row['machine_type'])
         return game_file

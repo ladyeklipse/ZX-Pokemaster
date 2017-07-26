@@ -131,7 +131,7 @@ class Database():
                           file.machine_type,
                           file.format,
                           file.size,
-                          file.size_zipped,
+                          file.content_desc,
                           file.is_demo,
                           file.part,
                           file.side,
@@ -339,7 +339,7 @@ class Database():
         file.format = row['format']
         file.tosec_path = row['tosec_path']
         file.size = row['size']
-        file.size_zipped = row['size_zipped']
+        file.content_desc = row['content_desc']
         file.is_demo = row['is_demo']
         file.setMachineType(row['file_machine_type'])
         file.part = row['part']
@@ -348,7 +348,6 @@ class Database():
         file.mod_flags = row['mod_flags']
         file.notes = row['notes']
         file.md5 = row['md5']
-        # file.md5_zipped = row['md5_zipped']
         file.crc32 = row['crc32']
         file.sha1 = row['sha1']
         return file
