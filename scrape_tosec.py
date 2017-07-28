@@ -6,6 +6,7 @@ if __name__=='__main__':
     ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
     ts.db.loadCache()
     ts.scrapeTOSEC()
+    ts.updateTOSECAliasesCSV()
     ts.addUnscraped()
     ts.db.commit()
     with open('tosec_inconsistencies.csv', 'w', encoding='utf-8') as f:

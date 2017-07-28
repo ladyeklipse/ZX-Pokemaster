@@ -162,7 +162,6 @@ class TOSECScraper():
     def addGameToLocalDB(self, game):
         files = game.getFiles()
         for file in files:
-            print('File=', file)
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
                 file.setContentDesc(filename)
@@ -226,6 +225,15 @@ class TOSECScraper():
         game_file.sha1 = file_path['sha1']
         game_file.setSize(file_path['size'])
         return game_file
+
+    def updateTOSECAliasesCSV(self):
+        self.getTOSECAliases()
+        with open('tosec_aliases.csv', 'w', encoding='utf-8') as f:
+            for key, value in self.manually_entered_tosec_aliases.items():
+                f.write(';'.join((key, value)))
+            for file_path in self.unscraped_file_paths:
+                game_file = self.getGameFileFromFilePathDict(file_path)
+                f.write(';'.join((game_file.getGameName(), '', game_file.getGenre())))
 
     def getTOSECAliases(self):
         if not self.manually_entered_tosec_aliases:
