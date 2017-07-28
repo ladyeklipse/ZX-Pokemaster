@@ -87,6 +87,24 @@ class TestTOSECScraper(unittest.TestCase):
         unscraped = ts.showUnscraped()
         self.assertEqual(len(unscraped), 0)
 
+    def test_popeye_collection(self):
+        wos_id = 12013
+        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        ts.db.execute(sql)
+        ts.db.commit()
+        # ts.db.loadCache()
+        dat_files = ['tests/Sinclair ZX Spectrum - Compilations - Games - [TZX] (test).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        game = ts.db.getGameByWosID(12013)
+        for file in game.getFiles():
+            print(file.tosec_path, 'content_desc='+file.content_desc, file.md5)
+            self.assertGreater(len(file.content_desc), 0)
+
+
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

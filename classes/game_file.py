@@ -22,11 +22,13 @@ def putPrefixToEnd(game_name):
 
 class GameFile(object):
 
+    path = ''
     game = None
     release = None
     release_seq = 0
     wos_name = ''
     wos_zipped_name = ''
+    wos_path = ''
     tosec_path = ''
     content_desc = ''
     is_demo = 0
@@ -41,19 +43,25 @@ class GameFile(object):
     md5 = ''
     crc32 = ''
     sha1 = ''
-    wos_path = ''
     src=''
     dest=''
     alt_dest=''
     is_tosec_compliant = False
+    is_alternate = False
 
-    def __init__(self, path='', size=0, game=None, release=None):
+    def __init__(self, path='', size=0, game=None, release=None,
+                 source=None):
         if not path:
             return
         filename = os.path.basename(path)
-        self.wos_path = path
         self.setSize(size)
         self.format = self.getFormat(path)
+        if source == 'wos':
+            self.wos_path = path
+        elif source == 'tosec':
+            self.getParamsFromTOSECPath(path)
+        else:
+            self.path = path
         self.game = game
         self.release = release
         if game:
@@ -68,9 +76,9 @@ class GameFile(object):
             size = int(size.replace(',',''))
 
     def __repr__(self):
-        path = self.getDestPath() if self.dest else self.wos_path
-        if not path:
-            path = self.tosec_path
+        for path in [self.alt_dest, self.dest, self.path, self.wos_path, self.tosec_path]:
+            if path:
+                break
         return '<GameFile: '+path+' md5:'+self.md5+'>'
 
     def __eq__(self, other):
@@ -97,13 +105,18 @@ class GameFile(object):
             self.format = other_file.format
             self.release = game.findReleaseByFile(self)
 
-    def countAlternateDumpsIn(self, collection=[]):
+    def countFilesWithSameDestIn(self, collection=[]):
         count = 0
         for other_file in collection:
             if self.dest:
                 if self.dest == other_file.dest:
                     count += 1
                 continue
+        return count
+
+    def countAlternateDumpsIn(self, collection=[]):
+        count = 0
+        for other_file in collection:
             if self.game.wos_id==other_file.game.wos_id and \
                 self.getYear()==other_file.getYear() and \
                 self.getPublisher()==other_file.getPublisher() and \
@@ -117,6 +130,8 @@ class GameFile(object):
                 self.content_desc == other_file.content_desc and \
                 self.format == other_file.format:
                 count += 1
+        if count:
+            self.is_alternate = True
         return count
 
     def getEquals(self, collection):
@@ -126,6 +141,7 @@ class GameFile(object):
                 self.getYear() == other_file.getYear() and \
                 self.getPublisher() == other_file.getPublisher() and \
                 self.getReleaseSeq() == other_file.getReleaseSeq() and \
+                self.content_desc == other_file.content_desc and \
                 self.machine_type == other_file.machine_type and \
                 self.side == other_file.side and \
                 self.part == other_file.part and \
@@ -148,13 +164,13 @@ class GameFile(object):
                 alt_mod_flag = '[a]'
             else:
                 alt_mod_flag = '[a' + str(copies_count) + ']'
-                self.alt_dest = dest[0] + alt_mod_flag + dest[1]
+            self.alt_dest = dest[0] + alt_mod_flag + dest[1]
         else:
             alt_mod_flag = '_'+str(copies_count+1)
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
 
     def isAlternate(self):
-        if self.alt_dest:
+        if self.is_alternate:
             return True
         else:
             return False
@@ -202,6 +218,7 @@ class GameFile(object):
         if len(matches)==1:
             return
         self.game.setPublisher(matches[1])
+        self.game.setGenreFromFilePath(path)
         self.release = GameRelease(game=self.game)
         self.game.addRelease(self.release)
         self.game.addFile(self)
@@ -210,6 +227,7 @@ class GameFile(object):
     def getParamsFromTOSECPath(self, tosec_path):
         self.tosec_path = tosec_path
         filename = os.path.splitext(os.path.basename(tosec_path).replace('(demo)', ''))[0]
+        # self.setContentDesc(filename)
         self.setMachineType(filename)
         matches = re.findall(TOSEC_REGEX, filename)
         for each in matches[2:]:
@@ -233,6 +251,16 @@ class GameFile(object):
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
 
+    def setContentDesc(self, filename):
+        if self.game and self.game.wos_id:
+            game_name = filename.split('(')[0].strip()
+            aliases = sorted(self.game.getAliases(), key=len, reverse=True)
+            for alias in aliases:
+                if len(game_name)<=len(alias):
+                    break
+                elif alias in game_name:
+                    self.content_desc = game_name.split(alias)[-1]
+                    break
 
     def setMachineType(self, filename):
         if not filename:
@@ -402,11 +430,12 @@ class GameFile(object):
                             self.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
                         return zf.read(zfname)
         else:
-            return open(local_path, 'rb').read()
+            with open(local_path, 'rb')as f:
+                return f.read()
 
     def getOutputPathFormatKwargs(self, game_name_length=MAX_GAME_NAME_LENGTH,
                                   for_filename=False):
-        game_name = self.getGameName(game_name_length=game_name_length)
+        game_name = self.getGameName(game_name_length=game_name_length, for_filename=for_filename)
         publisher = self.getPublisher(restrict_length=game_name_length<MAX_GAME_NAME_LENGTH)
         if publisher == '-' and not for_filename:
             publisher = 'Unknown Publisher'
@@ -427,33 +456,19 @@ class GameFile(object):
             'Notes':self.notes
         }
 
+
     def getGenre(self):
         if self.game.genre:
             return self.game.getGenre()
         else:
-            path = ''.join(os.path.split(self.src)[-3:]).lower()
-            if 'magazines' in path:
-                return 'Electronic Magazine'
-            elif 'covertapes' in path:
-                return 'Covertape'
-            elif 'demos' in path:
-                return 'Scene Demo'
-            elif 'educational' in path:
-                return 'General - Education'
-            elif 'compilation' in path:
-                return 'Compilation'
-            elif 'games' in path:
-                return 'Unknown Games'
+            return 'Unknown'
         return 'Unknown'
 
 
-    def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH):
+    def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,
+                    for_filename=False):
         game_name = self.release.aliases[0] if self.release else self.game.name
         # game_name = putPrefixToEnd(game_name)
-        if self.content_desc:
-            game_name += ' '+self.content_desc
-        if self.is_demo:
-            game_name += '(demo)'
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         # game_name = game_name[:MAX_GAME_NAME_LENGTH]
         while game_name.endswith('.'):
@@ -467,7 +482,11 @@ class GameFile(object):
             game_name = ' '.join(game_name[:-1])
             game_name = [x for x in game_name.split(' ') if x]
         game_name = ' '.join(game_name).strip()
-
+        if for_filename:
+            if self.content_desc:
+                game_name += ' '+self.content_desc
+            if self.is_demo:
+                game_name += ' (demo)'
         return game_name.strip()
 
     def getYear(self):
@@ -512,7 +531,8 @@ class GameFile(object):
         if self.wos_path:
             local_path = os.path.abspath(self.getWosPath(wos_mirror_root=LOCAL_FTP_ROOT))
             return local_path
-        # return self.wos_path
+        elif self.path:
+            return self.path
 
     def getDestPath(self, camel_case=False):
         dest = self.alt_dest if self.alt_dest else self.dest
@@ -533,8 +553,9 @@ class GameFile(object):
     def getAbsoluteDestPath(self, camel_case=False):
         return os.path.abspath(self.getDestPath(camel_case=False))
 
-    def getLocalFile(self):
-        return open(self.getLocalPath())
+    # def getLocalFile(self):
+    #     with open(self.getLocalPath()) as file:
+    #         return file
 
     def savePokesLocally(self):
         path = self.getLocalPath()

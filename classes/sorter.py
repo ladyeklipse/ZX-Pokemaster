@@ -109,6 +109,8 @@ class Sorter():
                     if game_file in collected_files[game_file.game.wos_id]:
                         continue
                     copies_count = game_file.countAlternateDumpsIn(collected_files[wos_id])
+                    if not tosec_compliant:
+                        copies_count = game_file.countFilesWithSameDestIn(collected_files[wos_id])
                     game_file.addAlternateModFlag(copies_count,
                                                   tosec_compliant=tosec_compliant,
                                                   short_filenames=self.short_filenames)
@@ -176,6 +178,7 @@ class Sorter():
                         game_file.tosec_path = None
                     game_file.src = file_path
                     game_file.dest = self.getDestination(game_file)
+                    game_file.alt_dest = ''
                     game_files.append(game_file)
         return game_files
 

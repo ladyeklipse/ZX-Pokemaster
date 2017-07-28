@@ -12,6 +12,11 @@ remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 def getWosSubfolder(filepath):
     return '123' if not filepath[0].isalpha() else filepath[0].lower()
 
+def getFileSystemFriendlyName(name):
+    name = name.replace(': ', ' - ').replace('/','-')
+    name = filepath_regex.sub('', name).strip()
+    return name
+
 class Game(object):
 
     wos_id = 0
@@ -75,11 +80,32 @@ class Game(object):
         filepath = filepath_regex.sub('', filepath.replace('/', '-')).strip()
         return filepath
 
+    def getAliases(self):
+        aliases = []
+        for release in self.releases:
+            aliases += release.aliases
+        return [getFileSystemFriendlyName(aliase) for aliase in set(aliases)]
+
     def getWosID(self):
         return str(self.wos_id).zfill(7)
 
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
+
+    def setGenreFromFilePath(self, path):
+        path = ''.join(os.path.split(path)[-3:]).lower()
+        if 'magazines' in path:
+            self.genre = 'Electronic Magazine'
+        elif 'covertapes' in path:
+            self.genre = 'Covertape'
+        elif 'demos' in path:
+            self.genre = 'Scene Demo'
+        elif 'educational' in path:
+            self.genre = 'General - Education'
+        elif 'compilation' in path:
+            self.genre = 'Compilation'
+        elif 'games' in path:
+            self.genre = 'Unknown Games'
 
     def getGenre(self):
         return self.genre if self.genre else 'Unknown'

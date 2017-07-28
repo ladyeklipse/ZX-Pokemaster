@@ -40,7 +40,7 @@ class Database():
     cache_by_md5 = {}
 
     def __init__(self):
-        self.conn = sqlite3.connect('pokemaster.db')
+        self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
         # self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()

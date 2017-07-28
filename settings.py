@@ -1,5 +1,5 @@
-LOCAL_GAME_FILES_DIRECTORY = 'wos_games'
-LOCAL_FTP_ROOT = ''
+POKEMASTER_DB_PATH = 'C:\\ZX Pokemaster\\pokemaster.db'
+LOCAL_FTP_ROOT = 'C:\\ZX Pokemaster\\ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'http://spectrumcomputing.co.uk',

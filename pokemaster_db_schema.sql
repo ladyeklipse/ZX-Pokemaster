@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 CREATE TABLE "game" (
-	`wos_id`	INTEGER NOT NULL AUTO_INCREMENT, -- ZXDB entries.entry_id. Auto-created entries from TOSEC are assigned IDs > 9000000
+	`wos_id` INTEGER PRIMARY KEY AUTOINCREMENT, -- ZXDB entries.entry_id. Auto-created entries from TOSEC are assigned IDs > 9000000
 	`name`	VARCHAR(255), -- ZXDB entries.title
 	`publisher`	VARCHAR(255), -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == 0
 	`year`	INTEGER, -- ZXDB releases.release_year WHERE releases.release_seq == 0
@@ -13,8 +13,7 @@ CREATE TABLE "game" (
 	`availability`	CHAR(1), -- ZXDB entries.availabletype_id
 	`tipshop_page`	TEXT, -- Retrieved by scraping the-tipshop.co.uk Database Index: "0123.htm" and "%s.html" where %s=[a-z]
 	`pok_file_contents`	BLOB, -- Retrieved by scraping the-tipshop.co.uk and manual correction
-	`tipshop_multiface_pokes_section` BLOB, -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
-	PRIMARY KEY(`wos_id`)
+	`tipshop_multiface_pokes_section` BLOB -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
 );
 INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 DELETE FROM game WHERE wos_id = 9000000;
@@ -45,7 +44,7 @@ CREATE TABLE "game_file" (
 	`machine_type`	INTEGER, -- ZXDB entry_machinetype.text WHERE download_machinetype.id=downloads.machinetype_id OR (if wos_path==NULL) - from TOSEC filename ([128K], [48K] or [48/128K])
 	`format`	TEXT, -- extension of UNZIPPED file, always lower case, retrieved by reading the file.
 	`size`	INTEGER, -- size of UNZIPPED file retrieved by reading the file
-	`content_desc` TEXT -- TOSEC - All data between end of game name and 1st bracket
+	`content_desc` TEXT, -- TOSEC - All data between end of game name and 1st bracket
 	`is_demo` INTEGER, -- TOSEC - 1 if (demo) in name, else 0
 	`part`	INTEGER DEFAULT 1, -- TOSEC - %d if (Part %d) in name or (Disk %d) in name, 0 by default
 	`side`	INTEGER, -- TOSEC - 1 if (Side A) in name, 2 if (Side B) in name, 0 by default.

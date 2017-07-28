@@ -11,16 +11,25 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id=1155'
         games = zxdb.getGames(where_clause)
         for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
             db.addGame(game)
         db.commit()
         game = db.getGameByWosID(1155)
         self.assertTrue(len(game.releases[0].aliases), 2)
         self.assertTrue('Crime Busters' in game.releases[0].aliases)
+        for file in game.getFiles():
+            if file.md5=='c358b7b95459f583c9e2bc11d9830d68':
+                self.assertGreater(len(file.wos_path), 0)
+                self.assertGreater(len(file.wos_name), 0)
+
 
     def test_multirelease_game(self):
         where_clause = 'AND entries.id=4'
         games = zxdb.getGames(where_clause)
         game = games[0]
+        for release in game.releases:
+            release.getInfoFromLocalFiles()
         self.assertEqual(len(game.releases), 4)
         db.addGame(games[0])
         db.commit()
@@ -31,6 +40,9 @@ class TestZXDBScraper(unittest.TestCase):
     def test_square_brackets_elimination(self):
         where_clause = 'AND entries.id = 26303'
         games = zxdb.getGames(where_clause)
+        for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
         db.addGame(games[0])
         db.commit()
         game = db.getGameByWosID(26303)
@@ -76,28 +88,11 @@ class TestZXDBScraper(unittest.TestCase):
     def test_cousin_horace(self):
         where_clause = 'AND entries.id = 30155'
         games = zxdb.getGames(where_clause)
-        s = Scraper()
-        for game in games:
-            for file in game.getFiles():
-                local_path = file.getLocalPath()
-                if os.path.exists(local_path) and \
-                        os.path.getsize(local_path):
-                    continue
-                elif os.path.exists(local_path) and \
-                                os.path.getsize(local_path) != file.size:
-                    print('wrong file size:', local_path)
-                else:
-                    for mirror in WOS_MIRRORS:
-                        try:
-                            status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)
-                        except:
-                            print(traceback.format_exc())
-                        if status == 200:
-                            break
+        zxdb.downloadMissingFiles(games)
         for release in games[0].releases:
             release.getInfoFromLocalFiles()
-        # db.addGame(games[0])
-        # db.commit()
+        db.addGame(games[0])
+        db.commit()
         game = db.getGameByWosID(30265)
 
     def test_side(self):
@@ -105,7 +100,6 @@ class TestZXDBScraper(unittest.TestCase):
         games = zxdb.getGames(where_clause)
         for release in games[0].releases:
             release.getInfoFromLocalFiles()
-            pass
         wos_names = [file.wos_name for file in games[0].getFiles()]
         self.assertIn('Zip-Zap - Alternate - Side 1.tzx', wos_names)
         self.assertIn('Zip-Zap - Alternate - Side 2.tzx', wos_names)

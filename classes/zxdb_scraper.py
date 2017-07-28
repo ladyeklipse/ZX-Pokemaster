@@ -103,21 +103,14 @@ class ZXDBScraper():
             sql += sql_where+' '
         sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT '+str(sql_limit)
-              # 'downloads.filetype_id IN (0, 1, 2, 8, 10, 11, 17, 20, 21, 28)) AND ' \
-        # print(sql)
         self.cur.execute(sql)
         game = Game()
         release = GameRelease()
         games = []
         for row in self.cur:
-            # print(row['wos_id'], row['release_seq'])
-            # continue
-            # print(row['wos_id'], row['release_seq'])
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:
-                # if game.wos_id:
-                #     games.append(game)
                 game = self.gameFromRow(row)
                 release = self.releaseFromRow(row, game)
                 game.addRelease(release)
@@ -131,8 +124,6 @@ class ZXDBScraper():
                         if release.loading_screen_gif_filepath and \
                                         release.loading_screen_gif_filepath!=row['file_link']:
                             pass
-                            # print(game, game.loading_screen_gif_filepath, row['file_link'])
-                            # print('Duplicate loading screen GIF')
                         else:
                             release.loading_screen_gif_filepath = row['file_link']
                             release.loading_screen_gif_filesize = row['file_size']
@@ -140,8 +131,6 @@ class ZXDBScraper():
                         if release.loading_screen_scr_filepath and \
                                         release.loading_screen_scr_filepath!=row['file_link']:
                             pass
-                            # print(game)
-                            # print('Duplicate loading screen SCR')
                         else:
                             release.loading_screen_scr_filepath = row['file_link']
                             release.loading_screen_scr_filesize = row['file_size']
@@ -150,16 +139,12 @@ class ZXDBScraper():
                         if release.ingame_screen_gif_filepath and \
                                         release.ingame_screen_gif_filepath!=row['file_link']:
                             pass
-                            # print(game, game.ingame_screen_gif_filepath, row['file_link'])
-                            # print('Duplicate ingame screen gif')
                         else:
                             release.ingame_screen_gif_filepath = row['file_link']
                             release.ingame_screen_gif_filesize = row['file_size']
                     elif row['file_format'] == 'Screen dump':
                         if release.ingame_screen_scr_filepath and \
                                         release.ingame_screen_scr_filepath != row['file_link']:
-                            # print(game, game.ingame_screen_scr_filepath, row['file_link'])
-                            # print('Duplicate ingame screen gif')
                             pass
                         else:
                             release.ingame_screen_scr_filepath = row['file_link']
@@ -168,8 +153,6 @@ class ZXDBScraper():
                     if release.manual_filepath and \
                                     release.manual_filepath!=row['file_link']:
                         pass
-                        # print(game, game.manual_filepath, row['file_link'])
-                        # print('Duplicate manual')
                     else:
                         release.manual_filepath = row['file_link']
                         release.manual_filesize = row['file_size']
@@ -220,7 +203,27 @@ class ZXDBScraper():
         return release
 
     def gameFileFromRow(self, row, game):
-        game_file = GameFile(row['file_link'], game=game)
+        game_file = GameFile(row['file_link'], game=game, source='wos')
         game_file.setSize(row['file_size'])
         game_file.setMachineType(row['machine_type'])
         return game_file
+
+    def downloadMissingFilesForGames(self, games):
+        s = Scraper()
+        for game in games:
+            for file in game.getFiles():
+                local_path = file.getLocalPath()
+                if os.path.exists(local_path) and \
+                        os.path.getsize(local_path):
+                    continue
+                elif os.path.exists(local_path) and \
+                                os.path.getsize(local_path) != file.size:
+                    print('wrong file size:', local_path)
+                else:
+                    for mirror in WOS_MIRRORS:
+                        try:
+                            status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)
+                        except:
+                            print(traceback.format_exc())
+                        if status == 200:
+                            break

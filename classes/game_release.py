@@ -117,6 +117,8 @@ class GameRelease(object):
             if file == new_file:
                 if new_file.tosec_path:
                     file.tosec_path = new_file.tosec_path
+                if new_file.content_desc:
+                    file.content_desc = new_file.content_desc
                 if new_file.is_demo:
                     file.is_demo = new_file.is_demo
                 if new_file.size:
@@ -129,6 +131,10 @@ class GameRelease(object):
                     file.part = new_file.part
                 if new_file.side:
                     file.side = new_file.side
+                if new_file.mod_flags:
+                    file.mod_flags = new_file.mod_flags
+                if new_file.notes:
+                    file.nots = new_file.notes
                 return
         new_file.game = self.game
         new_file.release_seq = self.release_seq

@@ -5,12 +5,14 @@ from classes.sorter import *
 import argparse
 
 if __name__=='__main__':
-    input_locations = ['ftp', 'tosec']
+    input_locations = ['ftp/pub/sinclair/games', 'ftp/zxdb', 'tosec']
     # input_locations = ['ftp/pub/sinclair/utils']
     # input_locations = ['tosec']
     s = Sorter(input_locations=input_locations,
-               output_location='sorted_with_no_repeats',
-               output_folder_structure='{Letter}',
-               ignore_alternate=True,
+               output_location='sorted_by_genre',
+               output_folder_structure='{Genre}',
+               ignore_alternate=False,
+               # short_filenames=True,
+               files_per_folder=255,
                cache=True)
     s.sortFiles()
