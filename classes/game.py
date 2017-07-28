@@ -5,7 +5,7 @@ import os
 import glob
 import re
 
-publisher_regex = re.compile('inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
+publisher_regex = re.compile(' inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
@@ -84,7 +84,7 @@ class Game(object):
         aliases = []
         for release in self.releases:
             aliases += release.aliases
-        return [getFileSystemFriendlyName(aliase) for aliase in set(aliases)]
+        return [getFileSystemFriendlyName(alias) for alias in set(aliases)]
 
     def getWosID(self):
         return str(self.wos_id).zfill(7)

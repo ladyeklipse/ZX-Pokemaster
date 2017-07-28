@@ -104,6 +104,52 @@ class TestTOSECScraper(unittest.TestCase):
             print(file.tosec_path, 'content_desc='+file.content_desc, file.md5)
             self.assertGreater(len(file.content_desc), 0)
 
+    def test_1942(self):
+        wos_id = 9297
+        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game WHERE wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_release WHERE wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_file WHERE game_wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        ts.db.execute(sql)
+        ts.db.commit()
+        # ts.db.loadCache()
+        dat_files = ['tests/Sinclair ZX Spectrum - Games - [TZX] (1942).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        game = ts.db.getGameByWosID(wos_id)
+        self.assertGreater(len(game.getFiles()), 0)
+
+    def test_ghostbusters(self):
+        wos_id = 2025
+        sql = 'DELETE FROM game_file WHERE game_wos_id in({}, 14372, 7433) AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game WHERE wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_release WHERE wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_file WHERE game_wos_id>9000000'.format(wos_id)
+        ts.db.execute(sql)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        ts.db.execute(sql)
+        ts.db.commit()
+        # ts.db.loadCache()
+        dat_files = ['tests/Sinclair ZX Spectrum - Games - [TZX] (Ghostbusters).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        game = ts.db.getGameByWosID(wos_id)
+        for release in game.releases:
+            if release.release_seq==1:
+                self.assertGreater(len(release.files), 0)
+            if release.release_seq==4:
+                self.assertGreater(len(release.files), 0)
+
 
 
     def scrape(self, paths, wos_id):

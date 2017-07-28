@@ -76,10 +76,7 @@ class GameFile(object):
             size = int(size.replace(',',''))
 
     def __repr__(self):
-        for path in [self.alt_dest, self.dest, self.path, self.wos_path, self.tosec_path]:
-            if path:
-                break
-        return '<GameFile: '+path+' md5:'+self.md5+'>'
+        return '<GameFile: '+self.getPath()+' md5:'+self.md5+'>'
 
     def __eq__(self, other):
         if self.wos_name and \
@@ -90,6 +87,11 @@ class GameFile(object):
         if self.md5 and self.md5==other.md5:
             return True
         return False
+
+    def getPath(self):
+        for path in [self.alt_dest, self.dest, self.path, self.wos_path, self.tosec_path]:
+            if path:
+                return path
 
     def importCredentials(self, game):
         self.game = game

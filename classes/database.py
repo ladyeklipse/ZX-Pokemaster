@@ -196,7 +196,7 @@ class Database():
         else:
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
             sql = SELECT_GAME_SQL_START
-            sql += 'WHERE game.wos_id=' \
+            sql += 'WHERE game.wos_id IN ' \
                    '(SELECT wos_id FROM game_release ' \
                    'WHERE game_release.name LIKE ?)'
             sql += SELECT_GAME_SQL_END
@@ -210,14 +210,17 @@ class Database():
             game_file = GameFile(filepath)
             candidates = []
             for game in games:
-                if game.getPublisher() == game_file.game.getPublisher():
-                    candidates.append(game)
+                for release in game.releases:
+                    if release.getPublisher() == game_file.game.getPublisher():
+                        candidates.append(game)
             if len(candidates)==1:
                 return candidates[0]
             else:
-                for game in games:
-                    if game.getYear() == game_file.game.getYear():
-                        return game
+                for game in candidates:
+                    for release in game.releases:
+                        if release.getYear() == game_file.game.getYear():
+                            return game
+            return None
 
     def getGamesFromRawData(self, raw_data):
         games = []
@@ -256,7 +259,7 @@ class Database():
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
         if not game:
-            game = self.getGameByFilePath(file.wos_path)
+            game = self.getGameByFilePath(file.getPath())
         return game
 
     def getGameByFileMD5(self, md5, zipped=False):

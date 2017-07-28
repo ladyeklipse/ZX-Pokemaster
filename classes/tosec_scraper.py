@@ -230,16 +230,16 @@ class TOSECScraper():
         self.getTOSECAliases()
         with open('tosec_aliases.csv', 'w', encoding='utf-8') as f:
             for key, value in self.manually_entered_tosec_aliases.items():
-                f.write(';'.join((key, value)))
+                f.write(';'.join((key, value))+'\n')
             for file_path in self.unscraped_file_paths:
                 game_file = self.getGameFileFromFilePathDict(file_path)
-                f.write(';'.join((game_file.getGameName(), '', game_file.getGenre())))
+                f.write(';'.join((game_file.game.getTOSECName(), '', game_file.getGenre()))+'\n')
 
     def getTOSECAliases(self):
         if not self.manually_entered_tosec_aliases:
             with open('tosec_aliases.csv', 'r', encoding='utf-8') as f:
                 for line in f.readlines():
                     line = line.strip().split(';')
-                    if len(line)<2:
+                    if len(line)<2 or not line[1]:
                         continue
                     self.manually_entered_tosec_aliases[line[0]]=line[1]
