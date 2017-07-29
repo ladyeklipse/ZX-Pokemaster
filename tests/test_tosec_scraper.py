@@ -150,7 +150,17 @@ class TestTOSECScraper(unittest.TestCase):
             if release.release_seq==4:
                 self.assertGreater(len(release.files), 0)
 
-
+    def test_educational_dats(self):
+        dat_files = ['tosec/Sinclair ZX Spectrum - Compilations - Educational - [TRD] (TOSEC-v2011-09-24_CM).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        ts.addUnscraped()
+        ts.db.loadCache()
+        game = ts.db.getGameByFileMD5('3bb8fca89941bb3b9ad26ae823c15899')
+        if not game:
+            self.fail()
+        self.assertNotEqual(game.wos_id, 0)
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
@@ -159,5 +169,6 @@ class TestTOSECScraper(unittest.TestCase):
         ts.db.loadCache()
         ts.paths = paths
         ts.scrapeTOSEC()
+        ts.addUnscraped()
         unscraped = ts.showUnscraped()
         self.assertEqual(len(unscraped), 0)

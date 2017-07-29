@@ -153,7 +153,7 @@ class Sorter():
             game_file = GameFile(file_path)
             game = self.db.getGameByFile(game_file)
             if game:
-                game_file.importCredentials(game)
+                game_file.importCredentialsFromGame(game, overwrite = True)
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)
             game_files.append(game_file)

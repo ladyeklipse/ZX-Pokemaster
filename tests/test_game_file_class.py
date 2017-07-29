@@ -21,7 +21,7 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(expected_crc32, game_file.getCRC32())
 
     def test_weird_md5(self):
-        game_file = GameFile('/pub/sinclair/utils/3DGameMaker(GraphicEditor3D).tap.zip')
+        game_file = GameFile('ftp/pub/sinclair/utils/3DGameMaker(GraphicEditor3D).tap.zip')
         self.assertTrue(os.path.exists(game_file.getLocalPath()))
         self.assertGreater(len(game_file.getMD5()), 0)
         game_file = GameFile('ftp\zxdb\sinclair\entries\\0030083\DogmoleTuppowski.scl.zip')
@@ -60,6 +60,10 @@ class GameFileTests(unittest.TestCase):
     def test_notes(self):
         file = GameFile("Test (19xx)(Publisher)[t][a][re-release]")
         self.assertEqual(file.notes, '[re-release]')
+        path = 'Sinclair ZX Spectrum\Games\[TAP]\Backpackers Guide to the Universe (1984)(Fantasy Software)[passworded].zip'
+        file = GameFile(path)
+        self.assertEqual(file.notes, '[passworded]')
+
 
     def test_cascade_games(self):
         file = GameFile('Spectral Skiing (1983)(Cascade Games)[16K].zip')

@@ -8,6 +8,8 @@ from settings import *
 import re
 
 TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GAME_EXTENSIONS]))
+ROUND_BRACKETS_REGEX = re.compile('[\(](.*?)[\)]')
+SQUARE_BRACKETS_REGEX = re.compile('[\[](.*?)[\]]')
 
 def putPrefixToEnd(game_name):
     if game_name.startswith('Die Hard'):
@@ -93,19 +95,36 @@ class GameFile(object):
             if path:
                 return path
 
-    def importCredentials(self, game):
+    def importCredentialsFromGame(self, game, overwrite=False):
         self.game = game
         other_file = game.findFileByMD5(self.md5)
         if other_file:
-            self.content_desc = other_file.content_desc
-            self.part = other_file.part
-            self.language = other_file.language
-            self.mod_flags = other_file.mod_flags
-            self.notes = other_file.notes
-            self.side = other_file.side
-            self.machine_type = other_file.machine_type
-            self.format = other_file.format
+            self.importCredentialsFromFile(other_file, overwrite=overwrite)
             self.release = game.findReleaseByFile(self)
+
+    def importCredentialsFromFile(self, other_file, overwrite=False):
+        if other_file.format:
+            self.format = other_file.format
+        if overwrite or other_file.tosec_path:
+            self.tosec_path = other_file.tosec_path
+        if overwrite or other_file.content_desc:
+            self.content_desc = other_file.content_desc
+        if overwrite or other_file.is_demo:
+            self.is_demo = other_file.is_demo
+        if overwrite or other_file.size:
+            self.size = other_file.size
+        if overwrite or other_file.language:
+            self.language = other_file.language
+        if overwrite or other_file.machine_type:
+            self.machine_type = other_file.machine_type
+        if overwrite or other_file.part:
+            self.part = other_file.part
+        if overwrite or other_file.side:
+            self.side = other_file.side
+        if overwrite or other_file.mod_flags:
+            self.mod_flags = other_file.mod_flags
+        if overwrite or other_file.notes:
+            self.notes = other_file.notes
 
     def countFilesWithSameDestIn(self, collection=[]):
         count = 0
@@ -207,8 +226,10 @@ class GameFile(object):
         return self.tosec_path if self.tosec_path else os.path.basename(self.wos_path)
 
     def getGameFromFileName(self, path):
+        if '(demo' in path:
+            self.is_demo = True
         filename = os.path.splitext(os.path.basename(path).replace('(demo)', ''))[0]
-        matches = re.findall(TOSEC_REGEX, filename)
+        matches = re.findall(ROUND_BRACKETS_REGEX, filename)
         game_name = re.sub(TOSEC_REGEX, '', filename).strip()
         if not self.game:
             self.game = Game(game_name)
@@ -229,28 +250,31 @@ class GameFile(object):
     def getParamsFromTOSECPath(self, tosec_path):
         self.tosec_path = tosec_path
         filename = os.path.splitext(os.path.basename(tosec_path).replace('(demo)', ''))[0]
-        # self.setContentDesc(filename)
         self.setMachineType(filename)
-        matches = re.findall(TOSEC_REGEX, filename)
-        for each in matches[2:]:
-            if len(re.findall('^a[0-9]?[0-9]?$', each)):
-                continue
-            elif len(re.findall('^M[0-9]$', each)):
+        round_brackets_matches = re.findall(ROUND_BRACKETS_REGEX, filename)
+        for each in round_brackets_matches[2:]:
+            if len(re.findall('^M[0-9]$', each)):
                 self.setLanguage(each)
-            elif len(re.findall('^[0-9\-]+K?$', each)):
-                self.setMachineType(each)
-            elif len(each)==2 and each.isalpha() and each!='cr':
+            elif len(each)==2 and each.isalpha() and each.islower():
                 self.setLanguage(each)
             elif 'Side' in each:
                 self.setSide(each)
             elif 'Part' in each or 'Disk' in each or 'Tape' in each:
                 self.setPart(each)
+        square_brackets_matches = re.findall(SQUARE_BRACKETS_REGEX, filename)
+        for each in square_brackets_matches:
+            if len(re.findall('^a[0-9]?[0-9]?$', each)):
+                continue
+            elif len(re.findall('^[0-9\-]+K?$', each)):
+                self.setMachineType(each)
             elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o', 't']:
                 mod_flag = '[{}]'.format(each)
                 if mod_flag not in self.mod_flags:
                     self.mod_flags += mod_flag
             elif each not in self.notes and \
-                self.machine_type not in each:
+                self.machine_type not in each and \
+                    're-release' not in each and \
+                    not each.startswith('aka '):
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note
@@ -314,37 +338,12 @@ class GameFile(object):
     def getLanguage(self):
         if self.language:
             return self.language
-        # elif self.release:
-        #     return self.release.getLanguage()
         else:
             return self.game.getLanguage()
 
     def getTOSECName(self, game_name_length=MAX_GAME_NAME_LENGTH):
         output_name = self.getOutputName(game_name_length=game_name_length)
         return output_name
-
-        # basename = self.getGameName(game_name_length=game_name_length)
-        # params = []
-        # params.append('('+self.getYear()+')')
-        # params.append('('+self.getPublisher(restrict_length=game_name_length<MAX_GAME_NAME_LENGTH)+')')
-        # language = self.getLanguage()
-        # if language!='en':
-        #     params.append('('+language+')')
-        # if self.part:
-        #     label = 'Disk' if self.format in ('dsk', 'trd') else 'Part'
-        #     if self.game.parts>1:
-        #         params.append('(%s %d of %d)' % (label, self.part, self.game.parts))
-        #     else:
-        #         params.append('(%s %d)' % (label, self.part))
-        # if self.side:
-        #     params.append('(%s)' % self.getSide())
-        # if self.machine_type and self.machine_type!='48K':
-        #     params.append('[%s]' % self.machine_type)
-        # if self.mod_flags:
-        #     params.append(self.mod_flags)
-        # tosec_name = basename+' '+''.join(params)+'.'+self.format
-        # tosec_name = filepath_regex.sub('', tosec_name.replace('/', '-').replace(':', ' -')).strip()
-        # return tosec_name
 
     def getOutputName(self, structure=TOSEC_COMPLIANT_FILENAME_STRUCTURE,
                       game_name_length=MAX_GAME_NAME_LENGTH):
@@ -462,6 +461,33 @@ class GameFile(object):
             'Notes':self.notes
         }
 
+    def getTOSECDatName(self):
+        parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
+        genre = self.game.getGenre()
+        if 'Compilation' in genre:
+            parts.append('Compilations')
+            if 'Utilities' in genre:
+                parts.append('Applications')
+            elif 'Educational' in genre:
+                parts.append('Educational')
+            elif 'Demo' in genre:
+                parts.append('Demos')
+            elif 'Magazine' in genre:
+                parts.append('Magazines')
+            else:
+                parts.append('Games')
+        elif genre.startswith('Utility'):
+            parts.append('Applications')
+        elif 'Education' in genre:
+            parts.append('Educational')
+        elif 'Magazine' in genre:
+            parts.append('Magazines')
+        elif 'Covertape' in genre:
+            parts.append('Covertapes')
+        else:
+            parts.append('Games')
+        parts.append('[{}]'.format(self.format.upper()))
+        return ' - '.join(parts)+'.dat'
 
     def getGenre(self):
         if self.game.genre:
@@ -474,9 +500,7 @@ class GameFile(object):
     def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,
                     for_filename=False):
         game_name = self.release.aliases[0] if self.release else self.game.name
-        # game_name = putPrefixToEnd(game_name)
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
-        # game_name = game_name[:MAX_GAME_NAME_LENGTH]
         while game_name.endswith('.'):
             game_name = game_name[:-1]
         while len(game_name)>game_name_length:
@@ -558,10 +582,6 @@ class GameFile(object):
 
     def getAbsoluteDestPath(self, camel_case=False):
         return os.path.abspath(self.getDestPath(camel_case=False))
-
-    # def getLocalFile(self):
-    #     with open(self.getLocalPath()) as file:
-    #         return file
 
     def savePokesLocally(self):
         path = self.getLocalPath()

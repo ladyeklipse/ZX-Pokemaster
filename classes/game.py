@@ -92,9 +92,46 @@ class Game(object):
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
 
+    def setContentDescForFiles(self):
+        files = self.getFiles()
+        for file in files:
+            if file.tosec_path and not file.content_desc:
+                filename = os.path.basename(file.tosec_path)
+                file.setContentDesc(filename)
+
+    def setCompilationType(self):
+        if not self.genre or self.genre == 'Compilation':
+            files = self.getFiles()
+            got_compilation_type = False
+            for file in files:
+                if 'Compilation' in file.tosec_path:
+
+                    if got_compilation_type:
+                        old_genre = self.genre
+                        self.setGenreFromFilePath(file.tosec_path)
+                        if self.genre!=old_genre:
+                            print(self, self.genre, old_genre)
+                            raise Exception('Inconsistency in compilation type')
+
+                    self.setGenreFromFilePath(file.tosec_path)
+                    got_compilation_type = True
+                    # break #FUTURE
+
     def setGenreFromFilePath(self, path):
         path = ''.join(os.path.split(path)[-3:]).lower()
-        if 'magazines' in path:
+        if 'compilation' in path:
+            self.genre = 'Compilation'
+            if 'demo' in path:
+                self.genre += ' - Demos'
+            elif 'education' in path:
+                self.genre += ' - Educational'
+            elif 'magazine' in path:
+                self.genre += ' - Magazines'
+            elif 'application' in path:
+                self.genre += ' - Utilities'
+            else:
+                self.genre += ' - Games'
+        elif 'magazines' in path:
             self.genre = 'Electronic Magazine'
         elif 'covertapes' in path:
             self.genre = 'Covertape'
@@ -102,8 +139,6 @@ class Game(object):
             self.genre = 'Scene Demo'
         elif 'educational' in path:
             self.genre = 'General - Education'
-        elif 'compilation' in path:
-            self.genre = 'Compilation'
         elif 'games' in path:
             self.genre = 'Unknown Games'
 

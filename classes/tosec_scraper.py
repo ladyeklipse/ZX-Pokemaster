@@ -160,11 +160,18 @@ class TOSECScraper():
         self.db.commit()
 
     def addGameToLocalDB(self, game):
-        files = game.getFiles()
-        for file in files:
-            if file.tosec_path and not file.content_desc:
-                filename = os.path.basename(file.tosec_path)
-                file.setContentDesc(filename)
+        game.setContentDescForFiles()
+        game.setCompilationType()
+        # files = game.getFiles()
+        # game_is_collection = True
+        # for file in files:
+        #     if 'Collection' not in file.tosec_path:
+        #         game_is_collection = False
+        #     if file.tosec_path and not file.content_desc:
+        #         filename = os.path.basename(file.tosec_path)
+        #         file.setContentDesc(filename)
+        # if game_is_collection:
+        #     game.setGenre()
         self.db.addGame(game)
 
     def showUnscraped(self):
@@ -199,19 +206,16 @@ class TOSECScraper():
         return unscraped_paths
 
     def addUnscraped(self):
-        # if not self.unscraped_file_paths:
-        #     unscraped_games = self.db.getAllGames('wos_id>9000000')
-        #     for game in unscraped_games:
-        #         for file in game.getFiles():
-
         for file_path in self.unscraped_file_paths:
             game_file = self.getGameFileFromFilePathDict(file_path)
             game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
             if game_by_md5:
                 game_by_md5.addFile(game_file)
-                self.db.addGame(game_by_md5)
+                game = game_by_md5
             else:
-                self.db.addGame(game_file.game)
+                game = game_file.game
+            self.db.addGame(game)
+        self.db.commit()
 
 
     def getGameFileFromFilePath(self, file_path):

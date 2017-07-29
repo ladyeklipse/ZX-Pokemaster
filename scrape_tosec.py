@@ -9,9 +9,9 @@ if __name__=='__main__':
     ts.updateTOSECAliasesCSV()
     ts.addUnscraped()
     ts.db.commit()
-    with open('tosec_inconsistencies.csv', 'w', encoding='utf-8') as f:
-        for array in ts.wrong_releases:
-            f.write(';'.join(array)+'\n')
-        for array in ts.inconsistencies:
-            f.write(';'.join(array)+'\n')
-    sys.exit()
+    # with open('tosec_inconsistencies.csv', 'w', encoding='utf-8') as f:
+    #     for array in ts.wrong_releases:
+    #         f.write(';'.join(array)+'\n')
+    #     for array in ts.inconsistencies:
+    #         f.write(';'.join(array)+'\n')
+    import check_zxdb_tosec_inconsistencies
