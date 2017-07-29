@@ -246,10 +246,14 @@ class GameFile(object):
             elif 'Part' in each or 'Disk' in each or 'Tape' in each:
                 self.setPart(each)
             elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o', 't']:
-                self.mod_flags += '[%s]' % each
+                mod_flag = '[{}]'.format(each)
+                if mod_flag not in self.mod_flags:
+                    self.mod_flags += mod_flag
             elif each not in self.notes and \
                 self.machine_type not in each:
-                self.notes += '[%s]' % each
+                note = '[{}]'.format(each)
+                if note not in self.notes:
+                    self.notes += note
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
 
@@ -486,7 +490,7 @@ class GameFile(object):
         game_name = ' '.join(game_name).strip()
         if for_filename:
             if self.content_desc:
-                game_name += ' '+self.content_desc
+                game_name += self.content_desc
             if self.is_demo:
                 game_name += ' (demo)'
         return game_name.strip()

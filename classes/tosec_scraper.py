@@ -17,11 +17,11 @@ class TOSECScraper():
     manually_entered_tosec_aliases = {}
     wrong_releases = [
         ['Wrong release chosen:'],
-        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name']
+        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
     ]
     inconsistencies = [
         ['Presumably wrong game chosen:'],
-        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name']
+        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
     ]
     unscraped_file_paths = []
 
@@ -199,6 +199,11 @@ class TOSECScraper():
         return unscraped_paths
 
     def addUnscraped(self):
+        # if not self.unscraped_file_paths:
+        #     unscraped_games = self.db.getAllGames('wos_id>9000000')
+        #     for game in unscraped_games:
+        #         for file in game.getFiles():
+
         for file_path in self.unscraped_file_paths:
             game_file = self.getGameFileFromFilePathDict(file_path)
             game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
@@ -207,6 +212,7 @@ class TOSECScraper():
                 self.db.addGame(game_by_md5)
             else:
                 self.db.addGame(game_file.game)
+
 
     def getGameFileFromFilePath(self, file_path):
         game_file = GameFile(file_path, source='tosec')
