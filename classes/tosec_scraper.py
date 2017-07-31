@@ -74,8 +74,11 @@ class TOSECScraper():
 
     def getPathsFromDatFile(self, dat_file):
         paths = []
-        with open(dat_file, 'r', encoding='utf-8') as f:
-            root = etree.fromstring(f.read())
+        with open(dat_file, 'rb') as f:
+            print(dat_file)
+            contents = f.read()
+            # root = etree.fromstring(contents)
+            root = etree.XML(contents)
             header = root[0]
             dirname = os.path.join(*header[0].text.split(' - '))
             games = [tag for tag in root[1:] if tag.tag=='game']

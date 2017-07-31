@@ -568,6 +568,7 @@ class GameFile(object):
         dest = self.alt_dest if self.alt_dest else self.dest
         if camel_case:
             dest = ''.join([x[0].upper() + x[1:] for x in dest.split(' ') if x])
+            dest = dest.replace(',', '')
         return dest
 
     def getBundleName(self):

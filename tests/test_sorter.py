@@ -312,7 +312,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_saboteur_out/Saboteur II (1987)(Durell Software).tap'
+        expected_file = 'tests/files/sort_saboteur_out/Saboteur II (1987)(Durell Software)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_two_disks_two_sides(self):
@@ -558,11 +558,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        not_expected_file = output_location+'/Durell Software/Saboteur II (1987)(Durell Software).tap'
+        not_expected_file = output_location+'/Durell Software/Saboteur II (1987)(Durell Software)[128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        expected_file = output_location+'/DurellSoftware/SaboteurII(1987)(DurellSoftware).tap'
+        expected_file = output_location+'/DurellSoftware/SaboteurII(1987)(DurellSoftware)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location + '/TheMojonTwins/Maritrini,FreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDe(2012)(TheMojonTwins).tap'
+        expected_file = output_location + '/TheMojonTwins/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDe(2012)(TheMojonTwins).tap'
         self.assertTrue(os.path.exists(expected_file))
 
 
