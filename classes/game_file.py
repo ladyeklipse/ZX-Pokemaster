@@ -325,15 +325,11 @@ class GameFile(object):
     def getPart(self):
         if not self.part:
             return ''
-        label = 'Disk' if self.format in ('dsk', 'trd') else 'Part'
+        label = 'Disk' if self.format in DISK_FORMATS else 'Part'
         if self.game.parts>1:
             return  '%s %d of %d' % (label, self.part, self.game.parts)
         else:
             return '%s %d' % (label, self.part)
-        # if self.format in ['trd', 'dsk']:
-        #     return 'Disk %d' % self.part
-        # else:
-        #     return 'Part %d' % self.part
 
     def getLanguage(self):
         if self.language:
@@ -567,11 +563,8 @@ class GameFile(object):
         elif self.path:
             return self.path
 
-    def getDestPath(self):#, camel_case=False):
+    def getDestPath(self):
         dest = self.alt_dest if self.alt_dest else self.dest
-        # if camel_case:
-        #     dest = ''.join([x[0].upper() + x[1:] for x in dest.split(' ') if x])
-        #     dest = dest.replace(',', '')
         return dest
 
     def getBundleName(self):
@@ -584,8 +577,8 @@ class GameFile(object):
         dest = os.path.join(dest_dir, bundle_name, dest_filename)
         self.alt_dest = dest
 
-    def getAbsoluteDestPath(self):#, camel_case=False):
-        return os.path.abspath(self.getDestPath())#camel_case=False))
+    def getAbsoluteDestPath(self):
+        return os.path.abspath(self.getDestPath())
 
     def savePokesLocally(self):
         path = self.getLocalPath()

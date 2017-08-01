@@ -13,6 +13,7 @@ WOS_LOADING_SCREENS_DIRECTORY = 'pub/sinclair/screens/load'
 WOS_MANUALS_DIRECTORY = 'pub/sinclair/games-info'
 TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
 GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
+DISK_FORMATS = ('dsk', 'trd', 'scl')
 MAX_ZIP_FILE_SIZE = 8858353
 MAX_GAME_NAME_LENGTH = 100
 MIN_GAME_NAME_LENGTH = 30

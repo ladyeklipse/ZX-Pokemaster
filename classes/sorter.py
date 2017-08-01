@@ -128,13 +128,11 @@ class Sorter():
         return collected_files
 
     def shortenGameFileDestination(self, game_file):
-        # abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
         abs_dest = game_file.getAbsoluteDestPath()
         if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
             for game_name_length in range(MAX_GAME_NAME_LENGTH, MIN_GAME_NAME_LENGTH, -10):
                 game_file.dest = self.getDestination(game_file,
                                                      game_name_length=game_name_length)
-                # abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
                 abs_dest = game_file.getAbsoluteDestPath()
                 if len(abs_dest) <= MAX_DESTINATION_PATH_LENGTH:
                     break
@@ -331,7 +329,6 @@ class Sorter():
                 print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
-            # dest = file.getDestPath(camel_case=self.use_camel_case)
             dest = file.getDestPath()
             try:
                 os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -385,7 +382,6 @@ class Sorter():
                 crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
                 if crc32 == game_file.crc32.zfill(8):
                     data = zf.read(zfname)
-                    # dest = game_file.getDestPath(camel_case=self.use_camel_case)
                     dest = game_file.getDestPath()
                     try:
                         with open(dest, 'wb') as output:
