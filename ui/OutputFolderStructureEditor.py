@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'OutputFolderStructureEditor.ui'
 #
-# Created: Tue Aug  1 01:25:41 2017
+# Created: Tue Aug  1 03:58:41 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -132,7 +132,7 @@ class Ui_Dialog(object):
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), Dialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-        Dialog.setTabOrder(self.txtOutputFileNameStructure, self.txtOutputFolderStructure)
+        Dialog.setTabOrder(self.txtOutputFolderStructure, self.txtOutputFileNameStructure)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Edit output folder structure", None))

@@ -16,7 +16,9 @@ class PatternCreatorDialog(QDialog):
 
     example_is_valid = False
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,
+                 folder_structure=None,
+                 file_structure=None):
         super(QDialog, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -32,6 +34,10 @@ class PatternCreatorDialog(QDialog):
         self.ui.txtOutputFileNameStructure.textChanged.connect(self.setExample)
         self.initGameFile()
         self.setExample()
+        if folder_structure:
+            self.ui.txtOutputFolderStructure.setText(folder_structure)
+        if file_structure:
+            self.ui.txtOutputFileNameStructure.setText(file_structure)
         self.ui.txtOutputFolderStructure.setFocus()
         self.exec()
 

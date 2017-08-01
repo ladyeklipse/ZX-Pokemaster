@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>531</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>400</height>
+    <height>550</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -156,7 +156,17 @@
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="1" column="2">
+            <item row="0" column="0" colspan="4">
+             <widget class="QComboBox" name="cmbOutputFolderStructure">
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+              <property name="currentText" stdset="0">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -169,7 +179,7 @@
               </property>
              </spacer>
             </item>
-            <item row="1" column="1">
+            <item row="1" column="2">
              <widget class="QPushButton" name="btnRemovePattern">
               <property name="text">
                <string>Remove pattern</string>
@@ -183,13 +193,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="3">
-             <widget class="QComboBox" name="cmbOutputFolderStructure">
-              <property name="editable">
-               <bool>false</bool>
-              </property>
-              <property name="currentText" stdset="0">
-               <string/>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btnEditPattern">
+              <property name="text">
+               <string>Edit pattern...</string>
               </property>
              </widget>
             </item>

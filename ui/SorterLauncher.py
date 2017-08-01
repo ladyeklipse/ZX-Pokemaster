@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Tue Aug  1 01:25:41 2017
+# Created: Tue Aug  1 03:58:41 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,13 +26,13 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(500, 531)
+        Dialog.resize(500, 550)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
         Dialog.setSizePolicy(sizePolicy)
-        Dialog.setMinimumSize(QtCore.QSize(500, 400))
+        Dialog.setMinimumSize(QtCore.QSize(500, 550))
         Dialog.setMaximumSize(QtCore.QSize(16777215, 16777215))
         Dialog.setBaseSize(QtCore.QSize(0, 0))
         Dialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
@@ -95,19 +95,22 @@ class Ui_Dialog(object):
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 1, 2, 1, 1)
-        self.btnRemovePattern = QtGui.QPushButton(self.groupBox_2)
-        self.btnRemovePattern.setObjectName(_fromUtf8("btnRemovePattern"))
-        self.gridLayout.addWidget(self.btnRemovePattern, 1, 1, 1, 1)
-        self.btnAddPattern = QtGui.QPushButton(self.groupBox_2)
-        self.btnAddPattern.setObjectName(_fromUtf8("btnAddPattern"))
-        self.gridLayout.addWidget(self.btnAddPattern, 1, 0, 1, 1)
         self.cmbOutputFolderStructure = QtGui.QComboBox(self.groupBox_2)
         self.cmbOutputFolderStructure.setEditable(False)
         self.cmbOutputFolderStructure.setProperty("currentText", _fromUtf8(""))
         self.cmbOutputFolderStructure.setObjectName(_fromUtf8("cmbOutputFolderStructure"))
-        self.gridLayout.addWidget(self.cmbOutputFolderStructure, 0, 0, 1, 3)
+        self.gridLayout.addWidget(self.cmbOutputFolderStructure, 0, 0, 1, 4)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 1, 3, 1, 1)
+        self.btnRemovePattern = QtGui.QPushButton(self.groupBox_2)
+        self.btnRemovePattern.setObjectName(_fromUtf8("btnRemovePattern"))
+        self.gridLayout.addWidget(self.btnRemovePattern, 1, 2, 1, 1)
+        self.btnAddPattern = QtGui.QPushButton(self.groupBox_2)
+        self.btnAddPattern.setObjectName(_fromUtf8("btnAddPattern"))
+        self.gridLayout.addWidget(self.btnAddPattern, 1, 0, 1, 1)
+        self.btnEditPattern = QtGui.QPushButton(self.groupBox_2)
+        self.btnEditPattern.setObjectName(_fromUtf8("btnEditPattern"))
+        self.gridLayout.addWidget(self.btnEditPattern, 1, 1, 1, 1)
         self.horizontalLayout_5.addLayout(self.gridLayout)
         self.verticalLayout_2.addWidget(self.groupBox_2)
         self.horizontalLayout_6 = QtGui.QHBoxLayout()
@@ -221,6 +224,7 @@ class Ui_Dialog(object):
         self.groupBox_2.setTitle(_translate("Dialog", "Output path structure pattern", None))
         self.btnRemovePattern.setText(_translate("Dialog", "Remove pattern", None))
         self.btnAddPattern.setText(_translate("Dialog", "Add pattern...", None))
+        self.btnEditPattern.setText(_translate("Dialog", "Edit pattern...", None))
         self.chkMaxFilesPerFolder.setText(_translate("Dialog", "Max files per folder:", None))
         self.chkCamelCase.setText(_translate("Dialog", "CamelCaseInsteadOfSpaces", None))
         self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme", None))

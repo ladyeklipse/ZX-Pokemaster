@@ -79,6 +79,6 @@ INCLUDED_LANGUAGES_LIST = [
     ('sv', 'Swedish')
 ]
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
-    '{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}.{Format}'
+    '{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
