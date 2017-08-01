@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'OutputFolderStructureEditor.ui'
 #
-# Created: Tue Aug  1 03:58:41 2017
+# Created: Tue Aug  1 04:37:24 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -122,9 +122,12 @@ class Ui_Dialog(object):
         sizePolicy.setHeightForWidth(self.lblExample.sizePolicy().hasHeightForWidth())
         self.lblExample.setSizePolicy(sizePolicy)
         self.lblExample.setMinimumSize(QtCore.QSize(0, 100))
+        self.lblExample.setMidLineWidth(5)
         self.lblExample.setText(_fromUtf8(""))
+        self.lblExample.setScaledContents(False)
         self.lblExample.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.lblExample.setWordWrap(True)
+        self.lblExample.setIndent(10)
         self.lblExample.setObjectName(_fromUtf8("lblExample"))
         self.gridLayout.addWidget(self.lblExample, 11, 0, 1, 4)
 

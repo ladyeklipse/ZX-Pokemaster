@@ -216,6 +216,7 @@ class Sorter():
             dest_dir = [get_meaningful_8letter_name(x) for x in dest_dir]
             dest_dir = os.path.join(*dest_dir)
         dest = os.path.join(dest_dir, dest_filename)
+        dest = os.sep.join([x for x in dest.split(os.sep) if x])
         if self.use_camel_case:
             dest = self.getCamelCasePath(dest)
         dest = os.path.join(self.output_location, dest)

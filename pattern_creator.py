@@ -30,10 +30,10 @@ class PatternCreatorDialog(QDialog):
         ]
         for button in self.buttons:
             button.clicked.connect(self.addPatternComponent)
-        self.ui.txtOutputFolderStructure.textChanged.connect(self.setExample)
-        self.ui.txtOutputFileNameStructure.textChanged.connect(self.setExample)
-        self.initGameFile()
-        self.setExample()
+        self.ui.txtOutputFolderStructure.textChanged.connect(self.setExamples)
+        self.ui.txtOutputFileNameStructure.textChanged.connect(self.setExamples)
+        self.initGameFiles()
+        self.setExamples()
         if folder_structure:
             self.ui.txtOutputFolderStructure.setText(folder_structure)
         if file_structure:
@@ -56,24 +56,39 @@ class PatternCreatorDialog(QDialog):
             elem = self.ui.txtOutputFileNameStructure
             elem.insert(text)
 
-    def initGameFile(self):
-        self.example_game_file = GameFile('Tujad (1986)(Ariolasoft UK)[48K].tap')
-        self.example_game_file.game.setGenre('Arcade - Maze')
-        self.example_game_file.game.wos_id = 5448
+    def initGameFiles(self):
+        self.examples = []
+        game_file = GameFile('Tujad (1986)(Ariolasoft UK)[48K].tap')
+        game_file.game.setGenre('Arcade Game `- Maze')
+        game_file.game.wos_id = 5448
+        self.examples.append(game_file)
+        game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2)(Side A)[Spy Hunter].tzx')
+        game_file.game.setNumberOfPlayers(1)
+        game_file.game.wos_id = 11598
+        self.examples.append(game_file)
+        game_file = GameFile('Sinclair ZX Spectrum\Covertapes\[TAP]\Snare (demo) (1992)(Beyond Belief - Sinclair User)[cr][48-128K].tap')
+        game_file.game.setGenre('Game - Puzzle')
+        game_file.game.wos_id = 4594
+        self.examples.append(game_file)
 
-    def setExample(self):
-        folder_structure, filename_structure = self.getPattern()
-        kwargs = self.example_game_file.getOutputPathFormatKwargs()
-        try:
-            filename = self.example_game_file.getOutputName(filename_structure)
-            example_path = os.path.join(folder_structure.format(**kwargs), filename)
-            if not is_pathname_valid(example_path):
-                raise Exception('Invalid path')
-            self.ui.lblExample.setText(example_path)
-            self.example_is_valid = True
-        except Exception as e:
-            self.ui.lblExample.setText(str(e))
-            self.example_is_valid = False
+    def setExamples(self):
+        examples = []
+        for game_file in self.examples:
+            folder_structure, filename_structure = self.getPattern()
+            kwargs = game_file.getOutputPathFormatKwargs()
+            try:
+                filename = game_file.getOutputName(filename_structure)
+                example_path = os.path.join(folder_structure.format(**kwargs), filename)
+                if not is_pathname_valid(example_path):
+                    raise Exception('Invalid path')
+                # self.ui.lblExample.setText(example_path)
+                examples.append(example_path)
+                self.example_is_valid = True
+            except Exception as e:
+                self.ui.lblExample.setText(str(e))
+                self.example_is_valid = False
+                break
+        self.ui.lblExample.setText('\r\n'.join(examples))
 
     def getPattern(self):
         folder_structure = self.ui.txtOutputFolderStructure.text()
