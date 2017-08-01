@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Tue Aug  1 04:37:24 2017
+# Created: Tue Aug  1 22:37:40 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -154,9 +154,6 @@ class Ui_Dialog(object):
         self.txtFormatPreference.setInputMask(_fromUtf8(""))
         self.txtFormatPreference.setObjectName(_fromUtf8("txtFormatPreference"))
         self.horizontalLayout_3.addWidget(self.txtFormatPreference)
-        self.btnFormatPreferenceWindow = QtGui.QToolButton(self.tabFileFiltering)
-        self.btnFormatPreferenceWindow.setObjectName(_fromUtf8("btnFormatPreferenceWindow"))
-        self.horizontalLayout_3.addWidget(self.btnFormatPreferenceWindow)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
@@ -166,12 +163,8 @@ class Ui_Dialog(object):
         self.horizontalLayout_4.addWidget(self.label_3)
         self.txtLanguages = QtGui.QLineEdit(self.tabFileFiltering)
         self.txtLanguages.setInputMask(_fromUtf8(""))
-        self.txtLanguages.setPlaceholderText(_fromUtf8(""))
         self.txtLanguages.setObjectName(_fromUtf8("txtLanguages"))
         self.horizontalLayout_4.addWidget(self.txtLanguages)
-        self.btnChooseLanguages = QtGui.QToolButton(self.tabFileFiltering)
-        self.btnChooseLanguages.setObjectName(_fromUtf8("btnChooseLanguages"))
-        self.horizontalLayout_4.addWidget(self.btnChooseLanguages)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.chkIncludeAlternate = QtGui.QCheckBox(self.tabFileFiltering)
         self.chkIncludeAlternate.setObjectName(_fromUtf8("chkIncludeAlternate"))
@@ -209,7 +202,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -232,9 +225,8 @@ class Ui_Dialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMainOptions), _translate("Dialog", "Main options", None))
         self.label_2.setText(_translate("Dialog", "Formats preference:", None))
         self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx", None))
-        self.btnFormatPreferenceWindow.setText(_translate("Dialog", "...", None))
         self.label_3.setText(_translate("Dialog", "Languages:", None))
-        self.btnChooseLanguages.setText(_translate("Dialog", "...", None))
+        self.txtLanguages.setPlaceholderText(_translate("Dialog", "en,es,ru,pl,cz,fr,de,nl,no", None))
         self.chkIncludeAlternate.setText(_translate("Dialog", "Include alternate files (marked [a] in TOSEC)", None))
         self.chkIncludeDemos.setText(_translate("Dialog", "Include demos (non-full versions of games)", None))
         self.chkIncludeRereleases.setText(_translate("Dialog", "Include re-releases", None))

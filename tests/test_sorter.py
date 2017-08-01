@@ -21,6 +21,7 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/files/sort_single_file_out/POKES/Zaxxon (1985)(US Gold).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
+        self.assertEqual(len(s.fails), 0)
 
     def test_placing_pokes_alongside_files(self):
         s = Sorter(input_locations=['tests/files/sort_single_file_in'],
@@ -66,6 +67,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a2].tzx'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_picking_best_candidate(self):
         s = Sorter(input_locations=['tests/files/sort_best_candidates_in'],
@@ -112,6 +114,7 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(not_expected_file))
         not_expected_file = 'tests/files/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].z80'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_sorting_unzipped_files(self):
         s = Sorter(input_locations=['tests/files/sort_unzipped_in'],
@@ -126,6 +129,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'\Race, The (1990)(Players Premier).z80'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_collecting_info_for_files_with_unknown_hashsum(self):
         s = Sorter(input_locations=['tests/files/sort_unknown_files_in'],
@@ -146,6 +150,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017)(-).tap'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
         # s = Sorter(input_locations=['tests/files/sort_unknown_files_in'],
         #            output_location='tests/files/sort_unknown_files_out',
         #            output_folder_structure='{Genre}/{Publisher}/{Language}/{Year}',
@@ -176,6 +181,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_doublesided_out/Fourth Protocol, The (1985)(Hutchinson Computer Publishing)(Part 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_ignore_rereleases(self):
         s = Sorter(input_locations=['tests/files/sort_ignore_rereleases_in'],
@@ -190,6 +196,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_ignore_hacks(self):
         s = Sorter(input_locations=['tests/files/sort_ignore_hacks_in'],
@@ -219,6 +226,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_winfriendly_out/David Amigaman/Serpes (2003)(David Amigaman)(es).z80'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_permission_denied(self):
         s = Sorter(input_locations=['tests/files/sort_permission_denied_in'],
@@ -246,6 +254,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)[a].trd'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_multilang_games(self):
         s = Sorter(
@@ -270,6 +279,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)[48-128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_multipart_games(self):
         s = Sorter(
@@ -290,6 +300,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat Software)(es)(Part 3 of 3).z80'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_sorting_extremely_long_filename(self):
         s = Sorter(
@@ -309,6 +320,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins)[a].pok'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_saboteur_2(self):
         s = Sorter(
@@ -326,6 +338,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_saboteur_out/Saboteur II (1987)(Durell Software)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_two_disks_two_sides(self):
         s = Sorter(
@@ -361,6 +374,7 @@ class TestSorter(unittest.TestCase):
                    output_folder_structure='',
                    cache=False)
         s.sortFiles()
+        self.assertEqual(len(s.fails), 0)
 
     def test_too_long_path(self):
         s = Sorter(
@@ -371,6 +385,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
+        self.assertEqual(len(s.fails), 0)
 
     def test_dot_in_filename(self):
         s = Sorter(
@@ -401,6 +416,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_weird_publisher_out/A.A. Barulin/A.A. Barulin Utilities Collection (1992)(A.A. Barulin)(ru).trd'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_die_hard(self):
         s = Sorter(
@@ -431,6 +447,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Quest for Sex (19xx)(Carley Bros).z80'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_preferred_languages(self):
         input_location = 'tests/files/sort_preferred_language_in'
@@ -450,6 +467,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Tasword Two (1983)(Profisoft).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_not_traversing_subfolders(self):
         input_location = 'tests/files/sort_not_traversing_subfolders_in'
@@ -467,6 +485,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_8letter_paths(self):
         input_location = 'tests/files/sort_8letter_in'
@@ -488,6 +507,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/ARCADADV/OPERASOF/ABADEL_2.TZX'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
 
     def test_files_per_folder(self):
         input_location = 'ftp/pub/sinclair/games/a'
@@ -497,25 +517,52 @@ class TestSorter(unittest.TestCase):
             output_location=output_location,
             traverse_subfolders=False,
             ignore_alternate=False,
-            # output_folder_structure='{Genre}',
             output_folder_structure='',
             max_files_per_folder = 100,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.fail()
+        for root, dirs, files in os.walk(output_location):
+            if len(files)>s.max_files_per_folder:
+                print(root)
+            self.assertLessEqual(len(files), s.max_files_per_folder)
 
-    def test_file_with_contents_description(self):
-        input_location = 'tests/files/sort_contents_desc_in'
-        output_location = 'tests/files/sort_contents_desc_out'
+    def test_folders_per_folder(self):
+        input_location = 'ftp/pub/sinclair/games/a'
+        output_location = 'tests/files/sort_folders_per_folder_out'
         s = Sorter(
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=False,
+            ignore_alternate=False,
+            output_folder_structure='{GameName}',
+            max_files_per_folder = 100,
+            cache=True)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        for root, dirs, files in os.walk(output_location):
+            if len(files)>s.max_files_per_folder:
+                print(root)
+            self.assertLessEqual(len(files), s.max_files_per_folder)
+            if len(dirs)>s.max_files_per_folder:
+                print(root)
+            self.assertLessEqual(len(dirs), s.max_files_per_folder)
+
+    def test_file_with_contents_description(self):
+        input_locations = [
+            'tests/files/sort_contents_desc_in',
+            # 'tosec/Sinclair ZX Spectrum/Compilations/Games/[TZX]'
+        ]
+        output_location = 'tests/files/sort_contents_desc_out'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            traverse_subfolders=False,
             output_folder_structure='',
-            files_per_folder = 20,
-            cache=False)
+            # max_files_per_folder = 20,
+            cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -554,6 +601,7 @@ class TestSorter(unittest.TestCase):
                     break
         if not expected_md5_found:
             self.fail()
+        self.assertEqual(len(s.fails), 0)
 
     def test_camel_case(self):
         input_locations = [
@@ -576,6 +624,44 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/TheMojonTwins/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(TheMojonTwins).tap'
         self.assertTrue(os.path.exists(expected_file))
+        self.assertEqual(len(s.fails), 0)
+
+    def test_bad_zips(self):
+        input_locations = [
+            'tests/files/sort_bad_zips_in',
+        ]
+        output_location = 'tests/files/sort_bad_zips_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            ignore_alternate=False,
+            use_camel_case=True,
+            output_folder_structure='{Publisher}',
+            cache=False)
+        s.sortFiles()
+        self.assertGreater(len(s.fails), 0)
+
+    def test_3d_games(self):
+        input_locations = [
+            'tests/files/sort_3d_games_in',
+        ]
+        output_location = 'tests/files/sort_3d_games_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            ignore_alternate=False,
+            output_folder_structure='',
+            cache=False)
+        s.sortFiles()
+        self.assertEqual(len(s.fails), 0)
+        for root, dirs, files in os.walk(output_location):
+            for file in files:
+                self.assertTrue(file.startswith('3D'))
+
+
+
+
+
 
 
 if __name__=='__main__':

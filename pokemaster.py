@@ -146,7 +146,13 @@ class MainDialog(QDialog):
             QMessageBox.information(self, MESSAGE_BOX_TITLE,
                                     self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
         else:
-            QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Sorting successfully finished.'))
+            message = self.tr('Sorting successfully finished.')
+            if s.fails:
+                message += self.tr('\nFailed files: {}. Please see failed_files.log')\
+                    .format(len(s.fails))
+                with open('failed_files.log', 'w+', encoding='utf-8') as f:
+                    f.write('\n'.join(s.fails))
+            QMessageBox.information(self, MESSAGE_BOX_TITLE, message)
         self.bar.close()
 
     def getInputLocations(self):

@@ -1,4 +1,5 @@
 from classes.database import *
+from classes.file_bundler import *
 from functions.game_name_functions import *
 from settings import *
 import os
@@ -18,6 +19,7 @@ class Sorter():
     should_cancel = False
     original_output_location = None
     too_long_path = None
+    fails = []
 
     def __init__(self, *args, **kwargs):
         if not kwargs:
@@ -51,6 +53,7 @@ class Sorter():
         if self.output_location in self.input_locations:
             self.original_output_location = self.output_location
             self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
+        self.fails = []
 
     def loadSettings(self):
         if not os.path.exists('settings.json'):
@@ -75,7 +78,10 @@ class Sorter():
             self.collected_files = self.filterCollectedFiles()
             print('Files filtered')
         if self.max_files_per_folder:
-            self.collected_files = self.bundleFilesInEqualFolders()
+            bundle_depth = len(self.output_folder_structure.split(os.sep))+1
+            fileBundler = FileBundler(self.max_files_per_folder, bundle_depth)
+            fileBundler.bundleFilesInEqualFolders(self.collected_files)
+            # self.collected_files = self.bundleFilesInEqualFolders()
         print('Redistributing...')
         self.redistributeFiles()
 
@@ -176,26 +182,30 @@ class Sorter():
         elif ext=='zip':
             if os.path.getsize(file_path)>MAX_ZIP_FILE_SIZE:
                 return []
-            with zipfile.ZipFile(file_path) as zf:
-                for zfname in zf.namelist():
-                    zfext = os.path.splitext(zfname)[1][1:].lower()
-                    if zfext not in self.formats_preference:
-                        continue
-                    game_file = GameFile(file_path)
-                    game_file.format = zfext
-                    game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
-                    unzipped_file = zf.read(zfname)
-                    unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
-                    game_file.md5 = unzipped_file_md5
-                    game = self.db.getGameByFileMD5(unzipped_file_md5)
-                    if game:
-                        game_file = game.findFileByMD5(unzipped_file_md5)
-                        game_file.release = game.releases[game_file.release_seq]
-                        game_file.tosec_path = None
-                    game_file.src = file_path
-                    game_file.dest = self.getDestination(game_file)
-                    game_file.alt_dest = ''
-                    game_files.append(game_file)
+            try:
+                with zipfile.ZipFile(file_path) as zf:
+                    for zfname in zf.namelist():
+                        zfext = os.path.splitext(zfname)[1][1:].lower()
+                        if zfext not in self.formats_preference:
+                            continue
+                        game_file = GameFile(file_path)
+                        game_file.format = zfext
+                        game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
+                        unzipped_file = zf.read(zfname)
+                        unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
+                        game_file.md5 = unzipped_file_md5
+                        game = self.db.getGameByFileMD5(unzipped_file_md5)
+                        if game:
+                            game_file = game.findFileByMD5(unzipped_file_md5)
+                            game_file.release = game.releases[game_file.release_seq]
+                            game_file.tosec_path = None
+                        game_file.src = file_path
+                        game_file.dest = self.getDestination(game_file)
+                        game_file.alt_dest = ''
+                        game_files.append(game_file)
+            except OSError:
+                self.fails.append(file_path)
+                return []
         return game_files
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
@@ -241,55 +251,55 @@ class Sorter():
                 self.collected_files[game_wos_id] = self.filterOutAlternateFormats(files)
         return self.collected_files
 
-    def bundleFilesInEqualFolders(self):
-        folders = {}
-        for game_wos_id, files in self.collected_files.items():
-            for i, file in enumerate(files):
-                if not file:
-                    continue
-                file_dest_dir = os.path.dirname(file.getDestPath())
-                if not folders.get(file_dest_dir):
-                    folders[file_dest_dir]=[]
-                folders[file_dest_dir].append(file)
-
-        bundles = {}
-        mini_bundles = {}
-        for folder_name, files in folders.items():
-            if len(files)<=self.max_files_per_folder:
-                continue
-            bundles = {}
-            mini_bundles = {}
-            for file in files:
-                mini_bundle_name = file.getBundleName()
-                if not mini_bundles.get(mini_bundle_name):
-                    mini_bundles[mini_bundle_name] = []
-                mini_bundles[mini_bundle_name].append(file)
-
-            current_bundle = []
-            mini_bundles = [{
-                'name':key,
-                'files':value
-            } for key, value in mini_bundles.items()]
-            mini_bundles = sorted(mini_bundles, key=lambda x: x['name'])
-            while True:
-                if mini_bundles:
-                    current_bundle.append(mini_bundles.pop(0)['files'])
-                files_in_current_bundle = sum([len(bundle) for bundle in current_bundle])
-                if not mini_bundles or \
-                    len(mini_bundles[0]['files'])+files_in_current_bundle>=self.max_files_per_folder:
-                    if current_bundle:
-                        current_bundle_name = '{}-{}'.format(current_bundle[0][0].getBundleName(),
-                                                             current_bundle[-1][-1].getBundleName())
-                        bundles[current_bundle_name] = [file for file in current_bundle]
-                    current_bundle = []
-                if not mini_bundles:
-                    break
-
-            for bundle_name, mini_bundles in bundles.items():
-                for mini_bundle in mini_bundles:
-                    for file in mini_bundle:
-                        file.setBundle(bundle_name)
-        return self.collected_files
+    # def bundleFilesInEqualFolders(self):
+    #     folders = {}
+    #     for game_wos_id, files in self.collected_files.items():
+    #         for i, file in enumerate(files):
+    #             if not file:
+    #                 continue
+    #             file_dest_dir = os.path.dirname(file.getDestPath())
+    #             if not folders.get(file_dest_dir):
+    #                 folders[file_dest_dir]=[]
+    #             folders[file_dest_dir].append(file)
+    #
+    #     bundles = {}
+    #     mini_bundles = {}
+    #     for folder_name, files in folders.items():
+    #         if len(files)<=self.max_files_per_folder:
+    #             continue
+    #         bundles = {}
+    #         mini_bundles = {}
+    #         for file in files:
+    #             mini_bundle_name = file.getBundleName()
+    #             if not mini_bundles.get(mini_bundle_name):
+    #                 mini_bundles[mini_bundle_name] = []
+    #             mini_bundles[mini_bundle_name].append(file)
+    #
+    #         current_bundle = []
+    #         mini_bundles = [{
+    #             'name':key,
+    #             'files':value
+    #         } for key, value in mini_bundles.items()]
+    #         mini_bundles = sorted(mini_bundles, key=lambda x: x['name'])
+    #         while True:
+    #             if mini_bundles:
+    #                 current_bundle.append(mini_bundles.pop(0)['files'])
+    #             files_in_current_bundle = sum([len(bundle) for bundle in current_bundle])
+    #             if not mini_bundles or \
+    #                 len(mini_bundles[0]['files'])+files_in_current_bundle>=self.max_files_per_folder:
+    #                 if current_bundle:
+    #                     current_bundle_name = '{}-{}'.format(current_bundle[0][0].getBundleName(),
+    #                                                          current_bundle[-1][-1].getBundleName())
+    #                     bundles[current_bundle_name] = [file for file in current_bundle]
+    #                 current_bundle = []
+    #             if not mini_bundles:
+    #                 break
+    #
+    #         for bundle_name, mini_bundles in bundles.items():
+    #             for mini_bundle in mini_bundles:
+    #                 for file in mini_bundle:
+    #                     file.setBundle(bundle_name)
+    #     return self.collected_files
 
     def filterOutAlternateFormats(self, files):
         equals_found_flag = True
@@ -335,6 +345,8 @@ class Sorter():
             except OSError:
                 print('Could not make dirs:', dest, 'for', file.src)
                 print(traceback.format_exc())
+                self.fails.append(file.src)
+                self.fails.append(traceback.format_exc())
                 continue
             if file.src.lower().endswith('zip'):
                 self.unpackFile(file)
