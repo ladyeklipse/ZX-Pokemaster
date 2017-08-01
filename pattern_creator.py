@@ -39,7 +39,7 @@ class PatternCreatorDialog(QDialog):
         if file_structure:
             self.ui.txtOutputFileNameStructure.setText(file_structure)
         self.ui.txtOutputFolderStructure.setFocus()
-        self.exec()
+        self.result = self.exec()
 
     def addPatternComponent(self):
         text = self.sender().text()

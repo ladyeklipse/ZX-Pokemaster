@@ -82,6 +82,8 @@ class MainDialog(QDialog):
         dialog = PatternCreatorDialog(parent=self,
                                       folder_structure=folder_structure,
                                       file_structure=file_structure)
+        if dialog.result!=QDialog.Accepted:
+            return
         pattern = dialog.getJoinedPattern()
         if pattern:
             for i in range(self.ui.cmbOutputFolderStructure.count()):
