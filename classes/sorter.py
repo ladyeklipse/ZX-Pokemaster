@@ -45,6 +45,8 @@ class Sorter():
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
+        if self.place_pok_files_in_pokes_subfolders and self.max_files_per_folder:
+            self.max_files_per_folder -= 1
         self.gui = kwargs.get('gui', None)
         if kwargs.get('cache', True):
             if self.gui:
@@ -109,7 +111,7 @@ class Sorter():
             if self.should_cancel:
                 break
             if i % 100 == 0:
-                print('Examined', i, 'files of', len(input_files))
+                # print('Examined', i, 'files of', len(input_files))
                 if self.gui:
                     self.gui.updateProgressBar(i)
             game_files = self.getGameFilesFromInputPath(file_path)
@@ -341,7 +343,7 @@ class Sorter():
             if self.should_cancel:
                 break
             if i % 100 == 0:
-                print('Redistributed files:', i-1, 'of', len(files_array))
+                # print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
             dest = file.getDestPath()

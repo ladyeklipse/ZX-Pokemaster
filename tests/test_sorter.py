@@ -516,9 +516,9 @@ class TestSorter(unittest.TestCase):
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=False,
-            ignore_alternate=False,
+            ignore_alternate=True,
             output_folder_structure='',
-            max_files_per_folder = 100,
+            max_files_per_folder = 50,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
