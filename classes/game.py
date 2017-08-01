@@ -119,6 +119,8 @@ class Game(object):
 
     def setGenreFromFilePath(self, path):
         path = ''.join(os.path.split(path)[-3:]).lower()
+        if self.publisher == 'Vaxalon':
+            self.genre = 'Scene Demo'
         if 'compilation' in path:
             self.genre = 'Compilation'
             if 'demo' in path:

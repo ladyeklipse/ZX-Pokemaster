@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1163</width>
-    <height>665</height>
+    <width>500</width>
+    <height>531</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>470</width>
-    <height>527</height>
+    <width>500</width>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -30,8 +30,8 @@
   </property>
   <property name="baseSize">
    <size>
-    <width>470</width>
-    <height>527</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="contextMenuPolicy">
@@ -50,370 +50,365 @@
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
-  <widget class="QPushButton" name="btnSortFiles">
-   <property name="geometry">
-    <rect>
-     <x>370</x>
-     <y>630</y>
-     <width>93</width>
-     <height>28</height>
-    </rect>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetNoConstraint</enum>
    </property>
-   <property name="text">
-    <string>Sort files</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeAlternate">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>500</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include alternate files (marked [a] in TOSEC)</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeRereleases">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>540</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include re-releases</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeAlternateFileFormats">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>560</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include alternate file formats (see formats preference order)</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeHacked">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>580</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include files marked as cracked, hacked or modded</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeXRated">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>600</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include x-rated games</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeUnknownFiles">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>620</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include unknown files</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="chkIncludeDemos">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>520</y>
-     <width>451</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Include demos (non-full versions of games)</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_4">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>390</y>
-     <width>481</width>
-     <height>70</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Languages</string>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout"/>
-  </widget>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>530</x>
-     <y>20</y>
-     <width>521</width>
-     <height>506</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>1</number>
-   </property>
-   <widget class="QWidget" name="tab">
-    <property name="accessibleName">
-     <string/>
-    </property>
-    <attribute name="title">
-     <string>Main options</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Input paths</string>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="1">
-         <widget class="QPushButton" name="btnAddPath">
-          <property name="text">
-           <string>Add path...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="chkTraverseSubdirectories">
-          <property name="text">
-           <string>Traverse subdirectories</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" rowspan="3">
-         <widget class="QListWidget" name="lstInputPaths"/>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="btnRemovePaths">
-          <property name="text">
-           <string>Remove path</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Output path:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="txtOutputPath"/>
-       </item>
-       <item>
-        <widget class="QToolButton" name="btnBrowseOutputPath">
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Output folder structure pattern</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>158</width>
+         <height>17</height>
+        </size>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="2">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="btnRemovePattern">
-            <property name="text">
-             <string>Remove pattern</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="btnAddPattern">
-            <property name="text">
-             <string>Add pattern...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="3">
-           <widget class="QComboBox" name="cmbOutputFolderStructure">
-            <property name="editable">
-             <bool>false</bool>
-            </property>
-            <property name="currentText" stdset="0">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
+      </spacer>
      </item>
      <item>
-      <widget class="QCheckBox" name="chkPlacePokFilesIntoPOKESSubfolder">
+      <widget class="QPushButton" name="btnSortFiles">
        <property name="text">
-        <string>Place .POK files into POKES subfolder</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>Sort files</string>
        </property>
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>File filtering</string>
-    </attribute>
-    <widget class="QWidget" name="horizontalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>10</y>
-       <width>511</width>
-       <height>261</height>
-      </rect>
+   </item>
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout"/>
-    </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>280</y>
-       <width>493</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Formats preference:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="txtFormatPreference">
-        <property name="inputMask">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btnFormatPreferenceWindow">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_4">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>210</y>
-     <width>457</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Languages:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="txtFormatPreference_2">
-      <property name="inputMask">
+     <widget class="QWidget" name="tabMainOptions">
+      <property name="accessibleName">
        <string/>
       </property>
-      <property name="placeholderText">
-       <string/>
-      </property>
+      <attribute name="title">
+       <string>Main options</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,0,0,0,0,0,0">
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Input paths</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btnAddPath">
+            <property name="text">
+             <string>Add path...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="chkTraverseSubdirectories">
+            <property name="text">
+             <string>Traverse subdirectories</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" rowspan="3">
+           <widget class="QListWidget" name="lstInputPaths"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="btnRemovePaths">
+            <property name="text">
+             <string>Remove path</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Output path:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtOutputPath"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnBrowseOutputPath">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Output path structure pattern</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="2">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btnRemovePattern">
+              <property name="text">
+               <string>Remove pattern</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="btnAddPattern">
+              <property name="text">
+               <string>Add pattern...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="QComboBox" name="cmbOutputFolderStructure">
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+              <property name="currentText" stdset="0">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QCheckBox" name="chkMaxFilesPerFolder">
+           <property name="text">
+            <string>Max files per folder:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="txtMaxFilesPerFolder">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999999</number>
+           </property>
+           <property name="value">
+            <number>255</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkCamelCase">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>CamelCaseInsteadOfSpaces</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkShortFilenames">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>Use 8.3 naming scheme</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkPlacePokFilesIntoPOKESSubfolders">
+         <property name="text">
+          <string>Place .POK files into POKES subfolders</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
-    </item>
-    <item>
-     <widget class="QToolButton" name="btnChooseLanguages">
-      <property name="text">
-       <string>...</string>
-      </property>
+     <widget class="QWidget" name="tabFileFiltering">
+      <attribute name="title">
+       <string>File filtering</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,1,1,1,1,1,1">
+       <property name="spacing">
+        <number>7</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Formats preference:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtFormatPreference">
+           <property name="inputMask">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnFormatPreferenceWindow">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Languages:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtLanguages">
+           <property name="inputMask">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnChooseLanguages">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeAlternate">
+         <property name="text">
+          <string>Include alternate files (marked [a] in TOSEC)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeDemos">
+         <property name="text">
+          <string>Include demos (non-full versions of games)</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeRereleases">
+         <property name="text">
+          <string>Include re-releases</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeAlternateFileFormats">
+         <property name="text">
+          <string>Include alternate file formats (see formats preference order)</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeHacked">
+         <property name="text">
+          <string>Include files marked as cracked, hacked or modded</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkIncludeXRated">
+         <property name="text">
+          <string>Include x-rated games</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+      <zorder>horizontalLayoutWidget_3</zorder>
+      <zorder>horizontalLayoutWidget_4</zorder>
+      <zorder>chkIncludeAlternate</zorder>
+      <zorder>chkIncludeDemos</zorder>
+      <zorder>chkIncludeAlternateFileFormats</zorder>
+      <zorder>chkIncludeHacked</zorder>
+      <zorder>chkIncludeRereleases</zorder>
+      <zorder>chkIncludeXRated</zorder>
+      <zorder>label_2</zorder>
+      <zorder>verticalSpacer</zorder>
      </widget>
-    </item>
-   </layout>
-  </widget>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources>
   <include location="res.qrc"/>

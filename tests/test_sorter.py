@@ -146,6 +146,18 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017)(-).tap'
         self.assertTrue(os.path.exists(expected_file))
+        # s = Sorter(input_locations=['tests/files/sort_unknown_files_in'],
+        #            output_location='tests/files/sort_unknown_files_out',
+        #            output_folder_structure='{Genre}/{Publisher}/{Language}/{Year}',
+        #            formats_preference=['tap', 'z80', 'dsk', 'trd'],
+        #            ignore_unknown=True,
+        #            cache=False)
+        # if os.path.exists(s.output_location):
+        #     shutil.rmtree(s.output_location)
+        # s.sortFiles()
+        # not_expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017)(-).tap'
+        # self.assertFalse(os.path.exists(not_expected_file))
+
 
     def test_doublesided_archive(self):
         s = Sorter(input_locations=['tests/files/sort_doublesided_in'],
@@ -487,12 +499,12 @@ class TestSorter(unittest.TestCase):
             ignore_alternate=False,
             # output_folder_structure='{Genre}',
             output_folder_structure='',
-            files_per_folder = 100,
+            max_files_per_folder = 100,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        # self.fail()
+        self.fail()
 
     def test_file_with_contents_description(self):
         input_location = 'tests/files/sort_contents_desc_in'
@@ -507,7 +519,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        # self.fail()
+        self.fail()
 
     def test_custom_file_naming_scheme(self):
         input_locations = [
@@ -547,7 +559,7 @@ class TestSorter(unittest.TestCase):
         input_locations = [
             'tests/files/sort_saboteur_in',
             'tests/files/sort_extremely_long_in']
-        output_location = 'tests/files/sort_camel_case_out/unnecessarily_long_path/unnecessarily_long_path/unnecessarily_long_path'
+        output_location = os.path.abspath('tests/files/sort_camel_case_out/unnecessarily_long_path/unnecessarily_long_path/unnecessarily_long_path')
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
@@ -562,7 +574,7 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(not_expected_file))
         expected_file = output_location+'/DurellSoftware/SaboteurII(1987)(DurellSoftware)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location + '/TheMojonTwins/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDe(2012)(TheMojonTwins).tap'
+        expected_file = output_location + '/TheMojonTwins/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(TheMojonTwins).tap'
         self.assertTrue(os.path.exists(expected_file))
 
 

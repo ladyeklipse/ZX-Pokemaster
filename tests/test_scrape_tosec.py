@@ -1,6 +1,7 @@
-from scrape_tosec import *
-from classes.database import *
 import unittest
+
+from classes.database import *
+
 
 class TestScrapingTOSEC(unittest.TestCase):
 

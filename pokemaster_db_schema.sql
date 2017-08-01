@@ -61,4 +61,22 @@ CREATE VIEW `game_id_file_checker` AS select wos_id, game.name, game_file.tosec_
 game_file.wos_name, game_file.wos_path from game
 left join game_file on game_file.game_wos_id=game.wos_id
 order by game.name;
+CREATE VIEW games_without_files AS select wos_id, name, publisher from game
+left join game_file on game.wos_id=game_file.game_wos_id
+where availability!=3 and availability!=4 
+and (
+(game_file.wos_path is null and game_file.tosec_path is null)
+or (game_file.wos_path='' and game_file.tosec_path='')
+)
+and game.machine_type not in (
+'TS2068 or TC2068', 
+'TC2048/Tx2068', 
+'SAM Coupe', 
+'ZX80',
+'ZX81 1K',
+'ZX81 2K',
+'ZX81 16K')  AND
+game.year<2011
+group by wos_id
+order by name;
 COMMIT;

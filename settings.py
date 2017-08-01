@@ -49,13 +49,14 @@ GAME_PREFIXES = ['A', 'The',
 SIDE_A = 1
 SIDE_B = 2
 PREDEFINED_OUTPUT_FOLDER_STRUCTURES = [
-    '{Letter}',
-    '{Letter}/{Name}',
-    '{Genre}/{Year}',
-    '{Publisher}/{Year}/{GameName}',
-    '{Genre}/{Publisher}',
-    '{MachineType}/{NumberOfPlayers}/{Genre}',
-    '{Genre}/{MultiplayerType}/{Letter}'
+    '/{TOSECName}',
+    '{Letter}/{TOSECName}',
+    '{Letter}/{Name}/{TOSECName}',
+    '{Genre}/{Year}/{TOSECName}',
+    '{Publisher}/{Year}/{GameName}/{TOSECName}',
+    '{Genre}/{Publisher}/{TOSECName}',
+    '{MachineType}/{NumberOfPlayers}/{Genre}/{TOSECName}',
+    '{Genre}/{MultiplayerType}/{Letter}/{TOSECName}'
 ]
 MESSAGE_BOX_TITLE = 'ZX Pokemaster'
 INCLUDED_TYPES_LIST = [

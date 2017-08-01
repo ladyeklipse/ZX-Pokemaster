@@ -347,6 +347,9 @@ class GameFile(object):
 
     def getOutputName(self, structure=TOSEC_COMPLIANT_FILENAME_STRUCTURE,
                       game_name_length=MAX_GAME_NAME_LENGTH):
+        if not structure:
+            structure = TOSEC_COMPLIANT_FILENAME_STRUCTURE
+        structure = structure.replace('{TOSECName}', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
         if not structure.endswith('.{Format}'):
             structure += '.{Format}'
         kwargs = self.getOutputPathFormatKwargs(game_name_length=game_name_length,
@@ -564,11 +567,11 @@ class GameFile(object):
         elif self.path:
             return self.path
 
-    def getDestPath(self, camel_case=False):
+    def getDestPath(self):#, camel_case=False):
         dest = self.alt_dest if self.alt_dest else self.dest
-        if camel_case:
-            dest = ''.join([x[0].upper() + x[1:] for x in dest.split(' ') if x])
-            dest = dest.replace(',', '')
+        # if camel_case:
+        #     dest = ''.join([x[0].upper() + x[1:] for x in dest.split(' ') if x])
+        #     dest = dest.replace(',', '')
         return dest
 
     def getBundleName(self):
@@ -581,8 +584,8 @@ class GameFile(object):
         dest = os.path.join(dest_dir, bundle_name, dest_filename)
         self.alt_dest = dest
 
-    def getAbsoluteDestPath(self, camel_case=False):
-        return os.path.abspath(self.getDestPath(camel_case=False))
+    def getAbsoluteDestPath(self):#, camel_case=False):
+        return os.path.abspath(self.getDestPath())#camel_case=False))
 
     def savePokesLocally(self):
         path = self.getLocalPath()

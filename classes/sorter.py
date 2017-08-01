@@ -6,6 +6,7 @@ import stat
 import shutil
 import zipfile
 import hashlib
+import json
 import time
 
 class Sorter():
@@ -19,6 +20,8 @@ class Sorter():
     too_long_path = None
 
     def __init__(self, *args, **kwargs):
+        if not kwargs:
+            kwargs = self.loadSettings()
         self.input_locations = kwargs.get('input_locations', [])
         self.traverse_subfolders= kwargs.get('traverse_subfolders', True)
         self.output_location = kwargs.get('output_location', 'sorted')
@@ -26,16 +29,17 @@ class Sorter():
         if not self.formats_preference:
             self.formats_preference = GAME_EXTENSIONS
         self.languages = kwargs.get('languages', [])
-        self.output_folder_structure = kwargs.get('output_folder_structure', '{Letter}')
+        self.max_files_per_folder = kwargs.get('max_files_per_folder', None)
+        self.output_folder_structure = kwargs.get('output_folder_structure', '')
         self.output_filename_structure = kwargs.get('output_filename_structure', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
         self.delete_original_files = kwargs.get('delete_original_files', False)
-        self.files_per_folder = kwargs.get('files_per_folder', None)
         self.ignore_alternate = kwargs.get('ignore_alternate', True)
         self.ignore_alternate_formats = kwargs.get('ignore_alternate_formats', False)
         self.ignore_rereleases = kwargs.get('ignore_rereleases', False)
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
         self.ignore_xrated = kwargs.get('ignore_xrated', False)
         self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
+        # self.ignore_unknown = kwargs.get('ignore_unknown', False)
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
@@ -48,6 +52,12 @@ class Sorter():
             self.original_output_location = self.output_location
             self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
 
+    def loadSettings(self):
+        if not os.path.exists('settings.json'):
+            return {}
+        with open('settings.json', 'r', encoding='utf-8') as f:
+            settings = json.load(f)
+        return settings
 
     def sortFiles(self):
         if not self.input_files:
@@ -64,7 +74,7 @@ class Sorter():
             self.languages:
             self.collected_files = self.filterCollectedFiles()
             print('Files filtered')
-        if self.files_per_folder:
+        if self.max_files_per_folder:
             self.collected_files = self.bundleFilesInEqualFolders()
         print('Redistributing...')
         self.redistributeFiles()
@@ -118,15 +128,23 @@ class Sorter():
         return collected_files
 
     def shortenGameFileDestination(self, game_file):
-        abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+        # abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+        abs_dest = game_file.getAbsoluteDestPath()
         if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
             for game_name_length in range(MAX_GAME_NAME_LENGTH, MIN_GAME_NAME_LENGTH, -10):
-                game_file.dest = self.getDestination(game_file, game_name_length=game_name_length)
-                abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+                game_file.dest = self.getDestination(game_file,
+                                                     game_name_length=game_name_length)
+                # abs_dest = game_file.getAbsoluteDestPath(camel_case=self.use_camel_case)
+                abs_dest = game_file.getAbsoluteDestPath()
                 if len(abs_dest) <= MAX_DESTINATION_PATH_LENGTH:
                     break
         if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
             self.too_long_path = abs_dest
+
+    def getCamelCasePath(self, path):
+        path = ''.join([x[0].upper() + x[1:] for x in path.split(' ') if x])
+        path = path.replace(',', '')
+        return path
 
     def getInputFiles(self, input_locations=None):
         if not input_locations:
@@ -198,6 +216,8 @@ class Sorter():
             dest_dir = [get_meaningful_8letter_name(x) for x in dest_dir]
             dest_dir = os.path.join(*dest_dir)
         dest = os.path.join(dest_dir, dest_filename)
+        if self.use_camel_case:
+            dest = self.getCamelCasePath(dest)
         dest = os.path.join(self.output_location, dest)
         return dest
 
@@ -236,7 +256,7 @@ class Sorter():
         bundles = {}
         mini_bundles = {}
         for folder_name, files in folders.items():
-            if len(files)<=self.files_per_folder:
+            if len(files)<=self.max_files_per_folder:
                 continue
             bundles = {}
             mini_bundles = {}
@@ -257,7 +277,7 @@ class Sorter():
                     current_bundle.append(mini_bundles.pop(0)['files'])
                 files_in_current_bundle = sum([len(bundle) for bundle in current_bundle])
                 if not mini_bundles or \
-                    len(mini_bundles[0]['files'])+files_in_current_bundle>=self.files_per_folder:
+                    len(mini_bundles[0]['files'])+files_in_current_bundle>=self.max_files_per_folder:
                     if current_bundle:
                         current_bundle_name = '{}-{}'.format(current_bundle[0][0].getBundleName(),
                                                              current_bundle[-1][-1].getBundleName())
@@ -310,7 +330,8 @@ class Sorter():
                 print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
-            dest = file.getDestPath(camel_case=self.use_camel_case)
+            # dest = file.getDestPath(camel_case=self.use_camel_case)
+            dest = file.getDestPath()
             try:
                 os.makedirs(os.path.dirname(dest), exist_ok=True)
             except OSError:
@@ -363,7 +384,8 @@ class Sorter():
                 crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
                 if crc32 == game_file.crc32.zfill(8):
                     data = zf.read(zfname)
-                    dest = game_file.getDestPath(camel_case=self.use_camel_case)
+                    # dest = game_file.getDestPath(camel_case=self.use_camel_case)
+                    dest = game_file.getDestPath()
                     try:
                         with open(dest, 'wb') as output:
                             output.write(data)
