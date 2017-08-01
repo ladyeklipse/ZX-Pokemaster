@@ -50,6 +50,7 @@ class GameFile(object):
     alt_dest=''
     is_tosec_compliant = False
     is_alternate = False
+    bundled_times = 0
 
     def __init__(self, path='', size=0, game=None, release=None,
                  source=None):
@@ -567,15 +568,30 @@ class GameFile(object):
         dest = self.alt_dest if self.alt_dest else self.dest
         return dest
 
-    def getBundleName(self):
-        bundle_name = ''.join([x for x in self.getGameName() if x.isalnum()])[:3].lower()
-        return bundle_name
+    def getBundleName(self, depth_level):
+        root_dir, bundled_part = self.getSplitDest(depth_level)
+        return ''.join([x for x in bundled_part if x.isalnum()])[:3].lower()
+        # bundle_name = ''.join([x for x in self.getGameName() if x.isalnum()])[:3].lower()
+        # return bundle_name
 
-    def setBundle(self, bundle_name):
-        dest = self.getDestPath()
-        dest_dir, dest_filename = os.path.split(dest)
-        dest = os.path.join(dest_dir, bundle_name, dest_filename)
+    def setBundle(self, bundle_name, depth_level):
+        root_dir, bundled_part = self.getSplitDest(depth_level)
+        # dest = self.getDestPath()
+        # dest = dest.replace('/', '\\').split('\\')
+        # root_dir = os.sep.join(dest[:-depth_level])
+        # bundled_part = os.sep.join(dest[-depth_level:])
+        dest = os.path.join(root_dir, bundle_name, bundled_part)
+        self.bundled_times += 1
         self.alt_dest = dest
+
+    def getSplitDest(self, depth_level):
+        depth_level += 1-self.bundled_times
+        dest = self.getDestPath()
+        dest = dest.replace('/', '\\').split('\\')
+        root_dir = os.sep.join(dest[:-depth_level])
+        bundled_part = os.sep.join(dest[-depth_level:])
+        return root_dir, bundled_part
+
 
     def getAbsoluteDestPath(self):
         return os.path.abspath(self.getDestPath())

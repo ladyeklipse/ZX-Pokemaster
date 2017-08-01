@@ -78,22 +78,27 @@ class Sorter():
             self.collected_files = self.filterCollectedFiles()
             print('Files filtered')
         if self.max_files_per_folder:
-            bundle_depth = len(self.output_folder_structure.split(os.sep))+1
+            bundle_depth = self.getBundleDepth()
             fileBundler = FileBundler(self.max_files_per_folder, bundle_depth)
             fileBundler.bundleFilesInEqualFolders(self.collected_files)
-            # self.collected_files = self.bundleFilesInEqualFolders()
         print('Redistributing...')
         self.redistributeFiles()
-
         if self.original_output_location:
-            backup_location_name = self.original_output_location+'_old'
-            if os.path.exists(backup_location_name):
-                i = 2
-                while os.path.exists(backup_location_name+'_'+str(i)):
-                    i += 1
-                backup_location_name = backup_location_name + '_' + str(i)
-            os.rename(self.original_output_location, backup_location_name)
-            os.rename(self.output_location, self.original_output_location)
+            self.renameOutputLocation()
+
+    def renameOutputLocation(self):
+        backup_location_name = self.original_output_location+'_old'
+        if os.path.exists(backup_location_name):
+            i = 2
+            while os.path.exists(backup_location_name+'_'+str(i)):
+                i += 1
+            backup_location_name = backup_location_name + '_' + str(i)
+        os.rename(self.original_output_location, backup_location_name)
+        os.rename(self.output_location, self.original_output_location)
+
+    def getBundleDepth(self):
+        self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
+        return len(self.output_folder_structure.split('\\')) + 1
 
     def collectFiles(self, input_files):
         if self.gui:

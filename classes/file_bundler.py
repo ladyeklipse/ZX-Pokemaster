@@ -7,30 +7,32 @@ class FileBundler():
         self.depth = depth
 
     def bundleFilesInEqualFolders(self, collected_files):
-        folders = self.enumerateFolders(collected_files)
-        for folder_name, files in folders.items():
-            if len(files)<=self.max_files_per_folder:
-                continue
-            mini_bundles = self.getMiniBundlesFromFilesList(files)
-            bundles = self.getBigBundlesFromMiniBundles(mini_bundles)
-            self.assignBundlesToFilesInBundles(bundles)
+        for depth_level in range(self.depth):
+            folders = self.enumerateFolders(collected_files, depth_level)
+            for folder_name, files in folders.items():
+                if len(files)<=self.max_files_per_folder:
+                    continue
+                mini_bundles = self.getMiniBundlesFromFilesList(files, depth_level)
+                bundles = self.getBigBundlesFromMiniBundles(mini_bundles, depth_level)
+                self.assignBundlesToFilesInBundles(bundles, depth_level)
 
-    def enumerateFolders(self, collected_files):
+    def enumerateFolders(self, collected_files, depth_level):
         folders = {}
         for game_wos_id, files in collected_files.items():
             for i, file in enumerate(files):
                 if not file:
                     continue
-                file_dest_dir = os.path.dirname(file.getDestPath())
+                # file_dest_dir = os.path.dirname(file.getDestPath())
+                file_dest_dir, bundled_part = file.getSplitDest(depth_level=depth_level)
                 if not folders.get(file_dest_dir):
                     folders[file_dest_dir]=[]
                 folders[file_dest_dir].append(file)
         return folders
 
-    def getMiniBundlesFromFilesList(self, files):
+    def getMiniBundlesFromFilesList(self, files, depth_level):
         mini_bundles = {}
         for file in files:
-            mini_bundle_name = file.getBundleName()
+            mini_bundle_name = file.getBundleName(depth_level)
             if not mini_bundles.get(mini_bundle_name):
                 mini_bundles[mini_bundle_name] = []
             mini_bundles[mini_bundle_name].append(file)
@@ -41,7 +43,7 @@ class FileBundler():
         mini_bundles = sorted(mini_bundles, key=lambda x: x['name'])
         return mini_bundles
 
-    def getBigBundlesFromMiniBundles(self, mini_bundles):
+    def getBigBundlesFromMiniBundles(self, mini_bundles, depth_level):
         bundles = {}
         current_bundle = []
         while True:
@@ -51,19 +53,19 @@ class FileBundler():
             if not mini_bundles or \
               len(mini_bundles[0]['files'])+files_in_current_bundle >= self.max_files_per_folder:
                 if current_bundle:
-                    current_bundle_name = self.getBundleName(current_bundle)
+                    current_bundle_name = self.getBundleName(current_bundle, depth_level)
                     bundles[current_bundle_name] = [file for file in current_bundle]
                 current_bundle = []
             if not mini_bundles:
                 break
         return bundles
 
-    def getBundleName(self, bundle):
-        return '{}-{}'.format(bundle[0][0].getBundleName(),
-                              bundle[-1][-1].getBundleName())
+    def getBundleName(self, bundle, depth_level):
+        return '{}-{}'.format(bundle[0][0].getBundleName(depth_level),
+                              bundle[-1][-1].getBundleName(depth_level))
 
-    def assignBundlesToFilesInBundles(self, bundles):
+    def assignBundlesToFilesInBundles(self, bundles, depth_level):
         for bundle_name, mini_bundles in bundles.items():
             for mini_bundle in mini_bundles:
                 for file in mini_bundle:
-                    file.setBundle(bundle_name)
+                    file.setBundle(bundle_name, depth_level)

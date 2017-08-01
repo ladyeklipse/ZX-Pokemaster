@@ -524,8 +524,8 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         for root, dirs, files in os.walk(output_location):
-            if len(files)>s.max_files_per_folder:
-                print(root)
+            print(root)
+            self.assertGreater(len(dirs)+len(files), 0)
             self.assertLessEqual(len(files), s.max_files_per_folder)
 
     def test_folders_per_folder(self):
@@ -536,15 +536,14 @@ class TestSorter(unittest.TestCase):
             output_location=output_location,
             traverse_subfolders=False,
             ignore_alternate=False,
-            output_folder_structure='{GameName}',
+            output_folder_structure='{MaxPlayers}\{GameName}',
             max_files_per_folder = 100,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         for root, dirs, files in os.walk(output_location):
-            if len(files)>s.max_files_per_folder:
-                print(root)
+            self.assertGreater(len(dirs)+len(files), 0)
             self.assertLessEqual(len(files), s.max_files_per_folder)
             if len(dirs)>s.max_files_per_folder:
                 print(root)
