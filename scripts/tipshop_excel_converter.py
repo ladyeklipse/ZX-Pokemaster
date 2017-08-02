@@ -1,7 +1,8 @@
 from classes.database import *
 import os
 XLSX_FILENAME = 'pokes.xlsx'
-
+if (os.getcwd().endswith('scripts')):
+    os.chdir('..')
 def db2xlsx():
     import xlsxwriter
     db = Database()

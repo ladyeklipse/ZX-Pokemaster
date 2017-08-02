@@ -50,10 +50,13 @@ class GameFile(object):
     alt_dest=''
     is_tosec_compliant = False
     is_alternate = False
-    bundled_times = 0
 
     def __init__(self, path='', size=0, game=None, release=None,
                  source=None):
+        self.bundled_times = 0
+        self.dest = ''
+        self.alt_dest = ''
+        self.is_alternate = False
         if not path:
             return
         filename = os.path.basename(path)
@@ -286,12 +289,17 @@ class GameFile(object):
         if self.game and self.game.wos_id:
             game_name = filename.split('(')[0].strip()
             aliases = sorted(self.game.getAliases(), key=len, reverse=True)
-            for alias in aliases:
-                if len(game_name)<=len(alias):
-                    break
-                elif alias in game_name:
-                    self.content_desc = game_name.split(alias)[-1]
-                    break
+            if not self.content_desc:
+                if ' - ' in game_name:
+                    self.content_desc = ' - '+' - '.join(game_name.split(' - ')[1:])
+                elif ' + ' in game_name:
+                    self.content_desc = ' + '+' + '.join(game_name.split(' + ')[1:])
+            if not self.content_desc.startswith(' '):
+                self.content_desc = ''
+            if self.content_desc in self.getGameName():
+                self.content_desc = ''
+            if ' - Issue' in self.content_desc:
+                self.content_desc = ''
 
     def setMachineType(self, filename):
         if not filename:
@@ -352,7 +360,7 @@ class GameFile(object):
         kwargs = self.getOutputPathFormatKwargs(game_name_length=game_name_length,
                                                 for_filename=True)
         output_name = structure.format(**kwargs)
-        if structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE:
+        if structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE+'.{Format}':
             output_name = output_name.replace('(%s)' % DEFAULT_GAME_LANGUAGE, '')
             output_name = output_name.replace('[%s]' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
@@ -503,6 +511,8 @@ class GameFile(object):
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         while game_name.endswith('.'):
             game_name = game_name[:-1]
+        if for_filename and self.content_desc:
+            game_name += self.content_desc
         while len(game_name)>game_name_length:
             game_name = [x for x in game_name.split(' ') if x][:-1]
             game_name = ' '.join(game_name)
@@ -512,11 +522,8 @@ class GameFile(object):
             game_name = ' '.join(game_name[:-1])
             game_name = [x for x in game_name.split(' ') if x]
         game_name = ' '.join(game_name).strip()
-        if for_filename:
-            if self.content_desc:
-                game_name += self.content_desc
-            if self.is_demo:
-                game_name += ' (demo)'
+        if for_filename and self.is_demo:
+            game_name += ' (demo)'
         return game_name.strip()
 
     def getYear(self):
@@ -570,16 +577,14 @@ class GameFile(object):
 
     def getBundleName(self, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)
+        # game_name = self.getGameName(game_name_length=30,
+        #                     for_filename=True)
+        # if game_name in bundled_part:
+        #     bundled_part = game_name
         return ''.join([x for x in bundled_part if x.isalnum()])[:3].lower()
-        # bundle_name = ''.join([x for x in self.getGameName() if x.isalnum()])[:3].lower()
-        # return bundle_name
 
     def setBundle(self, bundle_name, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)
-        # dest = self.getDestPath()
-        # dest = dest.replace('/', '\\').split('\\')
-        # root_dir = os.sep.join(dest[:-depth_level])
-        # bundled_part = os.sep.join(dest[-depth_level:])
         dest = os.path.join(root_dir, bundle_name, bundled_part)
         self.bundled_times += 1
         self.alt_dest = dest
@@ -595,6 +600,3 @@ class GameFile(object):
 
     def getAbsoluteDestPath(self):
         return os.path.abspath(self.getDestPath())
-
-    def savePokesLocally(self):
-        path = self.getLocalPath()

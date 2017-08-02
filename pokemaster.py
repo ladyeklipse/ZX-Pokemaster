@@ -199,13 +199,7 @@ class MainDialog(QDialog):
         try:
             with open('settings.json', 'r', encoding='utf-8') as f:
                 settings = json.load(f)
-                patterns = settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
-                if os.name=='nt':
-                    patterns = [pattern.replace('/', '\\') for pattern in patterns]
-                for i, pattern in enumerate(patterns):
-                    self.ui.cmbOutputFolderStructure.addItem(pattern)
-                    if pattern == settings.get('output_folder_structure'):
-                        self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
+                self.loadOutputPathStructures(settings)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.chkTraverseSubdirectories.setChecked(settings.get('traverse_subridrectories', True))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
@@ -234,6 +228,16 @@ class MainDialog(QDialog):
             self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
             self.ui.txtOutputPath.setText(os.getcwd())
             self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
+
+    def loadOutputPathStructures(self, settings):
+        patterns = settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
+        patterns = [pattern.replace('{Name}', '{GameName}') for pattern in patterns]
+        if os.name == 'nt':
+            patterns = [pattern.replace('/', '\\') for pattern in patterns]
+        for i, pattern in enumerate(patterns):
+            self.ui.cmbOutputFolderStructure.addItem(pattern)
+            if pattern == settings.get('output_folder_structure'):
+                self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
 
     def getDefaultFormatPreference(self):
         return ','.join(GAME_EXTENSIONS)

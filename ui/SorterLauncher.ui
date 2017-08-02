@@ -311,7 +311,7 @@
             <string/>
            </property>
            <property name="placeholderText">
-            <string>en,es,ru,pl,cz,fr,de,nl,no</string>
+            <string>en,es,ru,pl,cz,fr,de,nl,hu,cr,pl,sr,sl,sv,no</string>
            </property>
           </widget>
          </item>

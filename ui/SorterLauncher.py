@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Tue Aug  1 22:37:40 2017
+# Created: Wed Aug  2 02:45:29 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -226,7 +226,7 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Formats preference:", None))
         self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx", None))
         self.label_3.setText(_translate("Dialog", "Languages:", None))
-        self.txtLanguages.setPlaceholderText(_translate("Dialog", "en,es,ru,pl,cz,fr,de,nl,no", None))
+        self.txtLanguages.setPlaceholderText(_translate("Dialog", "en,es,ru,pl,cz,fr,de,nl,hu,cr,pl,sr,sl,sv,no", None))
         self.chkIncludeAlternate.setText(_translate("Dialog", "Include alternate files (marked [a] in TOSEC)", None))
         self.chkIncludeDemos.setText(_translate("Dialog", "Include demos (non-full versions of games)", None))
         self.chkIncludeRereleases.setText(_translate("Dialog", "Include re-releases", None))

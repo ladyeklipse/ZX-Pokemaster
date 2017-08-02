@@ -177,6 +177,8 @@ class Game(object):
     def setName(self, name):
         if name:
             name = remove_square_brackets_regex.sub('', name).strip()
+            name = name.replace('/','-')
+            name = ' '.join([word.title() if len(word)>3 else word for word in name.split(' ')])
             self.name = name
 
     def setPublisher(self, publisher):

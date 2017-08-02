@@ -24,7 +24,6 @@ class FileBundler():
             for i, file in enumerate(files):
                 if not file:
                     continue
-                # file_dest_dir = os.path.dirname(file.getDestPath())
                 file_dest_dir, bundled_part = file.getSplitDest(depth_level=depth_level)
                 if not folders.get(file_dest_dir):
                     folders[file_dest_dir]=[]
@@ -60,14 +59,6 @@ class FileBundler():
             if not mini_bundles or estimated_current_bundle_size >= self.max_files_per_folder:
                 if current_bundle:
                     current_bundle_name = self.getBundleName(current_bundle, depth_level)
-                    # if estimated_current_bundle_size>self.max_files_per_folder:
-                    #     new_bundles = self.splitBundle(current_bundle)
-                    #     for i, bundle in enumerate(new_bundles):
-                    #         bundle_name = current_bundle_name
-                    #         if i>1:
-                    #             bundle_name+=str(i)
-                    #         bundles[bundle_name] = bundle
-                    # else:
                     bundles[current_bundle_name] = [file for file in current_bundle]
                 current_bundle = []
             if not mini_bundles:
@@ -86,7 +77,6 @@ class FileBundler():
                 for i, new_mini_bundle in enumerate(new_mini_bundles):
                     new_bundle_name=bundle_name+str(i+1) if i else bundle_name
                     bundles[new_bundle_name] = [new_mini_bundle]
-            # del bundles[bundle_name]
         return bundles
 
     def splitBundle(self, bundle):
@@ -96,7 +86,6 @@ class FileBundler():
                 yield l[i:i + n]
         files = list(itertools.chain(*bundle))
         new_mini_bundles = list(chunks(files, self.max_files_per_folder))
-        # new_bundles = list(chunks(bundle, self.max_files_per_folder))
         return new_mini_bundles
 
     def assignBundlesToFilesInBundles(self, bundles, depth_level):

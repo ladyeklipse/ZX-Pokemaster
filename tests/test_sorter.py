@@ -16,9 +16,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_single_file_out/Zaxxon (1985)(US Gold).tap'
+        expected_file = 'tests/files/sort_single_file_out/Zaxxon (1985)(U.S. Gold).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_single_file_out/POKES/Zaxxon (1985)(US Gold).pok'
+        expected_file = 'tests/files/sort_single_file_out/POKES/Zaxxon (1985)(U.S. Gold).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
         self.assertEqual(len(s.fails), 0)
@@ -32,7 +32,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_single_file_out_2/Zaxxon (1985)(US Gold).pok'
+        expected_file = 'tests/files/sort_single_file_out_2/Zaxxon (1985)(U.S. Gold).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
 
@@ -45,7 +45,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_single_file_out_3/en/48K/2P/Arcade - Shoot-em-up/US Gold/1985/z/Zaxxon/Zaxxon (1985)(US Gold).tap'
+        expected_file = 'tests/files/sort_single_file_out_3/en/48K/2P/Arcade Game - Shoot-em-up/U.S. Gold/1985/z/Zaxxon/Zaxxon (1985)(U.S. Gold).tap'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_alt_files(self):
@@ -302,7 +302,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
-    def test_sorting_extremely_long_filename(self):
+    def test_extremely_long(self):
         s = Sorter(
                    input_locations=['tests/files/sort_extremely_long_in'],
                    output_location='tests/files/sort_extremely_long_out',
@@ -336,7 +336,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_saboteur_out/Saboteur II (1987)(Durell Software)[128K].tap'
+        expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell Software)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -349,11 +349,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 2 of 2).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 2 of 2).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side A).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 1 of 2)(Side A).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(US Gold)(Disk 1 of 2)(Side B).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 1 of 2)(Side B).dsk'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_equal_input_and_output_paths(self):
@@ -481,7 +481,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = output_location+'/Zaxxon (1985)(US Gold).tap'
+        expected_file = output_location+'/Zaxxon (1985)(U.S. Gold).tap'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -501,11 +501,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = output_location + '/ARCADADV/OPERASOF/ABADELCR.TZX'
+        expected_file = output_location + '/ARCGAMAD/OPERASOF/ABADELCR.TZX'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location + '/ARCADACT/REMADCOR/DIEHARD2.SNA'
+        expected_file = output_location + '/ARCGAMAC/REMADCOR/DIEHARD2.SNA'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location + '/ARCADADV/OPERASOF/ABADEL_2.TZX'
+        expected_file = output_location + '/ARCGAMAD/OPERASOF/ABADEL_2.TZX'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -542,6 +542,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
+        self.assertFalse(os.path.exists('tes-tes'))
         for root, dirs, files in os.walk(output_location):
             self.assertGreater(len(dirs)+len(files), 0)
             self.assertLessEqual(len(files), s.max_files_per_folder)
@@ -549,7 +550,7 @@ class TestSorter(unittest.TestCase):
                 print(root)
             self.assertLessEqual(len(dirs), s.max_files_per_folder)
 
-    def test_file_with_contents_description(self):
+    def test_content_desc(self):
         input_locations = [
             'tests/files/sort_contents_desc_in',
             # 'tosec/Sinclair ZX Spectrum/Compilations/Games/[TZX]'
@@ -565,7 +566,15 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.fail()
+        expected_file = output_location+\
+                        '/4 Game Pack No. 2 - Gunfighter + Periscope Up (1992)(Atlantis Software)(Side B).tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = output_location+\
+                        '/4 Most Megaheroes - Rogue Trooper + Capitan Sevilla (1991)(Alternative Software).tzx'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = output_location+\
+                        '/16-48 Magazine Tape 02 (1983)(16-48 Tape Magazine)(Side A).tzx'
+        self.assertTrue(os.path.exists(expected_file))
 
     def test_custom_file_naming_scheme(self):
         input_locations = [
@@ -584,9 +593,9 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         not_expected_file = output_location+'/Saboteur II (1987)(Durell Software).tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        expected_file = output_location+'/0004295 - Saboteur II.tap'
+        expected_file = output_location+'/0004295 - Saboteur II - Avenging Angel.tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location+'/0004295 - Saboteur II_2.tap'
+        expected_file = output_location+'/0004295 - Saboteur II - Avenging Angel_2.tap'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location + '/0027953 - Maritrini, Freelance Monster Slayer en - Las Increibles Vicisitudes de Despertarse Resacosa con Fred_2.tap'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -619,7 +628,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         not_expected_file = output_location+'/Durell Software/Saboteur II (1987)(Durell Software)[128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        expected_file = output_location+'/DurellSoftware/SaboteurII(1987)(DurellSoftware)[128K].tap'
+        expected_file = output_location+'/DurellSoftware/SaboteurII-AvengingAngel(1987)(DurellSoftware)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/TheMojonTwins/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(TheMojonTwins).tap'
         self.assertTrue(os.path.exists(expected_file))
@@ -664,12 +673,14 @@ class TestSorter(unittest.TestCase):
 
 
 if __name__=='__main__':
-    unittest.main()
+    # unittest.main()
+    t = TestSorter()
     # t.test_8letter_paths()
     # t.test_all_subfolder_kwargs()
     # t.test_alt_files()
     # t.test_camel_case()
     # t.test_not_traversing_subfolders()
-    # t.test_files_per_folder()
+    t.test_files_per_folder()
+    t.test_folders_per_folder()
     # t.test_multilang_games()
     # t.test_multipart_games()

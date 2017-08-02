@@ -88,6 +88,15 @@ class GameFileTests(unittest.TestCase):
         file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)(M3).zip')
         self.assertEqual(file.language, 'M3')
 
+    def test_content_desc(self):
+        game_name = 'HiSoft BASIC'
+        file = GameFile('Sinclair ZX Spectrum\Applications\[TAP]\HiSoft BASIC v1.0 (1986)(HiSoft)[a].zip')
+        file.game.wos_id=1
+        file.game.name = game_name
+        file.release.aliases = ['HiSoft BASIC']
+        file.setContentDesc(os.path.basename(file.path))
+        self.assertEqual(file.content_desc, ' v1.0')
+
 
 if __name__=='__main__':
     unittest.main()

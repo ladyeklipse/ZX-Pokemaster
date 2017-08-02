@@ -1,11 +1,8 @@
 import shutil
-
-from scrape_tipshop import *
-from scrape_zxdb import *
-
 from classes.zxdb_scraper import *
-from scripts.scrape_tosec import *
-
+from classes.tosec_scraper import *
+if (os.getcwd().endswith('scripts')):
+    os.chdir('..')
 if __name__=='__main__':
     LOCAL_FTP_ROOT = os.path.join(os.getcwd(), 'ftp')
     if os.path.exists('pokemaster.db'):
@@ -26,10 +23,13 @@ if __name__=='__main__':
             release.getInfoFromLocalFiles()
         db.addGame(game)
     db.commit()
-    if os.path.exists('pokemaster_zxdb_only.db'):
-        os.unlink('pokemaster_zxdb_only.db')
-    shutil.copy('pokemaster.db', 'pokemaster_zxdb_only.db')
+    if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
+        os.unlink('zxdb/pokemaster_zxdb_only.db')
+    shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
     # sys.exit()
-    # ts = TOSECScraper(db)
-    # ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-    # ts.scrapeTOSEC()
+    ts = TOSECScraper(db)
+    ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
+    ts.scrapeTOSEC()
+    ts.updateTOSECAliasesCSV()
+    ts.addUnscraped()
+    ts.db.commit()

@@ -57,7 +57,7 @@ CREATE TABLE "game_file" (
 );
 CREATE UNIQUE INDEX `unique_release` ON `game_release` (`wos_id` ,`release_seq` );
 -- CREATE UNIQUE INDEX `unique_alias` ON `game_alias` (`wos_id` ,`release_id` ,`name` );
-CREATE VIEW `game_id_file_checker` AS select wos_id, game.name, game_file.tosec_path,
+CREATE VIEW `game_id_file_checker` AS select wos_id, game.name, game_file.content_desc, game_file.tosec_path,
 game_file.wos_name, game_file.wos_path from game
 left join game_file on game_file.game_wos_id=game.wos_id
 order by game.name;

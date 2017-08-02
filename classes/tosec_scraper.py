@@ -165,16 +165,6 @@ class TOSECScraper():
     def addGameToLocalDB(self, game):
         game.setContentDescForFiles()
         game.setCompilationType()
-        # files = game.getFiles()
-        # game_is_collection = True
-        # for file in files:
-        #     if 'Collection' not in file.tosec_path:
-        #         game_is_collection = False
-        #     if file.tosec_path and not file.content_desc:
-        #         filename = os.path.basename(file.tosec_path)
-        #         file.setContentDesc(filename)
-        # if game_is_collection:
-        #     game.setGenre()
         self.db.addGame(game)
 
     def showUnscraped(self):

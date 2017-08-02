@@ -3,8 +3,8 @@ LOCAL_FTP_ROOT = 'C:\\ZX Pokemaster\\ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'http://spectrumcomputing.co.uk',
-    'https://wos.meulie.net',
-    WOS_SITE_ROOT,
+    # 'https://wos.meulie.net',
+    # WOS_SITE_ROOT,
 ]
 WOS_GAME_FILES_DIRECTORY = 'pub/sinclair/games'
 WOS_TRDOS_GAME_FILES_DIRECTORY = 'pub/sinclair/trdos/games'

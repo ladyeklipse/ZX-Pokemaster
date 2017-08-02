@@ -2,7 +2,8 @@ from classes.tipshop_scraper import *
 from classes.database import *
 from classes.game import *
 # from tipshop_excel_converter import *
-
+if (os.getcwd().endswith('scripts')):
+    os.chdir('..')
 def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]

@@ -14,14 +14,14 @@ class Sorter():
 
     db = Database()
     gui = None
-    input_files = []
-    collected_files = []
-    should_cancel = False
-    original_output_location = None
-    too_long_path = None
-    fails = []
 
     def __init__(self, *args, **kwargs):
+        self.input_files = []
+        self.collected_files = []
+        self.should_cancel = False
+        self.original_output_location = None
+        self.too_long_path = None
+        self.fails = []
         if not kwargs:
             kwargs = self.loadSettings()
         self.input_locations = kwargs.get('input_locations', [])
@@ -41,7 +41,6 @@ class Sorter():
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
         self.ignore_xrated = kwargs.get('ignore_xrated', False)
         self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
-        # self.ignore_unknown = kwargs.get('ignore_unknown', False)
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
@@ -100,7 +99,7 @@ class Sorter():
 
     def getBundleDepth(self):
         self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
-        return len(self.output_folder_structure.split('\\')) + 1
+        return len([x for x in self.output_folder_structure.split('\\') if x]) + 1
 
     def collectFiles(self, input_files):
         if self.gui:
@@ -143,7 +142,7 @@ class Sorter():
     def shortenGameFileDestination(self, game_file):
         abs_dest = game_file.getAbsoluteDestPath()
         if len(abs_dest) > MAX_DESTINATION_PATH_LENGTH:
-            for game_name_length in range(MAX_GAME_NAME_LENGTH, MIN_GAME_NAME_LENGTH, -10):
+            for game_name_length in range(MAX_GAME_NAME_LENGTH, MIN_GAME_NAME_LENGTH-10, -10):
                 game_file.dest = self.getDestination(game_file,
                                                      game_name_length=game_name_length)
                 abs_dest = game_file.getAbsoluteDestPath()
@@ -209,6 +208,7 @@ class Sorter():
                         game_file.src = file_path
                         game_file.dest = self.getDestination(game_file)
                         game_file.alt_dest = ''
+                        game_file.bundled_times = 0
                         game_files.append(game_file)
             except OSError:
                 self.fails.append(file_path)
@@ -257,56 +257,6 @@ class Sorter():
             if self.ignore_alternate_formats and files and game_wos_id:
                 self.collected_files[game_wos_id] = self.filterOutAlternateFormats(files)
         return self.collected_files
-
-    # def bundleFilesInEqualFolders(self):
-    #     folders = {}
-    #     for game_wos_id, files in self.collected_files.items():
-    #         for i, file in enumerate(files):
-    #             if not file:
-    #                 continue
-    #             file_dest_dir = os.path.dirname(file.getDestPath())
-    #             if not folders.get(file_dest_dir):
-    #                 folders[file_dest_dir]=[]
-    #             folders[file_dest_dir].append(file)
-    #
-    #     bundles = {}
-    #     mini_bundles = {}
-    #     for folder_name, files in folders.items():
-    #         if len(files)<=self.max_files_per_folder:
-    #             continue
-    #         bundles = {}
-    #         mini_bundles = {}
-    #         for file in files:
-    #             mini_bundle_name = file.getBundleName()
-    #             if not mini_bundles.get(mini_bundle_name):
-    #                 mini_bundles[mini_bundle_name] = []
-    #             mini_bundles[mini_bundle_name].append(file)
-    #
-    #         current_bundle = []
-    #         mini_bundles = [{
-    #             'name':key,
-    #             'files':value
-    #         } for key, value in mini_bundles.items()]
-    #         mini_bundles = sorted(mini_bundles, key=lambda x: x['name'])
-    #         while True:
-    #             if mini_bundles:
-    #                 current_bundle.append(mini_bundles.pop(0)['files'])
-    #             files_in_current_bundle = sum([len(bundle) for bundle in current_bundle])
-    #             if not mini_bundles or \
-    #                 len(mini_bundles[0]['files'])+files_in_current_bundle>=self.max_files_per_folder:
-    #                 if current_bundle:
-    #                     current_bundle_name = '{}-{}'.format(current_bundle[0][0].getBundleName(),
-    #                                                          current_bundle[-1][-1].getBundleName())
-    #                     bundles[current_bundle_name] = [file for file in current_bundle]
-    #                 current_bundle = []
-    #             if not mini_bundles:
-    #                 break
-    #
-    #         for bundle_name, mini_bundles in bundles.items():
-    #             for mini_bundle in mini_bundles:
-    #                 for file in mini_bundle:
-    #                     file.setBundle(bundle_name)
-    #     return self.collected_files
 
     def filterOutAlternateFormats(self, files):
         equals_found_flag = True

@@ -1,3 +1,3 @@
 import os
-if (os.getcwd().endswith('tests')):
+if (os.getcwd().endswith('scripts')):
     os.chdir('..')
