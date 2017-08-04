@@ -1,5 +1,6 @@
-POKEMASTER_DB_PATH = 'C:\\ZX Pokemaster\\pokemaster.db'
-LOCAL_FTP_ROOT = 'C:\\ZX Pokemaster\\ftp'
+ZX_POKEMASTER_VERSION = '1.1'
+POKEMASTER_DB_PATH = 'pokemaster.db'
+LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'http://spectrumcomputing.co.uk',
@@ -83,3 +84,21 @@ TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
     '{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
+OUTPUT_PATH_STRUCTURE_KEYS = [
+    'Genre',
+    'Type',
+    'Year',
+    'Letter',
+    'MachineType',
+    'Publisher',
+    'MaxPlayers',
+    'GameName',
+    'Language',
+    'Format',
+    'Side',
+    'Part',
+    'ModFlags'
+    'ZXDB_ID',
+    'Notes',
+    'TOSECName'
+]

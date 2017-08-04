@@ -493,7 +493,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
                    input_locations=[input_location],
                    output_location=output_location,
-                   traverse_subfolders=False,
+                   traverse_subfolders=True,
                    ignore_alternate=False,
                    short_filenames=True,
                    output_folder_structure='{Genre}\{Publisher}',
@@ -508,6 +508,9 @@ class TestSorter(unittest.TestCase):
         expected_file = output_location + '/ARCGAMAD/OPERASOF/ABADEL_2.TZX'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
+        for root, dirs, files in os.walk(
+                os.path.join(output_location, 'ELECTMAG', '164MAGTA')):
+            self.assertGreater(len(files), 100)
 
     def test_files_per_folder(self):
         input_location = 'ftp/pub/sinclair/games/a'
@@ -529,20 +532,21 @@ class TestSorter(unittest.TestCase):
             self.assertLessEqual(len(files), s.max_files_per_folder)
 
     def test_folders_per_folder(self):
-        input_location = 'ftp/pub/sinclair/games/a'
+        input_location = 'tests/files/sort_folders_per_folder_in'
         output_location = 'tests/files/sort_folders_per_folder_out'
         s = Sorter(
             input_locations=[input_location],
             output_location=output_location,
-            traverse_subfolders=False,
+            traverse_subfolders=True,
             ignore_alternate=False,
-            output_folder_structure='{MaxPlayers}\{GameName}',
-            max_files_per_folder = 100,
+            output_folder_structure='{Genre}/{GameName}',
+            max_files_per_folder = 50,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertFalse(os.path.exists('tes-tes'))
+        unwanted_location = os.path.join(output_location, 'uti-uti')
+        self.assertFalse(os.path.exists(unwanted_location))
         for root, dirs, files in os.walk(output_location):
             self.assertGreater(len(dirs)+len(files), 0)
             self.assertLessEqual(len(files), s.max_files_per_folder)
@@ -666,6 +670,18 @@ class TestSorter(unittest.TestCase):
             for file in files:
                 self.assertTrue(file.startswith('3D'))
 
+    def test_same_name(self):
+        input_locations = [
+            'tests/files/sort_same_name_in',
+        ]
+        output_location = 'tests/files/sort_same_name_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            ignore_alternate=False,
+            output_folder_structure='{GameName}',
+            cache=False)
+        s.sortFiles()
 
 
 

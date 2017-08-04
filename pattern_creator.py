@@ -1,16 +1,15 @@
 # from PyQt5.QtCore import *
 # from PyQt5.QtGui import *
 # from PyQt5.QtWidgets import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from ui.OutputFolderStructureEditor import *
-from classes.game_file import GameFile
-from classes.game import Game
-from settings import *
 import os
 import re
+from PyQt4.QtGui import *
+
+from classes.game_file import GameFile
+from functions.is_pathname_valid import *
 from settings import MESSAGE_BOX_TITLE
-from scripts.is_pathname_valid import *
+from ui.OutputFolderStructureEditor import *
+
 
 class PatternCreatorDialog(QDialog):
 
@@ -59,7 +58,7 @@ class PatternCreatorDialog(QDialog):
     def initGameFiles(self):
         self.examples = []
         game_file = GameFile('Tujad (1986)(Ariolasoft UK)[48K].tap')
-        game_file.game.setGenre('Arcade Game `- Maze')
+        game_file.game.setGenre('Arcade Game - Maze')
         game_file.game.wos_id = 5448
         self.examples.append(game_file)
         game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2)(Side A)[Spy Hunter].tzx')

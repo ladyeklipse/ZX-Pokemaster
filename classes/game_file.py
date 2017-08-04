@@ -1,4 +1,5 @@
-from classes.game import Game, getWosSubfolder, filepath_regex
+from classes.game import Game
+from functions.game_name_functions import getWosSubfolder, filepath_regex, putPrefixToEnd
 from classes.game_release import GameRelease
 import requests
 import os
@@ -11,16 +12,6 @@ TOSEC_REGEX = re.compile('[\(\[](.*?)[\)\]]|\.zip|'+'|'.join(['\.'+x for x in GA
 ROUND_BRACKETS_REGEX = re.compile('[\(](.*?)[\)]')
 SQUARE_BRACKETS_REGEX = re.compile('[\[](.*?)[\]]')
 
-def putPrefixToEnd(game_name):
-    if game_name.startswith('Die Hard'):
-        return game_name
-    if game_name.endswith(', 3D'):
-        game_name = '3D '+game_name[:-4]
-    for prefix in GAME_PREFIXES:
-        if game_name.startswith(prefix + ' '):
-            game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
-            return game_name
-    return game_name
 
 class GameFile(object):
 
@@ -289,14 +280,20 @@ class GameFile(object):
         if self.game and self.game.wos_id:
             game_name = filename.split('(')[0].strip()
             aliases = sorted(self.game.getAliases(), key=len, reverse=True)
-            if not self.content_desc:
+            alias_found = False
+            for alias in aliases:
+                alias = alias.lower()
+                if alias in game_name.lower():
+                    self.content_desc = game_name[game_name.lower().find(alias)+len(alias):].rstrip()
+                    alias_found = True
+            if not self.content_desc and not alias_found:
                 if ' - ' in game_name:
                     self.content_desc = ' - '+' - '.join(game_name.split(' - ')[1:])
                 elif ' + ' in game_name:
                     self.content_desc = ' + '+' + '.join(game_name.split(' + ')[1:])
             if not self.content_desc.startswith(' '):
                 self.content_desc = ''
-            if self.content_desc in self.getGameName():
+            if self.content_desc.replace(' - ', '') in self.getGameName():
                 self.content_desc = ''
             if ' - Issue' in self.content_desc:
                 self.content_desc = ''
@@ -364,6 +361,7 @@ class GameFile(object):
             output_name = output_name.replace('(%s)' % DEFAULT_GAME_LANGUAGE, '')
             output_name = output_name.replace('[%s]' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
+        output_name = ' '.join([x for x in output_name.split(' ') if x])
         output_name = filepath_regex.sub('', output_name.replace('/', '-').replace(':', ' -')).strip()
         return output_name
 
@@ -577,10 +575,6 @@ class GameFile(object):
 
     def getBundleName(self, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)
-        # game_name = self.getGameName(game_name_length=30,
-        #                     for_filename=True)
-        # if game_name in bundled_part:
-        #     bundled_part = game_name
         return ''.join([x for x in bundled_part if x.isalnum()])[:3].lower()
 
     def setBundle(self, bundle_name, depth_level):
@@ -590,10 +584,11 @@ class GameFile(object):
         self.alt_dest = dest
 
     def getSplitDest(self, depth_level):
-        depth_level += 1-self.bundled_times
+        depth_level += 1
         dest = self.getDestPath()
         dest = dest.replace('/', '\\').split('\\')
         root_dir = os.sep.join(dest[:-depth_level])
+        depth_level -= self.bundled_times
         bundled_part = os.sep.join(dest[-depth_level:])
         return root_dir, bundled_part
 

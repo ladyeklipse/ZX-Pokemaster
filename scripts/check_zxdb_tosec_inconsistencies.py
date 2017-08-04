@@ -1,10 +1,12 @@
+import os
+if (os.getcwd().endswith('scripts')):
+    os.chdir('..')
 try:
     f = open('zxdb_tosec_incosistencies.csv', 'w', encoding='utf-8')
 except IOError as e:
     print('File is opened in excel')
     raise e
 from classes.database import *
-import os
 db = Database()
 games = db.getAllGames()
 inconsistencies_header = [

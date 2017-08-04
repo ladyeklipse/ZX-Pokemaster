@@ -81,7 +81,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -245,7 +245,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Use 8.3 naming scheme</string>
+          <string>Use 8.3 naming scheme (experimental)</string>
          </property>
         </widget>
        </item>

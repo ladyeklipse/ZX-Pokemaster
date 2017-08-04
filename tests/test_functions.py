@@ -7,7 +7,14 @@ class TestFunctions(unittest.TestCase):
 def make_short_game_name_test(test_number, original, expected):
     def test(self):
         # print(original)
-        result = get_meaningful_8letter_name(original)
+        result = getMeaningfulEightLetterName(original)
+        self.assertEqual(expected, result)
+    return test
+
+def make_filesystem_friendly_name_test(test_number, original, expected):
+    def test(self):
+        # print(original)
+        result = getFileSystemFriendlyName(original)
         self.assertEqual(expected, result)
     return test
 
@@ -26,7 +33,7 @@ if __name__=='__main__':
         ('Saboteur II', 'SABOTEU2'),
         ('Licence to Kill', 'LICTOKIL'),
         ('Saboteur', 'SABOTEUR'),
-        ('Penetrator, The', 'PENETRAT'),
+        ('Penetrator, The',  'PENETRAT'),
         ('Sport of Kings Challenge, The', 'SPOKINCH'),
         ('Sports Pack, The', 'SPORTPAC'),
         ('Star Fly, The', 'STARFLY'),
@@ -37,5 +44,13 @@ if __name__=='__main__':
     for i, game_name in enumerate(game_names):
         test_f = make_short_game_name_test(i, game_name[0], game_name[1])
         setattr(TestFunctions, 'test_short_game_name_%d' % i, test_f)
+
+    game_names = [
+        ('jetSet Willy II', 'JetSet Willy II'),
+        ('AlchNews 23', 'AlchNews 23')
+    ]
+    for i, game_name in enumerate(game_names):
+        test_f = make_filesystem_friendly_name_test(i, game_name[0], game_name[1])
+        setattr(TestFunctions, 'test_winfriendly_game_name_%d' % i, test_f)
 
     unittest.main()

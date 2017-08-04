@@ -11,4 +11,5 @@ ts.scrapeTOSEC()
 ts.updateTOSECAliasesCSV()
 ts.addUnscraped()
 ts.db.commit()
+# import scripts.check_zxdb_tosec_inconsistencies
 

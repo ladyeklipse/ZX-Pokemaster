@@ -1,21 +1,10 @@
+from functions.game_name_functions import *
 from classes.cheat import *
 from classes.poke import *
 from settings import *
 import os
 import glob
 import re
-
-publisher_regex = re.compile(' inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
-filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
-remove_square_brackets_regex = re.compile('\[[^\]]*\]')
-
-def getWosSubfolder(filepath):
-    return '123' if not filepath[0].isalpha() else filepath[0].lower()
-
-def getFileSystemFriendlyName(name):
-    name = name.replace(': ', ' - ').replace('/','-')
-    name = filepath_regex.sub('', name).strip()
-    return name
 
 class Game(object):
 
@@ -24,6 +13,8 @@ class Game(object):
     publisher = ''
     year = None
     genre = ''
+    type = 'Unknown'
+    type = 'Unknown'
     x_rated = False
     number_of_players = 1
     multiplayer_type = ''
@@ -92,9 +83,15 @@ class Game(object):
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
 
-    def setContentDescForFiles(self):
+    def setContentDescForFiles(self, lookup_table={}):
         files = self.getFiles()
         for file in files:
+            if file.tosec_path in lookup_table:
+                if lookup_table[file.tosec_path]=='NONE':
+                    file.content_desc = ''
+                elif lookup_table[file.tosec_path].startswith('ALT'):
+                    file.content_desc = lookup_table[file.tosec_path][3:]
+                continue
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
                 file.setContentDesc(filename)
@@ -105,7 +102,6 @@ class Game(object):
             got_compilation_type = False
             for file in files:
                 if 'Compilation' in file.tosec_path:
-
                     if got_compilation_type:
                         old_genre = self.genre
                         self.setGenreFromFilePath(file.tosec_path)
@@ -121,6 +117,7 @@ class Game(object):
         path = ''.join(os.path.split(path)[-3:]).lower()
         if self.publisher == 'Vaxalon':
             self.genre = 'Scene Demo'
+            return
         if 'compilation' in path:
             self.genre = 'Compilation'
             if 'demo' in path:
@@ -176,9 +173,9 @@ class Game(object):
 
     def setName(self, name):
         if name:
-            name = remove_square_brackets_regex.sub('', name).strip()
-            name = name.replace('/','-')
-            name = ' '.join([word.title() if len(word)>3 else word for word in name.split(' ')])
+            name = getFileSystemFriendlyName(name)
+            # name = remove_square_brackets_regex.sub('', name).strip()
+            # name = name.replace('/','-').replace(':', ' -')
             self.name = name
 
     def setPublisher(self, publisher):
@@ -222,8 +219,22 @@ class Game(object):
     def setGenre(self, genre):
         if not genre:
             self.genre = ''
+            self.type = ''
         else:
             self.genre = genre.replace(':', ' -').replace('I/O', 'IO').replace('/', '-')
+            self.setType(genre)
+
+    def setType(self, genre):
+        if 'Compilation' in genre:
+            self.type = genre.replace(' - ', '/')
+        if 'Utilit' in genre:
+            self.type = 'Applications'
+        elif 'Music' in genre:
+            self.type = 'Music'
+        elif 'Covertape' in genre:
+            self.type = 'Covertapes'
+        elif 'Magazine' in genre:
+            self.type = 'Magazines'
 
     def setmanualUrl(self, url):
         self.manual_url = url

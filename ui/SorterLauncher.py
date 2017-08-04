@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Wed Aug  2 02:45:29 2017
+# Created: Fri Aug  4 16:20:15 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -202,7 +202,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -220,7 +220,7 @@ class Ui_Dialog(object):
         self.btnEditPattern.setText(_translate("Dialog", "Edit pattern...", None))
         self.chkMaxFilesPerFolder.setText(_translate("Dialog", "Max files per folder:", None))
         self.chkCamelCase.setText(_translate("Dialog", "CamelCaseInsteadOfSpaces", None))
-        self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme", None))
+        self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme (experimental)", None))
         self.chkPlacePokFilesIntoPOKESSubfolders.setText(_translate("Dialog", "Place .POK files into POKES subfolders", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMainOptions), _translate("Dialog", "Main options", None))
         self.label_2.setText(_translate("Dialog", "Formats preference:", None))

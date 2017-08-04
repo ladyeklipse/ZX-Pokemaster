@@ -89,14 +89,39 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.language, 'M3')
 
     def test_content_desc(self):
-        game_name = 'HiSoft BASIC'
         file = GameFile('Sinclair ZX Spectrum\Applications\[TAP]\HiSoft BASIC v1.0 (1986)(HiSoft)[a].zip')
+        game_name = 'HiSoft BASIC'
         file.game.wos_id=1
         file.game.name = game_name
-        file.release.aliases = ['HiSoft BASIC']
+        file.release.aliases = [game_name]
         file.setContentDesc(os.path.basename(file.path))
         self.assertEqual(file.content_desc, ' v1.0')
+        game_name = 'Treasure Island Dizzy'
+        file = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Dizzy II - Treasure Island Dizzy (1988)(Codemasters).zip')
+        file.game.wos_id=1
+        file.game.name = game_name
+        file.release.aliases = [game_name]
+        file.setContentDesc(os.path.basename(file.path))
+        self.assertEqual(file.content_desc, '')
+        file = GameFile('Sinclair ZX Spectrum\Games\[Z80]\\007 - Live and Let Die (1988)(Domark).zip')
+        game_name = 'Live and Let Die'
+        file.game.wos_id=1
+        file.game.name = game_name
+        file.release.aliases = 'Live and Let Die - The Computer Game/Live and Let Die/Aquablast'.split('/')
+        file.setContentDesc(os.path.basename(file.path))
+        self.assertEqual(file.content_desc, '')
+        file = GameFile('Sinclair ZX Spectrum\Games\[Z80]\Hunter II - Olympus-Mons (1985)(David Rushall).zip')
+        game_name = 'Hunter II - Olympus-mons'
+        file.game.wos_id=1
+        file.game.name = game_name
+        file.release.aliases = 'Hunter II - Olympus-mons/Hunter II - Olympus-mons'.split('/')
+        file.setContentDesc(os.path.basename(file.path))
+        self.assertEqual(file.content_desc, '')
 
+    def test_duplicate_spaces(self):
+        game_file = GameFile('Format  Utility (1994)(MI & DI  Software).trd')
+        out_name = game_file.getOutputName()
+        self.assertEqual(out_name, 'Format Utility (1994)(MI & DI Software).trd')
 
 if __name__=='__main__':
     unittest.main()

@@ -1,13 +1,31 @@
 import sys
+
+import os
+
+if hasattr(sys, 'frozen'):
+    os.chdir(os.path.dirname(sys.executable))
+
+from settings import *
+import itertools
+import stat
+import shutil
+import zipfile
+import hashlib
+import json
+import traceback
+from functions.game_name_functions import *
+from functions.is_pathname_valid import *
+from classes.database import *
+# db = Database()
+from classes.sorter import *
+
 sys.path.append("ui")
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-# from PyQt4.QtWidgets import *
 from ui.SorterLauncher import *
-from classes.sorter import *
-from scripts.is_pathname_valid import *
+
+
 import traceback
-import threading
 from pattern_creator import PatternCreatorDialog
 import json
 from settings import MESSAGE_BOX_TITLE
@@ -136,8 +154,14 @@ class MainDialog(QDialog):
         self.bar.setFixedWidth(400)
         self.bar.setAutoClose(True)
         self.bar.show()
-        s = Sorter(**kwargs)
+        s = PokemasterSorter(**kwargs)
+        if s.error:
+            self.bar.close()
+            QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr(s.error))
+            return
         self.bar.canceled.connect(s.cancel)
+        self.bar.raise_()
+        self.bar.activateWindow()
         s.sortFiles()
         self.bar.hide()
         if s.should_cancel:
@@ -187,7 +211,6 @@ class MainDialog(QDialog):
         return self.ui.txtMaxFilesPerFolder.value()
 
     def updateProgressBar(self, current_value=0, max_value=None, label=None):
-        print('updating progress bar')
         self.bar.setValue(current_value)
         if max_value:
             self.bar.setMaximum(max_value)

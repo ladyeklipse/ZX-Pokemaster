@@ -15,6 +15,7 @@ class TOSECScraper():
 
     paths = []
     manually_entered_tosec_aliases = {}
+    manually_corrected_content_descriptions = {}
     wrong_releases = [
         ['Wrong release chosen:'],
         ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
@@ -26,6 +27,8 @@ class TOSECScraper():
     unscraped_file_paths = []
 
     def __init__(self, cache=True, db=None):
+        self.getTOSECAliases()
+        self.getManuallyCorrectedContentDescriptions()
         self.db = db if db else Database()
         if cache:
             self.db.loadCache()
@@ -100,7 +103,6 @@ class TOSECScraper():
 
 
     def scrapeTOSEC(self):
-        self.getTOSECAliases()
         if not self.paths:
             self.generateTOSECPathsArray()
         games_found = 0
@@ -163,7 +165,7 @@ class TOSECScraper():
         self.db.commit()
 
     def addGameToLocalDB(self, game):
-        game.setContentDescForFiles()
+        game.setContentDescForFiles(lookup_table=self.manually_corrected_content_descriptions)
         game.setCompilationType()
         self.db.addGame(game)
 
@@ -246,3 +248,20 @@ class TOSECScraper():
                     if len(line)<2 or not line[1]:
                         continue
                     self.manually_entered_tosec_aliases[line[0]]=line[1]
+
+    def updateContentDescLookupTable(self):
+        print('Updating content descriptions lookup table not implemented yet.')
+        # self.getManuallyCorrectedContentDEscriptions()
+        # with open('game_id_file_checker.csv', 'w', encoding='utf-8') as f:
+
+    def getManuallyCorrectedContentDescriptions(self):
+        if not self.manually_corrected_content_descriptions:
+            with open('game_id_file_checker.csv', 'r', encoding='utf-8') as f:
+                for line in f.readlines():
+                    line = line.strip().split(';')
+                    if len(line)<3 or not line[3]:
+                        continue
+                    elif line[2].startswith('NONE'):
+                        self.manually_corrected_content_descriptions[line[3]] = ''
+                    elif line[2].startswith('ALT'):
+                        self.manually_corrected_content_descriptions[line[3]] = line[2][3:]

@@ -1,5 +1,5 @@
 ===========================================================
-ZX Pokemaster 1.01 README
+ZX Pokemaster 1.1 README
 ===========================================================
 
 CONTENTS.
@@ -99,19 +99,44 @@ For better understanding what each of them does, here is the description:
  
 8. If you want .POK files to be placed alongside executable files instead of POKES subfolder, please uncheck "Place .POK files into POKES subfolder".
 
-9. Select desired Output folder structure pattern or create your own by pressing "Add pattern" button.
+9. If you don't want to exclude games in languages you don't know, type comma-separated 2-letter ISO codes in "Languages" text box on "File filtering" tab.
+Example:
+en,ru,pl - will exclude games in Spanish and other languages, but will include games in English, Russian and Polish.
+
+10. Select desired Output path structure pattern or create your own by pressing "Add pattern" button or edit an existing one using "Edit pattern" button.
 Creating your own pattern should be straightforward. Either type it in, or use buttons and see how the example changes.
+You can edit both folder structure and filename structure using the buttons. Just make sure the focus is on the appropriate text box - press "Tab" on keyboard or click on it with a mouse to change.
 Each time you press a button, a "Slash" is added automatically. But you can replace it with another symbol, then the result will be different.
+
+10.1. Creating output folder structure pattern.
 Example:
 {Publisher}\{NumberOfPlayers}
 The files will be nested in two subfolders: first into publisher folder, then a folder for each possible number of players will be created.
 {Publisher} - {NumberOfPlayers}
 This will create several folders for each publisher in the same parent folder.
+
 Example:
 "Ariolasoft - 1P" will store 1 player games by Ariolasoft.
 "Ariolasoft - 2P" will store 2 player games by Ariolasoft. This folder will be created only if at least one game exists, which matches the criteria.
 
-10. Press "Sort" button and wait several minutes - this time is enough to sort 70000+ files (WoS and TOSEC dumps combined).
+10.2. Creating file name structure pattern.
+By default your files will have long names, according to TOSEC convention. This is the best option, because it ensures that you will be able to easily distinguish different files between each other.
+
+Internally, TOSEC-based filename is written like this:
+{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}
+
+You may add/remove parameters, use different types of brackets.
+For instance, you will be able to include ZXDB ID in the file name or make each file name start with release year, so your files are sorted by year inside the folder they reside in, like this:
+1986 - Tujad (Ariolasoft) [ID=5448].tap
+The file naming scheme would look like this:
+{Year} - {GameName} - ({Publisher}) [ID={ZXDB_ID}.{Format}
+
+11. Restricting amount of files per folders.
+Sorting by letters or by year doesn't always work right, because you will have a couple of files in "1996" folder and thousands of them in "1984" folder. Or thousands in "S" folder and tens in "Y" folder.
+Implementing the option to have not more than X files per folder will make it possible to make sorting files more equally. Besides I've heard of the systems which currently support not more than 256 files per folder, and it can take a while to load 2000 file names on real ZX Spectrum hardware.
+The folders will be named like volumes of huge dictionaries: e. g. if first game in bundle is "Saboteur and the last is "Tujad", the folder name will be "sab-tuj".
+
+12. Press "Sort" button and wait several minutes - this time is enough to sort 70000+ files (WoS and TOSEC dumps combined).
 
 ===========================================================
 III. How ZX Pokemaster works.
@@ -133,6 +158,9 @@ When ZX Pokemaster sorts your files, it looks into zip archives and non-archived
 ===========================================================
 IV. FAQ.
 ===========================================================
+
+Q: It doesn't work!
+A: I've tested it thoroughly, but I cannot guarantee that ZX Pokemaster will work on your machine or meet the requirements of your use case. Please scroll down to the end of this file, there are many ways to contact me. We will figure something out and you will be the first to receive the patched version of ZX Pokemaster!
 
 Q: How to exclude files based on criteria (e. g. copy all games except text adventures)?
 A: This might be a feature for future releases, but it's far on my list - there are way too many features already planned.
@@ -156,6 +184,17 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.1. 
+ - Improved filenames. Now they are more TOSEC-compliant.
+ - Improved GUI interface.
+ - Fixed bug: stumbling upon malformed zip file will not stop sorting other files.
+ - Filter files by languages.
+ - Making all files and folders CamelCased (to fit more information on screen).
+ - Renaming files and folders to 8.3 standart for esxDOS.
+ - Excluding x-rated games.
+ - Custom naming schemes for files.
+ - Restricting amount of files per folder.
+
 1.01. Fixed major bugs:
  - Game names are restricted to 50 characters (currently hardcoded constant) to avoid 256 chars per path restriction in most operating systems.
  - Output path can now be equal to one of the input paths - this use case is now handled properly.
@@ -171,22 +210,6 @@ VI. Planned features.
 Currently around 3000 files in TOSEC have no corresponding entry in ZXDB and it requires manual checking of each one.
 
 - Taking over updating TOSEC using ZX Pokemaster itself to add files from WoS FTP, which are not currently in TOSEC, to the latter, thus creating a unified source of files, so you can download a single archive and be sure you have everything that is out there on the Net.
-
-- Naming files and folders with 8.3 naming scheme.
-Believe it or not, long file names are still a luxury in some use cases, most notably ESXDos - DivMMC firmware, chosen as default for ZX Spectrum Next. 
-Thus, you would rather have all 8 letters used wisely instead of "SABOTE~1.TAP", "SABOTE~2.TAP", "SABOTE~3.TAP", where you can't even know for sure where is "Saboteur 1" and where is "Saboteur II - the Avenging Angel".
-
-- Custom naming schemes for files.
-Currently works only for folders, but it's relatively easy to make file names customizable, instead of sticking with TOSEC-compliant full file names.
-For instance, you will be able to include WoS ID in the file name or make each file name start with release year, so your files are sorted by year inside the folder they reside in, like this:
-1986 - Tujad (Ariolasoft) [ID=5448].tap
-The naming scheme would look like this:
-{Year} - {GameName} - ({Publisher}) [ID={WoSID}.{Format}
-
-- Restricting amount of files per folder.
-Sorting by letters or by year doesn't always work right, because you will have a couple of files in "1996" folder and thousands of them in "1984" folder. Or thousands in "S" folder and tens in "Y" folder.
-Implementing the option to have not more than X files per folder will make it possible to make sorting files more equally. Besides I've heard of the systems which currently support not more than 256 files per folder, and it can take a while to load 2000 file names on real ZX Spectrum hardware.
-The folders will be named like volumes of huge dictionaries: e. g. if first game in bundle is "Saboteur and the last is "Tujad", the folder name will be "Sab-Tuj".
 
 - Deploy ZX Pokemaster for Ubuntu/Debian and OSX. 
 This is relatively easy, if not the fact that I have to install those operating systems on virtual machines. I use Windows 7 exclusively for all the work I'm doing.

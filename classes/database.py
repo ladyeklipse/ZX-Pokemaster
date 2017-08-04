@@ -7,7 +7,6 @@ import os
 import sqlite3
 import traceback
 
-
 SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game.wos_id AS wos_id, ' \
                         'game_file.machine_type AS file_machine_type, ' \

@@ -1,4 +1,5 @@
-from classes.game import Game, publisher_regex, remove_square_brackets_regex, filepath_regex
+from classes.game import Game
+from functions.game_name_functions import *
 import re
 import zipfile
 import hashlib
@@ -75,7 +76,7 @@ class GameRelease(object):
             return str(self.year)
 
     def getAllAliases(self):
-        return self.aliases
+        return sorted(set(self.aliases), key=len, reverse=True)
 
     def getIngameScreenFilePath(self, format='scr'):
         if format=='scr':
@@ -105,6 +106,7 @@ class GameRelease(object):
             self.addAlias(alias)
 
     def addAlias(self, alias):
+        alias = getFileSystemFriendlyName(alias)
         if alias and alias not in self.aliases:
             self.aliases.append(alias)
 

@@ -26,10 +26,11 @@ if __name__=='__main__':
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
+    import scrape_tosec
     # sys.exit()
-    ts = TOSECScraper(db)
-    ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-    ts.scrapeTOSEC()
-    ts.updateTOSECAliasesCSV()
-    ts.addUnscraped()
-    ts.db.commit()
+    # ts = TOSECScraper(db)
+    # ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
+    # ts.scrapeTOSEC()
+    # ts.updateTOSECAliasesCSV()
+    # ts.addUnscraped()
+    # ts.db.commit()

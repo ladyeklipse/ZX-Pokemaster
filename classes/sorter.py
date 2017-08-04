@@ -8,16 +8,20 @@ import shutil
 import zipfile
 import hashlib
 import json
-import time
+import traceback
+
+db = Database()
 
 class Sorter():
 
-    db = Database()
-    gui = None
+    # db = Database()
+    # gui = None
+    # error = ''
+
 
     def __init__(self, *args, **kwargs):
         self.input_files = []
-        self.collected_files = []
+        self.collected_files = {}
         self.should_cancel = False
         self.original_output_location = None
         self.too_long_path = None
@@ -46,15 +50,18 @@ class Sorter():
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
         if self.place_pok_files_in_pokes_subfolders and self.max_files_per_folder:
             self.max_files_per_folder -= 1
-        self.gui = kwargs.get('gui', None)
-        if kwargs.get('cache', True):
-            if self.gui:
-                self.gui.updateProgressBar(0, 0, 'Loading database cache...')
-            self.db.loadCache()
         if self.output_location in self.input_locations:
             self.original_output_location = self.output_location
             self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
         self.fails = []
+        self.error = ''
+        if not self.checkOutputPath():
+            return
+        self.gui = kwargs.get('gui', None)
+        if kwargs.get('cache', True):
+            if self.gui:
+                self.gui.updateProgressBar(0, 0, 'Loading database cache...')
+            db.loadCache()
 
     def loadSettings(self):
         if not os.path.exists('settings.json'):
@@ -87,6 +94,16 @@ class Sorter():
         if self.original_output_location:
             self.renameOutputLocation()
 
+    def checkOutputPath(self):
+        gf = GameFile('test.tap')
+        try:
+            self.getDestination(gf)
+            return True
+        except KeyError as e:
+            key = e.args[0]
+            self.error = 'Invalid output path structure component: '+key
+            return False
+
     def renameOutputLocation(self):
         backup_location_name = self.original_output_location+'_old'
         if os.path.exists(backup_location_name):
@@ -105,12 +122,13 @@ class Sorter():
         if self.gui:
             self.gui.updateProgressBar(0, len(input_files), 'Examining files...')
         collected_files = {}
-        tosec_compliant = self.output_filename_structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE
+        tosec_compliant = \
+            self.output_filename_structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE or \
+            self.output_filename_structure=='{TOSECName}'
         for i, file_path in enumerate(input_files):
             if self.should_cancel:
                 break
             if i % 100 == 0:
-                # print('Examined', i, 'files of', len(input_files))
                 if self.gui:
                     self.gui.updateProgressBar(i)
             game_files = self.getGameFilesFromInputPath(file_path)
@@ -179,7 +197,7 @@ class Sorter():
         ext = os.path.splitext(file_path)[1][1:].lower()
         if ext in self.formats_preference:
             game_file = GameFile(file_path)
-            game = self.db.getGameByFile(game_file)
+            game = db.getGameByFile(game_file)
             if game:
                 game_file.importCredentialsFromGame(game, overwrite = True)
             game_file.src = file_path
@@ -200,7 +218,7 @@ class Sorter():
                         unzipped_file = zf.read(zfname)
                         unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
                         game_file.md5 = unzipped_file_md5
-                        game = self.db.getGameByFileMD5(unzipped_file_md5)
+                        game = db.getGameByFileMD5(unzipped_file_md5)
                         if game:
                             game_file = game.findFileByMD5(unzipped_file_md5)
                             game_file.release = game.releases[game_file.release_seq]
@@ -225,10 +243,10 @@ class Sorter():
         if self.short_filenames:
             dest_filename = os.path.splitext(dest_filename)
             print(dest_filename)
-            dest_filename = ''.join((get_meaningful_8letter_name(game_file.getGameName()), '.', game_file.format.upper()))
+            dest_filename = ''.join((getMeaningfulEightLetterName(game_file.getGameName()), '.', game_file.format.upper()))
             dest_dir = dest_dir.split(os.sep)
             print(dest_dir)
-            dest_dir = [get_meaningful_8letter_name(x) for x in dest_dir]
+            dest_dir = [getMeaningfulEightLetterName(x) for x in dest_dir]
             dest_dir = os.path.join(*dest_dir)
         dest = os.path.join(dest_dir, dest_filename)
         dest = os.sep.join([x for x in dest.split(os.sep) if x])
@@ -293,7 +311,6 @@ class Sorter():
             if self.should_cancel:
                 break
             if i % 100 == 0:
-                # print('Redistributed files:', i-1, 'of', len(files_array))
                 if self.gui:
                     self.gui.updateProgressBar(i)
             dest = file.getDestPath()

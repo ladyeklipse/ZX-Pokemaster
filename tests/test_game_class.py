@@ -52,5 +52,9 @@ class GameTests(unittest.TestCase):
         g = Game('Ace 2: Combat')
         self.assertEqual(g.getTOSECName(), 'Ace 2 - Combat (19xx)(-)')
 
+    def test_set_name(self):
+        g = Game('Terminator 2: Judgement day')
+        self.assertEqual(g.name, 'Terminator 2 - Judgement day')
+
 if __name__=='__main__':
     unittest.main()

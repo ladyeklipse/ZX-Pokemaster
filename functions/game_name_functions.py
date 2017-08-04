@@ -1,11 +1,16 @@
-from classes.game_file import GAME_PREFIXES
+from settings import *
+import re
+
+publisher_regex = re.compile(' inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
+filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
+remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
 MEANINGLESS_WORDS = [
     'of', 'the', 'in',
     'an', 'at', 'for'
 ]
 
-def get_meaningful_8letter_name(game_name):
+def getMeaningfulEightLetterName(game_name):
     if not game_name:
         return ''
     # if ',' in game_name and [x for x in GAME_PREFIXES if x in game_name.lower()]:
@@ -48,3 +53,28 @@ def get_meaningful_8letter_name(game_name):
             name += words[3][:(8-len(name))]
     return name.upper()
 
+def getWosSubfolder(filepath):
+    return '123' if not filepath[0].isalpha() else filepath[0].lower()
+
+def getFileSystemFriendlyName(name):
+    name = name.replace(':', ' -').replace('/','-')
+    name = ' '.join([word[0].upper()+word[1:].rstrip()
+                     if len(word)>3 and '.' not in word
+                     else word.strip() for word in name.split(' ')])
+    name = filepath_regex.sub('', name).strip()
+    return name
+
+def putPrefixToEnd(game_name):
+    components = re.split(' - | \+ ', game_name)
+    for component in components:
+        if len(component)<5:
+            continue
+        if component.startswith('Die Hard'):
+            continue
+        if component.endswith(', 3D'):
+            component = '3D '+component[:-4]
+        for prefix in GAME_PREFIXES:
+            if component.startswith(prefix + ' '):
+                component = ' '.join(component.split(' ')[1:]) + ', ' + prefix
+    game_name = ''.join(components)
+    return game_name
