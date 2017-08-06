@@ -1,4 +1,5 @@
 from classes.game_file import GameFile
+from classes.game_file import GameRelease
 from classes.game import Game
 import unittest
 import os
@@ -122,6 +123,37 @@ class GameFileTests(unittest.TestCase):
         game_file = GameFile('Format  Utility (1994)(MI & DI  Software).trd')
         out_name = game_file.getOutputName()
         self.assertEqual(out_name, 'Format Utility (1994)(MI & DI Software).trd')
+
+    def test_picking_best_release_name(self):
+        g = Game('Everyday Tale of a Seeker of Gold, An')
+        r = GameRelease(game=g, aliases=\
+        'Everyday Tale of a Seeker of Gold, An/An Everyday Tale of a Seeker of Gold'.split('/'))
+        f = GameFile('test.mgt')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Everyday Tale of a Seeker of Gold, An (19xx)(-).mgt')
+        g = Game('Live and Let Die')
+        r = GameRelease(game=g, aliases=['Aquablast', 'Live and Let Die - The Computer Game'])
+        f = GameFile('test.tap')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Live and Let Die - The Computer Game (19xx)(-)[aka Aquablast].tap')
+        g = Game('Where Time Stood Still')
+        r = GameRelease(game=g, aliases=['Land That Time Forgot, The', 'Where Time Stood Still', 'Tibet'])
+        f = GameFile('test.tap')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Where Time Stood Still (19xx)(-)[aka Land That Time Forgot, The][aka Tibet].tap')
+        g = Game('Adventures of St. Bernard, The')
+        r = GameRelease(game=g, aliases=\
+        'Adventures of Saint Bernard, The/Adventures of St. Bernard, The/The Adventures of St. Bernard'.split('/'))
+        f = GameFile('test.tap')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Adventures of St. Bernard, The (19xx)(-)[aka Adventures of Saint Bernard, The].tap')
+
+
+
 
 if __name__=='__main__':
     unittest.main()

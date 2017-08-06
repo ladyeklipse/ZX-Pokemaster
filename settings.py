@@ -42,7 +42,7 @@ ALPHABETIC_DIRNAMES = ['123', 'a', 'b', 'c', 'd', 'e', 'f',
                        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                        'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
                        'w', 'x', 'y', 'z']
-GAME_PREFIXES = ['A', 'The',
+GAME_PREFIXES = ['A', 'An', 'The',
                  'La', 'Le', 'De', "L'", "D'"
                  'Les', 'Los', 'Las', 'El',
                  'Une', 'Una', 'Uno',
@@ -50,15 +50,15 @@ GAME_PREFIXES = ['A', 'The',
                  'Der', 'Die', 'Das']
 SIDE_A = 1
 SIDE_B = 2
-PREDEFINED_OUTPUT_FOLDER_STRUCTURES = [
+PREDEFINED_OUTPUT_PATH_STRUCTURES = [
     '/{TOSECName}',
     '{Letter}/{TOSECName}',
     '{Letter}/{Name}/{TOSECName}',
     '{Genre}/{Year}/{TOSECName}',
     '{Publisher}/{Year}/{GameName}/{TOSECName}',
     '{Genre}/{Publisher}/{TOSECName}',
-    '{MachineType}/{NumberOfPlayers}/{Genre}/{TOSECName}',
-    '{Genre}/{MultiplayerType}/{Letter}/{TOSECName}'
+    '{MachineType}/{MaxPlayers}/{Genre}/{TOSECName}',
+    '{Genre}/{MaxPlayers}/{Letter}/{TOSECName}'
 ]
 MESSAGE_BOX_TITLE = 'ZX Pokemaster'
 INCLUDED_TYPES_LIST = [
@@ -81,10 +81,11 @@ INCLUDED_LANGUAGES_LIST = [
     ('sv', 'Swedish')
 ]
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
-    '{GameName} ({Year})({Publisher})({Language})({Part})({Side})[{MachineType}]{ModFlags}{Notes}'
+    '{GameName} ({Year})({Publisher})({Language})({Part})({Side}){ModFlags}[{MachineType}]{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
 OUTPUT_PATH_STRUCTURE_KEYS = [
+    'Type',
     'Genre',
     'Type',
     'Year',

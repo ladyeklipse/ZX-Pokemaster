@@ -4,6 +4,7 @@ from classes.game_release import GameRelease
 from classes.game_file import GameFile
 from classes.game_alias import GameAlias
 from classes.scraper import *
+from functions.game_name_functions import putPrefixToEnd
 from mysql import connector
 import time
 
@@ -78,6 +79,7 @@ class ZXDBScraper():
               'formattypes.text AS file_format,' \
               'entry_machinetype.text AS machine_type, ' \
               'download_machinetype.text AS file_machine_type, ' \
+              'schemetypes.text AS protection_scheme, ' \
               'releases.release_seq AS release_id, ' \
               'aliases.title AS alt_name, ' \
               'aliases.idiom_id AS alt_language, ' \
@@ -96,6 +98,7 @@ class ZXDBScraper():
               'LEFT JOIN genretypes ON genretypes.id=entries.genretype_id ' \
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
+              'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
               '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
               '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) '
@@ -166,17 +169,18 @@ class ZXDBScraper():
                     pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
                     game.importPokFile(file_path=pok_file_path)
                 if row['alt_name']:
-                    release.addAlias(row['alt_name'])
+                    alias = self.sanitizeAlias(row['alt_name'])
+                    release.addAlias(alias)
 
         games.append(game)
         return games
 
     def gameFromRow(self, row):
         game_name = row.get('tosec_compliant_name', row['name'])
-        if game_name.endswith(', 3D'):
-            game_name = '3D '+game_name[:-4]
+        game_name = self.sanitizeAlias(game_name)
         game = Game(game_name, int(row['wos_id']))
-        game.setPublisher(row['publisher'])
+        publisher = putPrefixToEnd(row['publisher'])
+        game.setPublisher(publisher)
         game.setYear(row['year'])
         game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
@@ -190,22 +194,34 @@ class ZXDBScraper():
 
     def releaseFromRow(self, row, game):
         release_name = row['alt_name'] if row['alt_name'] else game.name
+        release_name = self.sanitizeAlias(release_name)
+        publisher = putPrefixToEnd(row['publisher'])
         release = GameRelease(row['release_seq'],
                               row['year'],
-                              row['publisher'],
+                              publisher,
                               row['country'],
                               game,
                               [release_name])
         if row.get('name')!=game.name:
-            release.addAlias(row['name'])
-        for i, alias in enumerate(release.aliases):
-            release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
+            alias = self.sanitizeAlias(row['name'])
+            release.addAlias(alias)
+        # for i, alias in enumerate(release.aliases):
+        #     if alias.endswith(', 3D'):
+        #         alias = '3D ' + alias[:-4]
+        #     release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
         return release
+
+    def sanitizeAlias(self, alias):
+        alias = remove_square_brackets_regex.sub('', alias).strip()
+        if alias.endswith(', 3D'):
+            alias = '3D ' + alias[:-4]
+        return alias
 
     def gameFileFromRow(self, row, game):
         game_file = GameFile(row['file_link'], game=game, source='wos')
         game_file.setSize(row['file_size'])
         game_file.setMachineType(row['machine_type'])
+        game_file.setProtectionScheme(row['protection_scheme'])
         return game_file
 
     def downloadMissingFilesForGames(self, games):

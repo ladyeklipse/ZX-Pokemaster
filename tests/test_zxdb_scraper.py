@@ -109,3 +109,20 @@ class TestZXDBScraper(unittest.TestCase):
         wos_names = [file.wos_name for file in game.getFiles()]
         self.assertIn('Zip-Zap - Alternate - Side 1.tzx', wos_names)
         self.assertIn('Zip-Zap - Alternate - Side 2.tzx', wos_names)
+
+    def test_home_computer_club_the(self):
+        where_clause = 'AND entries.id = 22695'
+        games = zxdb.getGames(where_clause)
+        self.assertEqual(games[0].getPublisher(), 'Home Computer Club, The')
+        for release in games[0].releases:
+            self.assertEqual(release.getPublisher(), 'Home Computer Club, The')
+
+    def test_3d_games(self):
+        where_clause = 'AND entries.id = 25677'
+        games = zxdb.getGames(where_clause)
+        aliases = games[0].releases[0].getAllAliases()
+        self.assertEqual(aliases, ['Technical Drawing', '3D Plotter'])
+        where_clause = 'AND entries.id = 5140'
+        games = zxdb.getGames(where_clause)
+        aliases = games[0].releases[2].getAllAliases()
+        self.assertEqual(aliases, ['3D Tanks'])

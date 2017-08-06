@@ -23,8 +23,6 @@ sys.path.append("ui")
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui.SorterLauncher import *
-
-
 import traceback
 from pattern_creator import PatternCreatorDialog
 import json
@@ -85,15 +83,19 @@ class MainDialog(QDialog):
     def addPattern(self):
         pattern = self.getPatternFromDialog()
         if pattern:
-            self.ui.cmbOutputFolderStructure.insertItem(0, pattern)
-            self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
+            display_item = self.getDisplayItemFromOutputPattern(pattern)
+            self.ui.cmbOutputPathStructure.insertItem(0, *display_item)
+            self.ui.cmbOutputPathStructure.setCurrentIndex(0)
 
     def editPattern(self):
         folder_structure, file_structure = self.getOutputPathStructure()
         pattern = self.getPatternFromDialog(folder_structure, file_structure)
         if pattern:
-            index = self.ui.cmbOutputFolderStructure.currentIndex()
-            self.ui.cmbOutputFolderStructure.setItemText(index, pattern)
+            index = self.ui.cmbOutputPathStructure.currentIndex()
+            # self.ui.cmbOutputPathStructure.setItemText(index, pattern)
+            display_item = self.getDisplayItemFromOutputPattern(pattern)
+            self.ui.cmbOutputPathStructure.setItemText(index, display_item[0])
+            self.ui.cmbOutputPathStructure.setItemData(index, display_item[1])
 
     def getPatternFromDialog(self, folder_structure=None,
                                    file_structure=None):
@@ -104,15 +106,15 @@ class MainDialog(QDialog):
             return
         pattern = dialog.getJoinedPattern()
         if pattern:
-            for i in range(self.ui.cmbOutputFolderStructure.count()):
-                old_pattern = self.ui.cmbOutputFolderStructure.itemText(i)
+            for i in range(self.ui.cmbOutputPathStructure.count()):
+                old_pattern = self.ui.cmbOutputPathStructure.itemText(i)
                 if pattern == old_pattern:
-                    self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
+                    self.ui.cmbOutputPathStructure.setCurrentIndex(i)
                     return None
         return pattern
 
     def removePattern(self):
-        self.ui.cmbOutputFolderStructure.removeItem(self.ui.cmbOutputFolderStructure.currentIndex())
+        self.ui.cmbOutputPathStructure.removeItem(self.ui.cmbOutputPathStructure.currentIndex())
 
     def sortFiles(self):
         output_folder_structure, output_filename_structure = self.getOutputPathStructure()
@@ -154,7 +156,7 @@ class MainDialog(QDialog):
         self.bar.setFixedWidth(400)
         self.bar.setAutoClose(True)
         self.bar.show()
-        s = PokemasterSorter(**kwargs)
+        s = Sorter(**kwargs)
         if s.error:
             self.bar.close()
             QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr(s.error))
@@ -198,9 +200,8 @@ class MainDialog(QDialog):
         return languages
 
     def getOutputPathStructure(self):
-        index = self.ui.cmbOutputFolderStructure.currentIndex()
-        index = self.ui.cmbOutputFolderStructure.currentIndex()
-        item = self.ui.cmbOutputFolderStructure.itemText(index)
+        index = self.ui.cmbOutputPathStructure.currentIndex()
+        item = self.ui.cmbOutputPathStructure.itemData(index)
         folder_structure = os.path.dirname(item)
         filename_structure = os.path.basename(item)
         return folder_structure, filename_structure
@@ -244,23 +245,35 @@ class MainDialog(QDialog):
                     self.ui.txtMaxFilesPerFolder.setValue(settings['max_files_per_folder'])
         except:
             print(traceback.format_exc())
-            patterns = PREDEFINED_OUTPUT_FOLDER_STRUCTURES
-            if os.name == 'nt':
-                patterns = [pattern.replace('/', '\\') for pattern in patterns]
-            self.ui.cmbOutputFolderStructure.addItems(patterns)
-            self.ui.cmbOutputFolderStructure.setCurrentIndex(0)
+            # patterns = PREDEFINED_OUTPUT_FOLDER_STRUCTURES
+            # if os.name == 'nt':
+                # patterns = [pattern.replace('/', '\\') for pattern in patterns]
+            display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in PREDEFINED_OUTPUT_PATH_STRUCTURES]
+            for item in display_items:
+                self.ui.cmbOutputPathStructure.addItem(*item)
+            # self.ui.cmbOutputPathStructure.addItems(display_items)
+            self.ui.cmbOutputPathStructure.setCurrentIndex(0)
             self.ui.txtOutputPath.setText(os.getcwd())
             self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
 
     def loadOutputPathStructures(self, settings):
-        patterns = settings.get('patterns', PREDEFINED_OUTPUT_FOLDER_STRUCTURES)
+        patterns = settings.get('patterns', PREDEFINED_OUTPUT_PATH_STRUCTURES)
         patterns = [pattern.replace('{Name}', '{GameName}') for pattern in patterns]
-        if os.name == 'nt':
-            patterns = [pattern.replace('/', '\\') for pattern in patterns]
-        for i, pattern in enumerate(patterns):
-            self.ui.cmbOutputFolderStructure.addItem(pattern)
-            if pattern == settings.get('output_folder_structure'):
-                self.ui.cmbOutputFolderStructure.setCurrentIndex(i)
+        display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in
+                         PREDEFINED_OUTPUT_PATH_STRUCTURES]
+        # if os.name == 'nt':
+        #     patterns = [pattern.replace('/', '\\') for pattern in patterns]
+        for i, display_item in enumerate(display_items):
+            self.ui.cmbOutputPathStructure.addItem(*display_item)
+            if display_item[1] == settings.get('output_folder_structure'):
+                self.ui.cmbOutputPathStructure.setCurrentIndex(i)
+
+    def getDisplayItemFromOutputPattern(self, pattern):
+        pattern = pattern.replace('/', os.sep)
+        dirpath = os.path.dirname(pattern)
+        filename = os.path.basename(pattern)
+        display_text = 'Dir: {} File: {}'.format(dirpath, filename)
+        return (display_text, pattern)
 
     def getDefaultFormatPreference(self):
         return ','.join(GAME_EXTENSIONS)
@@ -274,8 +287,8 @@ class MainDialog(QDialog):
             json.dump(kwargs, f, indent=4)
 
     def getOutputFolderStructurePatterns(self):
-        return [self.ui.cmbOutputFolderStructure.itemText(i) \
-         for i in range(self.ui.cmbOutputFolderStructure.count())]
+        return [self.ui.cmbOutputPathStructure.itemData(i) \
+         for i in range(self.ui.cmbOutputPathStructure.count())]
 
 if __name__=='__main__':
     sys.excepthook = PyQtExceptHook

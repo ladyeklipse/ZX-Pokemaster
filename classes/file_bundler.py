@@ -21,7 +21,7 @@ class FileBundler():
 
     def enumerateFolders(self, collected_files, depth_level):
         folders = {}
-        for game_wos_id, files in collected_files.items():
+        for game_name, files in collected_files.items():
             for i, file in enumerate(files):
                 if not file:
                     continue

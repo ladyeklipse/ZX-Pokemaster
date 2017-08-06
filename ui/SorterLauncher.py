@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Fri Aug  4 16:20:15 2017
+# Created: Sun Aug  6 03:14:17 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,11 +95,11 @@ class Ui_Dialog(object):
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.cmbOutputFolderStructure = QtGui.QComboBox(self.groupBox_2)
-        self.cmbOutputFolderStructure.setEditable(False)
-        self.cmbOutputFolderStructure.setProperty("currentText", _fromUtf8(""))
-        self.cmbOutputFolderStructure.setObjectName(_fromUtf8("cmbOutputFolderStructure"))
-        self.gridLayout.addWidget(self.cmbOutputFolderStructure, 0, 0, 1, 4)
+        self.cmbOutputPathStructure = QtGui.QComboBox(self.groupBox_2)
+        self.cmbOutputPathStructure.setEditable(False)
+        self.cmbOutputPathStructure.setProperty("currentText", _fromUtf8(""))
+        self.cmbOutputPathStructure.setObjectName(_fromUtf8("cmbOutputPathStructure"))
+        self.gridLayout.addWidget(self.cmbOutputPathStructure, 0, 0, 1, 4)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 3, 1, 1)
         self.btnRemovePattern = QtGui.QPushButton(self.groupBox_2)

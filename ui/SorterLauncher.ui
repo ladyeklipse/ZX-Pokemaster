@@ -157,7 +157,7 @@
           <item>
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0" colspan="4">
-             <widget class="QComboBox" name="cmbOutputFolderStructure">
+             <widget class="QComboBox" name="cmbOutputPathStructure">
               <property name="editable">
                <bool>false</bool>
               </property>
@@ -245,7 +245,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Use 8.3 naming scheme (experimental)</string>
+          <string>Use 8.3 naming scheme</string>
          </property>
         </widget>
        </item>

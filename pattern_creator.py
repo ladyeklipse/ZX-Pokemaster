@@ -25,7 +25,8 @@ class PatternCreatorDialog(QDialog):
             self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnPart,
             self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, self.ui.btnSide,
             self.ui.btnLetter, self.ui.btnNumberOfPlayers, self.ui.btnSlash, self.ui.btnModFlags,
-            self.ui.btnFormat, self.ui.btnZXDB_ID, self.ui.btnHyphen, self.ui.btnUnderscore
+            self.ui.btnFormat, self.ui.btnZXDB_ID, self.ui.btnHyphen, self.ui.btnUnderscore,
+            self.ui.btnType, self.ui.btnNotes
         ]
         for button in self.buttons:
             button.clicked.connect(self.addPatternComponent)

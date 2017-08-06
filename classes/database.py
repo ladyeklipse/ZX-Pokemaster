@@ -1,7 +1,8 @@
 from settings import *
 from classes.game import Game
 from classes.game_release import GameRelease
-from classes.game_file import GameFile, TOSEC_REGEX #, GAME_PREFIXES, putPrefixToEnd
+from classes.game_file import GameFile, TOSEC_REGEX
+from functions.game_name_functions import getSearchStringFromGameName
 import re
 import os
 import sqlite3
@@ -22,15 +23,6 @@ SELECT_GAME_SQL_START = 'SELECT *, ' \
               'ON game_file.game_wos_id==game.wos_id AND ' \
               'game_file.game_release_seq=game_release.release_seq '
 SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
-
-def getSearchString(game_name):
-    for prefix in GAME_PREFIXES:
-        if game_name.startswith(prefix + ' '):
-            game_name = game_name[len(prefix)+1:]
-            break
-        elif game_name.endswith(', '+prefix):
-            game_name = game_name[:len(game_name)-len(prefix)-2]
-    return ''.join(filter(str.isalnum, game_name.lower()))
 
 class Database():
 
@@ -62,7 +54,7 @@ class Database():
             self.cache_by_wos_id[game.wos_id]=game
             for release in game.releases:
                 for name in release.getAllAliases():
-                    name = getSearchString(name)
+                    name = getSearchStringFromGameName(name)
                     if not self.cache_by_name.get(name):
                         self.cache_by_name[name]=[game]
                     elif game not in self.cache_by_name[name]:
@@ -159,7 +151,7 @@ class Database():
 
     def getGameByName(self, game_name):
         if self.cache_by_name:
-            game_name = getSearchString(game_name)
+            game_name = getSearchStringFromGameName(game_name)
             games = self.cache_by_name.get(game_name)
         else:
             sql = SELECT_GAME_SQL_START + \
@@ -185,12 +177,10 @@ class Database():
         filename = os.path.basename(filepath)
         game_release = re.sub(TOSEC_REGEX, '', filename).strip()
         if self.cache_by_name:
-            search_string = getSearchString(game_release)
+            search_string = getSearchStringFromGameName(game_release)
             games = self.cache_by_name.get(search_string)
             if not games:
-                # ZxZVm - %REAL_GAME_NAME% (%YEAR%)(%PUBLISHER%) will have the same wos_id as ZxZVm
-                # search_string = getSearchString(game_release.split('-')[0].strip())
-                search_string = getSearchString(game_release)
+                search_string = getSearchStringFromGameName(game_release)
                 games = self.cache_by_name.get(search_string)
         else:
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])

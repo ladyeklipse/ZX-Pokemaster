@@ -1,5 +1,5 @@
 from classes.game import Game
-from functions.game_name_functions import getWosSubfolder, filepath_regex, putPrefixToEnd
+from functions.game_name_functions import getWosSubfolder, filepath_regex, putPrefixToEnd, getSearchStringFromGameName
 from classes.game_release import GameRelease
 import requests
 import os
@@ -24,12 +24,14 @@ class GameFile(object):
     wos_path = ''
     tosec_path = ''
     content_desc = ''
+    game_name_differentiator = ''
     is_demo = 0
     machine_type = '48K'
     language = ''
     part = 0
     side = 0
     mod_flags = ''
+    alt_mod_flag = ''
     notes = ''
     format = ''
     size = 0
@@ -47,6 +49,8 @@ class GameFile(object):
         self.bundled_times = 0
         self.dest = ''
         self.alt_dest = ''
+        self.alt_mod_flag = ''
+        self.game_name_differentiator = ''
         self.is_alternate = False
         if not path:
             return
@@ -177,10 +181,11 @@ class GameFile(object):
                                          dir_path[1][:(8-len(alt_mod_flag))]+alt_mod_flag+dest[1])
         elif tosec_compliant:
             if copies_count == 1:
-                alt_mod_flag = '[a]'
+                self.alt_mod_flag = '[a]'
             else:
-                alt_mod_flag = '[a' + str(copies_count) + ']'
-            self.alt_dest = dest[0] + alt_mod_flag + dest[1]
+                self.alt_mod_flag = '[a' + str(copies_count) + ']'
+            dest_dir = os.path.dirname(dest[0])
+            self.alt_dest = os.path.join(dest_dir, self.getOutputName())
         else:
             alt_mod_flag = '_'+str(copies_count+1)
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
@@ -279,7 +284,8 @@ class GameFile(object):
     def setContentDesc(self, filename):
         if self.game and self.game.wos_id:
             game_name = filename.split('(')[0].strip()
-            aliases = sorted(self.game.getAliases(), key=len, reverse=True)
+            # aliases = sorted(self.game.getAliases(), key=len, reverse=True)
+            aliases = self.game.getAliases()
             alias_found = False
             for alias in aliases:
                 alias = alias.lower()
@@ -310,6 +316,10 @@ class GameFile(object):
         elif '16' in filename:
             self.machine_type = '16K'
 
+    def setProtectionScheme(self, protection_scheme):
+        if protection_scheme and protection_scheme not in self.notes and \
+            protection_scheme not in ('None', 'Undetermined', 'Unknown', 'Unspecified custom loader'):
+            self.notes += '['+protection_scheme+']'
 
     def getMachineType(self):
         if self.machine_type:
@@ -451,6 +461,7 @@ class GameFile(object):
         if publisher == '-' and not for_filename:
             publisher = 'Unknown Publisher'
         return {
+            'Type':self.getType(),
             'Genre':self.getGenre(),
             'Year':self.getYear(),
             'Letter':getWosSubfolder(game_name),
@@ -462,36 +473,18 @@ class GameFile(object):
             'Format':self.format,
             'Side':self.getSide(),
             'Part':self.getPart(),
-            'ModFlags':self.mod_flags,
+            'ModFlags':self.mod_flags+self.alt_mod_flag,
             'ZXDB_ID':self.game.getWosID(),
-            'Notes':self.notes
+            'Notes':self.getNotes()
         }
+
+    def getNotes(self):
+        return self.notes
 
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
         genre = self.game.getGenre()
-        if 'Compilation' in genre:
-            parts.append('Compilations')
-            if 'Utilities' in genre:
-                parts.append('Applications')
-            elif 'Educational' in genre:
-                parts.append('Educational')
-            elif 'Demo' in genre:
-                parts.append('Demos')
-            elif 'Magazine' in genre:
-                parts.append('Magazines')
-            else:
-                parts.append('Games')
-        elif genre.startswith('Utility'):
-            parts.append('Applications')
-        elif 'Education' in genre:
-            parts.append('Educational')
-        elif 'Magazine' in genre:
-            parts.append('Magazines')
-        elif 'Covertape' in genre:
-            parts.append('Covertapes')
-        else:
-            parts.append('Games')
+        parts += self.getType().split('\\')
         parts.append('[{}]'.format(self.format.upper()))
         return ' - '.join(parts)+'.dat'
 
@@ -502,15 +495,67 @@ class GameFile(object):
             return 'Unknown'
         return 'Unknown'
 
+    def getType(self):
+        genre = self.getGenre()
+        self.type = ''
+        if 'Compilation' in genre:
+            self.type += 'Compilations'
+            if 'Utilities' in genre:
+                self.type += os.sep+'Applications'
+            elif 'Educational' in genre:
+                self.type += os.sep+'Educational'
+            elif 'Demo' in genre:
+                self.type += os.sep+'Demos'
+            elif 'Magazine' in genre:
+                self.type += os.sep+'Magazines'
+            else:
+                self.type += os.sep+'Games'
+        elif genre.startswith('Utility') or 'Programming' in genre:
+            self.type += 'Applications'
+        elif 'Education' in genre:
+            self.type += 'Educational'
+        elif 'Magazine' in genre:
+            self.type += 'Magazines'
+        elif 'Covertape' in genre:
+            self.type += 'Covertapes'
+        elif 'Demo' in genre:
+            self.type += 'Demos'
+        elif 'Game' in genre:
+            self.type += 'Games'
+        else:
+            self.type = 'Unknown'
+        return self.type
+
+    def setReRelease(self):
+        if '[re-release]' not in self.notes and \
+                self.release.release_seq>0:
+            for release in self.game.releases:
+                if self.release.release_seq != release.release_seq and \
+                    self.release.getYear()==release.getYear():
+                    self.notes += '[re-release]'
+                    break
+
+    def setAka(self):
+        if '[aka' not in self.notes:
+            aliases_search_strings = []
+            game_name_search_string = getSearchStringFromGameName(self.getGameName())
+            aliases_search_strings.append(game_name_search_string)
+            for alias in self.release.getAllAliases():
+                alias_search_string = getSearchStringFromGameName(alias)
+                if not [x for x in aliases_search_strings if x in alias_search_string or alias_search_string in x]:
+                    self.notes += '[aka '+alias+']'
+                    aliases_search_strings.append(alias_search_string)
 
     def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,
                     for_filename=False):
-        game_name = self.release.aliases[0] if self.release else self.game.name
+        game_name = self.release.getAllAliases()[0] if self.release else self.game.name
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         while game_name.endswith('.'):
             game_name = game_name[:-1]
         if for_filename and self.content_desc:
-            game_name += self.content_desc
+            game_name += self.getContentDesc()
+        if self.game_name_differentiator:
+            game_name += '('+self.game_name_differentiator+')'
         while len(game_name)>game_name_length:
             game_name = [x for x in game_name.split(' ') if x][:-1]
             game_name = ' '.join(game_name)
@@ -522,7 +567,23 @@ class GameFile(object):
         game_name = ' '.join(game_name).strip()
         if for_filename and self.is_demo:
             game_name += ' (demo)'
-        return game_name.strip()
+        return game_name
+
+    def getContentDesc(self):
+        if self.content_desc=='NONE':
+            return ''
+        elif self.content_desc.startswith('ALT'):
+            return self.content_desc[3:]
+        else:
+            return self.content_desc
+
+
+    # def getAltGameName(self, differentiator=None):
+    #     if differentiator=='publisher':
+    #         self.game_name_differentiator = self.getPublisher().replace(' ', '').replace(',', '')[:10]
+    #     elif differentiator=='year':
+    #         self.game_name_differentiator = self.getYear()
+    #     return self.getGameName()
 
     def getYear(self):
         if self.release:
@@ -546,9 +607,9 @@ class GameFile(object):
         result = str(self.game.number_of_players) + 'P'
         return result
         #FUTURE:
-        if self.game.multiplayer_type:
-            result += ' (%s)' % self.game.getMultiplayerType()
-        return result
+        # if self.game.multiplayer_type:
+            # result += ' (%s)' % self.game.getMultiplayerType()
+        # return result
 
     def getReleaseSeq(self):
         return self.release.release_seq if self.release else 0
@@ -591,7 +652,6 @@ class GameFile(object):
         depth_level -= self.bundled_times
         bundled_part = os.sep.join(dest[-depth_level:])
         return root_dir, bundled_part
-
 
     def getAbsoluteDestPath(self):
         return os.path.abspath(self.getDestPath())

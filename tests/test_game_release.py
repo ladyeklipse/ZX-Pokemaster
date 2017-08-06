@@ -15,6 +15,12 @@ class TestGameRelease(unittest.TestCase):
         r = GameRelease(game=g)
         self.assertEqual(r.getTOSECName(), 'Ace 2 - Combat (19xx)(-)')
 
+    def test_aliases(self):
+        g = Game('Saboteur II')
+        r = GameRelease(game=g)
+        r.addAliases(['Saboteur II', 'Saboteur 2 - The Avenging Angel'])
+        aliases = r.getAllAliases()
+        self.assertEqual(aliases[0], 'Saboteur II')
 
     # def test_search_string(self):
     #     game = Game('La Abadia Del Crimen')

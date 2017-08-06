@@ -20,6 +20,7 @@ class Sorter():
 
 
     def __init__(self, *args, **kwargs):
+        self.gui = kwargs.get('gui', None)
         self.input_files = []
         self.collected_files = {}
         self.should_cancel = False
@@ -57,7 +58,6 @@ class Sorter():
         self.error = ''
         if not self.checkOutputPath():
             return
-        self.gui = kwargs.get('gui', None)
         if kwargs.get('cache', True):
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
@@ -83,7 +83,8 @@ class Sorter():
             self.ignore_alternate or \
             self.ignore_rereleases or \
             self.languages:
-            self.collected_files = self.filterCollectedFiles()
+            self.filterCollectedFiles()
+
             print('Files filtered')
         if self.max_files_per_folder:
             bundle_depth = self.getBundleDepth()
@@ -132,29 +133,29 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             game_files = self.getGameFilesFromInputPath(file_path)
+            if not game_files:
+                print('Nothing found for', file_path)
+                continue
             if not self.short_filenames:
                 for game_file in game_files:
                     self.shortenGameFileDestination(game_file)
             if self.too_long_path:
                 print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
                 break
-            if not game_files:
-                print('Nothing found for', file_path)
-                continue
             for game_file in game_files:
-                wos_id = game_file.game.wos_id
-                if wos_id not in collected_files.keys():
-                    collected_files[game_file.game.wos_id] = []
+                game_name = game_file.getGameName()
+                if game_name not in collected_files.keys():
+                    collected_files[game_name] = []
                 else:
-                    if game_file in collected_files[game_file.game.wos_id]:
+                    if game_file in collected_files[game_name]:
                         continue
-                    copies_count = game_file.countAlternateDumpsIn(collected_files[wos_id])
+                    copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
                     if not tosec_compliant:
-                        copies_count = game_file.countFilesWithSameDestIn(collected_files[wos_id])
+                        copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
                     game_file.addAlternateModFlag(copies_count,
                                                   tosec_compliant=tosec_compliant,
                                                   short_filenames=self.short_filenames)
-                collected_files[game_file.game.wos_id].append(game_file)
+                collected_files[game_name].append(game_file)
         return collected_files
 
     def shortenGameFileDestination(self, game_file):
@@ -226,6 +227,8 @@ class Sorter():
                         game_file.src = file_path
                         game_file.dest = self.getDestination(game_file)
                         game_file.alt_dest = ''
+                        game_file.alt_mod_flag = ''
+                        game_file.game_name_differentiator = ''
                         game_file.bundled_times = 0
                         game_files.append(game_file)
             except OSError:
@@ -235,9 +238,13 @@ class Sorter():
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
         #Publisher name will be cropped to 3 words if dest length is too long
-        subfolders_dict = game_file.getOutputPathFormatKwargs(
+        kwargs = game_file.getOutputPathFormatKwargs(
             game_name_length=game_name_length)
-        dest_dir = self.output_folder_structure.format(**subfolders_dict)
+        structure = self.output_folder_structure
+        if '{Type}' in structure and '{Genre}' in structure and \
+            kwargs['Type'] not in ['Applications', 'Games']:
+            structure = structure.replace('{Genre}', '')
+        dest_dir = structure.format(**kwargs)
         dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
                                                 game_name_length=game_name_length)
         if self.short_filenames:
@@ -256,25 +263,35 @@ class Sorter():
         return dest
 
     def filterCollectedFiles(self):
-        for game_wos_id, files in self.collected_files.items():
+        for game_name, files in self.collected_files.items():
             min_release = min([file.getReleaseSeq() for file in files])
             for i, file in enumerate(files):
                 if self.ignore_rereleases and file.getReleaseSeq()>min_release:
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
                 if self.ignore_alternate and file.isAlternate():
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
                 if self.ignore_hacks and file.isHack():
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
                 if self.ignore_bad_dumps and file.isBadDump():
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
                 if self.ignore_xrated and file.isXRated():
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
                 if self.languages and file.getLanguage() not in self.languages:
-                    self.collected_files[game_wos_id][i] = None
+                    self.collected_files[game_name][i] = None
             files = [file for file in files if file]
-            if self.ignore_alternate_formats and files and game_wos_id:
-                self.collected_files[game_wos_id] = self.filterOutAlternateFormats(files)
+            if self.ignore_alternate_formats and files and game_name:
+                self.collected_files[game_name] = self.filterOutAlternateFormats(files)
         return self.collected_files
+
+    # def renameSameGameNames(self):
+    #     game_file_same_names_dict = self.getDuplicateGameNamesCount()
+    #     for game_name, files in self.collected_files.items():
+    #
+    # def getDuplicateGameNamesCount(self):
+    #     game_file_same_names_dict = {}
+    #     for game_name, files in self.collected_files.items():
+    #         for i, file in enumerate(files):
+    #             game_name = file.getGameName()
 
     def filterOutAlternateFormats(self, files):
         equals_found_flag = True
@@ -306,7 +323,7 @@ class Sorter():
     def redistributeFiles(self):
         if self.gui:
             self.gui.updateProgressBar(0, self.getCollectedFilesCount(), 'Redistributing files...')
-        files_array = self.getFilesArray(self.collected_files)
+        files_array = self.getFilesArray()
         for i, file in enumerate(files_array):
             if self.should_cancel:
                 break
@@ -346,9 +363,9 @@ class Sorter():
                 pok_file_path = os.path.join(pok_dir_path, pok_file_name)
                 file.game.exportPokFile(pok_file_path)
 
-    def getFilesArray(self, collected_files):
+    def getFilesArray(self):
         files_array = []
-        for files in collected_files.values():
+        for files in self.collected_files.values():
             for file in files:
                 if not file:
                     continue

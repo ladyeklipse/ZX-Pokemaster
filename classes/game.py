@@ -75,6 +75,7 @@ class Game(object):
         aliases = []
         for release in self.releases:
             aliases += release.aliases
+        aliases = sorted(aliases, key=len, reverse=True)
         return [getFileSystemFriendlyName(alias) for alias in set(aliases)]
 
     def getWosID(self):
@@ -87,14 +88,17 @@ class Game(object):
         files = self.getFiles()
         for file in files:
             if file.tosec_path in lookup_table:
-                if lookup_table[file.tosec_path]=='NONE':
-                    file.content_desc = ''
-                elif lookup_table[file.tosec_path].startswith('ALT'):
-                    file.content_desc = lookup_table[file.tosec_path][3:]
+                # if lookup_table[file.tosec_path]=='NONE':
+                #     file.content_desc = ''
+                # elif lookup_table[file.tosec_path].startswith('ALT'):
+                #     file.content_desc = lookup_table[file.tosec_path][3:]
+                file.content_desc = lookup_table[file.tosec_path]
                 continue
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
                 file.setContentDesc(filename)
+            file.setReRelease()
+            file.setAka()
 
     def setCompilationType(self):
         if not self.genre or self.genre == 'Compilation':

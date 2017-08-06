@@ -1,7 +1,8 @@
 from settings import *
 import re
+import unicodedata
 
-publisher_regex = re.compile(' inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
+publisher_regex = re.compile(' Software| inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
@@ -57,16 +58,23 @@ def getWosSubfolder(filepath):
     return '123' if not filepath[0].isalpha() else filepath[0].lower()
 
 def getFileSystemFriendlyName(name):
+    if not name:
+        return ''
     name = name.replace(':', ' -').replace('/','-')
     name = ' '.join([word[0].upper()+word[1:].rstrip()
                      if len(word)>3 and '.' not in word
                      else word.strip() for word in name.split(' ')])
     name = filepath_regex.sub('', name).strip()
+    deunicoded_name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
+    if deunicoded_name:
+        return deunicoded_name
     return name
 
 def putPrefixToEnd(game_name):
+    if not game_name:
+        return ''
     components = re.split(' - | \+ ', game_name)
-    for component in components:
+    for i, component in enumerate(components):
         if len(component)<5:
             continue
         if component.startswith('Die Hard'):
@@ -75,6 +83,18 @@ def putPrefixToEnd(game_name):
             component = '3D '+component[:-4]
         for prefix in GAME_PREFIXES:
             if component.startswith(prefix + ' '):
-                component = ' '.join(component.split(' ')[1:]) + ', ' + prefix
+                components[i] = ' '.join(component.split(' ')[1:]) + ', ' + prefix
+                break
     game_name = ''.join(components)
     return game_name
+
+def getSearchStringFromGameName(game_name):
+    if not game_name:
+        return ''
+    for prefix in GAME_PREFIXES:
+        if game_name.startswith(prefix + ' '):
+            game_name = game_name[len(prefix)+1:]
+            break
+        elif game_name.endswith(', '+prefix):
+            game_name = game_name[:len(game_name)-len(prefix)-2]
+    return ''.join(filter(str.isalnum, game_name.lower()))

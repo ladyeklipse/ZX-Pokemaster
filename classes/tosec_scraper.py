@@ -84,7 +84,7 @@ class TOSECScraper():
             root = etree.XML(contents)
             header = root[0]
             dirname = os.path.join(*header[0].text.split(' - '))
-            games = [tag for tag in root[1:] if tag.tag=='game']
+            games = [tag for tag in root[1:] if tag.tag in ['game', 'machine']]
             for game in games:
                 roms = [tag for tag in game if tag.tag=='rom']
                 if len(roms)>1:
@@ -262,6 +262,6 @@ class TOSECScraper():
                     if len(line)<3 or not line[3]:
                         continue
                     elif line[2].startswith('NONE'):
-                        self.manually_corrected_content_descriptions[line[3]] = ''
+                        self.manually_corrected_content_descriptions[line[3]] = 'NONE'
                     elif line[2].startswith('ALT'):
-                        self.manually_corrected_content_descriptions[line[3]] = line[2][3:]
+                        self.manually_corrected_content_descriptions[line[3]] = line[2]

@@ -1,10 +1,11 @@
-from classes.sorter import *
-import unittest
-import shutil
 import os
 if (os.getcwd().endswith('tests')):
     os.chdir('..')
 print(os.getcwd())
+
+from classes.sorter import *
+import unittest
+import shutil
 
 class TestSorter(unittest.TestCase):
 
@@ -61,11 +62,11 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][m].tzx'
+        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[m][128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a].tzx'
+        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[a][128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K][a2].tzx'
+        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[a2][128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -650,6 +651,8 @@ class TestSorter(unittest.TestCase):
             use_camel_case=True,
             output_folder_structure='{Publisher}',
             cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertGreater(len(s.fails), 0)
 
@@ -664,6 +667,8 @@ class TestSorter(unittest.TestCase):
             ignore_alternate=False,
             output_folder_structure='',
             cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertEqual(len(s.fails), 0)
         for root, dirs, files in os.walk(output_location):
@@ -678,25 +683,57 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=False,
+            ignore_alternate=True,
             output_folder_structure='{GameName}',
+            output_filename_structure='{GameName} {Publisher}',
+            short_filenames=True,
             cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
         s.sortFiles()
+        self.assertFileExists(output_location+'/DEFENDER/DEFEND_5.TAP')
+
+    def test_sort_by_type(self):
+        input_locations = [
+            'tosec/lost-and-found',
+        ]
+        output_location = 'tests/files/sort_by_type_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            ignore_alternate=True,
+            output_folder_structure='{Type}\{Genre}',
+            cache=True)
+        if s.error:
+            print(s.error)
+            self.fail()
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileNotExists(s.output_location+'/Compilations/Applications/Compilation - Utilities')
+        self.assertFileNotExists(s.output_location+'/Games/Scene Demo')
+        self.assertFileNotExists(s.output_location+'/Games/Unknown')
+        self.assertFileNotExists(s.output_location+'/Games/Programming - General')
 
 
+    def assertFileExists(self, file_path):
+        self.assertTrue(os.path.exists(file_path))
 
-
-
+    def assertFileNotExists(self, file_path):
+        self.assertFalse(os.path.exists(file_path))
 
 if __name__=='__main__':
     # unittest.main()
     t = TestSorter()
+    t.test_alt_files()
+    # t.test_same_name()
+    # t.test_sort_false_alt()
     # t.test_8letter_paths()
     # t.test_all_subfolder_kwargs()
     # t.test_alt_files()
     # t.test_camel_case()
     # t.test_not_traversing_subfolders()
-    t.test_files_per_folder()
-    t.test_folders_per_folder()
+    # t.test_files_per_folder()
+    # t.test_folders_per_folder()
     # t.test_multilang_games()
     # t.test_multipart_games()

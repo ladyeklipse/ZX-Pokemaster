@@ -36,8 +36,8 @@ class GameRelease(object):
         self.files = []
         self.aliases = []
         self.addAliases(aliases)
-        if release_seq==0 and self.game.name not in self.aliases:
-            self.aliases = [self.game.name]+self.aliases
+        if release_seq==0:
+            self.addAlias(self.game.name)
 
     def __repr__(self):
         return '<Release {}: {}, ({})({}), {} files>'.format(
@@ -76,7 +76,11 @@ class GameRelease(object):
             return str(self.year)
 
     def getAllAliases(self):
-        return sorted(set(self.aliases), key=len, reverse=True)
+        aliases = sorted(set(self.aliases), key=len, reverse=True)
+        for i, alias in enumerate(aliases):
+            if self.game.name in alias:
+                return [aliases.pop(i)]+aliases
+        return aliases
 
     def getIngameScreenFilePath(self, format='scr'):
         if format=='scr':
@@ -106,9 +110,10 @@ class GameRelease(object):
             self.addAlias(alias)
 
     def addAlias(self, alias):
-        alias = getFileSystemFriendlyName(alias)
-        if alias and alias not in self.aliases:
-            self.aliases.append(alias)
+        if alias:
+            alias = getFileSystemFriendlyName(alias)
+            if alias not in self.aliases:
+                self.aliases.append(alias)
 
     def addFiles(self, files):
         for file in files:
