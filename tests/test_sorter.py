@@ -60,7 +60,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
+        expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(MCM)(es)[128K][re-release].tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[m][128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
@@ -70,7 +70,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
-    def test_picking_best_candidate(self):
+    def  test_picking_best_candidate(self):
         s = Sorter(input_locations=['tests/files/sort_best_candidates_in'],
                    output_location='tests/files/sort_best_candidates_out',
                    output_folder_structure='',
@@ -174,11 +174,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 1 of 3).tap'
+        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat)(es)(Part 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 2 of 3).tap'
+        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat)(es)(Part 2 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat Software)(es)(Part 3 of 3).tap'
+        expected_file = 'tests/files/sort_doublesided_out/Arkos (1988)(Zigurat)(es)(Part 3 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_doublesided_out/Fourth Protocol, The (1985)(Hutchinson Computer Publishing)(Part 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
@@ -195,7 +195,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = 'tests/files/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
+        not_expected_file = 'tests/files/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(MCM)(es)[128K].tzx'
         self.assertFalse(os.path.exists(not_expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -210,7 +210,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(MCM Software)(es)[128K].tzx'
+        expected_file = 'tests/files/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(MCM)(es)[128K].tzx'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_ignore_hacks_out/Abadia del Crimen, La (1988)(Opera Soft)(ES)[128K][m].tzx'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -271,9 +271,9 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         #Bug-eyes has both English and Italian versions, should retain both
-        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon Software)(it).tap'
+        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon)(it).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon Software).z80'
+        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon).z80'
         self.assertTrue(os.path.exists(expected_file))
         #Drazen Petrovic Basket has only spanish version.
         expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(es)[48-128K].tap'
@@ -295,11 +295,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat Software)(es)(Part 1 of 3).tap'
+        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat)(es)(Part 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat Software)(es)(Part 2 of 3).z80'
+        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat)(es)(Part 2 of 3).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat Software)(es)(Part 3 of 3).z80'
+        expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat)(es)(Part 3 of 3).z80'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -313,13 +313,13 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins).tap'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins)[a].pok'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)[a].pok'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins)[a].tap'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)[a].tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/The Mojon Twins/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(The Mojon Twins)[a].pok'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)[a].pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -337,7 +337,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell Software)[128K].tap'
+        expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell)[128K][aka Saboteur 2].tap'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -401,9 +401,9 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2 - The Sequel/Super Advanced Lawnmower Simulator Adventure 2 - The Sequel (1993)(Creative Radical Alternative).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/Proxima Software/Fuxoft Uvadi/Fuxoft Uvadi (1992)(Proxima Software).tzx'
+        expected_file = s.output_location+'/Proxima Software/Fuxoft Uvadi/Fuxoft Uvadi (1992)(Proxima).tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/Zenobi Software\Why is the World Round Anyway\Why is the World Round Anyway (demo) (1995)(Zenobi Software)(Side B).tzx'
+        expected_file = s.output_location+'/Zenobi Software\Why is the World Round Anyway\Why is the World Round Anyway (demo) (1995)(Zenobi)(Side B).tzx'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_weird_publisher(self):
@@ -464,7 +464,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = output_location+'/Tasword Two (1984)(MCI Iberica)(es).tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location+'/Tasword Two (1983)(Tasman Software)(ru).tap'
+        expected_file = output_location+'/Tasword Two - The Word Processor (1983)(Tasman)(ru)[aka Tasword 2].tap'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Tasword Two (1983)(Profisoft).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -572,10 +572,10 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         expected_file = output_location+\
-                        '/4 Game Pack No. 2 - Gunfighter + Periscope Up (1992)(Atlantis Software)(Side B).tzx'
+                        '/4 Game Pack No. 2 - Gunfighter + Periscope Up (1992)(Atlantis)(Side B).tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location+\
-                        '/4 Most Megaheroes - Rogue Trooper + Capitan Sevilla (1991)(Alternative Software).tzx'
+                        '/4 Most Megaheroes - Rogue Trooper + Capitan Sevilla (1991)(Alternative).tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location+\
                         '/16-48 Magazine Tape 02 (1983)(16-48 Tape Magazine)(Side A).tzx'
@@ -596,7 +596,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        not_expected_file = output_location+'/Saboteur II (1987)(Durell Software).tap'
+        not_expected_file = output_location+'/Saboteur II (1987)(Durell).tap'
         self.assertFalse(os.path.exists(not_expected_file))
         expected_file = output_location+'/0004295 - Saboteur II - Avenging Angel.tap'
         self.assertTrue(os.path.exists(expected_file))
@@ -631,7 +631,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        not_expected_file = output_location+'/Durell Software/Saboteur II (1987)(Durell Software)[128K].tap'
+        not_expected_file = output_location+'/Durell Software/Saboteur II (1987)(Durell)[128K].tap'
         self.assertFalse(os.path.exists(not_expected_file))
         expected_file = output_location+'/DurellSoftware/SaboteurII-AvengingAngel(1987)(DurellSoftware)[128K].tap'
         self.assertTrue(os.path.exists(expected_file))

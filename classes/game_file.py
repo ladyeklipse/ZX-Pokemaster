@@ -341,7 +341,12 @@ class GameFile(object):
     def getPart(self):
         if not self.part:
             return ''
-        label = 'Disk' if self.format in DISK_FORMATS else 'Part'
+        if self.format in DISK_FORMATS:
+            label = 'Disk'
+        elif self.format in TAPE_FORMATS:
+            label = 'Tape'
+        else:
+            label = 'Part'
         if self.game.parts>1:
             return  '%s %d of %d' % (label, self.part, self.game.parts)
         else:
@@ -486,7 +491,7 @@ class GameFile(object):
         genre = self.game.getGenre()
         parts += self.getType().split('\\')
         parts.append('[{}]'.format(self.format.upper()))
-        return ' - '.join(parts)+'.dat'
+        return ' - '.join(parts)
 
     def getGenre(self):
         if self.game.genre:
