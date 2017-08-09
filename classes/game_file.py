@@ -267,19 +267,34 @@ class GameFile(object):
                 continue
             elif len(re.findall('^[0-9\-]+K?$', each)):
                 self.setMachineType(each)
-            elif each and each[0].lower() in ['m', 'h', 'c', 'f', 'b', 'o', 't']:
+            elif self.isModFlag(each):
                 mod_flag = '[{}]'.format(each)
                 if mod_flag not in self.mod_flags:
                     self.mod_flags += mod_flag
             elif each not in self.notes and \
                 self.machine_type not in each and \
                     're-release' not in each and \
-                    not each.startswith('aka '):
+                    not each.startswith('aka ') and \
+                    not each.startswith('48K'):
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note
+        self.sortModFlags()
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
+
+    def isModFlag(self, match):
+        for each in MOD_FLAGS_ORDER:
+            if match==each or match.startswith(each+' '):
+                return True
+        return False
+
+    def sortModFlags(self):
+        mod_flags_array = re.findall(SQUARE_BRACKETS_REGEX, self.mod_flags)
+        mod_flags_array = sorted(set(mod_flags_array))
+        if 'b' in mod_flags_array:
+            mod_flags_array.append(mod_flags_array.pop(mod_flags_array.index('b')))
+        self.mod_flags = ''.join('[{}]'.format(x) for x in mod_flags_array)
 
     def setContentDesc(self, filename):
         if self.game and self.game.wos_id:
@@ -307,7 +322,15 @@ class GameFile(object):
     def setMachineType(self, filename):
         if not filename:
             return
-        if '128' in filename and '48' in filename:
+        if 'Pentagon 128' in filename or '(Pentagon' in filename or '[Pentagon' in filename:
+            self.machine_type = 'Pentagon 128K'
+        elif '+2a' in filename or '+2A' in filename:
+            self.machine_type = '+2A'
+        elif '+2' in filename:
+            self.machine_type = '+2'
+        elif '+3' in filename:
+            self.machine_type = '+3'
+        elif '128' in filename and '48' in filename:
             self.machine_type = '48-128K'
         elif '128' in filename:
             self.machine_type = '128K'
@@ -319,6 +342,7 @@ class GameFile(object):
     def setProtectionScheme(self, protection_scheme):
         if protection_scheme and protection_scheme not in self.notes and \
             protection_scheme not in ('None', 'Undetermined', 'Unknown', 'Unspecified custom loader'):
+            protection_scheme = protection_scheme.replace('Firebird ', '')
             self.notes += '['+protection_scheme+']'
 
     def getMachineType(self):
@@ -328,18 +352,44 @@ class GameFile(object):
             return self.game.machine_type
 
     def setLanguage(self, language):
-        self.language = language.lower() if language.isalpha() else language.upper()
+        language = language.lower() if language.isalpha() else language.upper()
+        if len(language)==2:
+            self.language = language
 
     def setPart(self, part):
-        part = part.split(' ')
-        for i, word in enumerate(part):
-            if (word in ['Part', 'Disk', 'Tape']) and \
-                len(part)>i+1 and \
-                part[i+1][0].isdigit():
-                self.part = int(part[i+1][0])
+        # part = part.split(' ')
+        # for i, word in enumerate(part):
+        #     if (word in ['Part', 'Disk', 'Tape']) and \
+        #         len(part)>i+1 and \
+        #         part[i+1][0].isdigit():
+        #         self.part = int(part[i+1][0])
+        part = part.replace(' ', '').lower()
+        for word in ('part', 'disk', 'tape'):
+            if word in part:
+                index = part.index(word)+len(word)-1
+                if part[index] in ['0', '-']:
+                    index+=1
+                if part[index+1].isdigit() and not part[index+2].isdigit():
+                    self.part = int(part[index+1])
+
+    def setLanguageFromWosName(self):
+        name = self.wos_name.lower()
+        for each in INCLUDED_LANGUAGES_LIST:
+            if '('+each[0]+')' in name or '('+each[1].lower()+')' in name:
+                self.language = each[0]
+                break
+
+    def setContentDescFromWosName(self):
+        content_desc = os.path.splitext(self.wos_name)[0].replace(' - ', '')
+        for alias in self.release.getAllAliases():
+            content_desc = content_desc.replace(alias, '')
+        self.content_desc = ' - '+content_desc
+
 
     def getPart(self):
         if not self.part:
+            return ''
+        if self.game.parts<2:
             return ''
         if self.format in DISK_FORMATS:
             label = 'Disk'
@@ -349,8 +399,8 @@ class GameFile(object):
             label = 'Part'
         if self.game.parts>1:
             return  '%s %d of %d' % (label, self.part, self.game.parts)
-        else:
-            return '%s %d' % (label, self.part)
+        # else:
+        #     return '%s %d' % (label, self.part)
 
     def getLanguage(self):
         if self.language:
@@ -381,9 +431,14 @@ class GameFile(object):
         return output_name
 
     def setSide(self, side):
-        if 'Side A' in side or 'Side 1' in side:
+        # if 'Side A' in side or 'Side 1' in side or 'SideA' in side or 'Side1 in s':
+        #     self.side = SIDE_A
+        # elif 'Side B' in side or 'Side 2' in side:
+        #     self.side = SIDE_B
+        side = side.lower().replace(' ', '')
+        if 'sidea' in side or 'side1' in side:
             self.side = SIDE_A
-        elif 'Side B' in side or 'Side 2' in side:
+        elif 'sideb' in side or 'side2' in side:
             self.side = SIDE_B
 
     def getSide(self):
@@ -515,10 +570,13 @@ class GameFile(object):
                 self.type += os.sep+'Magazines'
             else:
                 self.type += os.sep+'Games'
-        elif genre.startswith('Utility') or 'Programming' in genre:
-            self.type += 'Applications'
         elif 'Education' in genre:
             self.type += 'Educational'
+        elif genre.startswith('Utility') or \
+            'Programming' in genre or \
+            'General' in genre or \
+            'Emulator' in genre:
+            self.type += 'Applications'
         elif 'Magazine' in genre:
             self.type += 'Magazines'
         elif 'Covertape' in genre:
@@ -527,6 +585,10 @@ class GameFile(object):
             self.type += 'Demos'
         elif 'Game' in genre:
             self.type += 'Games'
+        elif 'Music' in genre:
+            self.type += 'Music'
+        elif 'e-Book' in genre:
+            self.type += 'eBooks'
         else:
             self.type = 'Unknown'
         return self.type

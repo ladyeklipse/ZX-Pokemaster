@@ -4,6 +4,7 @@ import unicodedata
 
 publisher_regex = re.compile(' Software| inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
+remove_brackets_regex = re.compile('[\[|\(][^\]]*[\]|\)]')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
 
 MEANINGLESS_WORDS = [

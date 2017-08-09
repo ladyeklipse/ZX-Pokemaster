@@ -43,6 +43,7 @@ class TOSECDat():
             break
         if files:
             old_file = os.path.join('tosec', files[0])
+            print('importing contributors from', old_file)
             with open(old_file, 'rb') as f:
                 contents = f.read()
                 root = etree.XML(contents)

@@ -218,6 +218,8 @@ class Game(object):
         self.language = language.lower()[:2]
 
     def getLanguage(self):
+        if self.language.startswith('?') or self.language.endswith('-'):
+            return 'en'
         return self.language if self.language else 'en'
 
     def setGenre(self, genre):

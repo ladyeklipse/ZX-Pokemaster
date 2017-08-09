@@ -152,8 +152,10 @@ class GameFileTests(unittest.TestCase):
         f.setAka()
         self.assertEqual(f.getTOSECName(), 'Adventures of St. Bernard, The (19xx)(-)[aka Adventures of Saint Bernard, The].tap')
 
-
-
+    def test_sort_mod_flags(self):
+        game_file = GameFile('Game (19xx)(-)[f +2][cr by Someone][MaxBoot]')
+        self.assertEqual(game_file.mod_flags, '[cr by Someone][f +2]')
+        self.assertEqual(game_file.notes, '[MaxBoot]')
 
 if __name__=='__main__':
     unittest.main()

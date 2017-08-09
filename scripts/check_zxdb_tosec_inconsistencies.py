@@ -31,18 +31,20 @@ for game in games:
             game_file_from_path = file_from_path
             game_from_path = game_file_from_path.game
             original_tosec_game_name = file_from_path.getTOSECName()
-            # current_tosec_game_name = file.getOutputName('{GameName} ({Year})({Publisher})')
             current_tosec_game_name = file.getTOSECName()
             if original_tosec_game_name!=current_tosec_game_name:
-                # print(original_tosec_game_name, current_tosec_game_name)
                 if game_from_path.publisher!=file.release.publisher:
                     problems.append('Wrong Publisher')
                 if game_from_path.year!=file.release.year:
                     problems.append('Wrong Year')
                 if '[re-release]' in original_tosec_game_name:
                     problems.append('Removed [re-release]')
+                if '[re-release]' in current_tosec_game_name:
+                    problems.append('Added [re-release]')
                 if '[aka' in original_tosec_game_name:
                     problems.append('Removed [aka ...] alias')
+                if '[aka' in current_tosec_game_name:
+                    problems.append('Added [aka ...] alias')
                 if file.getLanguage()!=file_from_path.getLanguage():
                     problems.append('Wrong Language')
                 if file.getMachineType()!=file_from_path.getMachineType():
@@ -69,15 +71,7 @@ for game in games:
         elif not file.tosec_path:
             problems.append('File not in TOSEC')
             original_tosec_game_name = ''
-            # current_tosec_game_name = file.getOutputName('{GameName} ({Year})({Publisher})')
             current_tosec_game_name = file.getTOSECName()
-            # current_tosec_game_name = os.path.splitext(current_tosec_game_name)[0].replace('(demo) ', '')
-        # elif not file.wos_path:
-        #     problem = 'File not in ZXDB'
-        #     game_file_from_path = GameFile(file.tosec_path)
-        #     game_from_path = game_file_from_path.game
-        #     original_tosec_game_name = game_from_path.getTOSECName()
-        #     current_tosec_game_name = ''
         else:
             continue
         if not problems:
@@ -92,7 +86,7 @@ for game in games:
             file.getTOSECDatName(),
             game.getWosID(),
             str(file.release_seq),
-            ', '.join(set(problems)),
+            ', '.join(sorted(set(problems))),
             'http://spectrumcomputing.co.uk/index.php?cat=96&id='+game.getWosID(),
         ])
 print('Undetermined problems:', undetermined_problems)

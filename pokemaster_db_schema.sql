@@ -41,7 +41,7 @@ CREATE TABLE "game_file" (
 	`wos_name`	VARCHAR(255), -- name of UNZIPPED file retrieved by reading the zipped file downloaded from FTP mirror.
 	`wos_path`	VARCHAR(255), -- ZXDB downloads.file_link WHERE formattypes.text contains "snapshot", "disk" or "tape".
 	`tosec_path`	TEXT, -- TOSEC path, assigned to selected wos_id and release_seq by complex algorythm and manually hardcodd exceptions for cases where it fails
-	`machine_type`	INTEGER, -- ZXDB entry_machinetype.text WHERE download_machinetype.id=downloads.machinetype_id OR (if wos_path==NULL) - from TOSEC filename ([128K], [48K] or [48/128K])
+	`machine_type` TEXT, -- ZXDB entry_machinetype.text WHERE download_machinetype.id=downloads.machinetype_id OR (if wos_path==NULL) - from TOSEC filename ([128K], [48K] or [48/128K])
 	`format`	TEXT, -- extension of UNZIPPED file, always lower case, retrieved by reading the file.
 	`size`	INTEGER, -- size of UNZIPPED file retrieved by reading the file
 	`content_desc` TEXT, -- TOSEC - All data between end of game name and 1st bracket
@@ -51,16 +51,19 @@ CREATE TABLE "game_file" (
 	`language`	CHAR(2), -- TOSEC - 2-letter language code in round brackets "()"
 	`mod_flags`	VARCHAR(255), -- TOSEC - Data in square brackets, starting with c, m, f, h, b
 	`notes`	VARCHAR(255), -- TOSEC - All data in square brackets "[]" except machine_type and those in mod_flags
-	`md5`	CHAR(32) UNIQUE, -- MD5 of unzipped file, retrieved by reading the file
+	`md5`	CHAR(32), -- MD5 of unzipped file, retrieved by reading the file
 	`crc32`	TEXT, -- CRC32 of unzipped file, retrieved by reading the file
 	`sha1`	TEXT -- SHA1 of unzipped file, retrieved by reading the file
 );
-CREATE UNIQUE INDEX `unique_release` ON `game_release` (`wos_id` ,`release_seq` );
+CREATE UNIQUE INDEX `hashsum` ON `game_file` (`wos_name`, `tosec_path`, `md5`);
+CREATE UNIQUE INDEX `unique_release` ON `game_release` (`wos_id` ,`release_seq`);
 -- CREATE UNIQUE INDEX `unique_alias` ON `game_alias` (`wos_id` ,`release_id` ,`name` );
 CREATE VIEW `game_id_file_checker` AS select wos_id, game.name, game_file.content_desc, game_file.tosec_path,
 game_file.wos_name, game_file.wos_path from game
 left join game_file on game_file.game_wos_id=game.wos_id
 order by game.name;
+CREATE VIEW `files_with_same_md5` AS select * from game_file WHERE md5 in
+ (select md5 from game_file GROUP BY md5 having count(md5)>1) order by count(md5) desc;
 CREATE VIEW games_without_files AS select wos_id, name, publisher from game
 left join game_file on game.wos_id=game_file.game_wos_id
 where availability!=3 and availability!=4 

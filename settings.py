@@ -74,9 +74,12 @@ INCLUDED_LANGUAGES_LIST = [
     ('nl', 'Dutch'),
     ('de', 'German'),
     ('fr', 'French'),
+    ('it', 'Italian'),
     ('hu', 'Hungarian'),
     ('no', 'Norwegian'),
     ('pl', 'Polish'),
+    ('pt', 'Portuguese'),
+    ('sh', 'Serbo-Croatian'),
     ('sr', 'Serbian'),
     ('sl', 'Slovak'),
     ('sv', 'Swedish')
@@ -104,3 +107,4 @@ OUTPUT_PATH_STRUCTURE_KEYS = [
     'Notes',
     'TOSECName'
 ]
+MOD_FLAGS_ORDER = ['cr', 'f', 'h', 'm', 'p', 't', 'tr', 'o', 'u', 'v', 'b']

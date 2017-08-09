@@ -126,3 +126,27 @@ class TestZXDBScraper(unittest.TestCase):
         games = zxdb.getGames(where_clause)
         aliases = games[0].releases[2].getAllAliases()
         self.assertEqual(aliases, ['3D Tanks'])
+
+    def test_multigame_compilation(self):
+        where_clause = 'AND entries.id = 17102'
+        games = zxdb.getGames(where_clause)
+        for release in games[0].releases:
+            release.getInfoFromLocalFiles()
+        self.assertGreater(len(games[0].getFiles()), 20)
+        for file in games[0].getFiles():
+            print(file.wos_name, file.content_desc)
+            self.assertGreater(len(file.content_desc), 0)
+
+    def test_multitape_game(self):
+        where_clause = 'AND entries.id = 11433'
+        games = zxdb.getGames(where_clause)
+        release = games[0].releases[0]
+        release.getInfoFromLocalFiles()
+        for file in release.files:
+            self.assertGreater(file.part, 0)
+
+    def test_sanitizing_alias(self):
+        alias = 'Jet Set Willy (again)'
+        new_alias = zxdb.sanitizeAlias(alias)
+        game = Game(new_alias)
+        self.assertEqual(game.name, 'Jet Set Willy - Again')

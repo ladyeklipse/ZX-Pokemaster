@@ -1,10 +1,10 @@
 from classes.database import *
-from classes.game import Game, filepath_regex, remove_square_brackets_regex
+from classes.game import Game
 from classes.game_release import GameRelease
-from classes.game_file import GameFile
+from classes.game_file import GameFile, ROUND_BRACKETS_REGEX
 from classes.game_alias import GameAlias
 from classes.scraper import *
-from functions.game_name_functions import putPrefixToEnd
+from functions.game_name_functions import putPrefixToEnd, filepath_regex, remove_square_brackets_regex, remove_brackets_regex
 from mysql import connector
 import time
 
@@ -212,9 +212,13 @@ class ZXDBScraper():
         return release
 
     def sanitizeAlias(self, alias):
-        alias = remove_square_brackets_regex.sub('', alias).strip()
         if alias.endswith(', 3D'):
             alias = '3D ' + alias[:-4]
+        round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
+        alias = remove_brackets_regex.sub('', alias).strip()
+        alias = alias.replace('YS issue', 'Your Sinclair Issue')
+        alias = alias.replace('SU issue', 'Sinclair User Issue')
+        alias = ' - '.join([alias]+round_brackets_contents)
         return alias
 
     def gameFileFromRow(self, row, game):
