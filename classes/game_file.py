@@ -35,6 +35,7 @@ class GameFile(object):
     notes = ''
     format = ''
     size = 0
+    size_zipped = 0
     md5 = ''
     crc32 = ''
     sha1 = ''
@@ -275,7 +276,8 @@ class GameFile(object):
                 self.machine_type not in each and \
                     're-release' not in each and \
                     not each.startswith('aka ') and \
-                    not each.startswith('48K'):
+                    not each.startswith('48') and \
+                    not each.startswith('Pentagon'):
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note

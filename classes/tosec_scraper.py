@@ -128,6 +128,11 @@ class TOSECScraper():
             if not current_game:
                 current_game = game_file.game
                 current_tosec_name = current_game.getTOSECName()
+            if current_game.wos_id:
+                game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
+                if game_by_md5 and game_by_md5.wos_id!=current_game.wos_id:
+                    current_game = game_file.game
+                    current_tosec_name = current_game.getTOSECName()
             if not current_game.wos_id:
                 game_name = game_file.game.getTOSECName()
                 if game_name in self.manually_entered_tosec_aliases.keys():

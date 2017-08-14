@@ -216,14 +216,14 @@ class ZXDBScraper():
             alias = '3D ' + alias[:-4]
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
         alias = remove_brackets_regex.sub('', alias).strip()
-        alias = alias.replace('YS issue', 'Your Sinclair Issue')
-        alias = alias.replace('SU issue', 'Sinclair User Issue')
+        # alias = alias.replace('YS issue', 'Your Sinclair Issue')
+        # alias = alias.replace('SU issue', 'Sinclair User Issue')
         alias = ' - '.join([alias]+round_brackets_contents)
         return alias
 
     def gameFileFromRow(self, row, game):
         game_file = GameFile(row['file_link'], game=game, source='wos')
-        game_file.setSize(row['file_size'])
+        game_file.size_zipped = row['file_size']
         game_file.setMachineType(row['machine_type'])
         game_file.setProtectionScheme(row['protection_scheme'])
         return game_file
@@ -234,15 +234,17 @@ class ZXDBScraper():
             for file in game.getFiles():
                 local_path = file.getLocalPath()
                 if os.path.exists(local_path) and \
-                        os.path.getsize(local_path):
+                        (os.path.getsize(local_path) == file.size_zipped or \
+                        not file.size_zipped):
                     continue
                 elif os.path.exists(local_path) and \
-                                os.path.getsize(local_path) != file.size:
+                                os.path.getsize(local_path) != file.size_zipped:
                     print('wrong file size:', local_path)
-                else:
+                # else:
                     for mirror in WOS_MIRRORS:
                         try:
                             status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)
+                            time.sleep(.5)
                         except:
                             print(traceback.format_exc())
                         if status == 200:
