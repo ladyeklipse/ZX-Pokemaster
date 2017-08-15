@@ -35,6 +35,17 @@ class ZXDBScraper():
                                 converter_class=RowConverter
                                 )
         self.cur = self.conn.cursor(dictionary=True, buffered=True)
+        self.loadLookupTables()
+
+    def loadLookupTables(self):
+        self.file_exclusion_list = []
+        with open('same_md5.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.split(';')
+                decision = line[7]
+                if not decision.startswith('KEEP'):
+                    self.file_exclusion_list.append(line[10])
+
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -164,7 +175,8 @@ class ZXDBScraper():
                          'disk' in row['file_format'] or \
                          'tape' in row['file_format']):
                     game_file = self.gameFileFromRow(row, game)
-                    release.addFile(game_file)
+                    if game_file.wos_path not in self.file_exclusion_list:
+                        release.addFile(game_file)
                 elif row['file_type']=='POK pokes file':
                     pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
                     game.importPokFile(file_path=pok_file_path)
