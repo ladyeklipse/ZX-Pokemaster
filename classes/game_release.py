@@ -78,7 +78,7 @@ class GameRelease(object):
             return str(self.year)
 
     def getAllAliases(self):
-        aliases = sorted(set(self.aliases), key=len, reverse=True)
+        aliases = sorted(set(self.aliases), key=lambda x: (len(x), -self.aliases.index(x)), reverse=True)
         for i, alias in enumerate(aliases):
             if self.game.name in alias:
                 return [aliases.pop(i)]+aliases

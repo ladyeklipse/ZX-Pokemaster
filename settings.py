@@ -84,8 +84,15 @@ INCLUDED_LANGUAGES_LIST = [
     ('sl', 'Slovak'),
     ('sv', 'Swedish')
 ]
+COUNTRY_LANGUAGE_DICT = {
+    'GB':'en',
+    'AU':'en',
+    'US':'en',
+    'AR':'es',
+    'BR':'pt',
+}
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
-    '{GameName} ({Year})({Publisher})({Language})({Part})({Side}){ModFlags}[{MachineType}]{Notes}'
+    '{GameName} ({Year})({Publisher})({MachineType})({Language})({Part})({Side}){ModFlags}{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
 OUTPUT_PATH_STRUCTURE_KEYS = [

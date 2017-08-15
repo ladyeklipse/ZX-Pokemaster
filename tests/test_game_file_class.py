@@ -1,6 +1,7 @@
 from classes.game_file import GameFile
 from classes.game_file import GameRelease
 from classes.game import Game
+from classes.database import Database
 import unittest
 import os
 print(os.getcwd())
@@ -52,7 +53,9 @@ class GameFileTests(unittest.TestCase):
         file = GameFile("Test (19xx)(Publisher)[m]")
         self.assertEqual(file.mod_flags, '[m]')
         file = GameFile("Test (19xx)(Publisher)[a][m][hacked]")
-        self.assertEqual(file.mod_flags, '[m][hacked]')
+        self.assertEqual(file.mod_flags, '[m]')
+        file = GameFile("Test (19xx)(Publisher)[a][m][h by SKiDROW]")
+        self.assertEqual(file.mod_flags, '[h by SKiDROW][m]')
         file = GameFile("Test (19xx)(Publisher)[a][re-release]")
         self.assertEqual(file.mod_flags, '')
         file = GameFile("Test (19xx)(Publisher)[t][a]")
@@ -60,7 +63,7 @@ class GameFileTests(unittest.TestCase):
 
     def test_notes(self):
         file = GameFile("Test (19xx)(Publisher)[t][a][re-release]")
-        self.assertEqual(file.notes, '[re-release]')
+        self.assertEqual(file.notes, '')
         path = 'Sinclair ZX Spectrum\Games\[TAP]\Backpackers Guide to the Universe (1984)(Fantasy Software)[passworded].zip'
         file = GameFile(path)
         self.assertEqual(file.notes, '[passworded]')
@@ -73,7 +76,7 @@ class GameFileTests(unittest.TestCase):
 
     def test_demo(self):
         file = GameFile('A Treat! (demo) (1985)(Firebird Software).zip')
-        self.assertEqual(file.game.getPublisher(), 'Firebird Software')
+        self.assertEqual(file.game.getPublisher(), 'Firebird')
         self.assertEqual(file.game.getYear(), '1985')
         self.assertEqual(file.game.name, 'A Treat!')
 
@@ -122,7 +125,7 @@ class GameFileTests(unittest.TestCase):
     def test_duplicate_spaces(self):
         game_file = GameFile('Format  Utility (1994)(MI & DI  Software).trd')
         out_name = game_file.getOutputName()
-        self.assertEqual(out_name, 'Format Utility (1994)(MI & DI Software).trd')
+        self.assertEqual(out_name, 'Format Utility (1994)(MI & DI).trd')
 
     def test_picking_best_release_name(self):
         g = Game('Everyday Tale of a Seeker of Gold, An')
@@ -151,11 +154,37 @@ class GameFileTests(unittest.TestCase):
         r.addFile(f)
         f.setAka()
         self.assertEqual(f.getTOSECName(), 'Adventures of St. Bernard, The (19xx)(-)[aka Adventures of Saint Bernard, The].tap')
+        # g = Game('Flintstones, The')
+        # r = GameRelease(game=g, aliases=\
+        # 'Picapiedra, Los/The Flintstones'.split('/'))
+        db = Database()
+        g = db.getGameByWosID(1799)
+        r = g.releases[3]
+        f = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Picapiedra, Los (1989)(MCM Software)[48-128K][aka Flintstones, The].zip')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48-128K)[aka Flintstones, The].tzx')
 
     def test_sort_mod_flags(self):
         game_file = GameFile('Game (19xx)(-)[f +2][cr by Someone][MaxBoot]')
         self.assertEqual(game_file.mod_flags, '[cr by Someone][f +2]')
         self.assertEqual(game_file.notes, '[MaxBoot]')
+
+    def  test_set_country(self):
+        game_file = GameFile('Sinclair ZX Spectrum\Demos\[SCL]\#AAABOG (2016)(wbr)(128K)(RU).zip', source='tosec')
+        self.assertEqual(game_file.release.country, 'RU')
+
+    def test_remove_aka(self):
+        game_file = GameFile('Professional Adventure Writer (1986)(Gilsoft International)(48-128K)(Side A)[aka Professional Adventure Writing System, The][aka PAW].tzx')
+        g = Game('Where Time Stood Still')
+        r = GameRelease(game=g, aliases=['Land That Time Forgot, The', 'Where Time Stood Still', 'Tibet'])
+        r.addFile(game_file)
+        game_file.setAka()
+        self.assertEqual(game_file.notes, '[aka Land That Time Forgot, The][aka Tibet]')
+        game_file.removeAka()
+        self.assertEqual(game_file.notes, '[aka Tibet]')
+        game_file.removeAka()
+        self.assertEqual(game_file.notes, '')
 
 if __name__=='__main__':
     unittest.main()

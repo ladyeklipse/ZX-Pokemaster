@@ -78,6 +78,7 @@ class Sorter():
         print('Files collected')
         if self.too_long_path:
             print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
+            self.fails = self.input_files
             return
         if self.ignore_hacks or \
             self.ignore_alternate or \
@@ -387,11 +388,12 @@ class Sorter():
                     data = zf.read(zfname)
                     dest = game_file.getDestPath()
                     try:
-                        with open(dest, 'wb') as output:
+                        os.makedirs(os.path.dirname(dest), exist_ok=True)
+                        with open(dest, 'wb+') as output:
                             output.write(data)
                     except PermissionError:
                         os.chmod(dest, stat.S_IWRITE)
-                        with open(dest, 'wb') as output:
+                        with open(dest, 'wb+') as output:
                             output.write(data)
                     break
 

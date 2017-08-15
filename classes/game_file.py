@@ -58,12 +58,6 @@ class GameFile(object):
         filename = os.path.basename(path)
         self.setSize(size)
         self.format = self.getFormat(path)
-        if source == 'wos':
-            self.wos_path = path
-        elif source == 'tosec':
-            self.getParamsFromTOSECPath(path)
-        else:
-            self.path = path
         self.game = game
         self.release = release
         if game:
@@ -74,6 +68,13 @@ class GameFile(object):
                 self.wos_name = filename
         else:
             self.getGameFromFileName(path)
+        if source == 'wos':
+            self.wos_path = path
+        elif source == 'tosec':
+            # self.getGameFromFileName(path)
+            self.getParamsFromTOSECPath(path)
+        else:
+            self.path = path
         if type(size)==str:
             size = int(size.replace(',',''))
 
@@ -256,8 +257,11 @@ class GameFile(object):
         for each in round_brackets_matches[2:]:
             if len(re.findall('^M[0-9]$', each)):
                 self.setLanguage(each)
-            elif len(each)==2 and each.isalpha() and each.islower():
-                self.setLanguage(each)
+            elif len(each)==2 and each.isalpha():
+                if each.islower():
+                    self.setLanguage(each)
+                elif each.isupper():
+                    self.setCountry(each)
             elif 'Side' in each:
                 self.setSide(each)
             elif 'Part' in each or 'Disk' in each or 'Tape' in each:
@@ -358,6 +362,13 @@ class GameFile(object):
         if len(language)==2:
             self.language = language
 
+    def setCountry(self, country):
+        country = country.upper()
+        if len(country)==2:
+            if not self.release:
+                print(self, 'has no self.release')
+            self.release.country = country
+
     def setPart(self, part):
         # part = part.split(' ')
         # for i, word in enumerate(part):
@@ -371,8 +382,9 @@ class GameFile(object):
                 index = part.index(word)+len(word)-1
                 if part[index] in ['0', '-']:
                     index+=1
-                if part[index+1].isdigit() and not part[index+2].isdigit():
-                    self.part = int(part[index+1])
+                if len(part)>index+1 and part[index+1].isdigit():
+                    if len(part)<=index+2 or not part[index+2].isdigit():
+                        self.part = int(part[index+1])
 
     def setLanguageFromWosName(self):
         name = self.wos_name.lower()
@@ -426,7 +438,7 @@ class GameFile(object):
         output_name = structure.format(**kwargs)
         if structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE+'.{Format}':
             output_name = output_name.replace('(%s)' % DEFAULT_GAME_LANGUAGE, '')
-            output_name = output_name.replace('[%s]' % DEFAULT_MACHINE_TYPE, '')
+            output_name = output_name.replace('(%s)' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
         output_name = ' '.join([x for x in output_name.split(' ') if x])
         output_name = filepath_regex.sub('', output_name.replace('/', '-').replace(':', ' -')).strip()
@@ -612,11 +624,14 @@ class GameFile(object):
             for alias in self.release.getAllAliases():
                 alias_search_string = getSearchStringFromGameName(alias)
                 if not [x for x in aliases_search_strings if x in alias_search_string or alias_search_string in x]:
+                    alias = putPrefixToEnd(alias)
                     self.notes += '[aka '+alias+']'
                     aliases_search_strings.append(alias_search_string)
 
     def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,
                     for_filename=False):
+        if game_name_length<=50:
+            self.removeAka()
         game_name = self.release.getAllAliases()[0] if self.release else self.game.name
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         while game_name.endswith('.'):
@@ -637,6 +652,10 @@ class GameFile(object):
         if for_filename and self.is_demo:
             game_name += ' (demo)'
         return game_name
+
+    def removeAka(self):
+        if '[aka' in self.notes:
+            self.notes = re.sub('(\[aka.+?\])', '', self.notes, count=1)
 
     def getContentDesc(self):
         if self.content_desc=='NONE':
@@ -718,9 +737,17 @@ class GameFile(object):
         dest = self.getDestPath()
         dest = dest.replace('/', '\\').split('\\')
         root_dir = os.sep.join(dest[:-depth_level])
-        depth_level -= self.bundled_times
+        depth_level -= self.getBundledTimes(dest)
         bundled_part = os.sep.join(dest[-depth_level:])
         return root_dir, bundled_part
+
+    def getBundledTimes(self, dest):
+        # return self.bundled_times
+        bundled_times = 0
+        for folder in dest:
+            if re.match('^[0-9a-z]{,3}\-[0-9a-z]{,3}[0-9]?$', folder):
+                bundled_times += 1
+        return bundled_times
 
     def getAbsoluteDestPath(self):
         return os.path.abspath(self.getDestPath())
