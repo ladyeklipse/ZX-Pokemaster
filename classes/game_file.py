@@ -1,5 +1,5 @@
 from classes.game import Game
-from functions.game_name_functions import getWosSubfolder, filepath_regex, putPrefixToEnd, getSearchStringFromGameName
+from functions.game_name_functions import *
 from classes.game_release import GameRelease
 import requests
 import os
@@ -187,7 +187,10 @@ class GameFile(object):
             else:
                 self.alt_mod_flag = '[a' + str(copies_count) + ']'
             dest_dir = os.path.dirname(dest[0])
-            self.alt_dest = os.path.join(dest_dir, self.getOutputName())
+            dest_filename = os.path.basename(dest[0])
+            everything_except_notes = dest_filename.replace(self.notes, '')
+            # self.alt_dest = os.path.join(dest_dir, self.getOutputName())
+            self.alt_dest = os.path.join(dest_dir, everything_except_notes+self.alt_mod_flag+self.notes+'.'+self.format)
         else:
             alt_mod_flag = '_'+str(copies_count+1)
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
@@ -629,13 +632,16 @@ class GameFile(object):
                     aliases_search_strings.append(alias_search_string)
 
     def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,
-                    for_filename=False):
-        if game_name_length<=50:
+                    for_filename=False,
+                    short=False):
+        if for_filename and game_name_length<=70:
             self.removeAka()
         game_name = self.release.getAllAliases()[0] if self.release else self.game.name
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         while game_name.endswith('.'):
             game_name = game_name[:-1]
+        if short:
+            return getMeaningfulEightLetterName(game_name)
         if for_filename and self.content_desc:
             game_name += self.getContentDesc()
         if self.game_name_differentiator:
@@ -724,7 +730,9 @@ class GameFile(object):
 
     def getBundleName(self, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)
-        return ''.join([x for x in bundled_part if x.isalnum()])[:3].lower()
+        bundle_name = bundled_part.split('\\')[0]
+        bundle_name =  ''.join([x for x in bundle_name if x.isalnum()])[:3].lower()
+        return bundle_name
 
     def setBundle(self, bundle_name, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)

@@ -26,7 +26,6 @@ class GameRelease(object):
     manual_filesize = 0
     files = []
 
-
     def __init__(self, release_seq=0, year=None, publisher=None, country='', game=None, aliases=[]):
         self.release_seq = release_seq
         self.game = game if game else Game()

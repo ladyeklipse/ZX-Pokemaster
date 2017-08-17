@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.1'
+ZX_POKEMASTER_VERSION = '1.2-beta1'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'

@@ -144,7 +144,7 @@ class Sorter():
                 print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
                 break
             for game_file in game_files:
-                game_name = game_file.getGameName()
+                game_name = game_file.getGameName(short=self.short_filenames)
                 if game_name not in collected_files.keys():
                     collected_files[game_name] = []
                 else:
@@ -284,16 +284,6 @@ class Sorter():
                 self.collected_files[game_name] = self.filterOutAlternateFormats(files)
         return self.collected_files
 
-    # def renameSameGameNames(self):
-    #     game_file_same_names_dict = self.getDuplicateGameNamesCount()
-    #     for game_name, files in self.collected_files.items():
-    #
-    # def getDuplicateGameNamesCount(self):
-    #     game_file_same_names_dict = {}
-    #     for game_name, files in self.collected_files.items():
-    #         for i, file in enumerate(files):
-    #             game_name = file.getGameName()
-
     def filterOutAlternateFormats(self, files):
         equals_found_flag = True
         while equals_found_flag == True:
@@ -332,28 +322,29 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             dest = file.getDestPath()
-            try:
-                os.makedirs(os.path.dirname(dest), exist_ok=True)
-            except OSError:
-                print('Could not make dirs:', dest, 'for', file.src)
-                print(traceback.format_exc())
-                self.fails.append(file.src)
-                self.fails.append(traceback.format_exc())
-                continue
+            # try:
+            #     os.makedirs(os.path.dirname(dest), exist_ok=True)
+            # except OSError:
+            #     print('Could not make dirs:', dest, 'for', file.src)
+            #     print(traceback.format_exc())
+            #     self.fails.append(file.src)
+            #     self.fails.append(traceback.format_exc())
+            #     continue
             if file.src.lower().endswith('zip'):
                 self.unpackFile(file)
             else:
                 try:
+                    os.makedirs(os.path.dirname(dest), exist_ok=True)
                     if self.delete_original_files:
                         shutil.move(file.src, dest)
                     else:
-                        shutil.copy(file.src, dest)
+                        shutil.copyfile(file.src, dest)
                 except PermissionError:
-                    os.chmod(file.dest, stat.S_IWRITE)
+                    os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
                     if self.delete_original_files:
                         shutil.move(file.src, dest)
                     else:
-                        shutil.copy(file.src, dest)
+                        shutil.copyfile(file.src, dest)
 
             if file.game.cheats:
                 pok_dir_path = os.path.dirname(dest)
@@ -395,6 +386,9 @@ class Sorter():
                         os.chmod(dest, stat.S_IWRITE)
                         with open(dest, 'wb+') as output:
                             output.write(data)
+                    except:
+                        self.fails.append(game_file.src)
+                        print(traceback.format_exc())
                     break
 
     def cancel(self):
