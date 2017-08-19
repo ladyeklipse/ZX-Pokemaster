@@ -1,12 +1,9 @@
-# import _memimporter
-# _memimporter.get_verbose_flag = lambda: 2
 from settings import *
-# from classes.sorter import *
 from distutils.core import setup
-import py2exe
 import sys
 import os
 import zipfile
+import py2exe
 sys.path.append("ui")
 sys.path.append("classes")
 sys.path.append("functions")

@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.2-beta1'
+ZX_POKEMASTER_VERSION = '1.2-beta3'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
@@ -90,9 +90,10 @@ COUNTRY_LANGUAGE_DICT = {
     'US':'en',
     'AR':'es',
     'BR':'pt',
+    '':'en',
 }
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
-    '{GameName} ({Year})({Publisher})({MachineType})({Language})({Part})({Side}){ModFlags}{Notes}'
+    '{GameName} ({Year})({Publisher})({MachineType})({Country})({Language})({Part})({Side}){ModFlags}{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
 OUTPUT_PATH_STRUCTURE_KEYS = [

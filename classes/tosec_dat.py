@@ -35,6 +35,7 @@ class TOSECDat():
         self.format = path[-1][1:-1].lower()
         self.importOldContributors()
         self.header = self.getHeader()
+        self.md5s = []
 
     def importOldContributors(self):
         base_name = self.getBaseFileName()
@@ -101,6 +102,9 @@ class TOSECDat():
             self.addFile(file)
 
     def addFile(self, file):
+        if file.getMD5() in self.md5s:
+            print('Ignoring', file)
+            return
         copies_count = file.countAlternateDumpsIn(self.files)
         if copies_count:
             file.addAlternateModFlag(copies_count,
@@ -109,6 +113,7 @@ class TOSECDat():
         else:
             file.alt_dest = file.getTOSECName()
         self.files.append(file)
+        self.md5s.append(file.getMD5())
 
     def export(self):
         root = etree.Element('datafile')

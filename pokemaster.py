@@ -41,6 +41,8 @@ class MainDialog(QDialog):
         super(QDialog, self).__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.setWindowTitle(self.windowTitle()+' v'+ZX_POKEMASTER_VERSION)
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.ui.tabWidget.setCurrentIndex(0)
         self.ui.btnAddPath.clicked.connect(self.addInputPath)
         self.ui.btnRemovePaths.clicked.connect(self.removeSelectedInputPaths)
@@ -169,15 +171,15 @@ class MainDialog(QDialog):
         if s.should_cancel:
             QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Operation was canceled.'))
         elif s.too_long_path:
-            QMessageBox.information(self, MESSAGE_BOX_TITLE,
+            QMessageBox.warning(self, MESSAGE_BOX_TITLE,
                                     self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
+        elif s.error:
+            QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("Errors occured while sorting files. See errors.log."))
         else:
             message = self.tr('Sorting successfully finished.')
             if s.fails:
                 message += self.tr('\nFailed files: {}. Please see failed_files.log')\
                     .format(len(s.fails))
-                with open('failed_files.log', 'w+', encoding='utf-8') as f:
-                    f.write('\n'.join(s.fails))
             QMessageBox.information(self, MESSAGE_BOX_TITLE, message)
         self.bar.close()
 
@@ -245,13 +247,9 @@ class MainDialog(QDialog):
                     self.ui.txtMaxFilesPerFolder.setValue(settings['max_files_per_folder'])
         except:
             print(traceback.format_exc())
-            # patterns = PREDEFINED_OUTPUT_FOLDER_STRUCTURES
-            # if os.name == 'nt':
-                # patterns = [pattern.replace('/', '\\') for pattern in patterns]
             display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in PREDEFINED_OUTPUT_PATH_STRUCTURES]
             for item in display_items:
                 self.ui.cmbOutputPathStructure.addItem(*item)
-            # self.ui.cmbOutputPathStructure.addItems(display_items)
             self.ui.cmbOutputPathStructure.setCurrentIndex(0)
             self.ui.txtOutputPath.setText(os.getcwd())
             self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
@@ -260,9 +258,7 @@ class MainDialog(QDialog):
         patterns = settings.get('patterns', PREDEFINED_OUTPUT_PATH_STRUCTURES)
         patterns = [pattern.replace('{Name}', '{GameName}') for pattern in patterns]
         display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in
-                         PREDEFINED_OUTPUT_PATH_STRUCTURES]
-        # if os.name == 'nt':
-        #     patterns = [pattern.replace('/', '\\') for pattern in patterns]
+                         patterns]
         for i, display_item in enumerate(display_items):
             self.ui.cmbOutputPathStructure.addItem(*display_item)
             if display_item[1] == settings.get('output_folder_structure'):

@@ -59,6 +59,15 @@ class TOSECScraper():
         self.paths = [path[1] for path in paths]
         return self.paths
 
+    def generateTOSECPathsArrayFromFolder(self, folder):
+        paths = []
+        for root, dirs, files in os.walk(folder):
+            # for dir in dirs:
+            for filename in files:
+                # paths.append((filename, os.path.join(root, filename)))
+                paths.append(os.path.join(root, filename))
+        return paths
+
     def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
         paths = []
         if not dat_files:
@@ -112,11 +121,11 @@ class TOSECScraper():
             if type(file_path)==str:
                 game_file = self.getGameFileFromFilePath(file_path)
             elif type(file_path)==dict:
-                print(file_path['path'])
                 game_file = self.getGameFileFromFilePathDict(file_path)
             new_tosec_name = game_file.game.getTOSECName()
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
+
                     self.addGameToLocalDB(current_game)
                     games_found += 1
                 else:
@@ -165,8 +174,8 @@ class TOSECScraper():
                          file_tosec_name))
                 else:
                     current_release.addFile(game_file)
-        if current_game.wos_id:
-            self.addGameToLocalDB(current_game)
+        # if current_game.wos_id:
+        self.addGameToLocalDB(current_game)
         self.db.commit()
 
     def addGameToLocalDB(self, game):
@@ -207,7 +216,10 @@ class TOSECScraper():
 
     def addUnscraped(self):
         for file_path in self.unscraped_file_paths:
-            game_file = self.getGameFileFromFilePathDict(file_path)
+            if type(file_path)==str:
+                game_file = self.getGameFileFromFilePath(file_path)
+            elif type(file_path)==dict:
+                game_file = self.getGameFileFromFilePathDict(file_path)
             game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
             if game_by_md5:
                 game_by_md5.addFile(game_file)
@@ -216,13 +228,19 @@ class TOSECScraper():
                 game = game_file.game
             self.db.addGame(game)
         self.db.commit()
+        self.unscraped_file_paths = []
 
 
     def getGameFileFromFilePath(self, file_path):
         game_file = GameFile(file_path, source='tosec')
-        game_file.format = os.path.split(file_path)[0][-4:-1].lower()
+        if file_path.endswith('.zip'):
+            game_file.format = os.path.split(file_path)[0][-4:-1].lower()
+        else:
+            game_file.format = file_path[-3:]
         game_file.tosec_path = file_path
         game_file.getMD5()
+        game_file.getCRC32()
+        game_file.getSHA1()
         game_file.setSize(os.path.getsize(file_path))
         return game_file
 
@@ -242,8 +260,27 @@ class TOSECScraper():
             for key, value in self.manually_entered_tosec_aliases.items():
                 f.write(';'.join((key, value))+'\n')
             for file_path in self.unscraped_file_paths:
-                game_file = self.getGameFileFromFilePathDict(file_path)
+                if type(file_path) == str:
+                    game_file = self.getGameFileFromFilePath(file_path)
+                elif type(file_path) == dict:
+                    game_file = self.getGameFileFromFilePathDict(file_path)
+                # game_file = self.getGameFileFromFilePathDict(file_path)
                 f.write(';'.join((game_file.game.getTOSECName(), '', game_file.getGenre()))+'\n')
+
+    def checkHaveMissRatio(self):
+        dat_paths = self.generateTOSECPathsArrayFromDatFiles()
+        have = []
+        miss = []
+        md5s = [row['md5'] for row in self.db.execute('SELECT md5 FROM game_file')]
+        for path in dat_paths:
+            if path['md5'] in md5s:
+                have.append(path)
+            else:
+                print('Miss:', path)
+                miss.append(path)
+        print('Have:', len(have))
+        print('Miss:', len(miss))
+        return miss
 
     def getTOSECAliases(self):
         if not self.manually_entered_tosec_aliases:

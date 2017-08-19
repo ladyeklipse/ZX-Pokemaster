@@ -186,5 +186,38 @@ class GameFileTests(unittest.TestCase):
         game_file.removeAka()
         self.assertEqual(game_file.notes, '')
 
+    def test_country(self):
+        game_file = GameFile('Game (19xx)(Publisher).tap')
+        game_file.release.country = 'GB'
+        game_file.language = 'en'
+        self.assertEqual(game_file.getTOSECName(), 'Game (19xx)(Publisher).tap')
+        game_file.release.country = 'CZ'
+        game_file.language = 'cz'
+        self.assertEqual(game_file.getTOSECName(), 'Game (19xx)(Publisher)(CZ).tap')
+        game_file.release.country = 'GB'
+        game_file.language = 'es'
+        self.assertEqual(game_file.getTOSECName(), 'Game (19xx)(Publisher)(GB)(es).tap')
+        game_file.release.country = 'RU'
+        game_file.language = 'en'
+        self.assertEqual(game_file.getTOSECName(), 'Game (19xx)(Publisher)(RU)(en).tap')
+        game_file.release.country = ''
+        game_file.language = 'en'
+        self.assertEqual(game_file.getTOSECName(), 'Game (19xx)(Publisher).tap')
+        game_file = GameFile('Sinclair ZX Spectrum\Games\[TAP]\Mihotabpa (19xx)(-)(ru).zip')
+        self.assertEqual(game_file.getTOSECName(), 'Mihotabpa (19xx)(-)(ru).tap')
+        game_file = GameFile('Sinclair ZX Spectrum\Games\[TAP]\Mihotabpa (19xx)(-)(ru)[tr ru].zip')
+        self.assertEqual(game_file.getTOSECName(), 'Mihotabpa (19xx)(-)[tr ru].tap')
+
+    def test_set_part(self):
+        game_file = GameFile('Test(Part5).tap')
+        game_file.setPart('Test(Part5).tap')
+        self.assertEqual(game_file.part, 5)
+        game_file = GameFile('tosec\fikus-pikus\renamed\Compilations\Demos\[TRD]\Fikus Pikus Demos (19xx)(Flash)(Disk 5 of 140).trd')
+        self.assertEqual(game_file.getType(), 'Compilations\\Demos')
+        self.assertEqual(game_file.part, 5)
+        game_file = GameFile('tosec\fikus-pikus\renamed\Compilations\Demos\[TRD]\Fikus Pikus Demos (19xx)(Flash)(Disk 101 of 140).trd')
+        self.assertEqual(game_file.getType(), 'Compilations\\Demos')
+        self.assertEqual(game_file.part, 101)
+
 if __name__=='__main__':
     unittest.main()

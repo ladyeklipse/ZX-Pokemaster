@@ -89,6 +89,13 @@ def putPrefixToEnd(game_name):
     game_name = ''.join(components)
     return game_name
 
+def putInitialsToEnd(name):
+    name = name.split(' ')
+    name = ' '.join([name[-1]+',']+name[:-1]).strip()
+    if name.endswith(','):
+        name = name[:-1].strip()
+    return name
+
 def getSearchStringFromGameName(game_name):
     if not game_name:
         return ''

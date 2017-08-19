@@ -223,9 +223,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_winfriendly_out/Cascade Games/19 Part 1 - Boot Camp (1988)(Cascade Games)(48-128K).tap'
+        expected_file = 'tests/files/sort_winfriendly_out/Cascade Games/19 Part 1 - Boot Camp (1988)(Cascade Games)(48K-128K).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_winfriendly_out/David Amigaman/Serpes (2003)(David Amigaman)(es).z80'
+        expected_file = 'tests/files/sort_winfriendly_out/Amigaman, David/Serpes (2003)(Amigaman, David)(es).z80'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -235,7 +235,7 @@ class TestSorter(unittest.TestCase):
                    output_folder_structure='',
                    cache=False)
         s.sortFiles()
-        expected_file = 'tests/files/sort_permission_denied_out/19 Part 1 - Boot Camp (1988)(Cascade Games)(48-128K).tap'
+        expected_file = 'tests/files/sort_permission_denied_out/19 Part 1 - Boot Camp (1988)(Cascade Games)(48K-128K).tap'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_sort_false_alt(self):
@@ -276,9 +276,9 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon).z80'
         self.assertTrue(os.path.exists(expected_file))
         #Drazen Petrovic Basket has only spanish version.
-        expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(48-128K)(es).tap'
+        expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(48K-128K)(es).tap'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(48-128K).tap'
+        not_expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(48K-128K).tap'
         self.assertFalse(os.path.exists(not_expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -547,8 +547,8 @@ class TestSorter(unittest.TestCase):
             output_location=output_location,
             traverse_subfolders=True,
             ignore_alternate=False,
-            output_folder_structure='{MachineType}/{Genre}/{Format}',
-            max_files_per_folder = 50,
+            output_folder_structure='{MachineType}/{Type}/{Genre}/{Format}',
+            max_files_per_folder = 25,
             cache=True)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -583,6 +583,40 @@ class TestSorter(unittest.TestCase):
                 print(dir)
                 self.assertEqual(len(dir), 2)
             break
+        for root, dirs, files in os.walk(output_location+'\\en'):
+            for dir in dirs:
+                if len(dirs) > s.max_files_per_folder:
+                    print(root)
+                self.assertLessEqual(len(files), s.max_files_per_folder)
+            break
+
+    def test_complex_hierarchy_per_folder(self):
+        input_location = 'tests/files/sort_complex_hierarchy_in'
+        output_location = 'tests/files/sort_complex_hierarchy_out'
+        s = Sorter(
+            input_locations=[input_location],
+            output_location=output_location,
+            traverse_subfolders=True,
+            ignore_alternate=False,
+            output_folder_structure='{Language}\\{Format}\\{GameName}',
+            max_files_per_folder = 10,
+            cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertEqual(len(s.fails), 0)
+        for root, dirs, files in os.walk(output_location+'\\Games'):
+            for dir in dirs:
+                print(dir)
+                self.assertEqual(len(dir), 2)
+            break
+        for root, dirs, files in os.walk(output_location+'\\Games\\en\\dsk'):
+            for dir in dirs:
+                if len(dirs) > s.max_files_per_folder:
+                    print(root)
+                self.assertLessEqual(len(files), s.max_files_per_folder)
+            break
+
 
     def test_content_desc(self):
         input_locations = [
@@ -752,9 +786,9 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(file_path))
 
 if __name__=='__main__':
-    # unittest.main()
-    t = TestSorter()
-    t.test_alt_files()
+    unittest.main()
+    # t = TestSorter()
+    # t.test_alt_files()
     # t.test_same_name()
     # t.test_sort_false_alt()
     # t.test_8letter_paths()

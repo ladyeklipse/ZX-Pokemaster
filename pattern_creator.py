@@ -3,6 +3,7 @@
 # from PyQt5.QtWidgets import *
 import os
 import re
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from classes.game_file import GameFile

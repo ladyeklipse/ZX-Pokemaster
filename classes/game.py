@@ -136,6 +136,8 @@ class Game(object):
                 self.genre += ' - Games'
         elif 'magazines' in path:
             self.genre = 'Electronic Magazine'
+        elif 'application' in path:
+            self.genre = 'Utility'
         elif 'covertapes' in path:
             self.genre = 'Covertape'
         elif 'demos' in path:
@@ -355,7 +357,7 @@ class Game(object):
             release_publisher = release.publisher.lower().replace('.', '')
             if game_file_publisher==release_publisher:
                 return release
-        print(self, 'Not found proper release for:', game_file)
+        # print(self, 'Not found proper release for:', game_file)
         if not strict:
             return self.releases[0]
         else:

@@ -4,7 +4,7 @@ from classes.game_release import GameRelease
 from classes.game_file import GameFile, ROUND_BRACKETS_REGEX
 from classes.game_alias import GameAlias
 from classes.scraper import *
-from functions.game_name_functions import putPrefixToEnd, filepath_regex, remove_square_brackets_regex, remove_brackets_regex
+from functions.game_name_functions import *
 from mysql import connector
 import time
 
@@ -66,7 +66,6 @@ class ZXDBScraper():
             self.cur.execute('COMMIT')
         print('DB updated')
 
-
     def getAllGames(self):
         return self.getGames()
 
@@ -95,6 +94,7 @@ class ZXDBScraper():
               'aliases.title AS alt_name, ' \
               'aliases.idiom_id AS alt_language, ' \
               'labels.name AS publisher, ' \
+              'labels.is_company AS is_company, ' \
               'releases.release_year AS year,' \
               'labels.country_id AS country ' \
               'FROM entries ' \
@@ -191,7 +191,7 @@ class ZXDBScraper():
         game_name = row.get('tosec_compliant_name', row['name'])
         game_name = self.sanitizeAlias(game_name)
         game = Game(game_name, int(row['wos_id']))
-        publisher = putPrefixToEnd(row['publisher'])
+        publisher = self.publisherNameFromRow(row)
         game.setPublisher(publisher)
         game.setYear(row['year'])
         game.setGenre(row['genre'])
@@ -207,7 +207,7 @@ class ZXDBScraper():
     def releaseFromRow(self, row, game):
         release_name = row['alt_name'] if row['alt_name'] else game.name
         release_name = self.sanitizeAlias(release_name)
-        publisher = putPrefixToEnd(row['publisher'])
+        publisher = self.publisherNameFromRow(row)
         release = GameRelease(row['release_seq'],
                               row['year'],
                               publisher,
@@ -222,6 +222,12 @@ class ZXDBScraper():
         #         alias = '3D ' + alias[:-4]
         #     release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
         return release
+
+    def publisherNameFromRow(self, row):
+        if row['is_company'] in (None, 1):
+            return putPrefixToEnd(row['publisher'])
+        elif row['is_company'] == 0:
+            return putInitialsToEnd(row['publisher'])
 
     def sanitizeAlias(self, alias):
         if alias.endswith(', 3D'):

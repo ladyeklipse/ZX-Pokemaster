@@ -87,12 +87,6 @@ class FileBundler():
         return '{}-{}'.format(first_file.getBundleName(depth_level),
                               last_file.getBundleName(depth_level))
 
-    # def getFilesFromBundle(self, bundle):
-    #     files = []
-    #     for item in bundle:
-    #         files += item.values()
-    #     return files
-
     def splitLargeBundles(self, bundles):
         for bundle_name in list(bundles.keys()):
             bundle = bundles[bundle_name]
@@ -119,8 +113,6 @@ class FileBundler():
                         mini_bundle[key] = item[key]
             result.append(mini_bundle)
         return result
-        # for chunk in chunks(issues, self.max_files_per_folder):
-        #     new_mini_bundles.append([bundle[x] for x in chunk])
         return new_mini_bundles
 
     def assignBundlesToFilesInBundles(self, bundles, depth_level):

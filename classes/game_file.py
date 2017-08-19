@@ -4,6 +4,7 @@ from classes.game_release import GameRelease
 import requests
 import os
 import zipfile
+import zlib
 import hashlib
 from settings import *
 import re
@@ -175,7 +176,7 @@ class GameFile(object):
     def addAlternateModFlag(self, copies_count, tosec_compliant, short_filenames):
         if not copies_count:
             return
-        dest = os.path.splitext(self.dest)
+        dest = os.path.splitext(self.dest if self.dest else self.getTOSECName())
         if short_filenames:
             alt_mod_flag = '_'+str(copies_count+1)
             dir_path = os.path.split(dest[0])
@@ -212,7 +213,7 @@ class GameFile(object):
             return False
 
     def isBadDump(self):
-        if '[b]' in self.mod_flags:
+        if '[b' in self.mod_flags:
             return True
         else:
             return False
@@ -282,6 +283,7 @@ class GameFile(object):
             elif each not in self.notes and \
                 self.machine_type not in each and \
                     're-release' not in each and \
+                    'ZXDB' not in each and \
                     not each.startswith('aka ') and \
                     not each.startswith('48') and \
                     not each.startswith('Pentagon'):
@@ -294,7 +296,10 @@ class GameFile(object):
 
     def isModFlag(self, match):
         for each in MOD_FLAGS_ORDER:
-            if match==each or match.startswith(each+' '):
+            if match==each:
+                return True
+            elif match.startswith(each) and \
+                match[len(each)] in (' 0123456789'):
                 return True
         return False
 
@@ -331,27 +336,29 @@ class GameFile(object):
     def setMachineType(self, filename):
         if not filename:
             return
-        if 'Pentagon 128' in filename or '(Pentagon' in filename or '[Pentagon' in filename:
+        filename = filename.lower()
+        if 'pentagon 128' in filename or '(Pentagon' in filename or '[Pentagon' in filename:
             self.machine_type = 'Pentagon 128K'
-        elif '+2a' in filename or '+2A' in filename:
+        elif '+2a' in filename:
             self.machine_type = '+2A'
         elif '+2' in filename:
             self.machine_type = '+2'
         elif '+3' in filename:
             self.machine_type = '+3'
-        elif '128' in filename and '48' in filename:
-            self.machine_type = '48-128K'
-        elif '128' in filename:
+        elif '128k' in filename and '48' in filename:
+            self.machine_type = '48K-128K'
+        elif '128k' in filename:
             self.machine_type = '128K'
-        elif '48' in filename:
+        elif '48k' in filename:
             self.machine_type = '48K'
-        elif '16' in filename:
+        elif '16k' in filename:
             self.machine_type = '16K'
 
     def setProtectionScheme(self, protection_scheme):
         if protection_scheme and protection_scheme not in self.notes and \
             protection_scheme not in ('None', 'Undetermined', 'Unknown', 'Unspecified custom loader'):
             protection_scheme = protection_scheme.replace('Firebird ', '')
+            protection_scheme = remove_brackets_regex.sub('', protection_scheme).strip()
             self.notes += '['+protection_scheme+']'
 
     def getMachineType(self):
@@ -372,22 +379,28 @@ class GameFile(object):
                 print(self, 'has no self.release')
             self.release.country = country
 
+    def getCountry(self):
+        if self.release:
+            return self.release.country
+        return ''
+
     def setPart(self, part):
-        # part = part.split(' ')
-        # for i, word in enumerate(part):
-        #     if (word in ['Part', 'Disk', 'Tape']) and \
-        #         len(part)>i+1 and \
-        #         part[i+1][0].isdigit():
-        #         self.part = int(part[i+1][0])
         part = part.replace(' ', '').lower()
         for word in ('part', 'disk', 'tape'):
             if word in part:
                 index = part.index(word)+len(word)-1
-                if part[index] in ['0', '-']:
+                if part[index] in ['-']:
                     index+=1
                 if len(part)>index+1 and part[index+1].isdigit():
-                    if len(part)<=index+2 or not part[index+2].isdigit():
-                        self.part = int(part[index+1])
+                    index += 1
+                    part_num = part[index]
+                    while True:
+                        index += 1
+                        if len(part)>=index or not part[index].isdigit():
+                            break
+                        else:
+                            part_num += part[index]
+                    self.part = int(part_num)
 
     def setLanguageFromWosName(self):
         name = self.wos_name.lower()
@@ -440,7 +453,15 @@ class GameFile(object):
                                                 for_filename=True)
         output_name = structure.format(**kwargs)
         if structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE+'.{Format}':
-            output_name = output_name.replace('(%s)' % DEFAULT_GAME_LANGUAGE, '')
+            country = self.getCountry().lower()
+            if country==self.getLanguage() or \
+                COUNTRY_LANGUAGE_DICT.get(country.upper())==self.getLanguage() or \
+                '[tr ' in self.mod_flags:
+                output_name = output_name.replace('(%s)' % self.getLanguage(), '')
+                if self.getLanguage() == 'en':
+                    output_name = output_name.replace('(%s)' % self.getCountry(), '')
+            # if not self.getPublisher():
+            #     output_name = output_name.replace('(%s)' % self.getCountry(), '')
             output_name = output_name.replace('(%s)' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
         output_name = ' '.join([x for x in output_name.split(' ') if x])
@@ -498,7 +519,17 @@ class GameFile(object):
             return md5
 
     def getCRC32(self):
-        return self.crc32
+        if self.crc32:
+            return self.crc32
+        local_path = self.getLocalPath()
+        if os.path.exists(local_path):
+            file_handle = self.getFileHandle(local_path)
+            if not file_handle:
+                print(self, 'has no valid file handle!')
+                return ''
+            crc32 = hex(zlib.crc32(file_handle))[2:]
+            self.crc32 = crc32
+            return crc32
 
     def getSHA1(self):
         if self.sha1:
@@ -546,6 +577,7 @@ class GameFile(object):
             'Publisher':publisher,
             'MaxPlayers':self.getMaxPlayers(),
             'GameName':game_name,
+            'Country':self.getCountry(),
             'Language':self.getLanguage(),
             'Format':self.format,
             'Side':self.getSide(),
@@ -560,7 +592,7 @@ class GameFile(object):
 
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
-        genre = self.game.getGenre()
+        # genre = self.game.getGenre()
         parts += self.getType().split('\\')
         parts.append('[{}]'.format(self.format.upper()))
         return ' - '.join(parts)
@@ -723,6 +755,8 @@ class GameFile(object):
             return local_path
         elif self.path:
             return self.path
+        elif self.tosec_path:
+            return self.tosec_path
 
     def getDestPath(self):
         dest = self.alt_dest if self.alt_dest else self.dest
@@ -741,12 +775,16 @@ class GameFile(object):
         self.alt_dest = dest
 
     def getSplitDest(self, depth_level):
-        depth_level += 1
+        if not depth_level:
+            depth_level += 1
         dest = self.getDestPath()
         dest = dest.replace('/', '\\').split('\\')
         root_dir = os.sep.join(dest[:-depth_level])
         depth_level -= self.getBundledTimes(dest)
         bundled_part = os.sep.join(dest[-depth_level:])
+        # dest = [re.sub('^[0-9a-z]{,3}\-[0-9a-z]{,3}[0-9]?$', '', x) for x in dest]
+        # dest = [x for x in dest if x]
+        # bundled_part = os.sep.join(dest)
         return root_dir, bundled_part
 
     def getBundledTimes(self, dest):

@@ -33,7 +33,7 @@ class GameRelease(object):
         self.setPublisher(publisher if publisher else self.game.publisher)
         if country == 'UK':
             country = 'GB'
-        self.country = country if country else 'GB'
+        # self.country = country if country else 'GB'
         self.files = []
         self.aliases = []
         self.addAliases(aliases)

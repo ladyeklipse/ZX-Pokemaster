@@ -85,16 +85,14 @@ class Sorter():
             self.ignore_rereleases or \
             self.languages:
             self.filterCollectedFiles()
-
-            print('Files filtered')
         if self.max_files_per_folder:
             bundle_depth = self.getBundleDepth()
             fileBundler = FileBundler(self.max_files_per_folder, bundle_depth)
             fileBundler.bundleFilesInEqualFolders(self.collected_files)
-        print('Redistributing...')
         self.redistributeFiles()
         if self.original_output_location:
             self.renameOutputLocation()
+        self.writeFailsLog()
 
     def checkOutputPath(self):
         gf = GameFile('test.tap')
@@ -116,6 +114,15 @@ class Sorter():
         os.rename(self.original_output_location, backup_location_name)
         os.rename(self.output_location, self.original_output_location)
 
+    def writeFailsLog(self):
+        if self.fails:
+            with open('failed_files.log', 'w+', encoding='utf-8') as f:
+                f.write('\n'.join(self.fails))
+        if self.error:
+            with open('errors.log', 'w+', encoding='utf-8') as f:
+                f.write(self.error)
+
+
     def getBundleDepth(self):
         self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
         return len([x for x in self.output_folder_structure.split('\\') if x]) + 1
@@ -133,7 +140,11 @@ class Sorter():
             if i % 100 == 0:
                 if self.gui:
                     self.gui.updateProgressBar(i)
-            game_files = self.getGameFilesFromInputPath(file_path)
+            try:
+                game_files = self.getGameFilesFromInputPath(file_path)
+            except:
+                self.fails.append(file_path)
+                self.error += '\nError while examining {}\n'.format(file_path)+traceback.format_exc()+'\n'
             if not game_files:
                 print('Nothing found for', file_path)
                 continue
@@ -217,7 +228,11 @@ class Sorter():
                         game_file = GameFile(file_path)
                         game_file.format = zfext
                         game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
-                        unzipped_file = zf.read(zfname)
+                        try:
+                            unzipped_file = zf.read(zfname)
+                        except zipfile.BadZipFile:
+                            self.fails.append(zfname+' in '+file_path)
+                            continue
                         unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
                         game_file.md5 = unzipped_file_md5
                         game = db.getGameByFileMD5(unzipped_file_md5)
@@ -321,39 +336,35 @@ class Sorter():
             if i % 100 == 0:
                 if self.gui:
                     self.gui.updateProgressBar(i)
-            dest = file.getDestPath()
-            # try:
-            #     os.makedirs(os.path.dirname(dest), exist_ok=True)
-            # except OSError:
-            #     print('Could not make dirs:', dest, 'for', file.src)
-            #     print(traceback.format_exc())
-            #     self.fails.append(file.src)
-            #     self.fails.append(traceback.format_exc())
-            #     continue
-            if file.src.lower().endswith('zip'):
-                self.unpackFile(file)
-            else:
-                try:
-                    os.makedirs(os.path.dirname(dest), exist_ok=True)
-                    if self.delete_original_files:
-                        shutil.move(file.src, dest)
-                    else:
-                        shutil.copyfile(file.src, dest)
-                except PermissionError:
-                    os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
-                    if self.delete_original_files:
-                        shutil.move(file.src, dest)
-                    else:
-                        shutil.copyfile(file.src, dest)
+            try:
+                if file.src.lower().endswith('zip'):
+                    self.unpackFile(file)
+                else:
+                    self.copyFile(file)
+                self.extractPokFile(file)
+            except:
+                self.fails.append(file.src)
+                self.error += '\nError while redistributing {}\n'.format(file.src)+traceback.format_exc()+'\n'
 
-            if file.game.cheats:
-                pok_dir_path = os.path.dirname(dest)
-                pok_file_name = os.path.splitext(os.path.basename(dest))[0]+'.pok'
-                if self.place_pok_files_in_pokes_subfolders:
-                    pok_dir_path = os.path.join(pok_dir_path, 'POKES')
-                    os.makedirs(pok_dir_path, exist_ok=True)
-                pok_file_path = os.path.join(pok_dir_path, pok_file_name)
-                file.game.exportPokFile(pok_file_path)
+    def copyFile(self, file):
+        try:
+            dest = file.getDestPath()
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copyfile(file.src, dest)
+        except PermissionError:
+            os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
+            shutil.copyfile(file.src, dest)
+
+    def extractPokFile(self, file):
+        dest = file.getDestPath()
+        if file.game.cheats:
+            pok_dir_path = os.path.dirname(dest)
+            pok_file_name = os.path.splitext(os.path.basename(dest))[0] + '.pok'
+            if self.place_pok_files_in_pokes_subfolders:
+                pok_dir_path = os.path.join(pok_dir_path, 'POKES')
+                os.makedirs(pok_dir_path, exist_ok=True)
+            pok_file_path = os.path.join(pok_dir_path, pok_file_name)
+            file.game.exportPokFile(pok_file_path)
 
     def getFilesArray(self):
         files_array = []
@@ -386,9 +397,9 @@ class Sorter():
                         os.chmod(dest, stat.S_IWRITE)
                         with open(dest, 'wb+') as output:
                             output.write(data)
-                    except:
-                        self.fails.append(game_file.src)
-                        print(traceback.format_exc())
+                    # except:
+                    #     self.fails.append(game_file.src)
+                    #     print(traceback.format_exc())
                     break
 
     def cancel(self):
