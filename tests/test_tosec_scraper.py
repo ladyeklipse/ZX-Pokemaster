@@ -1,3 +1,4 @@
+from scripts.restore_db import *
 from classes.tosec_scraper import *
 import  unittest
 if (os.getcwd().endswith('tests')):
@@ -188,13 +189,54 @@ class TestTOSECScraper(unittest.TestCase):
         self.assertEqual(game.genre, 'Utilities')
 
     def test_fikus_pikus(self):
+        sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game WHERE name LIKE "Fikus Pikus%" AND wos_id>9000000'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_release WHERE name LIKE "Fikus Pikus%" AND wos_id>9000000'
+        ts.db.execute(sql)
+        ts.db.commit()
+        ts.db.loadCache()
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\fikus-pikus\\renamed')
         ts.scrapeTOSEC()
+        ts.addUnscraped()
         game = ts.db.getGameByName('Fikus Pikus Games')
         self.assertEqual(game.genre, 'Compilation - Games')
-        self.assertGreater(len(game.getFiles()), 200)
+        self.assertGreater(len(game.getFiles()), 2)
+        self.assertGreater(game.parts, 9)
         for file in game.getFiles():
             self.assertGreater(file.part, 0)
+
+    def test_missing_files(self):
+        dat_files = ['tests/files/Sinclair ZX Spectrum - Games - [Z80] (miss).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+        ts.addUnscraped()
+        # ts.db.loadCache()
+        md5s = [
+            'ba78c16a2e6dbb3fdf47a6e23d805a7e',
+            'e07dcc8d415684c71f246ffce6ebcf5c',
+            '8a859a78004768254db5d0dc98b46414',
+            '76065f95ab3d67694f37cf4fd0039790'
+        ]
+        for md5 in md5s:
+            game = ts.db.getGameByFileMD5(md5)
+            if not game:
+                self.fail()
+            self.assertNotEqual(game.wos_id, 0)
+
+    def test_mia(self):
+        sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
+        ts.db.execute(sql)
+        ts.db.commit()
+        ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\mia')
+        ts.scrapeTOSEC()
+        ts.updateTOSECAliasesCSV()
+        ts.addUnscraped()
+        ts.db.commit()
+        game = ts.db.getGameByFileMD5('dbb91c0fb3a0d583fe14363bd68d3b58')
+        self.assertGreater(game.wos_id, 0)
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

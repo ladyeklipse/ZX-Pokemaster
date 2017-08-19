@@ -3,4 +3,5 @@ if (os.getcwd().endswith('scripts')):
     os.chdir('..')
 ts = TOSECScraper(cache=False)
 ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-ts.checkHaveMissRatio()
+missed_paths = ts.getUnscraped()
+

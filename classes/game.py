@@ -84,14 +84,16 @@ class Game(object):
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
 
+    def setContentDescForZXDBFiles(self, lookup_table={}):
+        files = self.getFiles()
+        for file in files:
+            if file.wos_name in lookup_table:
+                file.content_desc = lookup_table[file.wos_name]
+
     def setContentDescForFiles(self, lookup_table={}):
         files = self.getFiles()
         for file in files:
             if file.tosec_path in lookup_table:
-                # if lookup_table[file.tosec_path]=='NONE':
-                #     file.content_desc = ''
-                # elif lookup_table[file.tosec_path].startswith('ALT'):
-                #     file.content_desc = lookup_table[file.tosec_path][3:]
                 file.content_desc = lookup_table[file.tosec_path]
                 continue
             if file.tosec_path and not file.content_desc:

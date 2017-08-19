@@ -45,7 +45,16 @@ class ZXDBScraper():
                 decision = line[7]
                 if not decision.startswith('KEEP'):
                     self.file_exclusion_list.append(line[10])
-
+        self.manually_corrected_content_descriptions = {}
+        with open('game_id_file_checker.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if len(line)<5 or not line[4]:
+                    continue
+                elif line[2].startswith('NONE'):
+                    self.manually_corrected_content_descriptions[line[4]] = 'NONE'
+                elif line[2].startswith('ALT'):
+                    self.manually_corrected_content_descriptions[line[4]] = line[2]
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -93,16 +102,20 @@ class ZXDBScraper():
               'releases.release_seq AS release_id, ' \
               'aliases.title AS alt_name, ' \
               'aliases.idiom_id AS alt_language, ' \
-              'labels.name AS publisher, ' \
-              'labels.is_company AS is_company, ' \
+              'publisher_labels.name AS publisher, ' \
+              'publisher_labels.is_company AS publisher_is_company, ' \
+              'author_labels.name AS author, ' \
+              'author_labels.is_company AS author_is_company, ' \
               'releases.release_year AS year,' \
-              'labels.country_id AS country ' \
+              'publisher_labels.country_id AS country ' \
               'FROM entries ' \
               'LEFT JOIN relatedlinks ON entries.id=relatedlinks.entry_id AND relatedlinks.website_id=9 ' \
               'LEFT JOIN releases ON entries.id=releases.entry_id ' \
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
               'LEFT JOIN publishers ON publishers.entry_id=entries.id AND publishers.release_seq=releases.release_seq  ' \
-              'LEFT JOIN labels ON labels.id=publishers.label_id ' \
+              'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
+              'LEFT JOIN authors ON authors.entry_id=entries.id AND authors.author_seq=1  ' \
+              'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id ' \
               'LEFT JOIN aliases ON aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq ' \
               'LEFT JOIN filetypes ON downloads.filetype_id=filetypes.id ' \
               'LEFT JOIN formattypes ON downloads.formattype_id=formattypes.id ' \
@@ -224,19 +237,23 @@ class ZXDBScraper():
         return release
 
     def publisherNameFromRow(self, row):
-        if row['is_company'] in (None, 1):
-            return putPrefixToEnd(row['publisher'])
-        elif row['is_company'] == 0:
-            return putInitialsToEnd(row['publisher'])
+        if row['publisher']:
+            if row['publisher_is_company'] in (None, 1):
+                return putPrefixToEnd(row['publisher'])
+            elif row['publisher_is_company'] == 0:
+                return putInitialsToEnd(row['publisher'])
+        elif row['author']:
+            if row['author_is_company'] in (None, 1):
+                return putPrefixToEnd(row['author'])
+            elif row['author_is_company'] == 0:
+                return putInitialsToEnd(row['author'])
 
     def sanitizeAlias(self, alias):
-        if alias.endswith(', 3D'):
-            alias = '3D ' + alias[:-4]
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
         alias = remove_brackets_regex.sub('', alias).strip()
-        # alias = alias.replace('YS issue', 'Your Sinclair Issue')
-        # alias = alias.replace('SU issue', 'Sinclair User Issue')
         alias = ' - '.join([alias]+round_brackets_contents)
+        if alias.endswith(', 3D'):
+            alias = '3D ' + alias[:-4]
         return alias
 
     def gameFileFromRow(self, row, game):

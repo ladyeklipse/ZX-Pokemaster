@@ -21,16 +21,10 @@ if __name__=='__main__':
     for game in games:
         for release in game.releases:
             release.getInfoFromLocalFiles()
+        game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
         db.addGame(game)
     db.commit()
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
     import scrape_tosec
-    # sys.exit()
-    # ts = TOSECScraper(db)
-    # ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-    # ts.scrapeTOSEC()
-    # ts.updateTOSECAliasesCSV()
-    # ts.addUnscraped()
-    # ts.db.commit()

@@ -85,16 +85,6 @@ class TestZXDBScraper(unittest.TestCase):
         game = db.getGameByWosID(30265)
         self.assertEqual(game.getMultiplayerType(), 'Vs')
 
-    def test_cousin_horace(self):
-        where_clause = 'AND entries.id = 30155'
-        games = zxdb.getGames(where_clause)
-        zxdb.downloadMissingFiles(games)
-        for release in games[0].releases:
-            release.getInfoFromLocalFiles()
-        db.addGame(games[0])
-        db.commit()
-        game = db.getGameByWosID(30265)
-
     def test_side(self):
         where_clause = 'AND entries.id = 5856'
         games = zxdb.getGames(where_clause)
@@ -121,21 +111,11 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id = 25677'
         games = zxdb.getGames(where_clause)
         aliases = games[0].releases[0].getAllAliases()
-        self.assertEqual(aliases, ['Technical Drawing', '3D Plotter'])
+        self.assertEqual(aliases, ['3D Plotter', 'Technical Drawing'])
         where_clause = 'AND entries.id = 5140'
         games = zxdb.getGames(where_clause)
         aliases = games[0].releases[2].getAllAliases()
         self.assertEqual(aliases, ['3D Tanks'])
-
-    def test_multigame_compilation(self):
-        where_clause = 'AND entries.id = 17102'
-        games = zxdb.getGames(where_clause)
-        for release in games[0].releases:
-            release.getInfoFromLocalFiles()
-        self.assertGreater(len(games[0].getFiles()), 20)
-        for file in games[0].getFiles():
-            print(file.wos_name, file.content_desc)
-            self.assertGreater(len(file.content_desc), 0)
 
     def test_multitape_game(self):
         where_clause = 'AND entries.id = 11433'
@@ -150,3 +130,27 @@ class TestZXDBScraper(unittest.TestCase):
         new_alias = zxdb.sanitizeAlias(alias)
         game = Game(new_alias)
         self.assertEqual(game.name, 'Jet Set Willy - Again')
+
+    def test_alt_content_desc(self):
+        where_clause = 'AND entries.id IN (30155, 11170)'
+        games = zxdb.getGames(where_clause)
+        for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
+            game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
+            for file in game.getFiles():
+                if game.wos_id==30155:
+                    self.assertGreater(len(file.content_desc), 0)
+                else:
+                    self.assertEqual(len(file.content_desc), 0)
+
+    def test_authors_as_publishers(self):
+        where_clause = 'AND entries.id IN (30155, 21575, 7727)'
+        games = zxdb.getGames(where_clause)
+        for game in games:
+            if game.wos_id == 30155:
+                self.assertEqual(game.publisher, 'Grussu, Alessandro')
+            elif game.wos_id == 21575:
+                self.assertEqual(game.publisher, 'Owen, Andrew')
+            elif game.wos_id == 7727:
+                self.assertEqual(game.publisher, 'Mad Max')

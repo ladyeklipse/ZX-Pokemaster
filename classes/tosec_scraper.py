@@ -33,39 +33,48 @@ class TOSECScraper():
         if cache:
             self.db.loadCache()
 
-    def generateTOSECPathsArray(self):
-        categories = ['Applications',
-                      'Compilations\Applications',
-                      'Compilations\Demos',
-                      'Compilations\Educational',
-                      'Compilations\Games',
-                      'Compilations\Magazines',
-                      'Covertapes',
-                      'Demos',
-                      'Documentation',
-                      'Educational',
-                      'Magazines',
-                      'Games']
-        tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
-        paths = []
-        for category in categories:
-            category = 'Sinclair ZX Spectrum\\'+category
-            for folder in tosec_folders:
-                for root, dirs, files in os.walk(os.path.join('tosec', category, folder)):
-                    for filename in files:
-                        if filename.endswith('.zip'):
-                            paths.append((filename, os.path.join(root, filename)))
-        paths = sorted(paths, key=lambda path: path[0])
-        self.paths = [path[1] for path in paths]
-        return self.paths
+    # def generateTOSECPathsArray(self):
+    #     categories = ['Applications',
+    #                   'Compilations\Applications',
+    #                   'Compilations\Demos',
+    #                   'Compilations\Educational',
+    #                   'Compilations\Games',
+    #                   'Compilations\Magazines',
+    #                   'Covertapes',
+    #                   'Demos',
+    #                   'Documentation',
+    #                   'Educational',
+    #                   'Magazines',
+    #                   'Games']
+    #     tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
+    #     paths = []
+    #     for category in categories:
+    #         category = 'Sinclair ZX Spectrum\\'+category
+    #         for folder in tosec_folders:
+    #             for root, dirs, files in os.walk(os.path.join('tosec', category, folder)):
+    #                 for filename in files:
+    #                     if filename.endswith('.zip'):
+    #                         paths.append((filename, os.path.join(root, filename)))
+    #     paths = sorted(paths, key=lambda path: path[0])
+    #     self.paths = [path[1] for path in paths]
+    #     return self.paths
 
     def generateTOSECPathsArrayFromFolder(self, folder):
         paths = []
         for root, dirs, files in os.walk(folder):
-            # for dir in dirs:
             for filename in files:
-                # paths.append((filename, os.path.join(root, filename)))
-                paths.append(os.path.join(root, filename))
+                file_path_dict = {}
+                filepath = os.path.join(root, filename)
+                game_file = GameFile(filepath, source='tosec')
+                filename = os.path.splitext(os.path.basename(filepath))[0] + '.zip'
+                file_path_dict['name'] = filename
+                file_path_dict['path'] = filepath
+                file_path_dict['size'] = os.path.getsize(filepath)
+                file_path_dict['md5'] = game_file.getMD5()
+                file_path_dict['crc32'] = game_file.getCRC32()
+                file_path_dict['sha1'] = game_file.getSHA1()
+                paths.append(file_path_dict)
+                # paths.append(os.path.join(root, filename))
         return paths
 
     def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
@@ -89,7 +98,6 @@ class TOSECScraper():
         with open(dat_file, 'rb') as f:
             print(dat_file)
             contents = f.read()
-            # root = etree.fromstring(contents)
             root = etree.XML(contents)
             header = root[0]
             dirname = os.path.join(*header[0].text.split(' - '))
@@ -110,7 +118,6 @@ class TOSECScraper():
                     paths.append(file_path_dict)
         return paths
 
-
     def scrapeTOSEC(self):
         if not self.paths:
             self.generateTOSECPathsArray()
@@ -125,11 +132,19 @@ class TOSECScraper():
             new_tosec_name = game_file.game.getTOSECName()
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
-
                     self.addGameToLocalDB(current_game)
                     games_found += 1
-                else:
-                    self.unscraped_file_paths.append(self.paths[i-1])
+                # else:
+                #     self.unscraped_file_paths.append(self.paths[i - 1])
+                    # j = i-1
+                    # while True:
+                    #     path_to_add = self.paths[j]
+                    #     if type(path_to_add)==dict and current_game.name not in path_to_add['name']:
+                    #         break
+                    #     elif type(path_to_add)==str and current_game.name not in path_to_add:
+                    #         break
+                    #     self.unscraped_file_paths.append(path_to_add)
+                    #     j-=1
                 current_game.files = []
                 current_game = None
                 if games_found % 1000 == 0:
@@ -214,23 +229,6 @@ class TOSECScraper():
               'Games with unscraped files:', len(game_names))
         return unscraped_paths
 
-    def addUnscraped(self):
-        for file_path in self.unscraped_file_paths:
-            if type(file_path)==str:
-                game_file = self.getGameFileFromFilePath(file_path)
-            elif type(file_path)==dict:
-                game_file = self.getGameFileFromFilePathDict(file_path)
-            game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
-            if game_by_md5:
-                game_by_md5.addFile(game_file)
-                game = game_by_md5
-            else:
-                game = game_file.game
-            self.db.addGame(game)
-        self.db.commit()
-        self.unscraped_file_paths = []
-
-
     def getGameFileFromFilePath(self, file_path):
         game_file = GameFile(file_path, source='tosec')
         if file_path.endswith('.zip'):
@@ -244,14 +242,18 @@ class TOSECScraper():
         game_file.setSize(os.path.getsize(file_path))
         return game_file
 
-    def getGameFileFromFilePathDict(self, file_path):
-        game_file = GameFile(file_path['path'], source='tosec')
-        game_file.format = os.path.split(file_path['path'])[0][-4:-1].lower()
-        game_file.tosec_path = file_path['path']
-        game_file.md5 = file_path['md5']
-        game_file.crc32 = file_path['crc32']
-        game_file.sha1 = file_path['sha1']
-        game_file.setSize(file_path['size'])
+    def getGameFileFromFilePathDict(self, file_path_dict):
+        file_path = file_path_dict['path']
+        game_file = GameFile(file_path, source='tosec')
+        if file_path.endswith('.zip'):
+            game_file.format = os.path.split(file_path)[0][-4:-1].lower()
+        else:
+            game_file.format = file_path[-3:]
+        game_file.tosec_path = file_path
+        game_file.md5 = file_path_dict['md5']
+        game_file.crc32 = file_path_dict['crc32']
+        game_file.sha1 = file_path_dict['sha1']
+        game_file.setSize(file_path_dict['size'])
         return game_file
 
     def updateTOSECAliasesCSV(self):
@@ -267,12 +269,12 @@ class TOSECScraper():
                 # game_file = self.getGameFileFromFilePathDict(file_path)
                 f.write(';'.join((game_file.game.getTOSECName(), '', game_file.getGenre()))+'\n')
 
-    def checkHaveMissRatio(self):
-        dat_paths = self.generateTOSECPathsArrayFromDatFiles()
+    def getUnscraped(self):
+        # dat_paths = self.generateTOSECPathsArrayFromDatFiles()
         have = []
         miss = []
         md5s = [row['md5'] for row in self.db.execute('SELECT md5 FROM game_file')]
-        for path in dat_paths:
+        for path in self.paths:
             if path['md5'] in md5s:
                 have.append(path)
             else:
@@ -281,6 +283,20 @@ class TOSECScraper():
         print('Have:', len(have))
         print('Miss:', len(miss))
         return miss
+
+    def addUnscraped(self):
+        self.unscraped_file_paths = sorted(self.getUnscraped(), key=lambda file: file['name'])
+        for file_path in self.unscraped_file_paths:
+            game_file = self.getGameFileFromFilePathDict(file_path)
+            game = self.db.getGameByFileMD5(game_file.getMD5())
+            if not game:
+                game = self.db.getGameByFilePath(file_path['path'])
+            if not game:
+                game = game_file.game
+            game.releases[0].addFile(game_file)
+            self.db.addGame(game)
+        self.db.commit()
+        self.unscraped_file_paths = []
 
     def getTOSECAliases(self):
         if not self.manually_entered_tosec_aliases:

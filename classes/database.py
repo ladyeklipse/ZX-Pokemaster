@@ -51,17 +51,20 @@ class Database():
         games = self.getAllGames()
         print('got ', len(games), 'games')
         for game in games:
-            self.cache_by_wos_id[game.wos_id]=game
-            for release in game.releases:
-                for name in release.getAllAliases():
-                    name = getSearchStringFromGameName(name)
-                    if not self.cache_by_name.get(name):
-                        self.cache_by_name[name]=[game]
-                    elif game not in self.cache_by_name[name]:
-                        self.cache_by_name[name].append(game)
-                for file in release.files:
-                    self.cache_by_md5[file.md5]=game
+            self.loadGameInCache(game)
         print('cache loaded')
+
+    def loadGameInCache(self, game):
+        self.cache_by_wos_id[game.wos_id]=game
+        for release in game.releases:
+            for name in release.getAllAliases():
+                name = getSearchStringFromGameName(name)
+                if not self.cache_by_name.get(name):
+                    self.cache_by_name[name]=[game]
+                elif game not in self.cache_by_name[name]:
+                    self.cache_by_name[name].append(game)
+            for file in release.files:
+                self.cache_by_md5[file.md5]=game
 
     def addGame(self, game):
         # if not game.wos_id or not game.name:
@@ -136,6 +139,9 @@ class Database():
                 sql = "INSERT OR REPLACE INTO game_file VALUES " \
                       "({})".format(','.join(['?'] * len(values)))
                 self.cur.execute(sql, values)
+        if self.cache_by_md5:
+            self.loadGameInCache(game)
+
 
     def commit(self):
         self.conn.commit()

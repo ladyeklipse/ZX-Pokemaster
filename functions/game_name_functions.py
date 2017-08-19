@@ -41,13 +41,13 @@ def getMeaningfulEightLetterName(game_name):
         second_word_length = len(words[1])
         third_word_length = len(words[2])
         if first_word_length>3:
-            first_word_length = 8-len(words[2][:2])-len(words[0][:3])
+            first_word_length = 8-len(words[2][:2])-len(words[1][:3])
             if first_word_length>7:
                 first_word_length=4
             elif first_word_length<1:
                 first_word_length = len(words[0][:3])
         second_word_length = len(words[1])
-        if second_word_length>3 and first_word_length+third_word_length>5:
+        if second_word_length>3 and first_word_length+third_word_length>=5:
             second_word_length = 3
         third_word_length = 8-second_word_length-first_word_length
         name = words[0][:first_word_length]+words[1][:second_word_length]+words[2][:third_word_length]
@@ -90,6 +90,9 @@ def putPrefixToEnd(game_name):
     return game_name
 
 def putInitialsToEnd(name):
+    name = remove_square_brackets_regex.sub('', name).strip()
+    if name=='Mad Max':
+        return name
     name = name.split(' ')
     name = ' '.join([name[-1]+',']+name[:-1]).strip()
     if name.endswith(','):

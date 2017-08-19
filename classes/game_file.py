@@ -241,12 +241,14 @@ class GameFile(object):
             self.game = Game(game_name)
         else:
             self.game.name = game_name
-        if len(matches)==0:
-            return
-        self.game.setYear(matches[0])
-        if len(matches)==1:
-            return
-        self.game.setPublisher(matches[1])
+        # if len(matches)==0:
+        #     return
+        if len(matches)>0:
+            self.game.setYear(matches[0])
+        # if len(matches)==1:
+        #     return
+        if len(matches)>1:
+            self.game.setPublisher(matches[1])
         self.game.setGenreFromFilePath(path)
         self.release = GameRelease(game=self.game)
         self.game.addRelease(self.release)
@@ -396,7 +398,7 @@ class GameFile(object):
                     part_num = part[index]
                     while True:
                         index += 1
-                        if len(part)>=index or not part[index].isdigit():
+                        if index>=len(part) or not part[index].isdigit():
                             break
                         else:
                             part_num += part[index]
@@ -605,6 +607,9 @@ class GameFile(object):
         return 'Unknown'
 
     def getType(self):
+        if self.game.name.startswith('ZZZ-UNK'):
+            self.type = 'Unknown'
+            return self.type
         genre = self.getGenre()
         self.type = ''
         if 'Compilation' in genre:
