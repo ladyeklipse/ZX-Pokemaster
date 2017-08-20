@@ -18,8 +18,6 @@ class Selector:
         if isinstance(text, bytes):
             text = text.decode('utf-8')
         text = text.replace('&nbsp;', ' ')
-        # self.tree = lxml.html.fromstring(text)
-        # self.tree = lxml.etree.parse(StringIO(text), parser)
         text = str(bs4.BeautifulSoup(text, 'lxml'))
         self.tree = lxml.html.fromstring(text)
 

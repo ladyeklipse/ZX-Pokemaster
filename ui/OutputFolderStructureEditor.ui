@@ -14,26 +14,6 @@
    <string>Edit output folder structure</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,1,0">
-   <item row="7" column="1">
-    <widget class="QPushButton" name="btnPart">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>{Part}</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="2">
-    <widget class="QPushButton" name="btnSide">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>{Side}</string>
-     </property>
-    </widget>
-   </item>
    <item row="11" column="2">
     <widget class="QPushButton" name="btnUnderscore">
      <property name="focusPolicy">
@@ -185,16 +165,6 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="3">
-    <widget class="QPushButton" name="btnMachineType">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>{MachineType}</string>
-     </property>
-    </widget>
-   </item>
    <item row="6" column="2">
     <widget class="QPushButton" name="btnPublisher">
      <property name="focusPolicy">
@@ -272,6 +242,46 @@
      </property>
      <property name="text">
       <string>{Format}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3">
+    <widget class="QPushButton" name="btnMachineType">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>{MachineType}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="3">
+    <widget class="QPushButton" name="btnSide">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>{Side}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QPushButton" name="btnPart">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>{Part}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="btnCountry">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>{Country}</string>
      </property>
     </widget>
    </item>

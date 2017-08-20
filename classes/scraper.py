@@ -227,6 +227,10 @@ class Scraper(object):
     def getPageSourceWithCurrentSession(self, url,
                                  method='GET', data={},
                                  timeout=3):
+        if url.startswith('file:///'):
+            url = url.replace('file:///', '')
+            with open(url, 'r', encoding='utf-8') as f:
+                return f.read()
         if self.webdriver == 'requests':
             if method=='GET':
                 response = self.session.get(url, headers=self.headers, timeout=timeout)

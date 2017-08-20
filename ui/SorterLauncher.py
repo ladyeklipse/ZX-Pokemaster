@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Sun Aug  6 03:14:17 2017
+# Created: Mon Aug 21 00:19:36 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,6 +46,12 @@ class Ui_Dialog(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.btnLoadSettings = QtGui.QPushButton(Dialog)
+        self.btnLoadSettings.setObjectName(_fromUtf8("btnLoadSettings"))
+        self.horizontalLayout.addWidget(self.btnLoadSettings)
+        self.btnSaveSettings = QtGui.QPushButton(Dialog)
+        self.btnSaveSettings.setObjectName(_fromUtf8("btnSaveSettings"))
+        self.horizontalLayout.addWidget(self.btnSaveSettings)
         spacerItem = QtGui.QSpacerItem(158, 17, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.btnSortFiles = QtGui.QPushButton(Dialog)
@@ -207,6 +213,8 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "ZX Pokemaster", None))
+        self.btnLoadSettings.setText(_translate("Dialog", "Load Settings...", None))
+        self.btnSaveSettings.setText(_translate("Dialog", "Save Settings...", None))
         self.btnSortFiles.setText(_translate("Dialog", "Sort files", None))
         self.groupBox.setTitle(_translate("Dialog", "Input paths", None))
         self.btnAddPath.setText(_translate("Dialog", "Add path...", None))
@@ -220,7 +228,7 @@ class Ui_Dialog(object):
         self.btnEditPattern.setText(_translate("Dialog", "Edit pattern...", None))
         self.chkMaxFilesPerFolder.setText(_translate("Dialog", "Max files per folder:", None))
         self.chkCamelCase.setText(_translate("Dialog", "CamelCaseInsteadOfSpaces", None))
-        self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme (experimental)", None))
+        self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme", None))
         self.chkPlacePokFilesIntoPOKESSubfolders.setText(_translate("Dialog", "Place .POK files into POKES subfolders", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMainOptions), _translate("Dialog", "Main options", None))
         self.label_2.setText(_translate("Dialog", "Formats preference:", None))

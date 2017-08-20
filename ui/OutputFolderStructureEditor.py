@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'OutputFolderStructureEditor.ui'
 #
-# Created: Sun Aug  6 03:14:17 2017
+# Created: Mon Aug 21 00:19:35 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,14 +29,6 @@ class Ui_Dialog(object):
         Dialog.resize(423, 459)
         self.gridLayout = QtGui.QGridLayout(Dialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.btnPart = QtGui.QPushButton(Dialog)
-        self.btnPart.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.btnPart.setObjectName(_fromUtf8("btnPart"))
-        self.gridLayout.addWidget(self.btnPart, 7, 1, 1, 1)
-        self.btnSide = QtGui.QPushButton(Dialog)
-        self.btnSide.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.btnSide.setObjectName(_fromUtf8("btnSide"))
-        self.gridLayout.addWidget(self.btnSide, 7, 2, 1, 1)
         self.btnUnderscore = QtGui.QPushButton(Dialog)
         self.btnUnderscore.setFocusPolicy(QtCore.Qt.NoFocus)
         self.btnUnderscore.setObjectName(_fromUtf8("btnUnderscore"))
@@ -103,10 +95,6 @@ class Ui_Dialog(object):
         self.lblExample.setIndent(10)
         self.lblExample.setObjectName(_fromUtf8("lblExample"))
         self.gridLayout.addWidget(self.lblExample, 13, 0, 1, 4)
-        self.btnMachineType = QtGui.QPushButton(Dialog)
-        self.btnMachineType.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.btnMachineType.setObjectName(_fromUtf8("btnMachineType"))
-        self.gridLayout.addWidget(self.btnMachineType, 7, 3, 1, 1)
         self.btnPublisher = QtGui.QPushButton(Dialog)
         self.btnPublisher.setFocusPolicy(QtCore.Qt.NoFocus)
         self.btnPublisher.setObjectName(_fromUtf8("btnPublisher"))
@@ -139,6 +127,22 @@ class Ui_Dialog(object):
         self.btnFormat.setFocusPolicy(QtCore.Qt.NoFocus)
         self.btnFormat.setObjectName(_fromUtf8("btnFormat"))
         self.gridLayout.addWidget(self.btnFormat, 9, 2, 1, 1)
+        self.btnMachineType = QtGui.QPushButton(Dialog)
+        self.btnMachineType.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btnMachineType.setObjectName(_fromUtf8("btnMachineType"))
+        self.gridLayout.addWidget(self.btnMachineType, 9, 3, 1, 1)
+        self.btnSide = QtGui.QPushButton(Dialog)
+        self.btnSide.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btnSide.setObjectName(_fromUtf8("btnSide"))
+        self.gridLayout.addWidget(self.btnSide, 7, 3, 1, 1)
+        self.btnPart = QtGui.QPushButton(Dialog)
+        self.btnPart.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btnPart.setObjectName(_fromUtf8("btnPart"))
+        self.gridLayout.addWidget(self.btnPart, 7, 2, 1, 1)
+        self.btnCountry = QtGui.QPushButton(Dialog)
+        self.btnCountry.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btnCountry.setObjectName(_fromUtf8("btnCountry"))
+        self.gridLayout.addWidget(self.btnCountry, 7, 1, 1, 1)
         self.gridLayout.setRowStretch(13, 1)
 
         self.retranslateUi(Dialog)
@@ -149,8 +153,6 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Edit output folder structure", None))
-        self.btnPart.setText(_translate("Dialog", "{Part}", None))
-        self.btnSide.setText(_translate("Dialog", "{Side}", None))
         self.btnUnderscore.setText(_translate("Dialog", "Underscore(_)", None))
         self.btnNumberOfPlayers.setText(_translate("Dialog", "{MaxPlayers}", None))
         self.btnHyphen.setText(_translate("Dialog", "Hyphen ( - )", None))
@@ -161,7 +163,6 @@ class Ui_Dialog(object):
         self.btnZXDB_ID.setText(_translate("Dialog", "{ZXDB_ID}", None))
         self.label_3.setText(_translate("Dialog", "Output file name structure pattern:", None))
         self.label_2.setText(_translate("Dialog", "Examples:", None))
-        self.btnMachineType.setText(_translate("Dialog", "{MachineType}", None))
         self.btnPublisher.setText(_translate("Dialog", "{Publisher}", None))
         self.btnLanguage.setText(_translate("Dialog", "{Language}", None))
         self.btnModFlags.setText(_translate("Dialog", "{ModFlags}", None))
@@ -170,4 +171,8 @@ class Ui_Dialog(object):
         self.btnNotes.setText(_translate("Dialog", "{Notes}", None))
         self.btnLetter.setText(_translate("Dialog", "{Letter}", None))
         self.btnFormat.setText(_translate("Dialog", "{Format}", None))
+        self.btnMachineType.setText(_translate("Dialog", "{MachineType}", None))
+        self.btnSide.setText(_translate("Dialog", "{Side}", None))
+        self.btnPart.setText(_translate("Dialog", "{Part}", None))
+        self.btnCountry.setText(_translate("Dialog", "{Country}", None))
 
