@@ -95,7 +95,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -279,7 +279,7 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,1,1,1,1,1,1">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,1,1,1,1,1,0,1">
        <property name="spacing">
         <number>7</number>
        </property>
@@ -389,6 +389,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="chkIncludeSupplementaryFiles">
+         <property name="text">
+          <string>Include supplementary files</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -409,6 +419,7 @@
       <zorder>chkIncludeRereleases</zorder>
       <zorder>chkIncludeXRated</zorder>
       <zorder>verticalSpacer</zorder>
+      <zorder>chkIncludeSupplementaryFiles</zorder>
      </widget>
     </widget>
    </item>

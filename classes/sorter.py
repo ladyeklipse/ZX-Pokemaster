@@ -9,6 +9,7 @@ import zipfile
 import hashlib
 import json
 import traceback
+import glob
 
 db = Database()
 
@@ -46,6 +47,7 @@ class Sorter():
         self.ignore_hacks = kwargs.get('ignore_hacks', False)
         self.ignore_xrated = kwargs.get('ignore_xrated', False)
         self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
+        self.include_supplementary_files = kwargs.get('include_supplementary_files', False)
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
@@ -145,6 +147,7 @@ class Sorter():
             except:
                 self.fails.append(file_path)
                 self.error += '\nError while examining {}\n'.format(file_path)+traceback.format_exc()+'\n'
+                print(traceback.format_exc())
             if not game_files:
                 print('Nothing found for', file_path)
                 continue
@@ -341,10 +344,13 @@ class Sorter():
                     self.unpackFile(file)
                 else:
                     self.copyFile(file)
+                if self.include_supplementary_files:
+                    self.copySupplementaryFiles(file)
                 self.extractPokFile(file)
             except:
                 self.fails.append(file.src)
                 self.error += '\nError while redistributing {}\n'.format(file.src)+traceback.format_exc()+'\n'
+                print(traceback.format_exc())
 
     def copyFile(self, file):
         try:
@@ -354,6 +360,32 @@ class Sorter():
         except PermissionError:
             os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
             shutil.copyfile(file.src, dest)
+
+    def copySupplementaryFiles(self, file):
+        dirname = os.path.dirname(file.src)
+        filename = os.path.splitext(os.path.basename(file.src))[0]
+
+        for sup_file in glob.glob(dirname+'/*/'+filename+'.*'):
+            subdirname = os.path.split(os.path.dirname(sup_file))[-1]
+            ext = os.path.splitext(sup_file)[-1]
+            if ext[1:] in DISALLOWED_SUPPLEMENTARY_FILES:
+                continue
+            dest = file.getDestPath()
+            dest_dir = os.path.dirname(dest)
+            dest_filename = os.path.splitext(os.path.basename(dest))[0]
+            dest = os.path.join(dest_dir, subdirname, dest_filename)+ext
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy(sup_file, dest)
+        for sup_file in glob.glob(dirname+'/'+filename+'.*'):
+            ext = os.path.splitext(sup_file)[-1]
+            if ext[1:] in DISALLOWED_SUPPLEMENTARY_FILES:
+                continue
+            dest = file.getDestPath()
+            dest_dir = os.path.dirname(dest)
+            dest_filename = os.path.splitext(os.path.basename(dest))[0]
+            dest = os.path.join(dest_dir, dest_filename)+ext
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy(sup_file, dest)
 
     def extractPokFile(self, file):
         dest = file.getDestPath()

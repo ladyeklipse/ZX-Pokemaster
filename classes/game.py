@@ -214,7 +214,12 @@ class Game(object):
 
     def setMachineType(self, machine_type):
         if machine_type:
-            self.machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
+            machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
+            if '+2' in machine_type or '+3' in machine_type:
+                machine_type = machine_type.replace('128 ', '')
+        else:
+            machine_type = '48K'
+        self.machine_type = machine_type
 
     def setLanguage(self, language):
         if not language:

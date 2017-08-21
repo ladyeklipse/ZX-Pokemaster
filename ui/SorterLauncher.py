@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Mon Aug 21 00:19:36 2017
+# Created: Mon Aug 21 23:13:09 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -195,6 +195,10 @@ class Ui_Dialog(object):
         self.chkIncludeXRated.setChecked(True)
         self.chkIncludeXRated.setObjectName(_fromUtf8("chkIncludeXRated"))
         self.verticalLayout.addWidget(self.chkIncludeXRated)
+        self.chkIncludeSupplementaryFiles = QtGui.QCheckBox(self.tabFileFiltering)
+        self.chkIncludeSupplementaryFiles.setChecked(True)
+        self.chkIncludeSupplementaryFiles.setObjectName(_fromUtf8("chkIncludeSupplementaryFiles"))
+        self.verticalLayout.addWidget(self.chkIncludeSupplementaryFiles)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
         self.verticalLayout.setStretch(2, 1)
@@ -203,12 +207,12 @@ class Ui_Dialog(object):
         self.verticalLayout.setStretch(5, 1)
         self.verticalLayout.setStretch(6, 1)
         self.verticalLayout.setStretch(7, 1)
-        self.verticalLayout.setStretch(8, 1)
+        self.verticalLayout.setStretch(9, 1)
         self.tabWidget.addTab(self.tabFileFiltering, _fromUtf8(""))
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -241,6 +245,7 @@ class Ui_Dialog(object):
         self.chkIncludeAlternateFileFormats.setText(_translate("Dialog", "Include alternate file formats (see formats preference order)", None))
         self.chkIncludeHacked.setText(_translate("Dialog", "Include files marked as cracked, hacked or modded", None))
         self.chkIncludeXRated.setText(_translate("Dialog", "Include x-rated games", None))
+        self.chkIncludeSupplementaryFiles.setText(_translate("Dialog", "Include supplementary files", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFileFiltering), _translate("Dialog", "File filtering", None))
 
 import res_rc

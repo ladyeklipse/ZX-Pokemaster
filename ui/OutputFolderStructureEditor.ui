@@ -285,6 +285,16 @@
      </property>
     </widget>
    </item>
+   <item row="11" column="3">
+    <widget class="QPushButton" name="btnOriginalName">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>{OriginalName}</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>

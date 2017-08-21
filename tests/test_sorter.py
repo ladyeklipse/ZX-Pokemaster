@@ -128,7 +128,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = s.output_location+'\Mastering Machine Code (19xx)(ZX Computing).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'\Race, The (1990)(Players Premier).z80'
+        expected_file = s.output_location+'\Race, The (1990)(Players Premier)(48K-128K).z80'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -351,11 +351,11 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 2 of 2).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 2 of 2).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 1 of 2)(Side A).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2)(Side A).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(Disk 1 of 2)(Side B).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2)(Side B).dsk'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_equal_input_and_output_paths(self):
@@ -641,7 +641,7 @@ class TestSorter(unittest.TestCase):
                         '/4 Most Megaheroes - Rogue Trooper + Capitan Sevilla (1991)(Alternative).tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location+\
-                        '/16-48 Magazine Tape 02 (1983)(16-48 Tape Magazine)(Side A).tzx'
+                        '/16-48 Magazine Tape 02 (1983)(16-48 Tape Magazine)(16K)(Side A).tzx'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_custom_file_naming_scheme(self):
@@ -777,6 +777,42 @@ class TestSorter(unittest.TestCase):
         self.assertFileNotExists(s.output_location+'/Games/Scene Demo')
         self.assertFileNotExists(s.output_location+'/Games/Unknown')
         self.assertFileNotExists(s.output_location+'/Games/Programming - General')
+
+    def test_original_name(self):
+        input_locations = [
+            'tests/files/sort_original_name_in',
+        ]
+        output_location = 'tests/files/sort_original_name_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            output_folder_structure='',
+            output_filename_structure='{OriginalName} ({MachineType})',
+            cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists(output_location+'/Dizzy VII - Crystal Kindom Dizzy (2017) (+2).tap')
+        self.assertFileExists(output_location+'/CQuest (48K).tap')
+
+    def test_supplementary_files(self):
+        input_locations = [
+            'tests/files/sort_supplementary_files_in',
+        ]
+        output_location = 'tests/files/sort_supplementary_files_out/'
+        s = Sorter(
+            input_locations=input_locations,
+            output_location=output_location,
+            include_supplementary_files=True,
+            output_folder_structure='',
+            cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertEqual(s.fails, [])
+        self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe (2005)(Zaniboni, Marcello).gif')
+        self.assertFileExists(output_location+'/Accelerator (1984)(Century City).gif')
+        self.assertFileNotExists(output_location+'/Accelerator (1984)(Century City).zip')
 
 
     def assertFileExists(self, file_path):

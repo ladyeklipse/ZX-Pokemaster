@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'OutputFolderStructureEditor.ui'
 #
-# Created: Mon Aug 21 00:19:35 2017
+# Created: Mon Aug 21 23:13:09 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -143,6 +143,10 @@ class Ui_Dialog(object):
         self.btnCountry.setFocusPolicy(QtCore.Qt.NoFocus)
         self.btnCountry.setObjectName(_fromUtf8("btnCountry"))
         self.gridLayout.addWidget(self.btnCountry, 7, 1, 1, 1)
+        self.btnOriginalName = QtGui.QPushButton(Dialog)
+        self.btnOriginalName.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btnOriginalName.setObjectName(_fromUtf8("btnOriginalName"))
+        self.gridLayout.addWidget(self.btnOriginalName, 11, 3, 1, 1)
         self.gridLayout.setRowStretch(13, 1)
 
         self.retranslateUi(Dialog)
@@ -175,4 +179,5 @@ class Ui_Dialog(object):
         self.btnSide.setText(_translate("Dialog", "{Side}", None))
         self.btnPart.setText(_translate("Dialog", "{Part}", None))
         self.btnCountry.setText(_translate("Dialog", "{Country}", None))
+        self.btnOriginalName.setText(_translate("Dialog", "{OriginalName}", None))
 

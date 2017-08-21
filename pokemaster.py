@@ -51,6 +51,8 @@ class MainDialog(QDialog):
         self.ui.btnEditPattern.clicked.connect(self.editPattern)
         self.ui.btnRemovePattern.clicked.connect(self.removePattern)
         self.ui.btnSortFiles.clicked.connect(self.sortFiles)
+        self.ui.btnSaveSettings.clicked.connect(self.saveSettingsClicked)
+        self.ui.btnLoadSettings.clicked.connect(self.loadSettingsClicked)
         self.ui.chkMaxFilesPerFolder.toggled['bool'].connect(lambda state:
              self.enableMaxFilesPerFolder(state))
         self.loadSettings()
@@ -119,25 +121,7 @@ class MainDialog(QDialog):
         self.ui.cmbOutputPathStructure.removeItem(self.ui.cmbOutputPathStructure.currentIndex())
 
     def sortFiles(self):
-        output_folder_structure, output_filename_structure = self.getOutputPathStructure()
-        kwargs = {
-            'input_locations':self.getInputLocations(),
-            'traverse_subdirectories':self.ui.chkTraverseSubdirectories.isChecked(),
-            'output_location':self.ui.txtOutputPath.text(),
-            'formats_preference':self.getFormatsPreference(),
-            'languages':self.getLanguages(),
-            'output_folder_structure':output_folder_structure,
-            'output_filename_structure':output_filename_structure,
-            'max_files_per_folder':self.getMaxFilesPerFolder(),
-            'ignore_alternate':not self.ui.chkIncludeAlternate.isChecked(),
-            'ignore_alternate_formats':not self.ui.chkIncludeAlternateFileFormats.isChecked(),
-            'ignore_rereleases':not self.ui.chkIncludeRereleases.isChecked(),
-            'ignore_hacks':not self.ui.chkIncludeHacked.isChecked(),
-            'ignore_xrated':not self.ui.chkIncludeXRated.isChecked(),
-            'use_camel_case':self.ui.chkCamelCase.isChecked(),
-            'short_filenames':self.ui.chkShortFilenames.isChecked(),
-            'place_pok_files_in_pokes_subfolders':self.ui.chkPlacePokFilesIntoPOKESSubfolders.isChecked(),
-        }
+        kwargs = self.readSettings()
         if not is_pathname_valid(kwargs['output_location']):
             QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Invalid output path'))
             return
@@ -149,7 +133,6 @@ class MainDialog(QDialog):
         if not kwargs['input_locations']:
             QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Please add one or more input path(s).'))
             return
-
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)
@@ -182,6 +165,29 @@ class MainDialog(QDialog):
                     .format(len(s.fails))
             QMessageBox.information(self, MESSAGE_BOX_TITLE, message)
         self.bar.close()
+
+    def readSettings(self):
+        output_folder_structure, output_filename_structure = self.getOutputPathStructure()
+        kwargs = {
+            'input_locations':self.getInputLocations(),
+            'traverse_subdirectories':self.ui.chkTraverseSubdirectories.isChecked(),
+            'output_location':self.ui.txtOutputPath.text(),
+            'formats_preference':self.getFormatsPreference(),
+            'languages':self.getLanguages(),
+            'output_folder_structure':output_folder_structure,
+            'output_filename_structure':output_filename_structure,
+            'max_files_per_folder':self.getMaxFilesPerFolder(),
+            'ignore_alternate':not self.ui.chkIncludeAlternate.isChecked(),
+            'ignore_alternate_formats':not self.ui.chkIncludeAlternateFileFormats.isChecked(),
+            'ignore_rereleases':not self.ui.chkIncludeRereleases.isChecked(),
+            'ignore_hacks':not self.ui.chkIncludeHacked.isChecked(),
+            'ignore_xrated':not self.ui.chkIncludeXRated.isChecked(),
+            'include_supplementary_files':self.ui.chkIncludeSupplementaryFiles.isChecked(),
+            'use_camel_case':self.ui.chkCamelCase.isChecked(),
+            'short_filenames':self.ui.chkShortFilenames.isChecked(),
+            'place_pok_files_in_pokes_subfolders':self.ui.chkPlacePokFilesIntoPOKESSubfolders.isChecked(),
+        }
+        return kwargs
 
     def getInputLocations(self):
         input_locations = []
@@ -221,11 +227,38 @@ class MainDialog(QDialog):
             self.bar.setLabelText(self.tr(label))
         QCoreApplication.instance().processEvents()
 
-    def loadSettings(self):
+    def saveSettingsClicked(self):
+        path = QFileDialog.getSaveFileName(self,
+                                           self.tr('Save settings to...'),
+                                           None,
+                                           self.tr('Settings files (*.json)'))
+        if not path:
+            return
+        path = path.replace('/', os.sep).replace('\\', os.sep)
+        kwargs = self.readSettings()
+        self.saveSettings(kwargs, path)
+
+    def loadSettingsClicked(self):
+        path = QFileDialog.getOpenFileName(self,
+                                           self.tr('Load settings from...'),
+                                           None,
+                                           self.tr('Settings files (*.json)'))
+        if not path:
+            return
+        path = path.replace('/', os.sep).replace('\\', os.sep)
+        self.loadSettings(path)
+
+    def saveSettings(self, kwargs, path='settings.json'):
+        kwargs['patterns'] = self.getOutputFolderStructurePatterns()
+        with open(path, 'w+', encoding='utf-8') as f:
+            json.dump(kwargs, f, indent=4)
+
+    def loadSettings(self, path='settings.json'):
         try:
-            with open('settings.json', 'r', encoding='utf-8') as f:
+            with open(path, 'r', encoding='utf-8') as f:
                 settings = json.load(f)
                 self.loadOutputPathStructures(settings)
+                self.ui.lstInputPaths.clear()
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.chkTraverseSubdirectories.setChecked(settings.get('traverse_subridrectories', True))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
@@ -240,6 +273,7 @@ class MainDialog(QDialog):
                 self.ui.chkIncludeRereleases.setChecked(not settings.get('ignore_rereleases', False))
                 self.ui.chkIncludeHacked.setChecked(not settings.get('ignore_hacks', False))
                 self.ui.chkIncludeXRated.setChecked(not settings.get('ignore_xrated', False))
+                self.ui.chkIncludeSupplementaryFiles.setChecked(settings.get('include_supplementary_files', False))
                 self.ui.chkPlacePokFilesIntoPOKESSubfolders.setChecked(settings.get('place_pok_files_in_pokes_subfolders', True))
                 if settings.get('max_files_per_folder') and \
                    type(settings['max_files_per_folder'])==int:
@@ -255,6 +289,7 @@ class MainDialog(QDialog):
             self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
 
     def loadOutputPathStructures(self, settings):
+        self.ui.cmbOutputPathStructure.clear()
         patterns = settings.get('patterns', PREDEFINED_OUTPUT_PATH_STRUCTURES)
         patterns = [pattern.replace('{Name}', '{GameName}') for pattern in patterns]
         display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in
@@ -276,11 +311,6 @@ class MainDialog(QDialog):
 
     def getDefaultLanguages(self):
         return ','.join([x[0] for x in INCLUDED_LANGUAGES_LIST])
-
-    def saveSettings(self, kwargs):
-        kwargs['patterns'] = self.getOutputFolderStructurePatterns()
-        with open('settings.json', 'w+', encoding='utf-8') as f:
-            json.dump(kwargs, f, indent=4)
 
     def getOutputFolderStructurePatterns(self):
         return [self.ui.cmbOutputPathStructure.itemData(i) \

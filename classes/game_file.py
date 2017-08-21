@@ -27,7 +27,7 @@ class GameFile(object):
     content_desc = ''
     game_name_differentiator = ''
     is_demo = 0
-    machine_type = '48K'
+    machine_type = ''
     language = ''
     part = 0
     side = 0
@@ -586,8 +586,13 @@ class GameFile(object):
             'Part':self.getPart(),
             'ModFlags':self.mod_flags+self.alt_mod_flag,
             'ZXDB_ID':self.game.getWosID(),
-            'Notes':self.getNotes()
+            'Notes':self.getNotes(),
+            'OriginalName':self.getOriginalName(),
         }
+
+    def getOriginalName(self):
+        if self.src:
+            return os.path.splitext(os.path.basename(self.src))[0]
 
     def getNotes(self):
         return self.notes
