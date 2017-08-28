@@ -24,6 +24,7 @@ CREATE TABLE "game_release" (
 	`year`	INTEGER, -- ZXDB releases.release_year
 	`publisher`	TEXT, -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == publishers.release_seq
 	`country`	TEXT, -- ZXDB labels.country
+	`modded_by` TEXT, -- TOSEC md5 of file which has better information about year and/or publisher and/or country
 	`ingame_screen_gif_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Picture" AND filetypes.text = "Loading screen"
 	`ingame_screen_gif_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
 	`ingame_screen_scr_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Screen Dump" AND filetypes.text = "Loading screen"
@@ -46,6 +47,7 @@ CREATE TABLE "game_file" (
 	`size`	INTEGER, -- size of UNZIPPED file retrieved by reading the file
 	`content_desc` TEXT, -- TOSEC - All data between end of game name and 1st bracket
 	`is_demo` INTEGER, -- TOSEC - 1 if (demo) in name, else 0
+	`release_date` TEXT, -- TOSEC - overrides release year in ZXDB, can have month and day
 	`part`	INTEGER DEFAULT 1, -- TOSEC - %d if (Part %d) in name or (Disk %d) in name, 0 by default
 	`side`	INTEGER, -- TOSEC - 1 if (Side A) in name, 2 if (Side B) in name, 0 by default.
 	`language`	CHAR(2), -- TOSEC - 2-letter language code in round brackets "()"

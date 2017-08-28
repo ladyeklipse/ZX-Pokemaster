@@ -87,8 +87,9 @@ class Game(object):
     def setContentDescForZXDBFiles(self, lookup_table={}):
         files = self.getFiles()
         for file in files:
-            if file.wos_name in lookup_table:
-                file.content_desc = lookup_table[file.wos_name]
+            key = file.wos_path+'|'+file.wos_name
+            if key in lookup_table:
+                file.content_desc = lookup_table[key]
 
     def setContentDescForFiles(self, lookup_table={}):
         files = self.getFiles()
@@ -195,10 +196,11 @@ class Game(object):
         self.publisher = publisher
 
     def setYear(self, year):
-        if type(year)==int:
-            self.year = year
-        elif year and year.isdigit():
-            self.year = int(year)
+        self.year = year
+        # if type(year)==int:
+        #     self.year = year
+        # elif year and year.isdigit():
+        #     self.year = int(year)
 
     def setNumberOfPlayers(self, n_players):
         if type(n_players)==int:
@@ -358,6 +360,15 @@ class Game(object):
         for release in self.releases:
             for file in release.files:
                 if file.md5 == game_file.md5:
+                    if not release.year:
+                        release.year = game_file.getYear()
+                        release.modded_by = game_file.md5
+                    if not release.publisher:
+                        release.publisher = game_file.getPublisher()
+                        release.modded_by = game_file.md5
+                    if not release.country:
+                        release.country = game_file.getCountry()
+                        release.modded_by = game_file.md5
                     return release
         game_file_publisher = game_file.game.publisher.lower().replace('.','')
         for release in self.releases:

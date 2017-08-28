@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.2-beta4'
+ZX_POKEMASTER_VERSION = '1.2-beta5'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
@@ -13,7 +13,7 @@ WOS_INGAME_SCREENS_DIRECTORY = 'pub/sinclair/screens/in-game'
 WOS_LOADING_SCREENS_DIRECTORY = 'pub/sinclair/screens/load'
 WOS_MANUALS_DIRECTORY = 'pub/sinclair/games-info'
 TIPSHOP_SITE_ROOT = 'http://www.the-tipshop.co.uk'
-GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx']
+GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk', 'trd', 'tzx', 'img', 'mgt', 'rom', 'scl', 'slt', 'szx', 'fdi', 'opd', 'mdr', 'wdr', 'd80', 'd40']
 DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ['zip', 'pok']
 DISK_FORMATS = ('dsk', 'trd', 'scl')
 TAPE_FORMATS = ('tzx', 'tap')

@@ -51,10 +51,11 @@ class ZXDBScraper():
                 line = line.strip().split(';')
                 if len(line)<5 or not line[4]:
                     continue
-                elif line[2].startswith('NONE'):
-                    self.manually_corrected_content_descriptions[line[4]] = 'NONE'
+                key = line[5]+'|'+line[4]
+                if line[2].startswith('NONE'):
+                    self.manually_corrected_content_descriptions[key] = 'NONE'
                 elif line[2].startswith('ALT'):
-                    self.manually_corrected_content_descriptions[line[4]] = line[2]
+                    self.manually_corrected_content_descriptions[key] = line[2]
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')

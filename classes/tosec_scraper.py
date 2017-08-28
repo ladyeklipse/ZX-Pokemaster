@@ -33,32 +33,6 @@ class TOSECScraper():
         if cache:
             self.db.loadCache()
 
-    # def generateTOSECPathsArray(self):
-    #     categories = ['Applications',
-    #                   'Compilations\Applications',
-    #                   'Compilations\Demos',
-    #                   'Compilations\Educational',
-    #                   'Compilations\Games',
-    #                   'Compilations\Magazines',
-    #                   'Covertapes',
-    #                   'Demos',
-    #                   'Documentation',
-    #                   'Educational',
-    #                   'Magazines',
-    #                   'Games']
-    #     tosec_folders = ['[%s]' % x.upper() for x in GAME_EXTENSIONS]
-    #     paths = []
-    #     for category in categories:
-    #         category = 'Sinclair ZX Spectrum\\'+category
-    #         for folder in tosec_folders:
-    #             for root, dirs, files in os.walk(os.path.join('tosec', category, folder)):
-    #                 for filename in files:
-    #                     if filename.endswith('.zip'):
-    #                         paths.append((filename, os.path.join(root, filename)))
-    #     paths = sorted(paths, key=lambda path: path[0])
-    #     self.paths = [path[1] for path in paths]
-    #     return self.paths
-
     def generateTOSECPathsArrayFromFolder(self, folder):
         paths = []
         for root, dirs, files in os.walk(folder):
@@ -66,7 +40,8 @@ class TOSECScraper():
                 file_path_dict = {}
                 filepath = os.path.join(root, filename)
                 game_file = GameFile(filepath, source='tosec')
-                filename = os.path.splitext(os.path.basename(filepath))[0] + '.zip'
+                # filename = os.path.splitext(os.path.basename(filepath))[0] + '.zip'
+                filename = os.path.basename(filepath)
                 file_path_dict['name'] = filename
                 file_path_dict['path'] = filepath
                 file_path_dict['size'] = os.path.getsize(filepath)
@@ -74,7 +49,21 @@ class TOSECScraper():
                 file_path_dict['crc32'] = game_file.getCRC32()
                 file_path_dict['sha1'] = game_file.getSHA1()
                 paths.append(file_path_dict)
-                # paths.append(os.path.join(root, filename))
+        return paths
+
+    def generateTOSECPathsArrayFromList(self, list):
+        paths = []
+        for filepath in list:
+            file_path_dict = {}
+            filename = os.path.basename(filepath)
+            game_file = GameFile(filepath, source='tosec')
+            file_path_dict['name'] = filename
+            file_path_dict['path'] = filepath
+            file_path_dict['size'] = os.path.getsize(filepath)
+            file_path_dict['md5'] = game_file.getMD5()
+            file_path_dict['crc32'] = game_file.getCRC32()
+            file_path_dict['sha1'] = game_file.getSHA1()
+            paths.append(file_path_dict)
         return paths
 
     def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
@@ -109,7 +98,8 @@ class TOSECScraper():
                 for rom in roms:
                     file_path_dict = {}
                     file_path_dict['name'] = rom.attrib['name']
-                    filename = os.path.splitext(rom.attrib['name'])[0]+'.zip'
+                    # filename = os.path.splitext(rom.attrib['name'])[0]+'.zip'
+                    filename = rom.attrib['name']
                     file_path_dict['path'] = os.path.join(dirname, filename)
                     file_path_dict['size'] = rom.attrib['size']
                     file_path_dict['md5'] = rom.attrib['md5']
@@ -120,7 +110,7 @@ class TOSECScraper():
 
     def scrapeTOSEC(self):
         if not self.paths:
-            self.generateTOSECPathsArray()
+            raise Exception('TOSECScraper has no paths to scrape.')
         games_found = 0
         current_game = None
         current_tosec_name = ''
@@ -129,22 +119,13 @@ class TOSECScraper():
                 game_file = self.getGameFileFromFilePath(file_path)
             elif type(file_path)==dict:
                 game_file = self.getGameFileFromFilePathDict(file_path)
+            if game_file.format not in GAME_EXTENSIONS:
+                continue
             new_tosec_name = game_file.game.getTOSECName()
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
                     self.addGameToLocalDB(current_game)
                     games_found += 1
-                # else:
-                #     self.unscraped_file_paths.append(self.paths[i - 1])
-                    # j = i-1
-                    # while True:
-                    #     path_to_add = self.paths[j]
-                    #     if type(path_to_add)==dict and current_game.name not in path_to_add['name']:
-                    #         break
-                    #     elif type(path_to_add)==str and current_game.name not in path_to_add:
-                    #         break
-                    #     self.unscraped_file_paths.append(path_to_add)
-                    #     j-=1
                 current_game.files = []
                 current_game = None
                 if games_found % 1000 == 0:
@@ -189,7 +170,6 @@ class TOSECScraper():
                          file_tosec_name))
                 else:
                     current_release.addFile(game_file)
-        # if current_game.wos_id:
         self.addGameToLocalDB(current_game)
         self.db.commit()
 
@@ -245,10 +225,12 @@ class TOSECScraper():
     def getGameFileFromFilePathDict(self, file_path_dict):
         file_path = file_path_dict['path']
         game_file = GameFile(file_path, source='tosec')
-        if file_path.endswith('.zip'):
-            game_file.format = os.path.split(file_path)[0][-4:-1].lower()
+        filename = file_path_dict['name']
+        if filename.endswith('.zip'):
+            # game_file.format = os.path.split(file_path)[0][-4:-1].lower()
+            game_file.format = game_file.getFormat()
         else:
-            game_file.format = file_path[-3:]
+            game_file.format = file_path[-3:].lower()
         game_file.tosec_path = file_path
         game_file.md5 = file_path_dict['md5']
         game_file.crc32 = file_path_dict['crc32']

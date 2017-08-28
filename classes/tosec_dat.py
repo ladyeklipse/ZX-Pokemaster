@@ -143,7 +143,7 @@ class TOSECDat():
 
     def getExportFileName(self):
         filename = self.getBaseFileName()
-        filename += ' (TOSEC-V{}_CM).dat'.format(time.strftime('%Y-%m-%d'))
+        filename += ' (TOSEC-v{}_CM).dat'.format(time.strftime('%Y-%m-%d'))
         return filename
 
     def getFileTag(self, file):

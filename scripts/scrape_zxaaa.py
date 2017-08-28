@@ -35,7 +35,7 @@ def scrape_staryo():
         for src in files:
             if not src.endswith('.zip'):
                 continue
-            dest = os.path.join('tosec', 'ZXAAA Compilations', 'staryo',src)
+            dest = os.path.join('tosec', 'zxaaa scrape', 'staryo',src)
             src = 'https://zxaaa.net/'+src
             print(src, dest)
             if not os.path.exists(dest):
@@ -56,13 +56,13 @@ def scrape_system_disks():
                 continue
             if not src.endswith('.zip'):
                 continue
-            dest = os.path.join('tosec', 'ZXAAA Compilations', 'system_disks', name+'.zip')
+            dest = os.path.join('tosec', 'zxaaa scrape', 'system_disks', name+'.zip')
             src = 'https://zxaaa.net/'+src
             print(src, dest)
             if not os.path.exists(dest):
                 s.downloadFile(src, dest)
 
-def scrape_flash_games():
+def scrape_flash_demos():
     s = Scraper()
     pages = [
         'https://zxaaa.net/FLASH.html',
@@ -77,7 +77,28 @@ def scrape_flash_games():
                 continue
             if not src.endswith('.zip'):
                 continue
-            dest = os.path.join('tosec', 'ZXAAA Compilations', 'flash_demos', name+'.zip')
+            dest = os.path.join('tosec', 'zxaaa scrape', 'flash_demos', name+'.zip')
+            src = 'https://zxaaa.net/'+src
+            print(src, dest)
+            if not os.path.exists(dest):
+                s.downloadFile(src, dest)
+
+def scrape_flash_games():
+    s = Scraper()
+    pages = [
+        'https://zxaaa.net/intflash.html',
+    ]
+    for page in pages:
+        selector = s.loadUrl(page)
+        files = selector.xpath('//a').extract()
+        for file in files:
+            src = Selector(file).xpath('//@href').extract_first()
+            name = Selector(file).xpath('//img/@alt').extract_first()
+            if not name:
+                continue
+            if not src.endswith('.zip'):
+                continue
+            dest = os.path.join('tosec', 'zxaaa scrape', 'flash_games', name+'.zip')
             src = 'https://zxaaa.net/'+src
             print(src, dest)
             if not os.path.exists(dest):
@@ -101,7 +122,7 @@ def scrape_disks_aaa():
                 continue
             if not src.endswith('.zip'):
                 continue
-            dest = os.path.join('tosec','ZXAAA Compilations', 'disks_aaa', name+'.zip')
+            dest = os.path.join('tosec','zxaaa scrape', 'disks_aaa', name+'.zip')
             src = 'https://zxaaa.net/'+src
             print(src, dest)
             if not os.path.exists(dest):
@@ -109,7 +130,7 @@ def scrape_disks_aaa():
 
 def rename_files():
     skipped = []
-    for src in glob.glob('tosec/ZXAAA Compilations/*/*.*')+glob.glob('tosec/ZXAAA Compilations/*/*/*.*'):
+    for src in glob.glob('tosec/zxaaa scrape/*/*.*')+glob.glob('tosec/zxaaa scrape/*/*/*.*'):
         if 'renamed' in src or 'skipped' in src:
             continue
         print(src)
@@ -181,7 +202,7 @@ def rename_files():
             filename += ' (19xx)(Flash)'
         else:
             continue
-        dest = os.path.join('tosec', 'ZXAAA Compilations', 'renamed', dirname, filename)
+        dest = os.path.join('tosec', 'zxaaa scrape', 'renamed', dirname, filename)
         print('dest=', dest)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         if src.endswith('.zip'):
@@ -200,12 +221,13 @@ def rename_files():
         else:
             shutil.copy(src, dest)
     for src in skipped:
-        dest = src.replace('/ZXAAA Compilations', '/ZXAAA Compilations/skipped')
+        dest = src.replace('/zxaaa scrape', '/zxaaa scrape/skipped')
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         shutil.copy(src, dest)
 
 if __name__=='__main__':
 #     scrape_disks_aaa()
+#     scrape_flash_games()
 #     scrape_flash_demos()
 #     scrape_system_disks()
 #     scrape_chip()

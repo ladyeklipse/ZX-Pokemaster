@@ -72,6 +72,11 @@ for game in games:
             problems.append('File not in TOSEC')
             original_tosec_game_name = ''
             current_tosec_game_name = file.getTOSECName()
+        elif not file.wos_path:
+            problems.append('File not in ZXDB')
+            file_from_path = GameFile(file.tosec_path)
+            original_tosec_game_name = file_from_path.getTOSECName()
+            current_tosec_game_name = file.getTOSECName()
         else:
             continue
         if not problems:

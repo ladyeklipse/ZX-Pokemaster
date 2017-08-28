@@ -27,6 +27,7 @@ class GameFile(object):
     content_desc = ''
     game_name_differentiator = ''
     is_demo = 0
+    release_date = ''
     machine_type = ''
     language = ''
     part = 0
@@ -150,7 +151,7 @@ class GameFile(object):
                 self.getLanguage() == other_file.getLanguage() and \
                 self.mod_flags == other_file.mod_flags and \
                 self.is_demo == other_file.is_demo and \
-                self.content_desc == other_file.content_desc and \
+                self.getContentDesc() == other_file.getContentDesc() and \
                 self.format == other_file.format:
                 count += 1
         if count:
@@ -237,22 +238,22 @@ class GameFile(object):
         filename = os.path.splitext(os.path.basename(path).replace('(demo)', ''))[0]
         matches = re.findall(ROUND_BRACKETS_REGEX, filename)
         game_name = re.sub(TOSEC_REGEX, '', filename).strip()
+        version = re.findall('v[0-9].*', game_name)
+        if version:
+            game_name = game_name.replace(version[0], '').strip()
+            self.content_desc = ' '+version[0].strip()
         if not self.game:
             self.game = Game(game_name)
         else:
             self.game.name = game_name
-        # if len(matches)==0:
-        #     return
-        if len(matches)>0:
-            self.game.setYear(matches[0])
-        # if len(matches)==1:
-        #     return
-        if len(matches)>1:
-            self.game.setPublisher(matches[1])
-        self.game.setGenreFromFilePath(path)
         self.release = GameRelease(game=self.game)
         self.game.addRelease(self.release)
         self.game.addFile(self)
+        if len(matches)>0:
+            self.setReleaseDate(matches[0])
+        if len(matches)>1:
+            self.game.setPublisher(matches[1])
+        self.game.setGenreFromFilePath(path)
         self.getParamsFromTOSECPath(path)
 
     def getParamsFromTOSECPath(self, tosec_path):
@@ -282,16 +283,27 @@ class GameFile(object):
                 mod_flag = '[{}]'.format(each)
                 if mod_flag not in self.mod_flags:
                     self.mod_flags += mod_flag
-            elif each not in self.notes and \
-                self.machine_type not in each and \
-                    're-release' not in each and \
-                    'ZXDB' not in each and \
-                    not each.startswith('aka ') and \
-                    not each.startswith('48') and \
-                    not each.startswith('Pentagon'):
+            elif each.startswith('aka '):
+                alias = each[4:]
+                self.release.addAlias(alias)
+            elif each in self.notes:
+                continue
+            elif 're-release' in each:
+                continue
+            elif 'ZXDB=' in each:
+                continue
+            elif each.startswith('48'):
+                continue
+            elif each.startswith('Pentagon'):
+                continue
+            elif self.machine_type and self.machine_type in each:
+                continue
+            else:
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note
+            # else:
+            #     print('Skipped flag:', each)
         self.sortModFlags()
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
@@ -335,12 +347,26 @@ class GameFile(object):
             if ' - Issue' in self.content_desc:
                 self.content_desc = ''
 
+    def setReleaseDate(self, release_date):
+        release_date = re.findall('([12][90][x0-9][x0-9](-[x01][x0-9](-[x0-3][x0-9])?)?)', release_date)
+        if not release_date:
+            return
+        else:
+            release_date = release_date[0][0]
+        if len(release_date)>4:
+            self.release_date = release_date
+        year = release_date[:4]
+        self.game.setYear(year)
+        self.release.setYear(year)
+
     def setMachineType(self, filename):
         if not filename:
             return
         filename = filename.lower()
         if 'pentagon 128' in filename or '(Pentagon' in filename or '[Pentagon' in filename:
             self.machine_type = 'Pentagon 128K'
+        elif 'Timex' in filename:
+            self.machine_type = 'Timex'
         elif '+2a' in filename:
             self.machine_type = '+2A'
         elif '+2' in filename:
@@ -382,7 +408,7 @@ class GameFile(object):
             self.release.country = country
 
     def getCountry(self):
-        if self.release:
+        if self.release and self.release.country:
             return self.release.country
         return ''
 
@@ -497,15 +523,23 @@ class GameFile(object):
     def getSize(self):
         return '{:,}'.format(self.size)
 
-    def getFormat(self, path):
+    def getFormat(self, path=None):
+        if not path:
+            path = self.getPath()
         filename = os.path.basename(path)
         format = filename.replace('.zip','').split('.')[-1].lower()
         if format in GAME_EXTENSIONS:
             return format
-        else:
-            format = os.path.split(os.path.dirname(path))[-1].replace('[', '').replace(']', '').lower()
-            if format in GAME_EXTENSIONS:
-                return format
+        format = os.path.split(os.path.dirname(path))[-1].replace('[', '').replace(']', '').lower()
+        if format in GAME_EXTENSIONS:
+            return format
+        if path.endswith('.zip'):
+            with zipfile.ZipFile(path, 'r') as zf:
+                for zfname in zf.namelist():
+                    zfname_ext = zfname.split('.')[-1].lower()
+                    if zfname_ext in GAME_EXTENSIONS:
+                        return zfname_ext
+        return None
 
     def getMD5(self):
         if self.md5:
@@ -573,7 +607,7 @@ class GameFile(object):
         return {
             'Type':self.getType(),
             'Genre':self.getGenre(),
-            'Year':self.getYear(),
+            'Year':self.getYear(for_filename=for_filename),
             'Letter':getWosSubfolder(game_name),
             'MachineType':self.getMachineType(),
             'Publisher':publisher,
@@ -599,7 +633,6 @@ class GameFile(object):
 
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
-        # genre = self.game.getGenre()
         parts += self.getType().split('\\')
         parts.append('[{}]'.format(self.format.upper()))
         return ' - '.join(parts)
@@ -642,12 +675,12 @@ class GameFile(object):
             self.type += 'Covertapes'
         elif 'Demo' in genre:
             self.type += 'Demos'
-        elif 'Game' in genre:
-            self.type += 'Games'
         elif 'Music' in genre:
             self.type += 'Music'
         elif 'e-Book' in genre:
             self.type += 'eBooks'
+        elif 'Game' in genre:
+            self.type += 'Games'
         else:
             self.type = 'Unknown'
         return self.type
@@ -721,11 +754,14 @@ class GameFile(object):
     #         self.game_name_differentiator = self.getYear()
     #     return self.getGameName()
 
-    def getYear(self):
+    def getYear(self, for_filename=True):
+        if for_filename and self.release_date:
+            return self.release_date
         if self.release:
-            return self.release.getYear()
+            year = self.release.getYear()
         else:
-            return self.game.getYear()
+            year = self.game.getYear()
+        return year
 
     def getPublisher(self, restrict_length=False):
         if self.release:

@@ -95,6 +95,7 @@ class Database():
                       release.year,
                       release.publisher,
                       release.country,
+                      release.modded_by,
                       release.ingame_screen_gif_filepath,
                       release.ingame_screen_gif_filesize,
                       release.ingame_screen_scr_filepath,
@@ -127,6 +128,7 @@ class Database():
                           file.size,
                           file.content_desc,
                           file.is_demo,
+                          file.release_date,
                           file.part,
                           file.side,
                           file.language,
@@ -182,6 +184,9 @@ class Database():
     def getGameByFilePath(self, filepath):
         filename = os.path.basename(filepath)
         game_release = re.sub(TOSEC_REGEX, '', filename).strip()
+        version = re.findall('v[0-9].*', game_release)
+        if version:
+            game_release = game_release.replace(version[0], '').strip()
         if self.cache_by_name:
             search_string = getSearchStringFromGameName(game_release)
             games = self.cache_by_name.get(search_string)
@@ -199,10 +204,21 @@ class Database():
             games = self.getGamesFromRawData(raw_data)
         if not games:
             return None
+        game_file = GameFile(filepath)
         if len(games)==1:
-            return games[0]
+            game_year = games[0].getYear()[:4]
+            game_file_year = game_file.game.getYear()[:4]
+            if not game_year.isdigit() and not game_file_year.isdigit():
+                return games[0]
+            elif not game_year.isdigit():
+                return None
+            elif not game_file_year.isdigit():
+                return games[0]
+            elif abs(int(games[0].getYear())-int(game_file.game.getYear()))<=10:
+                return games[0]
+            else:
+                return None
         else:
-            game_file = GameFile(filepath)
             candidates = []
             for game in games:
                 for release in game.releases:
@@ -312,6 +328,7 @@ class Database():
                               row['release_publisher'],
                               row['release_country'],
                               game)
+        release.modded_by = row['modded_by']
         release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
         release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
         release.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
@@ -338,6 +355,7 @@ class Database():
         file.tosec_path = row['tosec_path']
         file.size = row['size']
         file.content_desc = row['content_desc']
+        file.release_date = row['release_date']
         file.is_demo = row['is_demo']
         file.setMachineType(row['file_machine_type'])
         file.part = row['part']

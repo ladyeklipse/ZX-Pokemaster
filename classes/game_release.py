@@ -25,6 +25,7 @@ class GameRelease(object):
     ingame_screen_scr_filesize = 0
     manual_filesize = 0
     files = []
+    modded_by = ''
 
     def __init__(self, release_seq=0, year=None, publisher=None, country='', game=None, aliases=[]):
         self.release_seq = release_seq
@@ -33,7 +34,7 @@ class GameRelease(object):
         self.setPublisher(publisher if publisher else self.game.publisher)
         if country == 'UK':
             country = 'GB'
-        # self.country = country if country else 'GB'
+        self.country = country
         self.files = []
         self.aliases = []
         self.addAliases(aliases)
@@ -64,11 +65,8 @@ class GameRelease(object):
         else:
             return self.game.getPublisher()
 
-    # def getLanguage(self):
-    #     if self.country in ['US', 'UK', 'GB', 'AU', 'NZ']:
-    #         return 'en'
-    #     else:
-    #         return self.country.lower()
+    def setYear(self, year):
+        self.year = year
 
     def getYear(self):
         if not self.year:

@@ -185,7 +185,7 @@ class TestTOSECScraper(unittest.TestCase):
             'tosec\\Sinclair ZX Spectrum\Applications\[TAP]\Turbo Load (1988)(Your Sinclair).zip'
         ]
         ts.scrapeTOSEC()
-        game = ts.gb.getGameByFileMD5('2911f21ca8af69be1ceff10be53702c6')
+        game = ts.db.getGameByFileMD5('2911f21ca8af69be1ceff10be53702c6')
         self.assertEqual(game.genre, 'Utilities')
 
     def test_fikus_pikus(self):
@@ -196,15 +196,17 @@ class TestTOSECScraper(unittest.TestCase):
         sql = 'DELETE FROM game_release WHERE name LIKE "Fikus Pikus%" AND wos_id>9000000'
         ts.db.execute(sql)
         ts.db.commit()
-        ts.db.loadCache()
-        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\fikus-pikus\\renamed')
+        # ts.db.loadCache()
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\ZXAAA Compilations\\Fikus Pikus Games')
+        ts.paths = ts.paths[:5]
         ts.scrapeTOSEC()
         ts.addUnscraped()
         game = ts.db.getGameByName('Fikus Pikus Games')
         self.assertEqual(game.genre, 'Compilation - Games')
         self.assertGreater(len(game.getFiles()), 2)
-        self.assertGreater(game.parts, 9)
+        self.assertGreater(game.parts, 2)
         for file in game.getFiles():
+            self.assertEqual(file.getCountry(), 'RU')
             self.assertGreater(file.part, 0)
 
     def test_missing_files(self):
@@ -226,6 +228,12 @@ class TestTOSECScraper(unittest.TestCase):
                 self.fail()
             self.assertNotEqual(game.wos_id, 0)
 
+    def test_educational(self):
+        dat_files = ['tosec/Sinclair ZX Spectrum - Compilations - Educational - [TRD] (TOSEC-v2011-09-24_CM).dat',
+                     ]
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
+        ts.scrapeTOSEC()
+
     def test_mia(self):
         sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
         ts.db.execute(sql)
@@ -237,6 +245,36 @@ class TestTOSECScraper(unittest.TestCase):
         ts.db.commit()
         game = ts.db.getGameByFileMD5('dbb91c0fb3a0d583fe14363bd68d3b58')
         self.assertGreater(game.wos_id, 0)
+
+    def test_getting_ext_from_zip_files(self):
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test')
+        ts.paths = ts.generateTOSECPathsArrayFromList([
+            'tosec\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
+        for path in ts.paths:
+            print(path)
+            game_file = ts.getGameFileFromFilePathDict(path)
+            print('tosec_path=',game_file.tosec_path)
+            self.assertTrue(game_file.format in GAME_EXTENSIONS)
+
+    def test_version_as_release(self):
+        sql = 'DELETE FROM game_file WHERE game_wos_id=30410 AND (wos_name="" OR wos_name IS NULL)'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game WHERE name = "Break-Space" AND wos_id>9000000'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_release WHERE name = "Break-Space" AND wos_id>9000000'
+        ts.db.execute(sql)
+        ts.db.commit()
+        ts.db.commit()
+        ts.paths = ts.generateTOSECPathsArrayFromList([
+            'tosec\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
+        ts.scrapeTOSEC()
+        ts.db.commit()
+        game = ts.db.getGameByWosID(30410)
+        self.assertGreater(len(game.getFiles()), 0)
+        for file in game.getFiles():
+            self.assertNotEqual(file.content_desc, '')
+            self.assertEqual(file.release.year, 2017)
+            self.assertEqual(file.release_date, '2017-06-14')
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

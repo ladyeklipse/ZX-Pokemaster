@@ -62,11 +62,11 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.mod_flags, '[t]')
 
     def test_notes(self):
-        file = GameFile("Test (19xx)(Publisher)[t][a][re-release]")
-        self.assertEqual(file.notes, '')
         path = 'Sinclair ZX Spectrum\Games\[TAP]\Backpackers Guide to the Universe (1984)(Fantasy Software)[passworded].zip'
         file = GameFile(path)
         self.assertEqual(file.notes, '[passworded]')
+        file = GameFile("Test (19xx)(Publisher)[t][a][re-release]")
+        self.assertEqual(file.notes, '')
 
 
     def test_cascade_games(self):
@@ -154,16 +154,13 @@ class GameFileTests(unittest.TestCase):
         r.addFile(f)
         f.setAka()
         self.assertEqual(f.getTOSECName(), 'Adventures of St. Bernard, The (19xx)(-)[aka Adventures of Saint Bernard, The].tap')
-        # g = Game('Flintstones, The')
-        # r = GameRelease(game=g, aliases=\
-        # 'Picapiedra, Los/The Flintstones'.split('/'))
         db = Database()
         g = db.getGameByWosID(1799)
         r = g.releases[3]
         f = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Picapiedra, Los (1989)(MCM Software)[48-128K][aka Flintstones, The].zip')
         r.addFile(f)
         f.setAka()
-        self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48-128K)[aka Flintstones, The].tzx')
+        self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48K-128K)[aka Flintstones, The].tzx')
 
     def test_sort_mod_flags(self):
         game_file = GameFile('Game (19xx)(-)[f +2][cr by Someone][MaxBoot]')
@@ -175,7 +172,7 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(game_file.release.country, 'RU')
 
     def test_remove_aka(self):
-        game_file = GameFile('Professional Adventure Writer (1986)(Gilsoft International)(48-128K)(Side A)[aka Professional Adventure Writing System, The][aka PAW].tzx')
+        game_file = GameFile('Professional Adventure Writer (1986)(Gilsoft International)(48K-128K)(Side A)[aka Professional Adventure Writing System, The][aka PAW].tzx')
         g = Game('Where Time Stood Still')
         r = GameRelease(game=g, aliases=['Land That Time Forgot, The', 'Where Time Stood Still', 'Tibet'])
         r.addFile(game_file)
@@ -218,6 +215,33 @@ class GameFileTests(unittest.TestCase):
         game_file = GameFile('tosec\fikus-pikus\renamed\Compilations\Demos\[TRD]\Fikus Pikus Demos (19xx)(Flash)(Disk 101 of 140).trd')
         self.assertEqual(game_file.getType(), 'Compilations\\Demos')
         self.assertEqual(game_file.part, 101)
+
+    def test_preserve_aka(self):
+        game_file = GameFile("DreamWalker (2014)(RetroSouls)(48K-128K)(RU)(en)[aka Alter Ego 2].tap")
+        self.assertTrue('Alter Ego 2' in game_file.release.getAllAliases())
+        self.assertTrue('DreamWalker' in game_file.release.getAllAliases())
+        game_file = GameFile("DreamWalker (2014)(RetroSouls)(48K-128K)(RU)(en)[aka Alter Ego 2][aka DreamWalker].tap")
+        self.assertTrue('Alter Ego 2' in game_file.release.getAllAliases())
+        self.assertTrue('DreamWalker' in game_file.release.getAllAliases())
+        self.assertEqual(len(game_file.release.getAllAliases()), 2)
+
+    def test_preserve_version(self):
+        game_file = GameFile("DreamWalker v1.0 (2014)(RetroSouls)(48K-128K)(RU)(en)[aka Alter Ego 2][aka DreamWalker].tap")
+        self.assertEqual(game_file.game.name, 'DreamWalker')
+        self.assertEqual(game_file.content_desc, 'v1.0')
+
+    def test_preserve_date(self):
+        game_file = GameFile('Game (2017-06-06)(Company).tzx')
+        tosec_output_name = game_file.getTOSECName()
+        self.assertEqual(tosec_output_name, 'Game (2017-06-06)(Company).tzx')
+        db = Database()
+        game = db.getGameByWosID(30408)
+        game_file = GameFile('tosec\itch.io\Games\Robot 1 in... The Ship of Doom (2017-06-18)(Recardo, Mat)(48K-128K).tzx',
+                             source='tosec')
+        game.addFile(game_file)
+        self.assertEqual(game_file.release.year, 2017)
+        tosec_output_name = game_file.getTOSECName()
+        self.assertEqual(tosec_output_name, 'Robot 1 in... The Ship of Doom (2017-06-18)(Recardo, Mat)(48K-128K).tzx')
 
 if __name__=='__main__':
     unittest.main()

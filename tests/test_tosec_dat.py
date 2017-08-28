@@ -9,10 +9,10 @@ if (os.getcwd().endswith('tests')):
 class TestTOSECDat(unittest.TestCase):
 
     def test_export(self):
-        dat = TOSECDat('_Test - Text - [Mixed]')
+        dat = TOSECDat('_Test - Test - [TZX]')
         db = Database()
-        game = db.getGameByWosID(1)
-        dat.addFiles(game.getFiles())
+        game = db.getGameByWosID(9)
+        dat.addFiles([file for file in game.getFiles() if file.format=='tzx'])
         dat.export()
         os.startfile(dat.getExportPath())
 

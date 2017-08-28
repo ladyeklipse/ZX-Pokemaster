@@ -144,6 +144,22 @@ class TestZXDBScraper(unittest.TestCase):
                 else:
                     self.assertEqual(len(file.content_desc), 0)
 
+    def test_file_release_date(self):
+        where_clause = 'AND entries.id = 20176'
+        games = zxdb.getGames(where_clause)
+        for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
+        game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
+        for file in game.getFiles():
+            self.assertEqual(file.release_date, '')
+        db.addGame(game)
+        db.commit()
+        game = db.getGameByWosID(20176)
+        for file in game.getFiles():
+            self.assertNotEqual(file.content_desc, '')
+            self.assertEqual(file.release_date, '')
+
     def test_authors_as_publishers(self):
         where_clause = 'AND entries.id IN (30155, 21575, 7727)'
         games = zxdb.getGames(where_clause)
