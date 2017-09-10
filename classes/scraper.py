@@ -11,6 +11,9 @@ from classes.proxy import Proxy
 import time
 from classes.user_agents import USER_AGENTS
 import shutil
+from ftplib import FTP
+from urllib.parse import urlparse
+
 
 ITER_CONTENT_CHUNK_SIZE = 1024*1024
 
@@ -281,6 +284,13 @@ class Scraper(object):
     def downloadFile(self, src, dest):
         if not src or not dest:
             return -1
+        if src.startswith('ftp://'):
+            url = urlparse(src)
+            ftp = FTP(url.netloc)
+            ftp.login()
+            ftp.retrbinary("RETR " + url.path, open(dest, 'wb').write)
+            ftp.quit()
+            return 200
         print('prepare to download', src, 'to', dest)
         session = self.getSession()
         self.waitBetweenRequests()

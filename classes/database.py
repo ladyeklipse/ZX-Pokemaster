@@ -191,8 +191,15 @@ class Database():
             search_string = getSearchStringFromGameName(game_release)
             games = self.cache_by_name.get(search_string)
             if not games:
-                search_string = getSearchStringFromGameName(game_release)
-                games = self.cache_by_name.get(search_string)
+                if ' - ' in game_release:
+                    search_string = getSearchStringFromGameName(game_release.split(' - ')[0])
+                    games = self.cache_by_name.get(search_string)
+                elif ' + ' in game_release:
+                    search_string = getSearchStringFromGameName(game_release.split(' + ')[0])
+                    games = self.cache_by_name.get(search_string)
+            # if not games:
+            #     search_string = getSearchStringFromGameName(game_release)
+            #     games = self.cache_by_name.get(search_string)
         else:
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
             sql = SELECT_GAME_SQL_START
@@ -202,36 +209,58 @@ class Database():
             sql += SELECT_GAME_SQL_END
             raw_data = self.cur.execute(sql, [game_release]).fetchall()
             games = self.getGamesFromRawData(raw_data)
+            if not games:
+                if '%-%' in game_release:
+                    game_release = game_release.split('%-%')[0]+"%"
+                    raw_data = self.cur.execute(sql, [game_release]).fetchall()
+                    games = self.getGamesFromRawData(raw_data)
+                elif '%+%' in game_release:
+                    game_release = game_release.split('%+%')[0]+"%"
+                    raw_data = self.cur.execute(sql, [game_release]).fetchall()
+                    games = self.getGamesFromRawData(raw_data)
         if not games:
             return None
         game_file = GameFile(filepath)
+        # if len(games)==1:
+        #     game_year = games[0].getYear()[:4]
+        #     game_file_year = game_file.game.getYear()[:4]
+        #     if not game_year.isdigit() and not game_file_year.isdigit():
+        #         return games[0]
+        #     elif not game_year.isdigit():
+        #         return None
+        #     elif not game_file_year.isdigit():
+        #         return games[0]
+        #     elif abs(int(games[0].getYear())-int(game_file.game.getYear()))<=10:
+        #         if games[0].getPublisher()!=game_file.getPublisher():
+        #             return None
+        #         return games[0]
+        #     else:
+        #         return None
+        # else:
         if len(games)==1:
-            game_year = games[0].getYear()[:4]
-            game_file_year = game_file.game.getYear()[:4]
-            if not game_year.isdigit() and not game_file_year.isdigit():
-                return games[0]
-            elif not game_year.isdigit():
-                return None
-            elif not game_file_year.isdigit():
-                return games[0]
-            elif abs(int(games[0].getYear())-int(game_file.game.getYear()))<=10:
-                return games[0]
-            else:
-                return None
+            game = games[0]
+            for release in game.releases:
+                if release.getYear() == game_file.game.getYear():
+                    return game
+                release_publisher = getSearchStringFromGameName(release.getPublisher())
+                game_file_publisher = getSearchStringFromGameName(game_file.game.getPublisher())
+                if release_publisher == game_file_publisher:
+                    return game
+        candidates = []
+        for game in games:
+            for release in game.releases:
+                release_publisher = getSearchStringFromGameName(release.getPublisher())
+                game_file_publisher = getSearchStringFromGameName(game_file.game.getPublisher())
+                if release_publisher==game_file_publisher:
+                    candidates.append(game)
+        if len(candidates)==1:
+            return candidates[0]
         else:
-            candidates = []
-            for game in games:
+            for game in candidates:
                 for release in game.releases:
-                    if release.getPublisher() == game_file.game.getPublisher():
-                        candidates.append(game)
-            if len(candidates)==1:
-                return candidates[0]
-            else:
-                for game in candidates:
-                    for release in game.releases:
-                        if release.getYear() == game_file.game.getYear():
-                            return game
-            return None
+                    if release.getYear() == game_file.game.getYear():
+                        return game
+        return None
 
     def getGamesFromRawData(self, raw_data):
         games = []

@@ -68,12 +68,25 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(game.cheats), 0)
 
     def test_getting_game_by_file_name(self):
-        filename = '66 (19xx)(Stankinsoft)(de).zip'
+        filename = 'Helter Skelter + Editor (1991)(Audiogenic)[h Rajsoft].tap'
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 2291)
+        filename = 'Helter Skelter (1991)(Audiogenic)[h Rajsoft].tap'
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 2291)
+        filename = '66 (19xx)(Stankisoft)(de).tap'
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.wos_id, 39)
-        filename = "Giant's Revenge (1984)(Thor Computer Software).zip"
+        filename = "Giant's Revenge (1984)(Thor Computer Software).tap"
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.wos_id, 2040)
+        filename = "Coin-Op Hits (1990)(US Gold).tap"
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 11598)
+        filename = "Coin-Op Hits (1990)(U.S. Gold).tap"
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 11598)
+
 
     def test_appending_tosec_file_info(self):
         filename = "Gonzzalezz (1989)(Opera Soft)(es)(Side B).zip"
@@ -174,6 +187,13 @@ class TestDatabase(unittest.TestCase):
                 games_with_no_original_release.append(game)
         print(games_with_no_original_release)
         self.assertEqual(len(games_with_no_original_release), 0)
+
+    def test_car_game(self):
+        # db.loadCache()
+        game_file = GameFile('tosec\CSSCGC Games Reviewed\\1996\Car (1996)(Yates, Damion)(48K-128K)[CSSCGC].z80')
+        game = db.getGameByFile(game_file)
+        self.assertNotEqual(game.wos_id, 1299)
+
 
 
 if __name__=='__main__':

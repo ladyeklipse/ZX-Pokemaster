@@ -264,7 +264,6 @@ class TestTOSECScraper(unittest.TestCase):
         sql = 'DELETE FROM game_release WHERE name = "Break-Space" AND wos_id>9000000'
         ts.db.execute(sql)
         ts.db.commit()
-        ts.db.commit()
         ts.paths = ts.generateTOSECPathsArrayFromList([
             'tosec\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
         ts.scrapeTOSEC()
@@ -275,6 +274,26 @@ class TestTOSECScraper(unittest.TestCase):
             self.assertNotEqual(file.content_desc, '')
             self.assertEqual(file.release.year, 2017)
             self.assertEqual(file.release_date, '2017-06-14')
+
+    def test_csscgc(self):
+        # ts.db.conn.close()
+        # restoreDB()
+        # ts.db = Database()
+        sql = 'DELETE FROM game_file WHERE game_wos_id=1299 AND notes="[CSSCGC]"'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game WHERE name="Car" and publisher="Yates, Damion"'
+        ts.db.execute(sql)
+        sql = 'DELETE FROM game_release WHERE name="Car" and publisher="Yates, Damion"'
+        ts.db.execute(sql)
+        ts.db.commit()
+        # ts.db.loadCache(force_reload=True)
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\csscgc Games test\\')
+        ts.scrapeTOSEC()
+        ts.addUnscraped()
+        ts.db.commit()
+        game = ts.db.getGameByWosID(1299)
+        for file in game.getFiles():
+            self.assertNotIn('[CSSCGC]', file.notes)
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

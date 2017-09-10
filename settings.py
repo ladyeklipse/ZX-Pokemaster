@@ -91,6 +91,7 @@ COUNTRY_LANGUAGE_DICT = {
     'US':'en',
     'AR':'es',
     'BR':'pt',
+    'CZ':'cs',
     '':'en',
 }
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \

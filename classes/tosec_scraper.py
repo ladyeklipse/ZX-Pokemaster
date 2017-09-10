@@ -27,7 +27,7 @@ class TOSECScraper():
     unscraped_file_paths = []
 
     def __init__(self, cache=True, db=None):
-        self.getTOSECAliases()
+        self.getManuallyEnteredTOSECAliases()
         self.getManuallyCorrectedContentDescriptions()
         self.db = db if db else Database()
         if cache:
@@ -78,8 +78,6 @@ class TOSECScraper():
             for ext in GAME_EXTENSIONS:
                 if '[%s]' % ext.upper() in dat_file:
                     paths += self.getPathsFromDatFile(dat_file)
-        paths = sorted(paths, key=lambda path_dict: path_dict['name'])
-        paths = sorted(paths, key=lambda path_dict: 'Compilation' in path_dict['path'])
         return paths
 
     def getPathsFromDatFile(self, dat_file):
@@ -107,6 +105,12 @@ class TOSECScraper():
                     file_path_dict['sha1'] = rom.attrib['sha1']
                     paths.append(file_path_dict)
         return paths
+
+    def sortPaths(self):
+        paths = self.paths
+        paths = sorted(paths, key=lambda path_dict: path_dict['name'])
+        paths = sorted(paths, key=lambda path_dict: 'Compilation' in path_dict['path'])
+        self.paths = paths
 
     def scrapeTOSEC(self):
         if not self.paths:
@@ -239,7 +243,8 @@ class TOSECScraper():
         return game_file
 
     def updateTOSECAliasesCSV(self):
-        self.getTOSECAliases()
+        self.getManuallyEnteredTOSECAliases()
+        written_game_names = []
         with open('tosec_aliases.csv', 'w', encoding='utf-8') as f:
             for key, value in self.manually_entered_tosec_aliases.items():
                 f.write(';'.join((key, value))+'\n')
@@ -248,8 +253,10 @@ class TOSECScraper():
                     game_file = self.getGameFileFromFilePath(file_path)
                 elif type(file_path) == dict:
                     game_file = self.getGameFileFromFilePathDict(file_path)
-                # game_file = self.getGameFileFromFilePathDict(file_path)
-                f.write(';'.join((game_file.game.getTOSECName(), '', game_file.getGenre()))+'\n')
+                game_name = game_file.game.getTOSECName()
+                if game_name not in written_game_names:
+                    f.write(';'.join((game_name, '', game_file.getGenre()))+'\n')
+                    written_game_names.append(game_name)
 
     def getUnscraped(self):
         # dat_paths = self.generateTOSECPathsArrayFromDatFiles()
@@ -260,7 +267,7 @@ class TOSECScraper():
             if path['md5'] in md5s:
                 have.append(path)
             else:
-                print('Miss:', path)
+                # print('Miss:', path)
                 miss.append(path)
         print('Have:', len(have))
         print('Miss:', len(miss))
@@ -268,6 +275,7 @@ class TOSECScraper():
 
     def addUnscraped(self):
         self.unscraped_file_paths = sorted(self.getUnscraped(), key=lambda file: file['name'])
+        self.updateTOSECAliasesCSV()
         for file_path in self.unscraped_file_paths:
             game_file = self.getGameFileFromFilePathDict(file_path)
             game = self.db.getGameByFileMD5(game_file.getMD5())
@@ -280,7 +288,7 @@ class TOSECScraper():
         self.db.commit()
         self.unscraped_file_paths = []
 
-    def getTOSECAliases(self):
+    def getManuallyEnteredTOSECAliases(self):
         if not self.manually_entered_tosec_aliases:
             with open('tosec_aliases.csv', 'r', encoding='utf-8') as f:
                 for line in f.readlines():
