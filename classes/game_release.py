@@ -10,9 +10,9 @@ class GameRelease(object):
 
     game = None
     release_seq = 0
-    year = None
-    publisher=None
-    country=''
+    year = ''
+    publisher = ''
+    country = ''
     aliases = []
     loading_screen_gif_filepath = None
     loading_screen_scr_filepath = None
@@ -128,6 +128,19 @@ class GameRelease(object):
         new_file.release = self
         self.files.append(new_file)
 
+    def importInfoFromGameFile(self, game_file):
+        game_file_year = game_file.getYear()
+        if (not self.year and game_file_year!='19xx') or \
+            (self.getYear()[:4] == game_file.getYear()[:4] and len(game_file_year)>4):
+            self.year = game_file.getYear()
+            self.modded_by = game_file.md5
+        if not self.getPublisher() and game_file.getPublisher()!='-':
+            self.publisher = game_file.getPublisher()
+            self.modded_by = game_file.md5
+        if not self.country and game_file.getCountry():
+            self.country = game_file.getCountry()
+            self.modded_by = game_file.md5
+
     def getInfoFromLocalFiles(self):
         extra_files = []
         for file in self.files:
@@ -175,16 +188,5 @@ class GameRelease(object):
                             second_file.setLanguageFromWosName()
                             second_file.release = file.release
                             extra_files.append(second_file)
-                            # Automatic setting of content_desc based on wos_name DOESN'T WORK.
-                            # Solution is to set it MANUALLY where necessary.
-                            # if  second_file.part == file.part and \
-                            #     second_file.language == file.language and \
-                            #     second_file.side == file.side and
-                            #     second_file.format == file.format and  \
-                            #     not second_file.is_demo:
-                            #     second_file.setContentDescFromWosName()
-                            #     if not file.content_desc:
-                            #         file.setContentDescFromWosName()
-                                # print('Imported content_desc from zxdb:', second_file.getTOSECName()        )
         self.addFiles(extra_files)
         self.files = [file for file in self.files if file.md5]

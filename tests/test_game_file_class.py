@@ -243,5 +243,19 @@ class GameFileTests(unittest.TestCase):
         tosec_output_name = game_file.getTOSECName()
         self.assertEqual(tosec_output_name, 'Robot 1 in... The Ship of Doom (2017-06-18)(Recardo, Mat)(48K-128K).tzx')
 
+    def test_trainer_as_machine_type(self):
+        game_file = GameFile('Sinclair ZX Spectrum\Games\[TAP]\Predator (1987)(Activision)[t +2].tap')
+        self.assertFalse(game_file.machine_type=='+2')
+
+    def test_strip_name_if_no_mod_flags(self):
+        pattern = '{GameName} ({Year}) ({Publisher}) ({MachineType}) {ModFlags}'
+        game_file = GameFile('Game (19xx)(-).tap')
+        output_name = game_file.getOutputName(pattern)
+        self.assertEqual(output_name, 'Game (19xx) (-).tap')
+        game_file = GameFile('Game (19xx)(-)[m].tap')
+        output_name = game_file.getOutputName(pattern)
+        self.assertEqual(output_name, 'Game (19xx) (-) [m].tap')
+
+
 if __name__=='__main__':
     unittest.main()

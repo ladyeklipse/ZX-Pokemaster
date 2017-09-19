@@ -367,11 +367,13 @@ class GameFile(object):
             self.machine_type = 'Pentagon 128K'
         elif 'Timex' in filename:
             self.machine_type = 'Timex'
-        elif '+2a' in filename:
+        elif '+2a-+3' in filename:
+            self.machine_type = '+2A-+3'
+        elif '[+2a' in filename or '(+2a' in filename:
             self.machine_type = '+2A'
-        elif '+2' in filename:
+        elif '[+2' in filename or '(+2' in filename:
             self.machine_type = '+2'
-        elif '+3' in filename:
+        elif '[+3' in filename or '(+3' in filename:
             self.machine_type = '+3'
         elif '128k' in filename and '48' in filename:
             self.machine_type = '48K-128K'
@@ -443,6 +445,8 @@ class GameFile(object):
             content_desc = content_desc.replace(alias, '')
         self.content_desc = ' - '+content_desc
 
+    def getMedia(self):
+        return ' '.join((self.getPart(), self.getSide())).strip()
 
     def getPart(self):
         if not self.part:
@@ -488,12 +492,12 @@ class GameFile(object):
                 output_name = output_name.replace('(%s)' % self.getLanguage(), '')
                 if self.getLanguage() == 'en':
                     output_name = output_name.replace('(%s)' % self.getCountry(), '')
-            # if not self.getPublisher():
-            #     output_name = output_name.replace('(%s)' % self.getCountry(), '')
             output_name = output_name.replace('(%s)' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
         output_name = ' '.join([x for x in output_name.split(' ') if x])
-        output_name = filepath_regex.sub('', output_name.replace('/', '-').replace(':', ' -')).strip()
+        output_name = filepath_regex.sub('', output_name.replace('/', '-').replace(':', ' -'))
+        filename, ext = os.path.splitext(output_name)
+        output_name = filename.strip()+ext
         return output_name
 
     def setSide(self, side):
@@ -616,8 +620,9 @@ class GameFile(object):
             'Country':self.getCountry(),
             'Language':self.getLanguage(),
             'Format':self.format,
-            'Side':self.getSide(),
+            'Media':self.getMedia(),
             'Part':self.getPart(),
+            'Side':self.getSide(),
             'ModFlags':self.mod_flags+self.alt_mod_flag,
             'ZXDB_ID':self.game.getWosID(),
             'Notes':self.getNotes(),
@@ -629,7 +634,10 @@ class GameFile(object):
             return os.path.splitext(os.path.basename(self.src))[0]
 
     def getNotes(self):
-        return self.notes
+        if self.game.x_rated:
+            return self.notes + X_RATED_FLAG
+        else:
+            return self.notes
 
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
@@ -711,7 +719,11 @@ class GameFile(object):
                     short=False):
         if for_filename and game_name_length<=70:
             self.removeAka()
-        game_name = self.release.getAllAliases()[0] if self.release else self.game.name
+        release_aliases = self.release.getAllAliases()
+        game_name = release_aliases[0] if release_aliases else self.game.name
+        if not game_name:
+            print('No game_name for file:', self)
+            return ''
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
         while game_name.endswith('.'):
             game_name = game_name[:-1]
@@ -746,14 +758,6 @@ class GameFile(object):
         else:
             return self.content_desc
 
-
-    # def getAltGameName(self, differentiator=None):
-    #     if differentiator=='publisher':
-    #         self.game_name_differentiator = self.getPublisher().replace(' ', '').replace(',', '')[:10]
-    #     elif differentiator=='year':
-    #         self.game_name_differentiator = self.getYear()
-    #     return self.getGameName()
-
     def getYear(self, for_filename=True):
         if for_filename and self.release_date:
             return self.release_date
@@ -761,6 +765,8 @@ class GameFile(object):
             year = self.release.getYear()
         else:
             year = self.game.getYear()
+        if not for_filename:
+            year = year[:4]
         return year
 
     def getPublisher(self, restrict_length=False):

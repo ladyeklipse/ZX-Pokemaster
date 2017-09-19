@@ -14,7 +14,7 @@ def getWosIDsOfTipshopGames(db=None):
     db = db if db else Database()
     db.loadCache()
     letters = ['0123']+[x for x in 'abcdefghijklmnopqrstuvwxyz']
-    # letters='a'
+    # letters='g'
     missing_data = []
     for letter in letters:
         urls = ts.getList(letter)
@@ -52,7 +52,7 @@ def games2xlsx(games, xlsx_filename='new_tipshop_pokes.xlsx', new_only=False):
         worksheet.write_row(i, 0, [
             game.getWosID(),
             game.name,
-            game.getPokFileContents(),
+            game.getPokFileContents(for_xlsx=True),
             game.tipshop_multiface_pokes_section,
             '0' if game.has_new_pokes else '1'
         ], mformat)
@@ -72,7 +72,7 @@ def updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db=None):
 
 def getAllPokes(wos_ids=[]):
     db = Database()
-    games = db.getAllGames('tipshop_page IS NOT NULL')
+    games = db.getAllGames('tipshop_page IS NOT NULL AND tipshop_page!="0"')
     # games = games[:10]
     ts = TipshopScraper()
     for i, game in enumerate(games):

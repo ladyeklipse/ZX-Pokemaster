@@ -29,9 +29,12 @@ class Cheat(object):
         if poke not in self.pokes:
             self.pokes.append(poke)
 
-    def asFileRecord(self):
+    def asFileRecord(self, for_xlsx=False):
         record = []
-        record.append('N' + self.description)
+        if for_xlsx:
+            record.append('N '+self.description)
+        else:
+            record.append('N' + self.description)
         for i, poke in enumerate(self.pokes):
             if i == len(self.pokes) - 1:
                 marker = 'Z'

@@ -194,6 +194,19 @@ class TestDatabase(unittest.TestCase):
         game = db.getGameByFile(game_file)
         self.assertNotEqual(game.wos_id, 1299)
 
+    def test_xrated(self):
+        game = self.db.getGameByWosID(3861)
+        for file in game.getFiles():
+            tosec_name = file.getTOSECName()
+            self.assertTrue('[adult]' in tosec_name)
+
+    def test_machine_type_48K(self):
+        pattern = '{GameName} ({Year}) ({Publisher}) ({MachineType}) {ModFlags}'
+        game_file = GameFile('tosec\\reviewed files\homebrew\Games\Souls (2013)(Retrobytes Productions)(ES).tap')
+        game_file.game = db.getGameByFile(game_file)
+        output_name = game_file.getOutputName(pattern)
+        self.assertEqual(output_name, 'Souls (2013) (Retrobytes Productions) (48K).tap')
+        game_file = GameFile('ftp/pub/sinclair/games/s/Souls.tzx.zip')
 
 
 if __name__=='__main__':

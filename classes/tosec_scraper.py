@@ -69,7 +69,7 @@ class TOSECScraper():
     def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
         paths = []
         if not dat_files:
-            root, dirs, files = next(os.walk('tosec'))
+            root, dirs, files = next(os.walk('tosec\\official dats'))
             dat_files = [file for file in files if file.endswith('.dat')]
         else:
             root = ''
@@ -151,6 +151,7 @@ class TOSECScraper():
                     game_from_db = self.db.getGameByFile(game_file)
                 if game_from_db and current_game!=game_from_db:
                     current_release = game_from_db.findReleaseByFile(game_file)
+                    current_release.importInfoFromGameFile(game_file) #EXPERIMENTAL
                     current_release.addFiles([file for file in current_game.files])
                     current_release.addFile(game_file)
                     current_game.files = []
@@ -254,6 +255,8 @@ class TOSECScraper():
                 elif type(file_path) == dict:
                     game_file = self.getGameFileFromFilePathDict(file_path)
                 game_name = game_file.game.getTOSECName()
+                if '[CSSCGC]' in game_file.notes:
+                    continue
                 if game_name not in written_game_names:
                     f.write(';'.join((game_name, '', game_file.getGenre()))+'\n')
                     written_game_names.append(game_name)

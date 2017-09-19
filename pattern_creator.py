@@ -23,8 +23,8 @@ class PatternCreatorDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.buttons = [
-            self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnPart,
-            self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, self.ui.btnSide,
+            self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnMedia, #self.ui.btnPart,
+            self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, #self.ui.btnSide,
             self.ui.btnLetter, self.ui.btnNumberOfPlayers, self.ui.btnSlash, self.ui.btnModFlags,
             self.ui.btnFormat, self.ui.btnZXDB_ID, self.ui.btnHyphen, self.ui.btnUnderscore,
             self.ui.btnType, self.ui.btnNotes, self.ui.btnCountry, self.ui.btnOriginalName
@@ -63,7 +63,7 @@ class PatternCreatorDialog(QDialog):
         game_file.game.setGenre('Arcade Game - Maze')
         game_file.game.wos_id = 5448
         self.examples.append(game_file)
-        game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2)(Side A)[Spy Hunter].tzx')
+        game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2 Side A)[Spy Hunter].tzx')
         game_file.game.setNumberOfPlayers(1)
         game_file.game.wos_id = 11598
         self.examples.append(game_file)

@@ -33,9 +33,9 @@ class TipshopScraper(Scraper):
 
     def __init__(self):
         self.name_replace_dict = {}
-        with open('tipshop_aliases.txt', 'r', encoding='utf-8') as f:
+        with open('tipshop_aliases.csv', 'r', encoding='utf-8') as f:
             for line in f.readlines():
-                line = line.split('|')
+                line = line.split(';')
                 if len(line)==1:
                     continue
                 else:
@@ -68,10 +68,13 @@ class TipshopScraper(Scraper):
             return
         url = game.getTipshopUrl()
         print(url)
-        selector = self.loadUrl(url)
-        pure_text = selector.xpath('//text()').extract_all()
-        strings = find_range(pure_text, 'Download full POKE database', ['Complete solutions', 'Type-in hacks'])
-        self.getPokesFromStrings(game, strings)
+        try:
+            selector = self.loadUrl(url)
+            pure_text = selector.xpath('//text()').extract_all()
+            strings = find_range(pure_text, 'Download full POKE database', ['Complete solutions', 'Type-in hacks'])
+            self.getPokesFromStrings(game, strings)
+        except:
+            print(traceback.format_exc())
 
     def getPokesFromStrings(self, game, strings):
         strings = [x.strip() for x in strings if x.strip()]

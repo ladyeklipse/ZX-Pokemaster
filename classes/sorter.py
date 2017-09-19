@@ -145,6 +145,7 @@ class Sorter():
             try:
                 game_files = self.getGameFilesFromInputPath(file_path)
             except:
+                game_files = None
                 self.fails.append(file_path)
                 self.error += '\nError while examining {}\n'.format(file_path)+traceback.format_exc()+'\n'
                 print(traceback.format_exc())

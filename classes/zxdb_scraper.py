@@ -136,6 +136,9 @@ class ZXDBScraper():
         release = GameRelease()
         games = []
         for row in self.cur:
+            #Skipping ZX80/ZX81 files
+            if row['machine_type'] and row['machine_type'].startswith('ZX8'):
+                continue
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:

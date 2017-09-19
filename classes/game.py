@@ -9,7 +9,7 @@ import re
 class Game(object):
 
     wos_id = 0
-    name = None
+    name = ''
     publisher = ''
     year = None
     genre = ''
@@ -157,8 +157,9 @@ class Game(object):
         if self.tipshop_page:
             return self.tipshop_page
         else:
-            self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
-            return self.tipshop_page
+            return None
+            # self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
+            # return self.tipshop_page
 
     def getYear(self):
         return str(self.year) if self.year else '19xx'
@@ -216,9 +217,12 @@ class Game(object):
 
     def setMachineType(self, machine_type):
         if machine_type:
-            machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
-            if '+2' in machine_type or '+3' in machine_type:
-                machine_type = machine_type.replace('128 ', '')
+            if 'TC20' in machine_type or 'TS20' in machine_type:
+                machine_type = 'Timex'
+            else:
+                machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
+                if '+2' in machine_type or '+3' in machine_type:
+                    machine_type = machine_type.replace('128 ', '')
         else:
             machine_type = '48K'
         self.machine_type = machine_type
@@ -338,13 +342,13 @@ class Game(object):
             pok_file_contents = self.getPokFileContents()
             f.write(pok_file_contents)
 
-    def getPokFileContents(self):
+    def getPokFileContents(self, for_xlsx=False):
         if not self.cheats:
             return ''
         pok_file_contents = ''
         for cheat in self.cheats:
             if not cheat.description.startswith('--'):
-                pok_file_contents += cheat.asFileRecord()
+                pok_file_contents += cheat.asFileRecord(for_xlsx=for_xlsx)
                 pok_file_contents += '\n'
         pok_file_contents += 'Y'
         return pok_file_contents
@@ -360,15 +364,7 @@ class Game(object):
         for release in self.releases:
             for file in release.files:
                 if file.md5 == game_file.md5:
-                    if not release.year:
-                        release.year = game_file.getYear()
-                        release.modded_by = game_file.md5
-                    if not release.publisher:
-                        release.publisher = game_file.getPublisher()
-                        release.modded_by = game_file.md5
-                    if not release.country:
-                        release.country = game_file.getCountry()
-                        release.modded_by = game_file.md5
+                    release.importInfoFromGameFile(game_file)
                     return release
         game_file_publisher = game_file.game.publisher.lower().replace('.','')
         for release in self.releases:

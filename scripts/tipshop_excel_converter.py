@@ -33,6 +33,8 @@ def xlsx2db():
     worksheet = workbook.sheet_by_index(0)
     for i in range(worksheet.nrows):
         wos_id = int(worksheet.cell_value(rowx=i, colx=0))
+        if wos_id>9000000:
+            continue
         pok_file_contents = worksheet.cell_value(rowx=i, colx=2)
         game = Game()
         try:

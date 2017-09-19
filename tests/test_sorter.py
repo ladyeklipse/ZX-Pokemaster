@@ -251,9 +251,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura).trd'
+        expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)(RU)(en).trd'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)[a].trd'
+        not_expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)(RU)(en)[a].trd'
         self.assertFalse(os.path.exists(not_expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -271,7 +271,7 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         #Bug-eyes has both English and Italian versions, should retain both
-        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon)(it).tap'
+        expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon)(GB)(it).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_multilang_out/Bug-Eyes (1985)(Icon).z80'
         self.assertTrue(os.path.exists(expected_file))
@@ -353,9 +353,9 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 2 of 2).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2)(Side A).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2 Side A).dsk'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2)(Side B).dsk'
+        expected_file = 'tests/files/sort_two_disks_two_sides_out/Epyx 21 (1990)(U.S. Gold)(+3)(Disk 1 of 2 Side B).dsk'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_equal_input_and_output_paths(self):
@@ -445,9 +445,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation).sna'
+        expected_file = output_location+'/Die Hard II (1999)(REMADE Corporation)(RU)(en).sna'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = output_location+'/Quest for Sex (19xx)(Carley Bros).z80'
+        not_expected_file = output_location+'/Quest for Sex (19xx)(Carley Bros)[adult].z80'
         self.assertFalse(os.path.exists(not_expected_file))
         self.assertEqual(len(s.fails), 0)
 
@@ -465,7 +465,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = output_location+'/Tasword Two (1984)(MCI Iberica)(es)[re-release].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location+'/Tasword Two - The Word Processor (1983)(Tasman)(ru)[aka Tasword 2].tap'
+        expected_file = output_location+'/Tasword Two - The Word Processor (1983)(Tasman)(GB)(ru)[aka Tasword 2].tap'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Tasword Two (1983)(Profisoft).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -810,10 +810,9 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertEqual(s.fails, [])
-        self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe (2005)(Zaniboni, Marcello).gif')
+        self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe (2005)(Zaniboni, Marcello)(IT)(en).gif')
         self.assertFileExists(output_location+'/Accelerator (1984)(Century City).gif')
         self.assertFileNotExists(output_location+'/Accelerator (1984)(Century City).zip')
-
 
     def assertFileExists(self, file_path):
         self.assertTrue(os.path.exists(file_path))

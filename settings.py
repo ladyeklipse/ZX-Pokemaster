@@ -95,7 +95,7 @@ COUNTRY_LANGUAGE_DICT = {
     '':'en',
 }
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \
-    '{GameName} ({Year})({Publisher})({MachineType})({Country})({Language})({Part})({Side}){ModFlags}{Notes}'
+    '{GameName} ({Year})({Publisher})({MachineType})({Country})({Language})({Media}){ModFlags}{Notes}'
 DEFAULT_MACHINE_TYPE = '48K'
 DEFAULT_GAME_LANGUAGE = 'en'
 OUTPUT_PATH_STRUCTURE_KEYS = [
@@ -118,3 +118,4 @@ OUTPUT_PATH_STRUCTURE_KEYS = [
     'TOSECName'
 ]
 MOD_FLAGS_ORDER = ['cr', 'f', 'h', 'm', 'p', 't', 'tr', 'o', 'u', 'v', 'b']
+X_RATED_FLAG = '[adult]'

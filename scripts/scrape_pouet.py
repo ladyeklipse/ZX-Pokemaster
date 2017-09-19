@@ -48,7 +48,7 @@ def scrape_pouet():
                 else:
                     release_date = release_date[0]
             else:
-                release_date = '-'
+                release_date = '19xx'
             if not release_group:
                 release_group = '-'
             if release_party:
@@ -64,7 +64,10 @@ def scrape_pouet():
             game_page_selector = s.loadUrl(game_page_url)
             download_link = game_page_selector.xpath('//a[@id="mainDownloadLink"]/@href').extract_first()
             download_link = download_link.replace(
-                'https://files.scene.org/view/',
+                '/view/',
+                '/get/')
+            download_link = download_link.replace(
+                'https://files.scene.org/get/',
                 'ftp://ftp.ua.scene.org/pub/mirrors/sceneorg/')
             print(tosec_name)
             print(download_link)
@@ -74,13 +77,16 @@ def scrape_pouet():
             else:
                 dest = 'tosec/unsorted files/pouet.net/dest/'+tosec_name+ext
                 print(dest)
-                if not os.path.exists(dest):
+                if not (os.path.exists(dest) and os.path.getsize(dest)):
                     try:
-                        s.downloadFile(download_link, dest)
-                        success += 1
+                        response = s.downloadFile(download_link, dest)
+                        if int(response)==200:
+                            success += 1
+                        else:
+                            exceptions.append([game_page_url, download_link, tosec_name])
                     except Exception as e:
                         print(traceback.format_exc())
-                        exceptions.append([download_link, dest])
+                        exceptions.append([game_page_url, download_link, tosec_name])
                 else:
                     success += 1
     print('Success:', success)
@@ -89,32 +95,48 @@ def scrape_pouet():
 
 
 
-# def rename():
-    # os.makedirs(os.path.dirname(dest), exist_ok=True)
-    # if ext == '.zip':
-    #     with zipfile.ZipFile(src, 'r') as zf:
-    #         files_to_extract = []
-    #         conflict = False
-    #         for zfname in zf.namelist():
-    #             zfname_ext = zfname.split('.')[-1].lower()
-    #             if zfname_ext in GAME_EXTENSIONS:
-    #                 files_to_extract.append(zfname)
-    #         for each in GAME_EXTENSIONS:
-    #             if len([x for x in files_to_extract if x.endswith(each)]) > 1:
-    #                 print('Conflict:', tosec_name, src, files_to_extract, 'Year:', year)
-    #                 conflict = True
-    #                 break
-    #         if not conflict and files_to_extract:
-    #             for file in files_to_extract:
-    #                 data = zf.read(files_to_extract[0])
-    #                 ext = os.path.splitext(files_to_extract[0])[-1].lower()
-    #                 dest = dest.replace('.zip', ext)
-    #                 with open(dest, 'wb+') as output:
-    #                     output.write(data)
-    #                     game_represented = True
-    #             files_extracted.append(src)
-    # else:
-    #     shutil.copy(src, dest)
+def rename():
+    files_extracted = []
+    for root, dirs, files in os.walk('tosec\\unsorted files\\pouet.net\\sortedbytype'):
+        for src_file in files:
+            src = os.path.join(root,  src_file)
+            print(src)
+            game_file = GameFile(src)
+            tosec_name = game_file.getTOSECName()
+            dest = os.path.join(
+                'tosec\\unsorted files\\pouet.net\\unpacked', game_file.getType(), tosec_name)
+            ext = os.path.splitext(src)[-1]
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            if ext == '.bak':
+                continue
+            if ext == '.zip':
+                with zipfile.ZipFile(src, 'r') as zf:
+                    files_to_extract = []
+                    conflict = False
+                    for zfname in zf.namelist():
+                        zfname_ext = zfname.split('.')[-1].lower()
+                        if zfname_ext in GAME_EXTENSIONS:
+                            files_to_extract.append(zfname)
+                    for each in GAME_EXTENSIONS:
+                        if len([x for x in files_to_extract if x.endswith(each)]) > 1:
+                            print('Conflict:', tosec_name, src, files_to_extract)
+                            conflict = True
+                            break
+                    if not conflict and files_to_extract:
+                        for file in files_to_extract:
+                            data = zf.read(files_to_extract[0])
+                            ext = os.path.splitext(files_to_extract[0])[-1].lower()
+                            dest = dest.replace('.zip', ext)
+                            with open(dest, 'wb+') as output:
+                                output.write(data)
+                        files_extracted.append(src)
+                    if conflict:
+                        dest = src.replace('sortedbytype', 'conflicts')
+                        os.makedirs(os.path.dirname(dest), exist_ok=True)
+                        shutil.copy(src, dest)
+            else:
+                shutil.copy(src, dest)
 
 if __name__=='__main__':
-    scrape_pouet()
+    # scrape_pouet()
+    rename()

@@ -2,7 +2,7 @@ from settings import *
 import re
 import unicodedata
 
-publisher_regex = re.compile(' Software| inc$|inc[ .]|ltd|plc|S\.A\.', re.IGNORECASE)
+publisher_regex = re.compile(' Software| inc$|inc[ .]|ltd|ltda|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_brackets_regex = re.compile('[\[|\(][^\]]*[\]|\)]')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
@@ -91,7 +91,7 @@ def putPrefixToEnd(game_name):
 
 def putInitialsToEnd(name):
     name = remove_square_brackets_regex.sub('', name).strip()
-    if name=='Mad Max':
+    if name in ('Mad Max', 'Alone Coder', 'Digital Prawn'):
         return name
     name = name.split(' ')
     name = ' '.join([name[-1]+',']+name[:-1]).strip()
