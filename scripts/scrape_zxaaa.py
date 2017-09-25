@@ -1,4 +1,6 @@
+from classes.game_file import *
 import os
+import re
 import glob
 import zipfile
 if (os.getcwd().endswith('scripts')):
@@ -225,6 +227,27 @@ def rename_files():
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         shutil.copy(src, dest)
 
+def rename_compilations():
+    src_root = os.path.join('tosec', 'unsorted files', 'ZXAAA Compilations')
+    # dest_root = os.path.join('tosec', 'reviewed files', 'ZXAAA Compilations')
+    for root, dirs, files in os.walk(src_root):
+        for file in files:
+            src = os.path.join(root, file)
+            game_file = GameFile(src)
+            if game_file.part:
+                print(src)
+                max_parts = re.findall('\(Disk .* of (.*)\)', file)[0]
+                game_file.content_desc = ' '+str(game_file.part).zfill(len(max_parts))
+                game_file.part = 0
+                game_file.game.parts = 0
+            dest_root = root.replace('unsorted files', 'reviewed files')
+            dest = os.path.join(dest_root, game_file.getTOSECName())
+            print(src, dest)
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy(src, dest)
+
+
+
 if __name__=='__main__':
 #     scrape_disks_aaa()
 #     scrape_flash_games()
@@ -232,5 +255,5 @@ if __name__=='__main__':
 #     scrape_system_disks()
 #     scrape_chip()
 #     scrape_staryo()
-    rename_files()
-
+#     rename_files()
+    rename_compilations()

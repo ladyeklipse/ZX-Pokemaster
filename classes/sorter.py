@@ -10,15 +10,11 @@ import hashlib
 import json
 import traceback
 import glob
+from copy import copy
 
 db = Database()
 
 class Sorter():
-
-    # db = Database()
-    # gui = None
-    # error = ''
-
 
     def __init__(self, *args, **kwargs):
         self.gui = kwargs.get('gui', None)
@@ -171,7 +167,7 @@ class Sorter():
                     game_file.addAlternateModFlag(copies_count,
                                                   tosec_compliant=tosec_compliant,
                                                   short_filenames=self.short_filenames)
-                collected_files[game_name].append(game_file)
+                collected_files[game_name].append(copy(game_file))
         return collected_files
 
     def shortenGameFileDestination(self, game_file):
@@ -430,9 +426,6 @@ class Sorter():
                         os.chmod(dest, stat.S_IWRITE)
                         with open(dest, 'wb+') as output:
                             output.write(data)
-                    # except:
-                    #     self.fails.append(game_file.src)
-                    #     print(traceback.format_exc())
                     break
 
     def cancel(self):

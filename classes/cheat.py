@@ -4,6 +4,7 @@ class Cheat(object):
 
     def __init__(self, description):
         if description:
+            description = description.strip()
             self.description = description[0].upper()+description[1:].strip()
         self.pokes = []
 
@@ -32,8 +33,13 @@ class Cheat(object):
     def asFileRecord(self, for_xlsx=False):
         record = []
         if for_xlsx:
+            if len(self.description)>80:
+                self.description = self.description[:80]+'|'+self.description[80:]
+            self.description = self.description.replace(']', '] ')
             record.append('N '+self.description)
         else:
+            self.description = ' '.join([x for x in self.description.split(' ') if x])
+            self.description = self.description.replace('] ', ']')
             record.append('N' + self.description)
         for i, poke in enumerate(self.pokes):
             if i == len(self.pokes) - 1:

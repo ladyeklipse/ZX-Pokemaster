@@ -141,19 +141,50 @@ class GameFile(object):
     def countAlternateDumpsIn(self, collection=[]):
         count = 0
         for other_file in collection:
-            if self.game.wos_id==other_file.game.wos_id and \
-                self.getYear()==other_file.getYear() and \
-                self.getPublisher()==other_file.getPublisher() and \
-                self.getReleaseSeq() == other_file.getReleaseSeq() and \
-                self.getMachineType() == other_file.getMachineType() and \
-                self.side == other_file.side and \
-                self.part == other_file.part and \
-                self.getLanguage() == other_file.getLanguage() and \
-                self.mod_flags == other_file.mod_flags and \
-                self.is_demo == other_file.is_demo and \
-                self.getContentDesc() == other_file.getContentDesc() and \
-                self.format == other_file.format:
-                count += 1
+            # if self.game.wos_id==other_file.game.wos_id and \
+            #     self.game.name==other_file.game.name and \
+            #     self.getYear()==other_file.getYear() and \
+            #     self.getPublisher()==other_file.getPublisher() and \
+            #     self.getReleaseSeq() == other_file.getReleaseSeq() and \
+            #     self.getMachineType() == other_file.getMachineType() and \
+            #     self.getMedia() == other_file.getMedia() and \
+            #     self.getLanguage() == other_file.getLanguage() and \
+            #     self.mod_flags == other_file.mod_flags and \
+            #     self.is_demo == other_file.is_demo and \
+            #     self.getContentDesc() == other_file.getContentDesc() and \
+            #     self.format == other_file.format and \
+            #     self.getNotes() == other_file.getNotes():
+            #     count += 1
+
+            # if self.game.wos_id != other_file.game.wos_id:
+            #     continue
+            # if self.getGameName().lower()!=other_file.getGameName().lower():
+            #     continue
+            if self.game.name != other_file.game.name:
+                continue
+            if self.getYear() != other_file.getYear():
+                continue
+            if self.getPublisher() != other_file.getPublisher():
+                continue
+            if self.getReleaseSeq() != other_file.getReleaseSeq():
+                continue
+            if self.getMachineType() != other_file.getMachineType():
+                continue
+            if self.getMedia() != other_file.getMedia():
+                continue
+            if self.getLanguage() != other_file.getLanguage():
+                continue
+            if self.mod_flags.lower() != other_file.mod_flags.lower():
+                continue
+            if self.is_demo != other_file.is_demo:
+                continue
+            if self.getContentDesc().lower() != other_file.getContentDesc().lower():
+                continue
+            if self.format.lower() != other_file.format.lower():
+                continue
+            if self.getNotes().lower() != other_file.getNotes().lower():
+                continue
+            count += 1
         if count:
             self.is_alternate = True
         return count
@@ -170,7 +201,8 @@ class GameFile(object):
                 self.side == other_file.side and \
                 self.part == other_file.part and \
                 self.getLanguage() == other_file.getLanguage() and \
-                self.mod_flags == other_file.mod_flags:
+                self.mod_flags == other_file.mod_flags and \
+                self.notes == other_file.notes:
                 equals.append(other_file)
         return equals
 
@@ -190,8 +222,7 @@ class GameFile(object):
                 self.alt_mod_flag = '[a' + str(copies_count) + ']'
             dest_dir = os.path.dirname(dest[0])
             dest_filename = os.path.basename(dest[0])
-            everything_except_notes = dest_filename.replace(self.notes, '')
-            # self.alt_dest = os.path.join(dest_dir, self.getOutputName())
+            everything_except_notes = dest_filename.replace(self.getNotes(), '')
             self.alt_dest = os.path.join(dest_dir, everything_except_notes+self.alt_mod_flag+self.notes+'.'+self.format)
         else:
             alt_mod_flag = '_'+str(copies_count+1)
@@ -264,6 +295,8 @@ class GameFile(object):
         for each in round_brackets_matches[2:]:
             if len(re.findall('^M[0-9]$', each)):
                 self.setLanguage(each)
+            elif len(re.findall('^[a-z][a-z]-[a-z][a-z]$', each)):
+                self.setLanguage(each)
             elif len(each)==2 and each.isalpha():
                 if each.islower():
                     self.setLanguage(each)
@@ -284,8 +317,9 @@ class GameFile(object):
                 if mod_flag not in self.mod_flags:
                     self.mod_flags += mod_flag
             elif each.startswith('aka '):
-                alias = each[4:]
-                self.release.addAlias(alias)
+                aka = getSearchStringFromGameName(each[4:])
+                if aka == getSearchStringFromGameName(self.game.name):
+                    continue
             elif each in self.notes:
                 continue
             elif 're-release' in each:
@@ -346,6 +380,14 @@ class GameFile(object):
                 self.content_desc = ''
             if ' - Issue' in self.content_desc:
                 self.content_desc = ''
+            if ' - Part ' in self.content_desc:
+                split_content_desc = self.content_desc.split(' - Part ')
+                part = split_content_desc[1][0]
+                if part.isdigit():
+                    self.part = int(part)
+                    split_content_desc[1] = split_content_desc[1][1:]
+                    self.content_desc = ''.join(split_content_desc).strip()
+
 
     def setReleaseDate(self, release_date):
         release_date = re.findall('([12][90][x0-9][x0-9](-[x01][x0-9](-[x0-3][x0-9])?)?)', release_date)
@@ -363,9 +405,9 @@ class GameFile(object):
         if not filename:
             return
         filename = filename.lower()
-        if 'pentagon 128' in filename or '(Pentagon' in filename or '[Pentagon' in filename:
+        if 'pentagon 128' in filename or '(pentagon' in filename or '[pentagon' in filename:
             self.machine_type = 'Pentagon 128K'
-        elif 'Timex' in filename:
+        elif 'timex' in filename:
             self.machine_type = 'Timex'
         elif '+2a-+3' in filename:
             self.machine_type = '+2A-+3'
@@ -383,6 +425,14 @@ class GameFile(object):
             self.machine_type = '48K'
         elif '16k' in filename:
             self.machine_type = '16K'
+        elif 'zx-uno' in filename or 'zxuno' in filename:
+            self.machine_type = 'ZX-UNO'
+        elif '(vega)' in filename:
+            self.machine_type = 'Vega'
+        elif '(next)' in filename:
+            self.machine_type = 'Next'
+        elif '(atm' in filename:
+            self.machine_type = 'ATM'
 
     def setProtectionScheme(self, protection_scheme):
         if protection_scheme and protection_scheme not in self.notes and \
@@ -398,8 +448,8 @@ class GameFile(object):
             return self.game.machine_type
 
     def setLanguage(self, language):
-        language = language.lower() if language.isalpha() else language.upper()
-        if len(language)==2:
+        # language = language.lower() if language.isalpha() else language.upper()
+        if len(language)==2 or len(language)==5:
             self.language = language
 
     def setCountry(self, country):
@@ -501,15 +551,24 @@ class GameFile(object):
         return output_name
 
     def setSide(self, side):
-        # if 'Side A' in side or 'Side 1' in side or 'SideA' in side or 'Side1 in s':
-        #     self.side = SIDE_A
-        # elif 'Side B' in side or 'Side 2' in side:
-        #     self.side = SIDE_B
         side = side.lower().replace(' ', '')
         if 'sidea' in side or 'side1' in side:
             self.side = SIDE_A
         elif 'sideb' in side or 'side2' in side:
             self.side = SIDE_B
+        elif 'side3' in side:
+            self.side = SIDE_A
+            self.part = 2
+        elif 'side4' in side:
+            self.side = SIDE_B
+            self.part = 2
+        elif 'side5' in side:
+            self.side = SIDE_A
+            self.part = 3
+        elif 'side6' in side:
+            self.side = SIDE_B
+            self.part = 3
+
 
     def getSide(self):
         if self.side == SIDE_A:
@@ -687,6 +746,8 @@ class GameFile(object):
             self.type += 'Music'
         elif 'e-Book' in genre:
             self.type += 'eBooks'
+        elif 'Documentation' in genre:
+            self.type += 'Documentation'
         elif 'Game' in genre:
             self.type += 'Games'
         else:
@@ -755,8 +816,10 @@ class GameFile(object):
             return ''
         elif self.content_desc.startswith('ALT'):
             return self.content_desc[3:]
-        else:
+        elif self.content_desc:
             return self.content_desc
+        else:
+            return ''
 
     def getYear(self, for_filename=True):
         if for_filename and self.release_date:

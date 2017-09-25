@@ -1,3 +1,4 @@
+from classes.tosec_dat import *
 from classes.tipshop_scraper import *
 from classes.database import *
 from classes.game import *
@@ -143,6 +144,23 @@ def convertHexes(text):
         text = text.replace(hexnum, str(intnum))
     return text.replace('$', '').replace('#', '')
 
+def createPOKTOSECDat():
+    dat = TOSECDat('Sinclair ZX Spectrum - Pokes - [POK]')
+    dat.allow_duplicates = True
+    dat.files = []
+    for root, dirs, files in os.walk('AllTipshopPokes'):
+        for file in files:
+            if not file.endswith('.pok'):
+                continue
+            filepath = os.path.join(root, file)
+            # print(filepath)
+            game_file = GameFile(filepath)
+            game_file.setSize(os.path.getsize(filepath))
+            game_file.format = 'pok'
+            # print(game_file)
+            dat.addFile(game_file)
+    dat.export()
+
 if __name__=='__main__':
     # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
     # updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
@@ -150,6 +168,7 @@ if __name__=='__main__':
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
     extractPokFiles()
+    createPOKTOSECDat()
     # TEMPORARY BELOW
     # text = convertHexes('''''')
     # scrapePokesFromText(text)

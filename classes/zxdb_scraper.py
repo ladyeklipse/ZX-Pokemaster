@@ -46,7 +46,7 @@ class ZXDBScraper():
                 if not decision.startswith('KEEP'):
                     self.file_exclusion_list.append(line[10])
         self.manually_corrected_content_descriptions = {}
-        with open('game_id_file_checker.csv', 'r', encoding='utf-8') as f:
+        with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
             for line in f.readlines():
                 line = line.strip().split(';')
                 if len(line)<5 or not line[4]:
@@ -56,6 +56,12 @@ class ZXDBScraper():
                     self.manually_corrected_content_descriptions[key] = 'NONE'
                 elif line[2].startswith('ALT'):
                     self.manually_corrected_content_descriptions[key] = line[2]
+        self.pok_file_paths = {}
+        with open('AllTipshopPokes\\zxdb_update.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if len(line)==2:
+                    self.pok_file_paths[int(line[0])] = line[1].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -101,7 +107,7 @@ class ZXDBScraper():
               'download_machinetype.text AS file_machine_type, ' \
               'schemetypes.text AS protection_scheme, ' \
               'releases.release_seq AS release_id, ' \
-              'aliases.title AS alt_name, ' \
+              'aliases.library_title AS alt_name, ' \
               'aliases.idiom_id AS alt_language, ' \
               'publisher_labels.name AS publisher, ' \
               'publisher_labels.is_company AS publisher_is_company, ' \
@@ -126,7 +132,7 @@ class ZXDBScraper():
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
               '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
-              '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) '
+              '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1)'
         if sql_where:
             sql += sql_where+' '
         sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
@@ -190,14 +196,22 @@ class ZXDBScraper():
                 elif row['file_format'] and \
                         ('snapshot' in row['file_format'] or \
                          'disk' in row['file_format'] or \
-                         'tape' in row['file_format']):
+                         'tape' in row['file_format'] or \
+                         'ROM' in row['file_format']):
                     game_file = self.gameFileFromRow(row, game)
                     if game_file.wos_path not in self.file_exclusion_list:
                         release.addFile(game_file)
                 elif row['file_type']=='POK pokes file':
-                    pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
-                    game.importPokFile(file_path=pok_file_path)
-                if row['alt_name']:
+                    try:
+                        pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
+                        game.importPokFile(file_path=pok_file_path)
+                    except FileNotFoundError:
+                        pok_file_path = self.pok_file_paths.get(game.wos_id)
+                        if not pok_file_path:
+                            print('Poke not found for:', game)
+                        else:
+                            game.importPokFile(file_path=pok_file_path)
+                if row['alt_name'] and row['alt_language'] in (None, 'en'):
                     alias = self.sanitizeAlias(row['alt_name'])
                     release.addAlias(alias)
 
@@ -231,9 +245,11 @@ class ZXDBScraper():
                               row['country'],
                               game,
                               [release_name])
-        if row.get('name')!=game.name:
-            alias = self.sanitizeAlias(row['name'])
-            release.addAlias(alias)
+        if release.release_seq>0:
+            release.addAlias(row['name'])
+        # if row.get('name')!=game.name:
+        #     alias = self.sanitizeAlias(row['name'])
+        #     release.addAlias(alias)
         # for i, alias in enumerate(release.aliases):
         #     if alias.endswith(', 3D'):
         #         alias = '3D ' + alias[:-4]
@@ -255,6 +271,8 @@ class ZXDBScraper():
     def sanitizeAlias(self, alias):
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
         alias = remove_brackets_regex.sub('', alias).strip()
+        alias = alias.replace('AlchNews', 'Alchemist News')
+        alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         alias = ' - '.join([alias]+round_brackets_contents)
         if alias.endswith(', 3D'):
             alias = '3D ' + alias[:-4]
@@ -279,7 +297,7 @@ class ZXDBScraper():
                 elif os.path.exists(local_path) and \
                                 os.path.getsize(local_path) != file.size_zipped:
                     print('wrong file size:', local_path)
-                # else:
+                else:
                     for mirror in WOS_MIRRORS:
                         try:
                             status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)

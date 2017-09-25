@@ -16,6 +16,7 @@ class TOSECScraper():
     paths = []
     manually_entered_tosec_aliases = {}
     manually_corrected_content_descriptions = {}
+    file_exclusion_list = []
     wrong_releases = [
         ['Wrong release chosen:'],
         ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
@@ -29,6 +30,7 @@ class TOSECScraper():
     def __init__(self, cache=True, db=None):
         self.getManuallyEnteredTOSECAliases()
         self.getManuallyCorrectedContentDescriptions()
+        self.getSameMD5ExclusionList()
         self.db = db if db else Database()
         if cache:
             self.db.loadCache()
@@ -39,8 +41,10 @@ class TOSECScraper():
             for filename in files:
                 file_path_dict = {}
                 filepath = os.path.join(root, filename)
+                ext = filepath[-3:]
+                if ext not in GAME_EXTENSIONS:
+                    continue
                 game_file = GameFile(filepath, source='tosec')
-                # filename = os.path.splitext(os.path.basename(filepath))[0] + '.zip'
                 filename = os.path.basename(filepath)
                 file_path_dict['name'] = filename
                 file_path_dict['path'] = filepath
@@ -125,6 +129,9 @@ class TOSECScraper():
                 game_file = self.getGameFileFromFilePathDict(file_path)
             if game_file.format not in GAME_EXTENSIONS:
                 continue
+            if game_file.tosec_path in self.file_exclusion_list:
+                print(game_file.tosec_path, 'in exclusion list.')
+                continue
             new_tosec_name = game_file.game.getTOSECName()
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
@@ -180,7 +187,7 @@ class TOSECScraper():
 
     def addGameToLocalDB(self, game):
         game.setContentDescForFiles(lookup_table=self.manually_corrected_content_descriptions)
-        game.setCompilationType()
+        game.setTypeFromFiles()
         self.db.addGame(game)
 
     def showUnscraped(self):
@@ -220,6 +227,7 @@ class TOSECScraper():
             game_file.format = os.path.split(file_path)[0][-4:-1].lower()
         else:
             game_file.format = file_path[-3:]
+        game_file.format = game_file.format.split('.')[-1]
         game_file.tosec_path = file_path
         game_file.getMD5()
         game_file.getCRC32()
@@ -232,10 +240,10 @@ class TOSECScraper():
         game_file = GameFile(file_path, source='tosec')
         filename = file_path_dict['name']
         if filename.endswith('.zip'):
-            # game_file.format = os.path.split(file_path)[0][-4:-1].lower()
             game_file.format = game_file.getFormat()
         else:
             game_file.format = file_path[-3:].lower()
+        game_file.format = game_file.format.split('.')[-1]
         game_file.tosec_path = file_path
         game_file.md5 = file_path_dict['md5']
         game_file.crc32 = file_path_dict['crc32']
@@ -267,6 +275,9 @@ class TOSECScraper():
         miss = []
         md5s = [row['md5'] for row in self.db.execute('SELECT md5 FROM game_file')]
         for path in self.paths:
+            if path['path'] in self.file_exclusion_list:
+                # print(path, 'in exclusion list.')
+                continue
             if path['md5'] in md5s:
                 have.append(path)
             else:
@@ -287,7 +298,8 @@ class TOSECScraper():
             if not game:
                 game = game_file.game
             game.releases[0].addFile(game_file)
-            self.db.addGame(game)
+            # self.db.addGame(game)
+            self.addGameToLocalDB(game)
         self.db.commit()
         self.unscraped_file_paths = []
 
@@ -302,17 +314,28 @@ class TOSECScraper():
 
     def updateContentDescLookupTable(self):
         print('Updating content descriptions lookup table not implemented yet.')
-        # self.getManuallyCorrectedContentDEscriptions()
-        # with open('game_id_file_checker.csv', 'w', encoding='utf-8') as f:
+        # self.getManuallyCorrectedContentDescriptions()
+        # with open('content_desc_aliases.csv', 'w', encoding='utf-8') as f:
 
     def getManuallyCorrectedContentDescriptions(self):
         if not self.manually_corrected_content_descriptions:
-            with open('game_id_file_checker.csv', 'r', encoding='utf-8') as f:
+            with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
                 for line in f.readlines():
                     line = line.strip().split(';')
                     if len(line)<3 or not line[3]:
                         continue
-                    elif line[2].startswith('NONE'):
+                    else:
+                        line[3] = line[3][:-4]
+                    if line[2].startswith('NONE'):
                         self.manually_corrected_content_descriptions[line[3]] = 'NONE'
                     elif line[2].startswith('ALT'):
                         self.manually_corrected_content_descriptions[line[3]] = line[2]
+
+    def getSameMD5ExclusionList(self):
+        if not self.file_exclusion_list:
+            with open('same_md5.csv', 'r', encoding='utf-8') as f:
+                for line in f.readlines():
+                    line = line.split(';')
+                    decision = line[7]
+                    if not decision.startswith('KEEP'):
+                        self.file_exclusion_list.append(line[11])

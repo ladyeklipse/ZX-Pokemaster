@@ -170,3 +170,9 @@ class TestZXDBScraper(unittest.TestCase):
                 self.assertEqual(game.publisher, 'Owen, Andrew')
             elif game.wos_id == 7727:
                 self.assertEqual(game.publisher, 'Mad Max')
+
+    def test_downloading(self):
+        where_clause = 'AND entries.id IN (24888)'
+        games = zxdb.getGames(where_clause)
+        zxdb.downloadMissingFilesForGames(games)
+

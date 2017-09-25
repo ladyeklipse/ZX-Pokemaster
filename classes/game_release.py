@@ -123,6 +123,19 @@ class GameRelease(object):
             if file == new_file:
                 file.importCredentialsFromFile(new_file)
                 return
+        if new_file.game and 'Your Sinclair - Issue' not in new_file.game.name:
+            add_aka = True
+            for alias in self.getAllAliases():
+                ss_newfile = getSearchStringFromGameName(new_file.game.name)
+                ss_self = getSearchStringFromGameName(alias)
+                if ss_newfile==ss_self or ss_self in ss_newfile or ss_newfile in ss_self or \
+                        new_file.content_desc.replace('ALT ','') in new_file.game.name:
+                    add_aka = False
+                    break
+            if add_aka:
+                aka = '[aka {}]'.format(new_file.game.name)
+                if aka not in new_file.notes:
+                    new_file.notes += aka
         new_file.game = self.game
         new_file.release_seq = self.release_seq
         new_file.release = self
@@ -134,7 +147,7 @@ class GameRelease(object):
             (self.getYear()[:4] == game_file.getYear()[:4] and len(game_file_year)>4):
             self.year = game_file.getYear()
             self.modded_by = game_file.md5
-        if not self.getPublisher() and game_file.getPublisher()!='-':
+        if self.getPublisher()=='-' and game_file.getPublisher()!='-':
             self.publisher = game_file.getPublisher()
             self.modded_by = game_file.md5
         if not self.country and game_file.getCountry():

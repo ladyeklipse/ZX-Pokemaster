@@ -74,19 +74,23 @@ def getFileSystemFriendlyName(name):
 def putPrefixToEnd(game_name):
     if not game_name:
         return ''
-    components = re.split(' - | \+ ', game_name)
-    for i, component in enumerate(components):
-        if len(component)<5:
-            continue
-        if component.startswith('Die Hard'):
-            continue
-        if component.endswith(', 3D'):
-            component = '3D '+component[:-4]
-        for prefix in GAME_PREFIXES:
-            if component.startswith(prefix + ' '):
-                components[i] = ' '.join(component.split(' ')[1:]) + ', ' + prefix
-                break
-    game_name = ''.join(components)
+    for prefix in GAME_PREFIXES:
+        if game_name.startswith(prefix + ' '):
+            game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
+            break
+    # components = re.split(' - | \+ ', game_name)
+    # for i, component in enumerate(components):
+    #     if len(component)<5:
+    #         continue
+    #     if component.startswith('Die Hard'):
+    #         continue
+    #     if component.endswith(', 3D'):
+    #         component = '3D '+component[:-4]
+    #     for prefix in GAME_PREFIXES:
+    #         if component.startswith(prefix + ' '):
+    #             components[i] = ' '.join(component.split(' ')[1:]) + ', ' + prefix
+    #             break
+    # game_name = ' - '.join(components)
     return game_name
 
 def putInitialsToEnd(name):
@@ -102,7 +106,9 @@ def putInitialsToEnd(name):
 def getSearchStringFromGameName(game_name):
     if not game_name:
         return ''
+    game_name = game_name.lower().replace('issue', '').replace('the ', '')
     for prefix in GAME_PREFIXES:
+        prefix = prefix.lower()
         if game_name.startswith(prefix + ' '):
             game_name = game_name[len(prefix)+1:]
             break

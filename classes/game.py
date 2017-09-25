@@ -94,8 +94,8 @@ class Game(object):
     def setContentDescForFiles(self, lookup_table={}):
         files = self.getFiles()
         for file in files:
-            if file.tosec_path in lookup_table:
-                file.content_desc = lookup_table[file.tosec_path]
+            if file.tosec_path[:-4] in lookup_table:
+                file.content_desc = lookup_table[file.tosec_path[:-4]]
                 continue
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
@@ -103,22 +103,21 @@ class Game(object):
             file.setReRelease()
             file.setAka()
 
-    def setCompilationType(self):
-        if not self.genre or self.genre == 'Compilation':
-            files = self.getFiles()
-            got_compilation_type = False
+    def setTypeFromFiles(self):
+        if self.genre and self.genre!='Compilation':
+            return
+        files = self.getFiles()
+        for file in files:
+            if 'Compilation' in file.tosec_path:
+                self.setGenreFromFilePath(file.tosec_path)
+                if self.genre:
+                    break
+        if not self.genre:
             for file in files:
-                if 'Compilation' in file.tosec_path:
-                    if got_compilation_type:
-                        old_genre = self.genre
-                        self.setGenreFromFilePath(file.tosec_path)
-                        if self.genre!=old_genre:
-                            print(self, self.genre, old_genre)
-                            raise Exception('Inconsistency in compilation type')
+                self.setGenreFromFilePath(file.tosec_path)
+                if self.genre:
+                    break
 
-                    self.setGenreFromFilePath(file.tosec_path)
-                    got_compilation_type = True
-                    # break #FUTURE
 
     def setGenreFromFilePath(self, path):
         path = ''.join(os.path.split(path)[-3:]).lower()
@@ -147,6 +146,8 @@ class Game(object):
             self.genre = 'Scene Demo'
         elif 'educational' in path:
             self.genre = 'General - Education'
+        elif 'documentation' in path:
+            self.genre = 'Documentation'
         elif 'games' in path:
             self.genre = 'Unknown Games'
 
@@ -193,7 +194,7 @@ class Game(object):
             publisher = ''
         publisher = publisher.replace('/', '-')
         publisher = publisher_regex.sub('', publisher)
-        publisher = remove_square_brackets_regex.sub('', publisher).strip()
+        publisher = remove_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher
 
     def setYear(self, year):
@@ -256,6 +257,8 @@ class Game(object):
             self.type = 'Covertapes'
         elif 'Magazine' in genre:
             self.type = 'Magazines'
+        elif 'Game' in genre:
+            self.type = 'Games'
 
     def setmanualUrl(self, url):
         self.manual_url = url

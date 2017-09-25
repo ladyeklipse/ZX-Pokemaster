@@ -18,11 +18,15 @@ def db2xlsx():
     worksheet.set_column('C:C', 40)
     worksheet.set_column('D:D', 40)
     for i, row in enumerate(raw_data):
+        game = Game()
+        game.importPokFile(text=row[2])
+        pok_contents = game.getPokFileContents(for_xlsx = True)
+        multiface_poke_secion = row[3]
         worksheet.write_row(i, 0, [
             str(row['wos_id']).zfill(7),
                 row['name'],
-                row[2],
-                row[3]
+                pok_contents,
+                multiface_poke_secion
         ], mformat)
     workbook.close()
 
@@ -41,7 +45,8 @@ def xlsx2db():
             game.importPokFile(text=pok_file_contents)
             for cheat in game.cheats:
                 if cheat.description.isdigit():
-                    raise(ValueError('Cheat desc is digit!'))
+                    raise(ValueError('Cheat  desc is digit!'))
+            pok_file_contents = game.getPokFileContents()
         except Exception as e:
             print(str(wos_id).zfill(7))
             #raise e
