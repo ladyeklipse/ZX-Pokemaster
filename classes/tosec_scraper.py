@@ -41,14 +41,20 @@ class TOSECScraper():
             for filename in files:
                 file_path_dict = {}
                 filepath = os.path.join(root, filename)
-                ext = filepath[-3:]
-                if ext not in GAME_EXTENSIONS:
+                ext = os.path.splitext(filepath)[1][1:].lower()
+                if ext not in GAME_EXTENSIONS+['zip']:
                     continue
                 game_file = GameFile(filepath, source='tosec')
                 filename = os.path.basename(filepath)
                 file_path_dict['name'] = filename
                 file_path_dict['path'] = filepath
-                file_path_dict['size'] = os.path.getsize(filepath)
+                if ext!='zip':
+                    file_path_dict['size'] = os.path.getsize(filepath)
+                else:
+                    with zipfile.ZipFile(filepath, 'r') as zf:
+                        for zfname in zf.namelist():
+                            file_path_dict['size'] = zf.getinfo(zfname).file_size
+                            break
                 file_path_dict['md5'] = game_file.getMD5()
                 file_path_dict['crc32'] = game_file.getCRC32()
                 file_path_dict['sha1'] = game_file.getSHA1()

@@ -115,6 +115,7 @@ def createTOSECTorrentFile():
     pass
 
 if __name__=='__main__':
+    pass
     # if not os.path.exists('sorted\\tosec-style'):
     # sortFilesTOSECStyle()
     # renameFilesUsingDATs()

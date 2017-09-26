@@ -458,6 +458,7 @@ class GameFile(object):
             if not self.release:
                 print(self, 'has no self.release')
             self.release.country = country
+            self.language = COUNTRY_LANGUAGE_DICT.get(country, country.lower())
 
     def getCountry(self):
         if self.release and self.release.country:

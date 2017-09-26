@@ -135,6 +135,12 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(out_name, 'Format Utility (1994)(MI & DI).trd')
 
     def test_picking_best_release_name(self):
+        g = Game('Bug-Eyes')
+        r = GameRelease(game=g)
+        f = GameFile('Bor-Fies (19xx)(-)[aka Bug-Eyes].tap')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Bug-Eyes (19xx)(-)[aka Bor-Fies].tap')
         db = Database()
         g = db.getGameByWosID(1799)
         r = g.releases[3]
@@ -142,12 +148,6 @@ class GameFileTests(unittest.TestCase):
         r.addFile(f)
         f.setAka()
         self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48K-128K)(ES)(en)[aka Flintstones, The].tap')
-        g = Game('Bug-Eyes')
-        r = GameRelease(game=g)
-        f = GameFile('Bor-Fies (19xx)(-)[aka Bug-Eyes].tap')
-        r.addFile(f)
-        f.setAka()
-        self.assertEqual(f.getTOSECName(), 'Bug-Eyes (19xx)(-)[aka Bor-Fies].tap')
         g = Game('Alcatraz II')
         r = GameRelease(game=g, aliases='Alcatraz II - The Doomsday Mission/Alcatraz II/Alcatrazz 2 - The Doomsday Mission'.split('/'))
         f = GameFile('Doomsday Mission.tap')
@@ -314,6 +314,10 @@ class GameFileTests(unittest.TestCase):
                 if len(game_file.alt_dest) <= MAX_DESTINATION_PATH_LENGTH:
                     break
         self.assertLessEqual(len(game_file.alt_dest), 200)
+
+    def test_language_detection(self):
+        game_file = GameFile('Three Octopuses (2017)(kas29)(RU).tap')
+        self.assertEqual(game_file.getLanguage(), 'ru')
 
 
 if __name__=='__main__':

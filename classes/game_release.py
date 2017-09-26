@@ -128,8 +128,11 @@ class GameRelease(object):
             for alias in self.getAllAliases():
                 ss_newfile = getSearchStringFromGameName(new_file.game.name)
                 ss_self = getSearchStringFromGameName(alias)
-                if ss_newfile==ss_self or ss_self in ss_newfile or ss_newfile in ss_self or \
-                        new_file.content_desc.replace('ALT ','') in new_file.game.name:
+                if ss_newfile==ss_self or ss_self in ss_newfile or ss_newfile in ss_self:
+                    add_aka = False
+                    break
+                elif new_file.content_desc and \
+                    new_file.content_desc.replace('ALT ','') in new_file.game.name:
                     add_aka = False
                     break
             if add_aka:

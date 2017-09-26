@@ -10,6 +10,7 @@ import hashlib
 import json
 import traceback
 import glob
+import time
 from copy import copy
 
 db = Database()
@@ -17,6 +18,7 @@ db = Database()
 class Sorter():
 
     def __init__(self, *args, **kwargs):
+        self.log = ''
         self.gui = kwargs.get('gui', None)
         self.input_files = []
         self.collected_files = {}
@@ -430,3 +432,10 @@ class Sorter():
 
     def cancel(self):
         self.should_cancel = True
+
+    def saveLog(self):
+        log_name = time.strftime('%Y-%m-%d %H:%M:%S report.log')
+        log_path = os.path.join('logs', log_name)
+        os.makedirs('logs', exist_ok=True)
+        with open(log_path, 'w+', encoding='utf-8') as f:
+            f.write(self.log)

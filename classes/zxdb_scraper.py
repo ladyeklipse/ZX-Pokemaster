@@ -44,7 +44,7 @@ class ZXDBScraper():
                 line = line.split(';')
                 decision = line[7]
                 if not decision.startswith('KEEP'):
-                    self.file_exclusion_list.append(line[10])
+                    self.file_exclusion_list.append(line[9]+'|'+line[10])
         self.manually_corrected_content_descriptions = {}
         with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
             for line in f.readlines():
@@ -147,6 +147,10 @@ class ZXDBScraper():
                 continue
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
+            if row['publisher'] and 'Nyitrai' in row['publisher'] and \
+                row['genre'] and \
+                            row['genre']=='Compilation':
+                continue
             if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:
                 game = self.gameFromRow(row)
                 release = self.releaseFromRow(row, game)
@@ -193,14 +197,16 @@ class ZXDBScraper():
                     else:
                         release.manual_filepath = row['file_link']
                         release.manual_filesize = row['file_size']
-                elif row['file_format'] and \
-                        ('snapshot' in row['file_format'] or \
-                         'disk' in row['file_format'] or \
-                         'tape' in row['file_format'] or \
-                         'ROM' in row['file_format']):
-                    game_file = self.gameFileFromRow(row, game)
-                    if game_file.wos_path not in self.file_exclusion_list:
-                        release.addFile(game_file)
+                elif row['file_format']:
+                    file_format = row['file_format'].lower()
+                    if 'snapshot' in file_format or \
+                         'disk' in file_format or \
+                         'tape' in file_format or \
+                         'rom' in file_format or \
+                         'cartridge' in file_format:
+                        game_file = self.gameFileFromRow(row, game)
+                        if game_file.wos_name+'|'+game_file.wos_path not in self.file_exclusion_list:
+                            release.addFile(game_file)
                 elif row['file_type']=='POK pokes file':
                     try:
                         pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
