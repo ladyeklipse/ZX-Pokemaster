@@ -233,6 +233,9 @@
            <property name="enabled">
             <bool>false</bool>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
            <property name="maximum">
             <number>999999999</number>
            </property>
@@ -246,7 +249,7 @@
        <item>
         <widget class="QCheckBox" name="chkCamelCase">
          <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
+          <enum>Qt::StrongFocus</enum>
          </property>
          <property name="text">
           <string>CamelCaseInsteadOfSpaces</string>
@@ -256,7 +259,7 @@
        <item>
         <widget class="QCheckBox" name="chkShortFilenames">
          <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
+          <enum>Qt::StrongFocus</enum>
          </property>
          <property name="text">
           <string>Use 8.3 naming scheme</string>
@@ -425,6 +428,36 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>lstInputPaths</tabstop>
+  <tabstop>btnAddPath</tabstop>
+  <tabstop>btnRemovePaths</tabstop>
+  <tabstop>chkTraverseSubdirectories</tabstop>
+  <tabstop>txtOutputPath</tabstop>
+  <tabstop>btnBrowseOutputPath</tabstop>
+  <tabstop>cmbOutputPathStructure</tabstop>
+  <tabstop>btnAddPattern</tabstop>
+  <tabstop>btnEditPattern</tabstop>
+  <tabstop>btnRemovePattern</tabstop>
+  <tabstop>chkMaxFilesPerFolder</tabstop>
+  <tabstop>txtMaxFilesPerFolder</tabstop>
+  <tabstop>chkCamelCase</tabstop>
+  <tabstop>chkShortFilenames</tabstop>
+  <tabstop>chkPlacePokFilesIntoPOKESSubfolders</tabstop>
+  <tabstop>btnLoadSettings</tabstop>
+  <tabstop>btnSaveSettings</tabstop>
+  <tabstop>btnSortFiles</tabstop>
+  <tabstop>txtFormatPreference</tabstop>
+  <tabstop>txtLanguages</tabstop>
+  <tabstop>chkIncludeAlternate</tabstop>
+  <tabstop>chkIncludeDemos</tabstop>
+  <tabstop>chkIncludeRereleases</tabstop>
+  <tabstop>chkIncludeAlternateFileFormats</tabstop>
+  <tabstop>chkIncludeHacked</tabstop>
+  <tabstop>chkIncludeXRated</tabstop>
+  <tabstop>chkIncludeSupplementaryFiles</tabstop>
+ </tabstops>
  <resources>
   <include location="res.qrc"/>
  </resources>

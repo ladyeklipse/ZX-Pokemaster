@@ -111,7 +111,7 @@ class TOSECScraper():
                     file_path_dict['path'] = os.path.join(dirname, filename)
                     file_path_dict['size'] = rom.attrib['size']
                     file_path_dict['md5'] = rom.attrib['md5']
-                    file_path_dict['crc32'] = rom.attrib['crc']
+                    file_path_dict['crc32'] = rom.attrib['crc'].zfill(8)
                     file_path_dict['sha1'] = rom.attrib['sha1']
                     paths.append(file_path_dict)
         return paths
@@ -252,7 +252,7 @@ class TOSECScraper():
         game_file.format = game_file.format.split('.')[-1]
         game_file.tosec_path = file_path
         game_file.md5 = file_path_dict['md5']
-        game_file.crc32 = file_path_dict['crc32']
+        game_file.crc32 = file_path_dict['crc32'].zfill(8)
         game_file.sha1 = file_path_dict['sha1']
         game_file.setSize(file_path_dict['size'])
         return game_file
@@ -319,9 +319,12 @@ class TOSECScraper():
                     self.manually_entered_tosec_aliases[line[0]]=line[1]
 
     def updateContentDescLookupTable(self):
-        print('Updating content descriptions lookup table not implemented yet.')
-        # self.getManuallyCorrectedContentDescriptions()
-        # with open('content_desc_aliases.csv', 'w', encoding='utf-8') as f:
+        # print('Updating content descriptions lookup table not implemented yet.')
+        self.getManuallyCorrectedContentDescriptions()
+        content_desc_aliases_update = self.db.execute('SELECT * FROM content_desc_aliases')
+        with open('content_desc_aliases.csv', 'w', encoding='utf-8') as f:
+            for row in content_desc_aliases_update:
+                f.write(';'.join([str(x) if x else '' for x in row])+'\n')
 
     def getManuallyCorrectedContentDescriptions(self):
         if not self.manually_corrected_content_descriptions:

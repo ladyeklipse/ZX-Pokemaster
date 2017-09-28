@@ -18,14 +18,17 @@ db = Database()
 class Sorter():
 
     def __init__(self, *args, **kwargs):
-        self.log = ''
+        self.log_path = ''
         self.gui = kwargs.get('gui', None)
+        self.files_sorted = 0
+        self.files_skipped = 0
         self.input_files = []
         self.collected_files = {}
+        self.files_not_in_database = []
         self.should_cancel = False
         self.original_output_location = None
         self.too_long_path = None
-        self.fails = []
+        # self.fails = []
         if not kwargs:
             kwargs = self.loadSettings()
         self.input_locations = kwargs.get('input_locations', [])
@@ -54,8 +57,8 @@ class Sorter():
         if self.output_location in self.input_locations:
             self.original_output_location = self.output_location
             self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
-        self.fails = []
-        self.error = ''
+        # self.fails = []
+        self.errors = ''
         if not self.checkOutputPath():
             return
         if kwargs.get('cache', True):
@@ -76,10 +79,10 @@ class Sorter():
         print('Got', len(self.input_files), 'raw input files')
         self.collected_files = self.collectFiles(self.input_files)
         print('Files collected')
-        if self.too_long_path:
-            print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
-            self.fails = self.input_files
-            return
+        # if self.too_long_path:
+        #     print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
+        #     self.fails = self.input_files
+        #     return
         if self.ignore_hacks or \
             self.ignore_alternate or \
             self.ignore_rereleases or \
@@ -92,7 +95,8 @@ class Sorter():
         self.redistributeFiles()
         if self.original_output_location:
             self.renameOutputLocation()
-        self.writeFailsLog()
+        # self.writeFailsLog()
+        self.saveLog()
 
     def checkOutputPath(self):
         gf = GameFile('test.tap')
@@ -101,7 +105,7 @@ class Sorter():
             return True
         except KeyError as e:
             key = e.args[0]
-            self.error = 'Invalid output path structure component: '+key
+            self.errors = 'Invalid output path structure component: '+key
             return False
 
     def renameOutputLocation(self):
@@ -114,14 +118,13 @@ class Sorter():
         os.rename(self.original_output_location, backup_location_name)
         os.rename(self.output_location, self.original_output_location)
 
-    def writeFailsLog(self):
-        if self.fails:
-            with open('failed_files.log', 'w+', encoding='utf-8') as f:
-                f.write('\n'.join(self.fails))
-        if self.error:
-            with open('errors.log', 'w+', encoding='utf-8') as f:
-                f.write(self.error)
-
+    # def writeFailsLog(self):
+    #     if self.fails:
+    #         with open('failed_files.log', 'w+', encoding='utf-8') as f:
+    #             f.write('\n'.join(self.fails))
+    #     if self.errors:
+    #         with open('errors.log', 'w+', encoding='utf-8') as f:
+    #             f.write(self.errors)
 
     def getBundleDepth(self):
         self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
@@ -144,8 +147,9 @@ class Sorter():
                 game_files = self.getGameFilesFromInputPath(file_path)
             except:
                 game_files = None
-                self.fails.append(file_path)
-                self.error += '\nError while examining {}\n'.format(file_path)+traceback.format_exc()+'\n'
+                # self.fails.append(file_path)
+                self.errors += 'Error while examining {}\n{}\n'.format(file_path, traceback.format_exc())
+                self.files_skipped += 1
                 print(traceback.format_exc())
             if not game_files:
                 print('Nothing found for', file_path)
@@ -215,6 +219,8 @@ class Sorter():
             game = db.getGameByFile(game_file)
             if game:
                 game_file.importCredentialsFromGame(game, overwrite = True)
+            else:
+                self.files_not_in_database.append(game_file)
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)
             game_files.append(game_file)
@@ -224,17 +230,14 @@ class Sorter():
             try:
                 with zipfile.ZipFile(file_path) as zf:
                     for zfname in zf.namelist():
-                        zfext = os.path.splitext(zfname)[1][1:].lower()
+                        zfbasename, zfext = os.path.splitext(zfname)
+                        zfext = zfext[1:].lower()
                         if zfext not in self.formats_preference:
                             continue
                         game_file = GameFile(file_path)
                         game_file.format = zfext
                         game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
-                        try:
-                            unzipped_file = zf.read(zfname)
-                        except zipfile.BadZipFile:
-                            self.fails.append(zfname+' in '+file_path)
-                            continue
+                        unzipped_file = zf.read(zfname)
                         unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
                         game_file.md5 = unzipped_file_md5
                         game = db.getGameByFileMD5(unzipped_file_md5)
@@ -242,6 +245,14 @@ class Sorter():
                             game_file = game.findFileByMD5(unzipped_file_md5)
                             game_file.release = game.releases[game_file.release_seq]
                             game_file.tosec_path = None
+                        else:
+                            game_file.zfname = zfname
+                            self.files_not_in_database.append(game_file)
+                            game_file_lower = game_file.game.name.lower()
+                            zfbasename_lower = zfbasename.lower()
+                            if zfbasename_lower not in game_file_lower and \
+                                game_file_lower not in zfbasename_lower:
+                                game_file.content_desc = ' - '+zfbasename
                         game_file.src = file_path
                         game_file.dest = self.getDestination(game_file)
                         game_file.alt_dest = ''
@@ -250,7 +261,10 @@ class Sorter():
                         game_file.bundled_times = 0
                         game_files.append(game_file)
             except OSError:
-                self.fails.append(file_path)
+                self.errors += 'Error while examinig {}:\n{}\n'.format(
+                    file_path, traceback.format_exc())
+                self.files_skipped += 1
+                # self.errors.append(file_path)
                 return []
         return game_files
 
@@ -347,24 +361,27 @@ class Sorter():
                     self.copySupplementaryFiles(file)
                 self.extractPokFile(file)
             except:
-                self.fails.append(file.src)
-                self.error += '\nError while redistributing {}\n'.format(file.src)+traceback.format_exc()+'\n'
-                print(traceback.format_exc())
+                self.errors += 'Error while redistributing {}:\n{}\n'.format(
+                    file.src, traceback.format_exc())
+                self.files_skipped += 1
 
     def copyFile(self, file):
+        dest = file.getDestPath()
         try:
-            dest = file.getDestPath()
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             shutil.copyfile(file.src, dest)
         except PermissionError:
             os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
             shutil.copyfile(file.src, dest)
+        finally:
+            self.files_sorted += 1
 
     def copySupplementaryFiles(self, file):
         dirname = os.path.dirname(file.src)
         filename = os.path.splitext(os.path.basename(file.src))[0]
-
-        for sup_file in glob.glob(dirname+'/*/'+filename+'.*'):
+        glob_regex = dirname+'/*/'+filename+'.*'
+        glob_regex = glob_regex.translate({ord('['):'[\[]', ord(']'):'[\]]'})
+        for sup_file in glob.glob(glob_regex):
             subdirname = os.path.split(os.path.dirname(sup_file))[-1]
             ext = os.path.splitext(sup_file)[-1]
             if ext[1:] in DISALLOWED_SUPPLEMENTARY_FILES:
@@ -375,7 +392,9 @@ class Sorter():
             dest = os.path.join(dest_dir, subdirname, dest_filename)+ext
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             shutil.copy(sup_file, dest)
-        for sup_file in glob.glob(dirname+'/'+filename+'.*'):
+        glob_regex = dirname+'/'+filename+'.*'
+        glob_regex = glob_regex.translate({ord('['):'[[]', ord(']'):'[]]'})
+        for sup_file in glob.glob(glob_regex):
             ext = os.path.splitext(sup_file)[-1]
             if ext[1:] in DISALLOWED_SUPPLEMENTARY_FILES:
                 continue
@@ -428,14 +447,29 @@ class Sorter():
                         os.chmod(dest, stat.S_IWRITE)
                         with open(dest, 'wb+') as output:
                             output.write(data)
+                    finally:
+                        self.files_sorted += 1
                     break
 
     def cancel(self):
         self.should_cancel = True
 
     def saveLog(self):
-        log_name = time.strftime('%Y-%m-%d %H:%M:%S report.log')
-        log_path = os.path.join('logs', log_name)
+        if not self.files_skipped and not self.files_not_in_database and \
+            not self.errors:
+            return
+        log_name = time.strftime('%Y-%m-%d %H-%M report.log')
+        self.log_path = os.path.abspath(os.path.join('logs', log_name))
         os.makedirs('logs', exist_ok=True)
-        with open(log_path, 'w+', encoding='utf-8') as f:
-            f.write(self.log)
+        with open(self.log_path, 'w+', encoding='utf-8') as f:
+            f.write('Files sorted: {}\n'.format(self.files_sorted))
+            f.write('Files skipped: {}\n'.format(self.files_skipped))
+            f.write('\n')
+            if self.files_not_in_database:
+                f.write('Files not in database: {}\n'.format(len(self.files_not_in_database)))
+                f.write('-' * 20 + '\n')
+                for file in self.files_not_in_database:
+                    f.write('{} --> {}\n'.format(file.getSrcPathForLog(), file.getDestPath()))
+            f.write('\nErrors: \n')
+            f.write('-' * 20 + '\n')
+            f.write(self.errors)

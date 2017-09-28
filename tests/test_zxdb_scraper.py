@@ -115,7 +115,7 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id = 5140'
         games = zxdb.getGames(where_clause)
         aliases = games[0].releases[2].getAllAliases()
-        self.assertEqual(aliases, ['3D Tanks'])
+        self.assertEqual(aliases, ['3D-Tanx', '3D Tanks'])
 
     def test_multitape_game(self):
         where_clause = 'AND entries.id = 11433'

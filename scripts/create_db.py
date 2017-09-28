@@ -18,10 +18,8 @@ if __name__=='__main__':
     zxdb = ZXDBScraper()
     games = zxdb.getAllGames()
     zxdb.downloadMissingFilesForGames(games)
+    zxdb.getInfoFromLocalFiles(games)
     for game in games:
-        for release in game.releases:
-            release.getInfoFromLocalFiles()
-        game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
         db.addGame(game)
     db.commit()
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):

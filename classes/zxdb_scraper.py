@@ -205,8 +205,10 @@ class ZXDBScraper():
                          'rom' in file_format or \
                          'cartridge' in file_format:
                         game_file = self.gameFileFromRow(row, game)
-                        if game_file.wos_name+'|'+game_file.wos_path not in self.file_exclusion_list:
-                            release.addFile(game_file)
+                        release.addFile(game_file)
+                        # file_exclusion_key = game_file.wos_name+'|'+game_file.wos_path
+                        # if file_exclusion_key in self.file_exclusion_list:
+                        #     release.removeFile(file_exclusion_key)
                 elif row['file_type']=='POK pokes file':
                     try:
                         pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
@@ -312,3 +314,14 @@ class ZXDBScraper():
                             print(traceback.format_exc())
                         if status == 200:
                             break
+
+    def getInfoFromLocalFiles(self, games):
+        for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
+                for game_file in release.files:
+                    file_exclusion_key = game_file.wos_name + '|' + game_file.wos_path
+                    if file_exclusion_key in self.file_exclusion_list:
+                        release.removeFile(file_exclusion_key)
+            game.setContentDescForZXDBFiles(self.manually_corrected_content_descriptions)
+

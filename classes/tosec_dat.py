@@ -38,7 +38,7 @@ class TOSECDat():
         self.contributors = ['Lady Eklipse']
         self.importOldContributors()
         self.header = self.getHeader()
-        self.md5s = []
+        self.md5s = {}
         self.allow_duplicates = False
 
     def importOldContributors(self):
@@ -128,7 +128,7 @@ class TOSECDat():
 
     def addFile(self, game_file):
         if game_file.getMD5() in self.md5s and not self.allow_duplicates:
-            print('Ignoring', game_file)
+            print('Ignoring', game_file, 'because:', self.md5s[game_file.getMD5()])
             return
         copies_count = game_file.countAlternateDumpsIn(self.files)
         if copies_count:
@@ -144,7 +144,7 @@ class TOSECDat():
                 if len(game_file.alt_dest) <= MAX_GAME_NAME_LENGTH:
                     break
         self.files.append(game_file)
-        self.md5s.append(game_file.getMD5())
+        self.md5s[game_file.getMD5()] = game_file
 
     def export(self):
         root = etree.Element('datafile')

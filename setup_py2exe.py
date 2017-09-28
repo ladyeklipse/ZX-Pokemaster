@@ -17,7 +17,6 @@ setup(
         'bundle_files': 1,
         'compressed': True,
         'includes':['sip', 'PyQt4.QtCore', 'PyQt4.QtGui', '_ctypes'],
-        # 'packages':['sorter']
         }
     },
     windows=[
@@ -39,5 +38,9 @@ zfpath = os.path.join('dist', zfname+'.zip')
 with zipfile.ZipFile(zfpath, 'w', zipfile.ZIP_DEFLATED) as zf:
     for root, dirs, files in os.walk('dist'):
         for file in files:
-            if not file.endswith('.zip'):
+            if file.endswith('.zip'):
+                continue
+            elif file.endswith('.log'):
+                continue
+            else:
                 zf.write(os.path.join(root, file), file)

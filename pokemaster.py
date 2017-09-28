@@ -142,10 +142,10 @@ class MainDialog(QDialog):
         self.bar.setAutoClose(True)
         self.bar.show()
         s = Sorter(**kwargs)
-        if s.error:
-            self.bar.close()
-            QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr(s.error))
-            return
+        # if s.error:
+        #     self.bar.close()
+        #     QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr(s.error))
+        #     return
         self.bar.canceled.connect(s.cancel)
         self.bar.raise_()
         self.bar.activateWindow()
@@ -153,16 +153,17 @@ class MainDialog(QDialog):
         self.bar.hide()
         if s.should_cancel:
             QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Operation was canceled.'))
-        elif s.too_long_path:
-            QMessageBox.warning(self, MESSAGE_BOX_TITLE,
-                                    self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
-        elif s.error:
-            QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("Errors occured while sorting files. See errors.log."))
+        # elif s.too_long_path:
+        #     QMessageBox.warning(self, MESSAGE_BOX_TITLE,
+        #                             self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
+        # elif s.error:
+        #     QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("Errors occured while sorting files. See errors.log."))
         else:
             message = self.tr('Sorting successfully finished.')
-            if s.fails:
-                message += self.tr('\nFailed files: {}. Please see failed_files.log')\
-                    .format(len(s.fails))
+            message += self.tr('\nFiles sorted: {}'.format(s.files_sorted))
+            if s.errors:
+                message += self.tr('\nSome errors occured during sorting. Please see {}')\
+                    .format(s.log_path)
             QMessageBox.information(self, MESSAGE_BOX_TITLE, message)
         self.bar.close()
 

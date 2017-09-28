@@ -22,7 +22,7 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/files/sort_single_file_out/POKES/Zaxxon (1985)(U.S. Gold).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_placing_pokes_alongside_files(self):
         s = Sorter(input_locations=['tests/files/sort_single_file_in'],
@@ -68,7 +68,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_alt_files_out/Abadia del Crimen, La (1988)(Opera Soft)(128K)(es)[a2].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def  test_picking_best_candidate(self):
         s = Sorter(input_locations=['tests/files/sort_best_candidates_in'],
@@ -115,7 +115,7 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(not_expected_file))
         not_expected_file = 'tests/files/sort_ignoring_alternate_formats_out/Abadia del Crimen, La (1988)(Opera Soft)(128K)(es)[a].z80'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_sorting_unzipped_files(self):
         s = Sorter(input_locations=['tests/files/sort_unzipped_in'],
@@ -130,7 +130,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'\Race, The (1990)(Players Premier)(48K-128K).z80'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_collecting_info_for_files_with_unknown_hashsum(self):
         s = Sorter(input_locations=['tests/files/sort_unknown_files_in'],
@@ -152,7 +152,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017)(-).tap'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_doublesided_archive(self):
         s = Sorter(input_locations=['tests/files/sort_doublesided_in'],
@@ -171,7 +171,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_doublesided_out/Fourth Protocol, The - The Game (1985)(Hutchinson Computer Publishing)(Tape 1 of 3).tap'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_ignore_rereleases(self):
         s = Sorter(input_locations=['tests/files/sort_ignore_rereleases_in'],
@@ -186,7 +186,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_ignore_rereleases_out/Abadia del Crimen, La (1988)(MCM)(128K)(es).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_ignore_hacks(self):
         s = Sorter(input_locations=['tests/files/sort_ignore_hacks_in'],
@@ -216,7 +216,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_winfriendly_out/Amigaman, David/Serpes (2003)(Amigaman, David)(es).z80'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_permission_denied(self):
         s = Sorter(input_locations=['tests/files/sort_permission_denied_in'],
@@ -244,7 +244,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_false_alt_out/Dizzy Elusive (19xx)(Jura)(RU)(en)[a].trd'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_multilang_games(self):
         s = Sorter(
@@ -269,7 +269,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = 'tests/files/sort_multilang_out/Drazen Petrovic Basket (1989)(Topo Soft)(48K-128K).tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_multipart_games(self):
         s = Sorter(
@@ -290,7 +290,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_multipart_out/Arkos (1988)(Zigurat)(es)(Part 3 of 3).z80'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_extremely_long(self):
         s = Sorter(
@@ -302,7 +302,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).pok'
@@ -311,7 +311,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en)[a].pok'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_saboteur_2(self):
         s = Sorter(
@@ -329,7 +329,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell)(128K)[aka Saboteur 2].tap'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_two_disks_two_sides(self):
         s = Sorter(
@@ -365,7 +365,7 @@ class TestSorter(unittest.TestCase):
                    output_folder_structure='',
                    cache=False)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_too_long_path(self):
         s = Sorter(
@@ -376,7 +376,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_dot_in_filename(self):
         s = Sorter(
@@ -407,7 +407,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_weird_publisher_out/A.A. Barulin/A.A. Barulin Utilities Collection (1992)(A.A. Barulin)(ru).trd'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_die_hard(self):
         s = Sorter(
@@ -438,7 +438,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Quest for Sex (19xx)(Carley Bros)[adult].z80'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_preferred_languages(self):
         input_location = 'tests/files/sort_preferred_language_in'
@@ -458,7 +458,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Tasword Two (1983)(Profisoft).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_not_traversing_subfolders(self):
         input_location = 'tests/files/sort_not_traversing_subfolders_in'
@@ -476,7 +476,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Abadia del Crimen, La (1988)(Opera Soft)(128K)(es).tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_8letter_paths(self):
         input_location = 'tests/files/sort_8letter_in'
@@ -500,7 +500,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/ARCGAMAD/128K/ABADEL_2.TZX'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         for root, dirs, files in os.walk(
                 os.path.join(output_location, 'SPOGAMAC', '48K')):
             self.assertEqual(len(files), 5)
@@ -522,7 +522,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         for root, dirs, files in os.walk(output_location):
             print(root)
             self.assertGreater(len(dirs)+len(files), 0)
@@ -542,7 +542,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         unwanted_location = os.path.join(output_location, 'uti-uti')
         self.assertFalse(os.path.exists(unwanted_location))
         for root, dirs, files in os.walk(output_location):
@@ -566,7 +566,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         for root, dirs, files in os.walk(output_location):
             for dir in dirs:
                 print(dir)
@@ -593,7 +593,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         for root, dirs, files in os.walk(output_location+'\\Games'):
             for dir in dirs:
                 print(dir)
@@ -666,7 +666,7 @@ class TestSorter(unittest.TestCase):
                     break
         if not expected_md5_found:
             self.fail()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_camel_case(self):
         input_locations = [
@@ -689,7 +689,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/MojonTwinsThe/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(MojonTwinsThe)(ES)(en).tap'
         self.assertTrue(os.path.exists(expected_file))
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
 
     def test_bad_zips(self):
         input_locations = [
@@ -706,7 +706,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertGreater(len(s.fails), 0)
+        self.assertGreater(len(s.errors), 0)
 
     def test_3d_games(self):
         input_locations = [
@@ -722,7 +722,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(len(s.fails), 0)
+        self.assertEqual(len(s.errors), 0)
         for root, dirs, files in os.walk(output_location):
             for file in files:
                 self.assertTrue(file.startswith('3D'))
@@ -756,8 +756,8 @@ class TestSorter(unittest.TestCase):
             ignore_alternate=True,
             output_folder_structure='{Type}\{Genre}',
             cache=True)
-        if s.error:
-            print(s.error)
+        if s.errors:
+            print(s.errors)
             self.fail()
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -798,18 +798,16 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertEqual(s.fails, [])
+        self.assertEqual(s.errors, '')
         self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe (2005)(Zaniboni, Marcello)(IT)(en).gif')
         self.assertFileExists(output_location+'/Accelerator (1984)(Century City).gif')
         self.assertFileNotExists(output_location+'/Accelerator (1984)(Century City).zip')
+        self.assertFileExists(output_location+"/UDG's Machine (1985)(Sagesoft)[aka UDG Machine].txt")
 
     def test_disappearing_files(self):
         s = Sorter(cache=True)
         s.input_locations = [
-            # 'tosec/Sinclair ZX Spectrum/Applications/[TZX]/',
-            # 'ftp/pub/sinclair/utils',
             'tests/files/sort_disappearing_files_in/',
-            # 'tests/files/sort_disappearing_files_in/tosec/'
         ]
         s.output_location = 'tests/files/sort_disappearing_files_out/'
         if os.path.exists(s.output_location):

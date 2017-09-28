@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Thu Sep 14 18:08:52 2017
+# Created: Thu Sep 28 02:22:56 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -126,17 +126,18 @@ class Ui_Dialog(object):
         self.horizontalLayout_6.addWidget(self.chkMaxFilesPerFolder)
         self.txtMaxFilesPerFolder = QtGui.QSpinBox(self.tabMainOptions)
         self.txtMaxFilesPerFolder.setEnabled(False)
+        self.txtMaxFilesPerFolder.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.txtMaxFilesPerFolder.setMaximum(999999999)
         self.txtMaxFilesPerFolder.setProperty("value", 255)
         self.txtMaxFilesPerFolder.setObjectName(_fromUtf8("txtMaxFilesPerFolder"))
         self.horizontalLayout_6.addWidget(self.txtMaxFilesPerFolder)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
         self.chkCamelCase = QtGui.QCheckBox(self.tabMainOptions)
-        self.chkCamelCase.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.chkCamelCase.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.chkCamelCase.setObjectName(_fromUtf8("chkCamelCase"))
         self.verticalLayout_2.addWidget(self.chkCamelCase)
         self.chkShortFilenames = QtGui.QCheckBox(self.tabMainOptions)
-        self.chkShortFilenames.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.chkShortFilenames.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.chkShortFilenames.setObjectName(_fromUtf8("chkShortFilenames"))
         self.verticalLayout_2.addWidget(self.chkShortFilenames)
         self.chkPlacePokFilesIntoPOKESSubfolders = QtGui.QCheckBox(self.tabMainOptions)
@@ -214,6 +215,33 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+        Dialog.setTabOrder(self.tabWidget, self.lstInputPaths)
+        Dialog.setTabOrder(self.lstInputPaths, self.btnAddPath)
+        Dialog.setTabOrder(self.btnAddPath, self.btnRemovePaths)
+        Dialog.setTabOrder(self.btnRemovePaths, self.chkTraverseSubdirectories)
+        Dialog.setTabOrder(self.chkTraverseSubdirectories, self.txtOutputPath)
+        Dialog.setTabOrder(self.txtOutputPath, self.btnBrowseOutputPath)
+        Dialog.setTabOrder(self.btnBrowseOutputPath, self.cmbOutputPathStructure)
+        Dialog.setTabOrder(self.cmbOutputPathStructure, self.btnAddPattern)
+        Dialog.setTabOrder(self.btnAddPattern, self.btnEditPattern)
+        Dialog.setTabOrder(self.btnEditPattern, self.btnRemovePattern)
+        Dialog.setTabOrder(self.btnRemovePattern, self.chkMaxFilesPerFolder)
+        Dialog.setTabOrder(self.chkMaxFilesPerFolder, self.txtMaxFilesPerFolder)
+        Dialog.setTabOrder(self.txtMaxFilesPerFolder, self.chkCamelCase)
+        Dialog.setTabOrder(self.chkCamelCase, self.chkShortFilenames)
+        Dialog.setTabOrder(self.chkShortFilenames, self.chkPlacePokFilesIntoPOKESSubfolders)
+        Dialog.setTabOrder(self.chkPlacePokFilesIntoPOKESSubfolders, self.btnLoadSettings)
+        Dialog.setTabOrder(self.btnLoadSettings, self.btnSaveSettings)
+        Dialog.setTabOrder(self.btnSaveSettings, self.btnSortFiles)
+        Dialog.setTabOrder(self.btnSortFiles, self.txtFormatPreference)
+        Dialog.setTabOrder(self.txtFormatPreference, self.txtLanguages)
+        Dialog.setTabOrder(self.txtLanguages, self.chkIncludeAlternate)
+        Dialog.setTabOrder(self.chkIncludeAlternate, self.chkIncludeDemos)
+        Dialog.setTabOrder(self.chkIncludeDemos, self.chkIncludeRereleases)
+        Dialog.setTabOrder(self.chkIncludeRereleases, self.chkIncludeAlternateFileFormats)
+        Dialog.setTabOrder(self.chkIncludeAlternateFileFormats, self.chkIncludeHacked)
+        Dialog.setTabOrder(self.chkIncludeHacked, self.chkIncludeXRated)
+        Dialog.setTabOrder(self.chkIncludeXRated, self.chkIncludeSupplementaryFiles)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "ZX Pokemaster", None))

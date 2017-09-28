@@ -134,6 +134,8 @@ class Game(object):
                 self.genre += ' - Magazines'
             elif 'application' in path:
                 self.genre += ' - Utilities'
+            elif 'mixed' in path:
+                self.genre += ' - Mixed'
             else:
                 self.genre += ' - Games'
         elif 'magazines' in path:
@@ -159,8 +161,6 @@ class Game(object):
             return self.tipshop_page
         else:
             return None
-            # self.tipshop_page = TIPSHOP_SITE_ROOT+'/cgi-bin/info.pl?wosid='+self.getWosID()
-            # return self.tipshop_page
 
     def getYear(self):
         return str(self.year) if self.year else '19xx'

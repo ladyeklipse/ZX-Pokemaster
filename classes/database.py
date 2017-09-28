@@ -113,7 +113,6 @@ class Database():
             for file in release.files:
                 try:
                     file.getMD5()
-                    # file.getMD5(zipped=True)
                 except:
                     print('Bad file:', file, 'for game:', game)
                     print(traceback.format_exc())
@@ -173,12 +172,7 @@ class Database():
         elif len(games)==1:
             return games[0]
         else:
-            # ZxZVm - %REAL_GAME_NAME% (%YEAR%)(%PUBLISHER%) will have the same wos_id as ZxZVm
-            # for game in games:
-                # if game.name.split('-')[0]==game_name:
-                #     return [game]
             print('Ambiguity not resolved for', game_name)
-            # print(game)
             return None
 
     def getGameByFilePath(self, filepath):
@@ -197,9 +191,6 @@ class Database():
                 elif ' + ' in game_release:
                     search_string = getSearchStringFromGameName(game_release.split(' + ')[0])
                     games = self.cache_by_name.get(search_string)
-            # if not games:
-            #     search_string = getSearchStringFromGameName(game_release)
-            #     games = self.cache_by_name.get(search_string)
         else:
             game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
             sql = SELECT_GAME_SQL_START
@@ -221,22 +212,6 @@ class Database():
         if not games:
             return None
         game_file = GameFile(filepath)
-        # if len(games)==1:
-        #     game_year = games[0].getYear()[:4]
-        #     game_file_year = game_file.game.getYear()[:4]
-        #     if not game_year.isdigit() and not game_file_year.isdigit():
-        #         return games[0]
-        #     elif not game_year.isdigit():
-        #         return None
-        #     elif not game_file_year.isdigit():
-        #         return games[0]
-        #     elif abs(int(games[0].getYear())-int(game_file.game.getYear()))<=10:
-        #         if games[0].getPublisher()!=game_file.getPublisher():
-        #             return None
-        #         return games[0]
-        #     else:
-        #         return None
-        # else:
         if len(games)==1:
             game = games[0]
             for release in game.releases:

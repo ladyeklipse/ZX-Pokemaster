@@ -144,6 +144,11 @@ class GameRelease(object):
         new_file.release = self
         self.files.append(new_file)
 
+    def removeFile(self, file_exclusion_key):
+        self.files = [file for file in self.files if \
+                file.wos_name+'|'+file.wos_path!=file_exclusion_key]
+
+
     def importInfoFromGameFile(self, game_file):
         game_file_year = game_file.getYear()
         if (not self.year and game_file_year!='19xx') or \
@@ -164,45 +169,48 @@ class GameRelease(object):
             if not os.path.exists(file_path):
                 print(file_path, 'does not exist. Cannot get MD5 hashes.')
                 continue
-            file.md5_zipped = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
-            with zipfile.ZipFile(file_path) as z:
-                for zfname in z.namelist():
-                    zfext = os.path.splitext(zfname)[1].lower()[1:]
-                    if zfext in GAME_EXTENSIONS:
-                        unzipped_file = z.read(zfname)
-                        new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
-                        new_file_sha1 = hashlib.sha1(unzipped_file).hexdigest()
-                        new_file_crc32 = hex(z.getinfo(zfname).CRC)[2:]
-                        if file.format != zfext:
-                            print('FORMAT MISMATCH:', file.wos_path, zfname)
-                        if not file.md5:
-                            file.md5 = new_file_md5
-                            file.sha1 = new_file_sha1
-                            file.crc32 = new_file_crc32
-                            file.wos_name = os.path.basename(zfname)
-                            file.format = zfext
-                            file.is_demo = '(demo' in file_path.lower()
-                            file.setSize(z.getinfo(zfname).file_size)
-                            file.setMachineType(zfname)
-                            file.setPart(zfname)
-                            file.setSide(zfname)
-                            file.setLanguageFromWosName()
-                        else:
-                            second_file = file.copy()
-                            second_file.crc32 = new_file_crc32
-                            second_file.md5 = new_file_md5
-                            second_file.sha1 = new_file_sha1
-                            second_file.format = zfext
-                            second_file.md5_zipped = file.md5_zipped
-                            second_file.is_demo = '(demo' in file_path.lower()
-                            second_file.setSize(z.getinfo(zfname).file_size)
-                            second_file.wos_name = os.path.basename(zfname)
-                            second_file.wos_zipped_name = file.wos_zipped_name
-                            second_file.setMachineType(zfname)
-                            second_file.setPart(zfname)
-                            second_file.setSide(zfname)
-                            second_file.setLanguageFromWosName()
-                            second_file.release = file.release
-                            extra_files.append(second_file)
+            try:
+                z = zipfile.ZipFile(file_path)
+            except zipfile.BadZipFile:
+                print('Bad zip file:', file_path)
+                continue
+            for zfname in z.namelist():
+                zfext = os.path.splitext(zfname)[1].lower()[1:]
+                if zfext in GAME_EXTENSIONS:
+                    unzipped_file = z.read(zfname)
+                    new_file_md5 = hashlib.md5(unzipped_file).hexdigest()
+                    new_file_sha1 = hashlib.sha1(unzipped_file).hexdigest()
+                    new_file_crc32 = hex(z.getinfo(zfname).CRC)[2:].zfill(8)
+                    if file.format != zfext:
+                        print('FORMAT MISMATCH:', file.wos_path, zfname)
+                    if not file.md5:
+                        file.md5 = new_file_md5
+                        file.sha1 = new_file_sha1
+                        file.crc32 = new_file_crc32
+                        file.wos_name = os.path.basename(zfname)
+                        file.format = zfext
+                        file.is_demo = '(demo' in file_path.lower()
+                        file.setSize(z.getinfo(zfname).file_size)
+                        file.setMachineType(zfname)
+                        file.setPart(zfname)
+                        file.setSide(zfname)
+                        file.setLanguageFromWosName()
+                    else:
+                        second_file = file.copy()
+                        second_file.crc32 = new_file_crc32
+                        second_file.md5 = new_file_md5
+                        second_file.sha1 = new_file_sha1
+                        second_file.format = zfext
+                        second_file.is_demo = '(demo' in file_path.lower()
+                        second_file.setSize(z.getinfo(zfname).file_size)
+                        second_file.wos_name = os.path.basename(zfname)
+                        second_file.wos_zipped_name = file.wos_zipped_name
+                        second_file.setMachineType(zfname)
+                        second_file.setPart(zfname)
+                        second_file.setSide(zfname)
+                        second_file.setLanguageFromWosName()
+                        second_file.release = file.release
+                        extra_files.append(second_file)
+            z.close()
         self.addFiles(extra_files)
         self.files = [file for file in self.files if file.md5]

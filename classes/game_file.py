@@ -22,6 +22,7 @@ class GameFile(object):
     release_seq = 0
     wos_name = ''
     wos_zipped_name = ''
+    zfname = ''
     wos_path = ''
     tosec_path = ''
     content_desc = ''
@@ -336,8 +337,6 @@ class GameFile(object):
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note
-            # else:
-            #     print('Skipped flag:', each)
         self.sortModFlags()
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
@@ -627,7 +626,7 @@ class GameFile(object):
             if not file_handle:
                 print(self, 'has no valid file handle!')
                 return ''
-            crc32 = hex(zlib.crc32(file_handle))[2:]
+            crc32 = hex(zlib.crc32(file_handle))[2:].zfill(8)
             self.crc32 = crc32
             return crc32
 
@@ -656,7 +655,7 @@ class GameFile(object):
                         if not self.size:
                             self.setSize(zf.getinfo(zfname).file_size)
                         if not self.crc32:
-                            self.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
+                            self.crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
                         return zf.read(zfname)
         else:
             with open(local_path, 'rb')as f:
@@ -728,6 +727,8 @@ class GameFile(object):
                 self.type += os.sep+'Demos'
             elif 'Magazine' in genre:
                 self.type += os.sep+'Magazines'
+            elif 'Mixed' in genre:
+                self.type += os.sep+'Mixed'
             else:
                 self.type += os.sep+'Games'
         elif 'Education' in genre:
@@ -877,6 +878,12 @@ class GameFile(object):
     def getDestPath(self):
         dest = self.alt_dest if self.alt_dest else self.dest
         return dest
+
+    def getSrcPathForLog(self):
+        src = self.src
+        if self.zfname and src.lower().endswith('.zip'):
+            src = self.zfname + ' from ' + src
+        return src
 
     def getBundleName(self, depth_level):
         root_dir, bundled_part = self.getSplitDest(depth_level)

@@ -2,6 +2,7 @@ from classes.database import *
 from classes.game import *
 from classes.game_file import *
 from classes.zxdb_scraper import ZXDBScraper
+from functions.game_name_functions import *
 from classes.tipshop_scraper import TipshopScraper
 import  unittest
 if (os.getcwd().endswith('tests')):
@@ -31,9 +32,9 @@ class TestDatabase(unittest.TestCase):
 
     def test_search_string(self):
         game_name = 'La Abadia Del Crimen'
-        self.assertEqual(getSearchString(game_name), 'abadiadelcrimen')
+        self.assertEqual(getSearchStringFromGameName(game_name), 'abadiadelcrimen')
         game_name = 'Abadia Del Crimen, La'
-        self.assertEqual(getSearchString(game_name), 'abadiadelcrimen')
+        self.assertEqual(getSearchStringFromGameName(game_name), 'abadiadelcrimen')
 
     def test_adding_broken_wos_id(self):
         game = Game()
@@ -149,7 +150,7 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByWosID(1)
         self.assertEqual(len(game.releases), 4)
         self.assertEqual(game.releases[0].publisher, 'Domark')
-        self.assertEqual(game.releases[1].publisher, 'Erbe Software')
+        self.assertEqual(game.releases[1].publisher, 'Erbe')
         self.assertEqual(game.releases[2].publisher, 'Musical 1')
         self.assertEqual(game.releases[3].publisher, 'The Hit Squad')
 
@@ -175,7 +176,7 @@ class TestDatabase(unittest.TestCase):
     def test_olisa(self):
         md5 = '61edae0e09709406bb3082bbeecb8b63'
         game = self.db.getGameByFileMD5(md5)
-        self.assertGreaterEqual(len(game.getFiles()), 4)
+        self.assertGreaterEqual(len(game.getFiles()), 3)
 
     def test_find_games_with_no_original_release(self):
         games = db.getAllGames()
