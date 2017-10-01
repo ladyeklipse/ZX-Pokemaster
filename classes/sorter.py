@@ -57,7 +57,6 @@ class Sorter():
         if self.output_location in self.input_locations:
             self.original_output_location = self.output_location
             self.output_location = os.path.join(os.path.dirname(self.output_location), '%s_temp' % self.output_location)
-        # self.fails = []
         self.errors = ''
         if not self.checkOutputPath():
             return
@@ -79,10 +78,6 @@ class Sorter():
         print('Got', len(self.input_files), 'raw input files')
         self.collected_files = self.collectFiles(self.input_files)
         print('Files collected')
-        # if self.too_long_path:
-        #     print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
-        #     self.fails = self.input_files
-        #     return
         if self.ignore_hacks or \
             self.ignore_alternate or \
             self.ignore_rereleases or \
@@ -95,7 +90,6 @@ class Sorter():
         self.redistributeFiles()
         if self.original_output_location:
             self.renameOutputLocation()
-        # self.writeFailsLog()
         self.saveLog()
 
     def checkOutputPath(self):
@@ -118,14 +112,6 @@ class Sorter():
         os.rename(self.original_output_location, backup_location_name)
         os.rename(self.output_location, self.original_output_location)
 
-    # def writeFailsLog(self):
-    #     if self.fails:
-    #         with open('failed_files.log', 'w+', encoding='utf-8') as f:
-    #             f.write('\n'.join(self.fails))
-    #     if self.errors:
-    #         with open('errors.log', 'w+', encoding='utf-8') as f:
-    #             f.write(self.errors)
-
     def getBundleDepth(self):
         self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
         return len([x for x in self.output_folder_structure.split('\\') if x]) + 1
@@ -147,7 +133,6 @@ class Sorter():
                 game_files = self.getGameFilesFromInputPath(file_path)
             except:
                 game_files = None
-                # self.fails.append(file_path)
                 self.errors += 'Error while examining {}\n{}\n'.format(file_path, traceback.format_exc())
                 self.files_skipped += 1
                 print(traceback.format_exc())
@@ -264,7 +249,6 @@ class Sorter():
                 self.errors += 'Error while examinig {}:\n{}\n'.format(
                     file_path, traceback.format_exc())
                 self.files_skipped += 1
-                # self.errors.append(file_path)
                 return []
         return game_files
 
@@ -281,10 +265,8 @@ class Sorter():
                                                 game_name_length=game_name_length)
         if self.short_filenames:
             dest_filename = os.path.splitext(dest_filename)
-            print(dest_filename)
             dest_filename = ''.join((getMeaningfulEightLetterName(game_file.getGameName()), '.', game_file.format.upper()))
             dest_dir = dest_dir.split(os.sep)
-            print(dest_dir)
             dest_dir = [getMeaningfulEightLetterName(x) for x in dest_dir]
             dest_dir = os.path.join(*dest_dir)
         dest = os.path.join(dest_dir, dest_filename)

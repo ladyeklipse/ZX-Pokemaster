@@ -2,7 +2,7 @@ from settings import *
 import re
 import unicodedata
 
-publisher_regex = re.compile(' Software| inc$|inc[ .]|ltd|ltda|plc|S\.A\.', re.IGNORECASE)
+publisher_regex = re.compile(' Software| inc$|inc[ .]|ltda|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_brackets_regex = re.compile('[\[|\(][^\]]*[\]|\)]')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')
@@ -115,3 +115,7 @@ def getSearchStringFromGameName(game_name):
         elif game_name.endswith(', '+prefix):
             game_name = game_name[:len(game_name)-len(prefix)-2]
     return ''.join(filter(str.isalnum, game_name.lower()))
+
+# def sanitizePublisher(publisher, publisher_aliases):
+#     if publisher in publisher_aliases:
+#         return publisher_aliases[publisher]

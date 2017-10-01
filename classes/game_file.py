@@ -224,7 +224,8 @@ class GameFile(object):
             dest_dir = os.path.dirname(dest[0])
             dest_filename = os.path.basename(dest[0])
             everything_except_notes = dest_filename.replace(self.getNotes(), '')
-            self.alt_dest = os.path.join(dest_dir, everything_except_notes+self.alt_mod_flag+self.notes+'.'+self.format)
+            self.alt_dest = os.path.join(dest_dir,
+                         everything_except_notes+self.alt_mod_flag+self.getNotes()+'.'+self.format)
         else:
             alt_mod_flag = '_'+str(copies_count+1)
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
@@ -333,6 +334,8 @@ class GameFile(object):
                 continue
             elif self.machine_type and self.machine_type in each:
                 continue
+            elif each=='adult':
+                self.game.x_rated = 1
             else:
                 note = '[{}]'.format(each)
                 if note not in self.notes:
@@ -368,6 +371,7 @@ class GameFile(object):
                 if alias in game_name.lower():
                     self.content_desc = game_name[game_name.lower().find(alias)+len(alias):].rstrip()
                     alias_found = True
+                    break
             if not self.content_desc and not alias_found:
                 if ' - ' in game_name:
                     self.content_desc = ' - '+' - '.join(game_name.split(' - ')[1:])
@@ -375,11 +379,14 @@ class GameFile(object):
                     self.content_desc = ' + '+' + '.join(game_name.split(' + ')[1:])
             if not self.content_desc.startswith(' '):
                 self.content_desc = ''
-            if self.content_desc.replace(' - ', '') in self.getGameName():
+            ss_content_desc = getSearchStringFromGameName(self.content_desc)
+            if ss_content_desc in getSearchStringFromGameName(self.getGameName()):
                 self.content_desc = ''
-            if ' - Issue' in self.content_desc:
+            elif ss_content_desc in getSearchStringFromGameName(self.notes):
                 self.content_desc = ''
-            if ' - Part ' in self.content_desc:
+            elif ' - Issue' in self.content_desc:
+                self.content_desc = ''
+            elif ' - Part ' in self.content_desc:
                 split_content_desc = self.content_desc.split(' - Part ')
                 part = split_content_desc[1][0]
                 if part.isdigit():
@@ -406,8 +413,8 @@ class GameFile(object):
         filename = filename.lower()
         if 'pentagon 128' in filename or '(pentagon' in filename or '[pentagon' in filename:
             self.machine_type = 'Pentagon 128K'
-        elif 'timex' in filename:
-            self.machine_type = 'Timex'
+        elif 'timex' in filename or 'tc2048' in filename or 'ts2068' in filename:
+            self.machine_type = 'TC2048-TS2068'
         elif '+2a-+3' in filename:
             self.machine_type = '+2A-+3'
         elif '[+2a' in filename or '(+2a' in filename:
@@ -511,12 +518,12 @@ class GameFile(object):
             label = 'Part'
         if self.game.parts>1:
             return  '%s %d of %d' % (label, self.part, self.game.parts)
-        # else:
-        #     return '%s %d' % (label, self.part)
 
     def getLanguage(self):
         if self.language:
             return self.language
+        elif '[tr ' in self.mod_flags:
+            return self.mod_flags.split('[tr ')[1][:2]
         else:
             return self.game.getLanguage()
 
@@ -540,7 +547,8 @@ class GameFile(object):
                 COUNTRY_LANGUAGE_DICT.get(country.upper())==self.getLanguage() or \
                 '[tr ' in self.mod_flags:
                 output_name = output_name.replace('(%s)' % self.getLanguage(), '')
-                if self.getLanguage() == 'en':
+                if self.getLanguage() == 'en' or \
+                        (self.getCountry()=='GB' and '[tr ' in self.mod_flags):
                     output_name = output_name.replace('(%s)' % self.getCountry(), '')
             output_name = output_name.replace('(%s)' % DEFAULT_MACHINE_TYPE, '')
         output_name = output_name.replace('()', '').replace('[]', '')
@@ -693,10 +701,16 @@ class GameFile(object):
             return os.path.splitext(os.path.basename(self.src))[0]
 
     def getNotes(self):
-        if self.game.x_rated:
-            return self.notes + X_RATED_FLAG
+        if self.notes == 'NONE':
+            return ''
+        if self.notes.startswith('ALT '):
+            notes = self.notes[4:]
         else:
-            return self.notes
+            notes = self.notes
+        if self.game.x_rated:
+            return notes + X_RATED_FLAG
+        else:
+            return notes
 
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added

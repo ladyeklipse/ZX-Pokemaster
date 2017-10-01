@@ -16,6 +16,7 @@ class TOSECScraper():
     paths = []
     manually_entered_tosec_aliases = {}
     manually_corrected_content_descriptions = {}
+    manually_corrected_notes = {}
     file_exclusion_list = []
     wrong_releases = [
         ['Wrong release chosen:'],
@@ -29,8 +30,9 @@ class TOSECScraper():
 
     def __init__(self, cache=True, db=None):
         self.getManuallyEnteredTOSECAliases()
-        self.getManuallyCorrectedContentDescriptions()
+        self.getManuallyCorrectedContentDescriptionsAndNotes()
         self.getSameMD5ExclusionList()
+        self.getPublisherAliases()
         self.db = db if db else Database()
         if cache:
             self.db.loadCache()
@@ -193,7 +195,12 @@ class TOSECScraper():
 
     def addGameToLocalDB(self, game):
         game.setContentDescForFiles(lookup_table=self.manually_corrected_content_descriptions)
+        game.setNotesForFiles(lookup_table=self.manually_corrected_notes)
         game.setTypeFromFiles()
+        game.setCountryFromFiles()
+        for release in game.releases:
+            if release.publisher in self.publisher_aliases:
+                release.publisher = self.publisher_aliases[release.publisher]
         self.db.addGame(game)
 
     def showUnscraped(self):
@@ -304,7 +311,6 @@ class TOSECScraper():
             if not game:
                 game = game_file.game
             game.releases[0].addFile(game_file)
-            # self.db.addGame(game)
             self.addGameToLocalDB(game)
         self.db.commit()
         self.unscraped_file_paths = []
@@ -318,27 +324,31 @@ class TOSECScraper():
                         continue
                     self.manually_entered_tosec_aliases[line[0]]=line[1]
 
-    def updateContentDescLookupTable(self):
-        # print('Updating content descriptions lookup table not implemented yet.')
-        self.getManuallyCorrectedContentDescriptions()
+    def updateContentDescAndNotesLookupTable(self):
+        self.getManuallyCorrectedContentDescriptionsAndNotes()
         content_desc_aliases_update = self.db.execute('SELECT * FROM content_desc_aliases')
         with open('content_desc_aliases.csv', 'w', encoding='utf-8') as f:
             for row in content_desc_aliases_update:
                 f.write(';'.join([str(x) if x else '' for x in row])+'\n')
 
-    def getManuallyCorrectedContentDescriptions(self):
+    def getManuallyCorrectedContentDescriptionsAndNotes(self):
         if not self.manually_corrected_content_descriptions:
             with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
                 for line in f.readlines():
-                    line = line.strip().split(';')
+                    line = line.strip().replace('\t', ';').split(';')
                     if len(line)<3 or not line[3]:
                         continue
                     else:
-                        line[3] = line[3][:-4]
-                    if line[2].startswith('NONE'):
-                        self.manually_corrected_content_descriptions[line[3]] = 'NONE'
-                    elif line[2].startswith('ALT'):
+                         line[3] = line[3][:-4]
+                    if line[2].startswith('NONE') or line[2].startswith('ALT'):
                         self.manually_corrected_content_descriptions[line[3]] = line[2]
+                    if len(line)<8:
+                        continue
+                    else:
+                        notes = line[6]
+                        if notes.startswith('NONE') or notes.startswith('ALT'):
+                            md5 = line[7]
+                            self.manually_corrected_notes[md5] = notes
 
     def getSameMD5ExclusionList(self):
         if not self.file_exclusion_list:
@@ -348,3 +358,14 @@ class TOSECScraper():
                     decision = line[7]
                     if not decision.startswith('KEEP'):
                         self.file_exclusion_list.append(line[11])
+
+    def getPublisherAliases(self):
+        self.publisher_aliases = {}
+        with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if not line[1]:
+                    break
+                self.publisher_aliases[line[0]]=line[1]
+        return self.publisher_aliases
+

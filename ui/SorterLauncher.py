@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Thu Sep 28 02:22:56 2017
+# Created: Sun Oct  1 19:55:59 2017
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -210,10 +210,26 @@ class Ui_Dialog(object):
         self.verticalLayout.setStretch(7, 1)
         self.verticalLayout.setStretch(9, 1)
         self.tabWidget.addTab(self.tabFileFiltering, _fromUtf8(""))
+        self.tabAbout = QtGui.QWidget()
+        self.tabAbout.setObjectName(_fromUtf8("tabAbout"))
+        self.textEdit = QtGui.QTextEdit(self.tabAbout)
+        self.textEdit.setGeometry(QtCore.QRect(20, 10, 441, 331))
+        self.textEdit.setStyleSheet(_fromUtf8("background-color: transparent;"))
+        self.textEdit.setObjectName(_fromUtf8("textEdit"))
+        self.btnReadme = QtGui.QPushButton(self.tabAbout)
+        self.btnReadme.setGeometry(QtCore.QRect(20, 350, 241, 28))
+        self.btnReadme.setObjectName(_fromUtf8("btnReadme"))
+        self.btnFacebook = QtGui.QPushButton(self.tabAbout)
+        self.btnFacebook.setGeometry(QtCore.QRect(20, 390, 241, 28))
+        self.btnFacebook.setObjectName(_fromUtf8("btnFacebook"))
+        self.btnSourceForge = QtGui.QPushButton(self.tabAbout)
+        self.btnSourceForge.setGeometry(QtCore.QRect(20, 430, 241, 28))
+        self.btnSourceForge.setObjectName(_fromUtf8("btnSourceForge"))
+        self.tabWidget.addTab(self.tabAbout, _fromUtf8(""))
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.tabWidget, self.lstInputPaths)
         Dialog.setTabOrder(self.lstInputPaths, self.btnAddPath)
@@ -272,8 +288,36 @@ class Ui_Dialog(object):
         self.chkIncludeRereleases.setText(_translate("Dialog", "Include re-releases", None))
         self.chkIncludeAlternateFileFormats.setText(_translate("Dialog", "Include alternate file formats (see formats preference order)", None))
         self.chkIncludeHacked.setText(_translate("Dialog", "Include files marked as cracked, hacked or modded", None))
+        self.chkIncludeXRated.setToolTip(_translate("Dialog", "18+ games: may contain nudity, pornographic images, extremely obscene language or hate speech", None))
         self.chkIncludeXRated.setText(_translate("Dialog", "Include x-rated games", None))
-        self.chkIncludeSupplementaryFiles.setText(_translate("Dialog", "Include supplementary files", None))
+        self.chkIncludeSupplementaryFiles.setToolTip(_translate("Dialog", "If a ZX Spectrum file has got other files with the same name in the same folder or in a subfolder, include those as well. May be handy tor maps, manuals etc.", None))
+        self.chkIncludeSupplementaryFiles.setText(_translate("Dialog", "Include supplementary files (Warning: may be slow!)", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFileFiltering), _translate("Dialog", "File filtering", None))
+        self.textEdit.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Brought to you by Helga Iliashenko aka Lady Eklipse</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">with the sencere feelings to the ZX Spectrum community.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Special thanks to:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Anna Soloviova for moral support;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Gerard Sweeney for www.the-tipshop.co.uk;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Einar Saukas for ZXDB;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">D. Kampschulte aka Der Eratosthenes for beta testing;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">blinkydoos for beta testing;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The TOSEC team, especially:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">gorski,</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">maddog,</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">dziuber,</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">panda</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">and others.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+        self.btnReadme.setText(_translate("Dialog", "View README", None))
+        self.btnFacebook.setText(_translate("Dialog", "Visit Facebook tech support group", None))
+        self.btnSourceForge.setText(_translate("Dialog", "Check for new version on SourceForge", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabAbout), _translate("Dialog", "Help", None))
 
 import res_rc

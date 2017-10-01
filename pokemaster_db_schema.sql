@@ -60,10 +60,21 @@ CREATE TABLE "game_file" (
 CREATE UNIQUE INDEX `hashsum` ON `game_file` (`game_wos_id`, `wos_name`, `wos_path`, `md5`);
 CREATE UNIQUE INDEX `unique_release` ON `game_release` (`wos_id` ,`release_seq`);
 -- CREATE UNIQUE INDEX `unique_alias` ON `game_alias` (`wos_id` ,`release_id` ,`name` );
-CREATE VIEW `content_desc_aliases` AS select wos_id, game.name, game_file.content_desc, game_file.tosec_path,
-game_file.wos_name, game_file.wos_path from game
-left join game_file on game_file.game_wos_id=game.wos_id
-order by game.name;
+CREATE VIEW `content_desc_aliases` AS
+SELECT
+	wos_id,
+	game.name,
+	game_file.content_desc,
+	game_file.tosec_path,
+	game_file.wos_name,
+	game_file.wos_path,
+	game_file.notes,
+	game_file.md5,
+	LENGTH(game_file.notes) AS l
+FROM game
+LEFT JOIN game_file ON game_file.game_wos_id=game.wos_id
+WHERE game_file.md5 IS NOT NULL
+ORDER BY l DESC;
 CREATE VIEW `files_with_same_md5` AS
 SELECT game.name, game.year, game.publisher, game.genre, game_file.md5,
 'http://www.worldofspectrum.org/infoseekid.cgi?id=' ||

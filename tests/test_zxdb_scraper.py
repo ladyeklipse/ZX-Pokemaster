@@ -176,3 +176,11 @@ class TestZXDBScraper(unittest.TestCase):
         games = zxdb.getGames(where_clause)
         zxdb.downloadMissingFilesForGames(games)
 
+    def test_alt_publisher(self):
+        where_clause = 'AND entries.id IN (24406)'
+        games = zxdb.getGames(where_clause)
+        zxdb.getInfoFromLocalFiles(games)
+        self.assertEqual(games[0].publisher, 'Baldomero, Garcia')
+        self.assertEqual(games[0].releases[0].publisher, 'Baldomero, Garcia')
+        db.addGame(games[0])
+        db.commit()

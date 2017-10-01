@@ -327,7 +327,7 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell)(128K)[aka Saboteur 2].tap'
+        expected_file = 'tests/files/sort_saboteur_out/Saboteur II - Avenging Angel (1987)(Durell)(128K).tap'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 
@@ -454,7 +454,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = output_location+'/Tasword Two (1984)(MCI Iberica)(es)[re-release].tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location+'/Tasword Two - The Word Processor (1983)(Tasman)(GB)(ru)[aka Tasword 2].tap'
+        expected_file = output_location+'/Tasword Two - The Word Processor (1983)(Tasman)[tr ru][aka Tasword 2].tap'
         self.assertTrue(os.path.exists(expected_file))
         not_expected_file = output_location+'/Tasword Two (1983)(Profisoft).tzx'
         self.assertFalse(os.path.exists(not_expected_file))
@@ -685,7 +685,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         not_expected_file = output_location+'/Durell/Saboteur II (1987)(Durell)(128K).tap'
         self.assertFalse(os.path.exists(not_expected_file))
-        expected_file = output_location+'/Durell/SaboteurII-AvengingAngel(1987)(Durell)(128K)[akaSaboteur2].tap'
+        expected_file = output_location+'/Durell/SaboteurII-AvengingAngel(1987)(Durell)(128K).tap'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location + '/MojonTwinsThe/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(MojonTwinsThe)(ES)(en).tap'
         self.assertTrue(os.path.exists(expected_file))

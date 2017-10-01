@@ -100,8 +100,17 @@ class Game(object):
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
                 file.setContentDesc(filename)
-            file.setReRelease()
-            file.setAka()
+
+    def setNotesForFiles(self, lookup_table={}):
+        files = self.getFiles()
+        for file in files:
+            md5 = file.getMD5()
+            if md5 in lookup_table:
+                file.notes = lookup_table[md5]
+            else:
+                file.setReRelease()
+                file.setAka()
+
 
     def setTypeFromFiles(self):
         if self.genre and self.genre!='Compilation':
@@ -117,6 +126,25 @@ class Game(object):
                 self.setGenreFromFilePath(file.tosec_path)
                 if self.genre:
                     break
+
+    def setCountryFromFiles(self):
+        for file in self.getFiles():
+            if file.getLanguage() in ['pl', 'ru', 'cs', 'sl', 'bs']:
+                if file.getCountry() in ['GB', 'ES']:
+                    mod_flag = '[tr {}]'.format(file.language)
+                    if mod_flag not in file.mod_flags:
+                        file.mod_flags += mod_flag
+                    file.language = ''
+                elif not file.getCountry():
+                    if file.getLanguage()=='cs':
+                        file.release.country = 'CZ'
+                    elif file.getLanguage()=='sl':
+                        file.release.country = 'SI'
+                    else:
+                        file.release.country = file.getLanguage().upper()
+                    if not file.game.language:
+                        file.game.language = file.getLanguage()
+                    file.language = ''
 
 
     def setGenreFromFilePath(self, path):
@@ -185,8 +213,6 @@ class Game(object):
     def setName(self, name):
         if name:
             name = getFileSystemFriendlyName(name)
-            # name = remove_square_brackets_regex.sub('', name).strip()
-            # name = name.replace('/','-').replace(':', ' -')
             self.name = name
 
     def setPublisher(self, publisher):
@@ -199,10 +225,6 @@ class Game(object):
 
     def setYear(self, year):
         self.year = year
-        # if type(year)==int:
-        #     self.year = year
-        # elif year and year.isdigit():
-        #     self.year = int(year)
 
     def setNumberOfPlayers(self, n_players):
         if type(n_players)==int:
@@ -219,7 +241,7 @@ class Game(object):
     def setMachineType(self, machine_type):
         if machine_type:
             if 'TC20' in machine_type or 'TS20' in machine_type:
-                machine_type = 'Timex'
+                machine_type = 'TC2048-TS2068'
             else:
                 machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
                 if '+2' in machine_type or '+3' in machine_type:

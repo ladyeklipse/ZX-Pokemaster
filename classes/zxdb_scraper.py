@@ -62,6 +62,15 @@ class ZXDBScraper():
                 line = line.strip().split(';')
                 if len(line)==2:
                     self.pok_file_paths[int(line[0])] = line[1].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
+        self.publisher_aliases = {}
+        with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if not line[1]:
+                    break
+                self.publisher_aliases[line[0]]=line[1]
+
+
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -147,10 +156,6 @@ class ZXDBScraper():
                 continue
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
-            if row['publisher'] and 'Nyitrai' in row['publisher'] and \
-                row['genre'] and \
-                            row['genre']=='Compilation':
-                continue
             if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:
                 game = self.gameFromRow(row)
                 release = self.releaseFromRow(row, game)
@@ -198,17 +203,19 @@ class ZXDBScraper():
                         release.manual_filepath = row['file_link']
                         release.manual_filesize = row['file_size']
                 elif row['file_format']:
-                    file_format = row['file_format'].lower()
-                    if 'snapshot' in file_format or \
-                         'disk' in file_format or \
-                         'tape' in file_format or \
-                         'rom' in file_format or \
-                         'cartridge' in file_format:
-                        game_file = self.gameFileFromRow(row, game)
-                        release.addFile(game_file)
-                        # file_exclusion_key = game_file.wos_name+'|'+game_file.wos_path
-                        # if file_exclusion_key in self.file_exclusion_list:
-                        #     release.removeFile(file_exclusion_key)
+                    if row['publisher'] and \
+                            ('Nyitrai' in row['publisher'] or 'Jatekgyaros' in row['publisher']) and \
+                            row['genre'] and row['genre'] == 'Compilation':
+                        pass
+                    else:
+                        file_format = row['file_format'].lower()
+                        if 'snapshot' in file_format or \
+                             'disk' in file_format or \
+                             'tape' in file_format or \
+                             'rom' in file_format or \
+                             'cartridge' in file_format:
+                            game_file = self.gameFileFromRow(row, game)
+                            release.addFile(game_file)
                 elif row['file_type']=='POK pokes file':
                     try:
                         pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
@@ -253,15 +260,8 @@ class ZXDBScraper():
                               row['country'],
                               game,
                               [release_name])
-        if release.release_seq>0:
-            release.addAlias(row['name'])
-        # if row.get('name')!=game.name:
-        #     alias = self.sanitizeAlias(row['name'])
-        #     release.addAlias(alias)
-        # for i, alias in enumerate(release.aliases):
-        #     if alias.endswith(', 3D'):
-        #         alias = '3D ' + alias[:-4]
-        #     release.aliases[i] = remove_square_brackets_regex.sub('', alias).strip()
+        # if release.release_seq>0:
+        release.addAlias(row['name'])
         return release
 
     def publisherNameFromRow(self, row):
@@ -281,6 +281,9 @@ class ZXDBScraper():
         alias = remove_brackets_regex.sub('', alias).strip()
         alias = alias.replace('AlchNews', 'Alchemist News')
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
+        if alias == 'Pozycje Milosne':
+            alias = '22 Pozycje milosne'
+        alias = alias.replace('F-14 Afterburner', 'Afterburner')
         alias = ' - '.join([alias]+round_brackets_contents)
         if alias.endswith(', 3D'):
             alias = '3D ' + alias[:-4]
@@ -317,8 +320,13 @@ class ZXDBScraper():
 
     def getInfoFromLocalFiles(self, games):
         for game in games:
+            game.setCountryFromFiles()
+            if game.publisher in self.publisher_aliases:
+                game.publisher = self.publisher_aliases[game.publisher]
             for release in game.releases:
                 release.getInfoFromLocalFiles()
+                if release.publisher in self.publisher_aliases:
+                    release.publisher = self.publisher_aliases[release.publisher]
                 for game_file in release.files:
                     file_exclusion_key = game_file.wos_name + '|' + game_file.wos_path
                     if file_exclusion_key in self.file_exclusion_list:

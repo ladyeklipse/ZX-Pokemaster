@@ -16,8 +16,8 @@ import traceback
 from functions.game_name_functions import *
 from functions.is_pathname_valid import *
 from classes.database import *
-# db = Database()
 from classes.sorter import *
+import webbrowser
 
 sys.path.append("ui")
 from PyQt4.QtCore import *
@@ -56,7 +56,19 @@ class MainDialog(QDialog):
         self.ui.chkMaxFilesPerFolder.toggled['bool'].connect(lambda state:
              self.enableMaxFilesPerFolder(state))
         self.loadSettings()
+        self.ui.btnReadme.clicked.connect(self.openReadme)
+        self.ui.btnFacebook.clicked.connect(self.openFacebook)
+        self.ui.btnSourceForge.clicked.connect(self.openSourceForge)
         self.exec()
+
+    def openReadme(self):
+        os.startfile('README.txt')
+
+    def openFacebook(self):
+        webbrowser.open('https://www.facebook.com/groups/zxpokemaster/')
+
+    def openSourceForge(self):
+        webbrowser.open('https://sourceforge.net/projects/zx-pokemaster/?source=updater')
 
     def enableMaxFilesPerFolder(self, state):
         self.ui.txtMaxFilesPerFolder.setEnabled(state)
@@ -96,7 +108,6 @@ class MainDialog(QDialog):
         pattern = self.getPatternFromDialog(folder_structure, file_structure)
         if pattern:
             index = self.ui.cmbOutputPathStructure.currentIndex()
-            # self.ui.cmbOutputPathStructure.setItemText(index, pattern)
             display_item = self.getDisplayItemFromOutputPattern(pattern)
             self.ui.cmbOutputPathStructure.setItemText(index, display_item[0])
             self.ui.cmbOutputPathStructure.setItemData(index, display_item[1])
@@ -142,10 +153,6 @@ class MainDialog(QDialog):
         self.bar.setAutoClose(True)
         self.bar.show()
         s = Sorter(**kwargs)
-        # if s.error:
-        #     self.bar.close()
-        #     QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr(s.error))
-        #     return
         self.bar.canceled.connect(s.cancel)
         self.bar.raise_()
         self.bar.activateWindow()
@@ -153,11 +160,6 @@ class MainDialog(QDialog):
         self.bar.hide()
         if s.should_cancel:
             QMessageBox.information(self, MESSAGE_BOX_TITLE, self.tr('Operation was canceled.'))
-        # elif s.too_long_path:
-        #     QMessageBox.warning(self, MESSAGE_BOX_TITLE,
-        #                             self.tr('Path %s is too long. Please try another output location.' % s.too_long_path))
-        # elif s.error:
-        #     QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("Errors occured while sorting files. See errors.log."))
         else:
             message = self.tr('Sorting successfully finished.')
             message += self.tr('\nFiles sorted: {}'.format(s.files_sorted))
@@ -221,6 +223,8 @@ class MainDialog(QDialog):
         return self.ui.txtMaxFilesPerFolder.value()
 
     def updateProgressBar(self, current_value=0, max_value=None, label=None):
+        if current_value==max_value:
+            current_value -= 1
         self.bar.setValue(current_value)
         if max_value:
             self.bar.setMaximum(max_value)

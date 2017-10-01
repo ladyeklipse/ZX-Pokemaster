@@ -83,8 +83,6 @@ class TipshopScraper(Scraper):
         while i<len(strings):
             string = strings[i]
             possible_pokes = self.getPossiblePokesFromString(string)
-            # print('string=', string)
-            # print('possible pokes = ',possible_pokes)
             if not possible_pokes:
                 i += 1
                 continue
@@ -116,15 +114,12 @@ class TipshopScraper(Scraper):
                 desc = desc[1:].lstrip()
             if desc.startswith('(') and desc.endswith(')'):
                 desc = desc[1:-1].lstrip()
-            # if desc:
-            #     desc = desc[0].upper() + desc[1:]
             j = i
             while True:
                 j += 1
                 if j>=len(strings):
                     break
                 possible_pokes_continued = self.getPossiblePokesFromString(strings[j])
-                # possible_next_description = self.getPossibleDescriptionFromString(string)
                 possible_next_description = self.getPossibleDescriptionFromString(strings[j])
                 for char in SANITIZE_DESC_CHARS+[x for x in ' 0123456789nxNX,']:
                     possible_next_description = possible_next_description.replace(char, '')
@@ -135,8 +130,6 @@ class TipshopScraper(Scraper):
                     break
                 else:
                     possible_pokes += possible_pokes_continued
-                    # i+=1
-                    # j+=1
             self.addCheatToGame(desc, possible_pokes, game)
             i += 1
 
@@ -145,14 +138,10 @@ class TipshopScraper(Scraper):
 
     def getPossibleDescriptionFromString(self, string):
         return string.strip()
-        # text_outside_brackets =  re.sub(r'\([^)]*\)', '', string).strip()
-        # text_inside_brackets = re.findall(r'\([^)]*\)'
-        # string_without_brackets = re.sub(r'\([^)]*\)', '', string.strip())
-        # return string_without_brackets
 
     def addCheatToGame(self, desc, possible_pokes, game):
-        print('"' + desc + '"')
-        print(possible_pokes)
+        # print('"' + desc + '"')
+        # print(possible_pokes)
         if desc and possible_pokes and \
                                 3 < len(desc) < 100 and not desc.isdigit():
             c = Cheat(desc)

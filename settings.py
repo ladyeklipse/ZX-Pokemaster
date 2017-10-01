@@ -86,7 +86,8 @@ INCLUDED_LANGUAGES_LIST = [
     ('pt', 'Portuguese'),
     ('sh', 'Serbo-Croatian'),
     ('sr', 'Serbian'),
-    ('sl', 'Slovak'),
+    ('sk', 'Slovak'),
+    ('sl', 'Slovenian'),
     ('sv', 'Swedish')
 ]
 COUNTRY_LANGUAGE_DICT = {
@@ -96,6 +97,7 @@ COUNTRY_LANGUAGE_DICT = {
     'AR':'es',
     'BR':'pt',
     'CZ':'cs',
+    'SI':'sl',
     '':'en',
 }
 TOSEC_COMPLIANT_FILENAME_STRUCTURE = \

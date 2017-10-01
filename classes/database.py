@@ -67,8 +67,6 @@ class Database():
                 self.cache_by_md5[file.md5]=game
 
     def addGame(self, game):
-        # if not game.wos_id or not game.name:
-        #     raise Exception('Cannot add game with corrupt data:'+game.getWosID()+','+game.getTOSECName())
         values = [game.wos_id if game.wos_id else None,
                   game.name,
                   game.publisher,
@@ -146,6 +144,9 @@ class Database():
 
     def commit(self):
         self.conn.commit()
+
+    def getGameNameAliases(self):
+        game_names = self.execute('SELECT wos_id, game_name FROM ')
 
     def getAllGames(self, condition=None):
         sql = SELECT_GAME_SQL_START

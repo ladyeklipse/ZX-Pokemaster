@@ -1,5 +1,6 @@
 from classes.tosec_dat import *
 from classes.tipshop_scraper import *
+from classes.zxdb_scraper import *
 from classes.database import *
 from classes.game import *
 # from tipshop_excel_converter import *
@@ -61,10 +62,6 @@ def games2xlsx(games, xlsx_filename='new_tipshop_pokes.xlsx', new_only=False):
 
 def updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db=None):
     db = db if db else Database()
-    # for chunk in chunks(wos_ids_tipshop_pages_pairs, 500):
-    #     sql = 'UPDATE game SET has_tipshop_page=1 WHERE wos_id in ('+','.join(['?']*len(chunk))+')'
-    #     print(sql, chunk)
-    #     db.execute(sql, chunk)
     for pair in wos_ids_tipshop_pages_pairs:
         sql = 'UPDATE game SET tipshop_page=? WHERE wos_id=?'
         params = pair
@@ -90,13 +87,44 @@ def getAllPokes(wos_ids=[]):
                 print('New cheat found:', cheat)
                 game.has_new_pokes = True
                 break
-        # if game.cheats:
-        #     db.addGame(game)
         print('left=', len(games)-i)
-    # db.commit()
     if wos_ids:
         return [game for game in games if game.wos_id in wos_ids]
     return games
+
+def updateMods():
+    zxdb = ZXDBScraper()
+    zxdb.cur.execute('''
+    SELECT id, original_id FROM entries
+    WHERE is_mod=1;
+    ''')
+    db = Database()
+    for mod in zxdb.cur:
+        print(mod)
+        if not str(mod['original_id']).isnumeric():
+            continue
+        mod_game = db.getGameByWosID(mod['id'])
+        mod_of = db.getGameByWosID(mod['original_id'])
+        if not mod_of:
+            print('No game with id', mod['original_id'])
+            continue
+        for cheat in mod_of.cheats:
+            mod_game.addCheat(cheat)
+        for cheat in mod_of.cheats:
+            if cheat.description=='Having already applied the poke simply add these':
+                cheat.description = 'Moves invisible object from First Landing to The Hall'
+            elif cheat.description == 'To prevent this from happening':
+                cheat.description = 'No pitch decrease when life lost'
+        for cheat in mod_game.cheats:
+            if cheat.description=='Having already applied the poke simply add these':
+                cheat.description = 'Moves invisible object from First Landing to The Hall'
+            elif cheat.description == 'To prevent this from happening':
+                cheat.description = 'No pitch decrease when life lost'
+        db.addGame(mod_game)
+    db.commit()
+
+
+    db = Database()
 
 def extractPokFiles():
     db = Database()
@@ -132,17 +160,18 @@ def scrapePokesFromText(text):
         print(f.read())
 
 def convertHexes(text):
-    hexes = re.findall(r'([a-fA-F0-9]{2,4}[,\s]{1})', text)
+    text = text.replace('$', '#')
+    hexes = re.findall(r'(\#[a-fA-F0-9]{2,4}[,\s]{1,})', text)
     print(hexes)
     for hexnum in hexes:
-        hexnum = hexnum.strip().replace(',','')
+        hexnum = hexnum[1:].strip().replace(',','')
         print('hexnum=',hexnum)
         if not hexnum:
             continue
         intnum = int(str(hexnum), 16)
         print(intnum)
-        text = text.replace(hexnum, str(intnum))
-    return text.replace('$', '').replace('#', '')
+        text = text.replace('#'+hexnum, str(intnum), 1)
+    return text
 
 def createPOKTOSECDat():
     dat = TOSECDat('Sinclair ZX Spectrum - Pokes - [POK]')
@@ -167,10 +196,72 @@ if __name__=='__main__':
     # print('total wos_ids = ', len(wos_ids))
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
+    updateMods()
     extractPokFiles()
     createPOKTOSECDat()
     # TEMPORARY BELOW
-    # text = convertHexes('''''')
-    # scrapePokesFromText(text)
+    # text = convertHexes('''
+# some good
+#5B00, #01 :
+#5B01, #FE :
+#5B02, #FB :
+#5B03, #ED :
+#5B04, #78 :
+#5B05, #E6 :
+#5B06, #02 :
+#5B07, #20 :
+#5B08, #0B :
+#5B09, #01 :
+#5B0A, #1D :
+#5B0B, #00 :
+#5B0C, #11 :
+#5B0D, #A3 :
+#5B0E, #7A :
+#5B0F, #21 :
+#5B10, #18 :
+#5B11, #5B :
+#5B12, #ED :
+#5B13, #B0 :
+#5B14, #C3 :
+#5B15, #79 :
+#5B16, #89 :
+#5B17, #00
+#5B18, #01 :
+#5B19, #03 :
+#5B1A, #01 :
+#5B1B, #01 :
+#5B1C, #01 :
+#5B1D, #00 :
+#5B1E, #0B :
+#5B1F, #08 :
+#5B20, 	#00 :
+#5B21, 	#0C  :
+#5B22, 	#0A  :
+#5B23, 	#01  :
+#5B24, 	#04  :
+#5B25, 	#09  :
+#5B26, 	#02  :
+#5B27, 	#06 :
+#5B28, 	#02  :
+#5B29, 	#0D  :
+#5B2A, 	#0A  :
+#5B2B, 	#07  :
+#5B2C, 	#06  :
+#5B2D, 	#0A  :
+#5B2E, 	#0E  :
+#5B2F, 	#00 :
+#5B30,	#00 :
+#5B31, 	#00  :
+#5B32, 	#03  :
+#5B33, 	#03  :
+#5B34, 	#00  :
+#5B35, 	#00  :
+#5B36, 	#00  :
+#5B37, 	#00 :
+# 34388, 0
+# 34389, 91
+#     ''')
+#     print(text)
+#     scrapePokesFromText(text)
     # text = ''''''
     # scrapePokesFromText(text)
