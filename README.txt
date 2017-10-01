@@ -1,5 +1,5 @@
 ===========================================================
-ZX Pokemaster 1.1 README
+ZX Pokemaster 1.2 README
 ===========================================================
 
 CONTENTS.
@@ -60,17 +60,17 @@ Example 1:
 Formats preference order: tzx, tap, dsk
 "Include alternate file formats" IS NOT checked.
 Expected result:
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap - this file will be copied.
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx - this file will be copied.
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80 - this file will NOT be copied (Z80 is not in format preference order).
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tap - this file will be copied.
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tzx - this file will be copied.
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).z80 - this file will NOT be copied (Z80 is not in format preference order).
 Example 2:
 Formats preference order: tzx, tap, dsk
 "Include alternate file formats" IS checked.
 Expected result:
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx - this file will be copied.
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tap - this file will NOT be copied (similar file with TZX extension exists).
-Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].z80 - this file will NOT be copied (Z80 is not in format preference order).
-Abadia del Crimen, La (1988)(Opera Soft)(es)[48K].tap - this file will be copied.
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tzx - this file will be copied.
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tap - this file will NOT be copied (similar file with TZX extension exists).
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).z80 - this file will NOT be copied (Z80 is not in format preference order).
+Abadia del Crimen, La (1988)(Opera Soft)(ES)(48K).tap - this file will be copied.
 
 7. If you want to make sure you have each and every file available, check all the the checkboxes.
 For better understanding what each of them does, here is the description:
@@ -79,11 +79,11 @@ For better understanding what each of them does, here is the description:
  
  - Include re-releases: all re-releases will be copied along with original releases if checked.
  Example (checked):
- Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx - this file will be copied.
- Abadia del Crimen, La (1988)(MCM Software)(ES)[128K][re-release].tzx - this file will be copied.
+ Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tzx - this file will be copied.
+ Abadia del Crimen, La (1988)(MCM Software)(ES)(128K)[re-release].tzx - this file will be copied.
  Example (unchecked):
- Abadia del Crimen, La (1988)(Opera Soft)(es)[128K].tzx - this file will be copied.
- Abadia del Crimen, La (1988)(MCM Software)(ES)[128K][re-release].tzx - this file will NOT be copied.
+ Abadia del Crimen, La (1988)(Opera Soft)(ES)(128K).tzx - this file will be copied.
+ Abadia del Crimen, La (1988)(MCM Software)(ES)(128K)[re-release].tzx - this file will NOT be copied.
  
  - Include alternate file formats: see p. 6 (above).
  
@@ -93,9 +93,9 @@ For better understanding what each of them does, here is the description:
  [h] - hacked
  [f] - fixed for emulators.
  Example (checked):
- Abadia del Crimen, La (1988)(Opera Soft)(es)[h Perestroika].trd - this file will be copied.
+ Abadia del Crimen, La (1988)(Opera Soft)(ES)[h Perestroika].trd - this file will be copied.
  Example (unchecked):
- Abadia del Crimen, La (1988)(Opera Soft)(es)[h Perestroika].trd - this file will NOT be copied.
+ Abadia del Crimen, La (1988)(Opera Soft)(ES)[h Perestroika].trd - this file will NOT be copied.
  
 8. If you want .POK files to be placed alongside executable files instead of POKES subfolder, please uncheck "Place .POK files into POKES subfolder".
 
@@ -136,7 +136,20 @@ Sorting by letters or by year doesn't always work right, because you will have a
 Implementing the option to have not more than X files per folder will make it possible to make sorting files more equally. Besides I've heard of the systems which currently support not more than 256 files per folder, and it can take a while to load 2000 file names on real ZX Spectrum hardware.
 The folders will be named like volumes of huge dictionaries: e. g. if first game in bundle is "Saboteur and the last is "Tujad", the folder name will be "sab-tuj".
 
-12. Press "Sort" button and wait several minutes - this time is enough to sort 70000+ files (WoS and TOSEC dumps combined).
+12. Including supplementary files.
+ZX Pokemaster can find and rename files which go along with your executables, but are not in its database. 
+Beware that this may significantly slow down the redistribution of files.
+Example:
+You have a file named "TUJAD.TZX".
+It has got a manual in the same folder called "TUJAD.TXT".
+And it has a screenshot in the subfolder "SCRSHOT" called "TUJAD.SCR".
+If "Include supplementary files" is checked, all 3 files will be copied into Output Path with these names by default:
+"Tujad (1986)(Ariolasoft UK).tzx"
+"Tujad (1986)(Ariolasoft UK).txt"
+and
+"Tujad (1986)(Ariolasoft UK).scr" in "SCRSHOT" subfolder inside Output Path.
+
+13. Press "Sort" button and wait several minutes - this time is enough to sort 70000+ files (WoS and TOSEC dumps combined).
 
 ===========================================================
 III. How ZX Pokemaster works.
@@ -184,6 +197,25 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.2.
+ - Full TOSEC-compliance achieved.
+ - This release fully matches the October 31st TOSEC release.
+ - Files from the following sources have been added to the database:
+	http://indieretronews.com
+	http://itch.io
+	http://spectrum4ever.org
+	http://speccy21.tk
+	http://pouet.net
+	http://zxaaa.net
+	http://zxbg.blogspot.com
+	http://www.yoursinclair.co.uk/csscgc
+ - Added files with non-common extensions (.mgt, .ipf, .dck and others)
+ - Proper logging added. Don't hesitate to send me logs if anything feels weird.
+ - 8.3 naming scheme perfected.
+ - Sorting by folders with equal amount of files improved (still not perfect).
+ - Help tab added to GUI.
+	
+
 1.1. 
  - Improved filenames. Now they are more TOSEC-compliant.
  - Improved GUI interface.
@@ -238,4 +270,4 @@ If you're interested in hiring me as a programmer, you're welcome to contact me 
 https://www.upwork.com/freelancers/~01621f640af26c1cb3
 
 Sincerely yours,
-Helga aka Lady Eklipse.
+Helga Iliashenko aka Lady Eklipse.
