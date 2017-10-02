@@ -2,6 +2,7 @@ from classes.game_file import *
 from classes.game import *
 from classes.database import *
 from lxml import etree
+from copy import copy
 
 def refresh_tosec_aliases():
     with open('tosec_aliases.bak', 'r', encoding='utf-8') as f:
@@ -32,7 +33,7 @@ class TOSECScraper():
         self.getManuallyEnteredTOSECAliases()
         self.getManuallyCorrectedContentDescriptionsAndNotes()
         self.getSameMD5ExclusionList()
-        self.getPublisherAliases()
+        # self.getPublisherAliases()
         self.db = db if db else Database()
         if cache:
             self.db.loadCache()
@@ -166,11 +167,12 @@ class TOSECScraper():
                     game_from_db = self.db.getGameByFile(game_file)
                 if game_from_db and current_game!=game_from_db:
                     current_release = game_from_db.findReleaseByFile(game_file)
-                    current_release.importInfoFromGameFile(game_file) #EXPERIMENTAL
+                    current_release.importInfoFromGameFile(game_file)
                     current_release.addFiles([file for file in current_game.files])
-                    current_release.addFile(game_file)
+                    current_release.addFile(copy(game_file))
                     current_game.files = []
                     current_game = game_from_db
+                    self.addGameToLocalDB(current_game) #fixes weird bugs
                 else:
                     current_game.files.append(game_file)
             else:
@@ -198,9 +200,9 @@ class TOSECScraper():
         game.setNotesForFiles(lookup_table=self.manually_corrected_notes)
         game.setTypeFromFiles()
         game.setCountryFromFiles()
-        for release in game.releases:
-            if release.publisher in self.publisher_aliases:
-                release.publisher = self.publisher_aliases[release.publisher]
+        # for release in game.releases:
+        #     if release.publisher in self.publisher_aliases:
+        #         release.publisher = self.publisher_aliases[release.publisher]
         self.db.addGame(game)
 
     def showUnscraped(self):
@@ -359,13 +361,13 @@ class TOSECScraper():
                     if not decision.startswith('KEEP'):
                         self.file_exclusion_list.append(line[11])
 
-    def getPublisherAliases(self):
-        self.publisher_aliases = {}
-        with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
-            for line in f.readlines():
-                line = line.strip().split(';')
-                if not line[1]:
-                    break
-                self.publisher_aliases[line[0]]=line[1]
-        return self.publisher_aliases
+    # def getPublisherAliases(self):
+    #     self.publisher_aliases = {}
+    #     with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
+    #         for line in f.readlines():
+    #             line = line.strip().split(';')
+    #             if not line[1]:
+    #                 break
+    #             self.publisher_aliases[line[0]]=line[1]
+    #     return self.publisher_aliases
 

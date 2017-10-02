@@ -263,5 +263,30 @@ if __name__=='__main__':
 #     ''')
 #     print(text)
 #     scrapePokesFromText(text)
-    # text = ''''''
+    text = '''
+Eugene not interested in guarding portal (Bug-Byte) 
+POKE 36348,0: POKE 36349,0: POKE 36438,24 
+Eugene not interested in guarding portal (Software Project)
+POKE 36359,0: POKE 36360,0: POKE 36449,24 
+
+Portal not required (Bug-Byte) 
+POKE 36809,176: POKE 36810,128: POKE 36815,177: POKE 36816,128 
+Portal not Required (Software Project)
+POKE 36820,176: POKE 36821,128: POKE 36826,177: POKE 36827,128 
+
+Eugene completely harmless (Bug-Byte) POKE 36408,0 
+Eugene completely harmless (Software Project) 36419,0 
+
+Skylabs harmless (Bug-Byte) POKE 36552,0 
+Skylabs harmless (Software Project) POKE 36563,0 
+
+Next cavern instead of loss of life (Bug-Byte) POKE 34799,40 POKE 34800,144 
+Next cavern instead of loss of life (Software Project) 34805,51 POKE 34806,144 
+
+Larger bonus for cavern completion (Bug-Byte) POKE 37051,45 
+Larger bonus for cavern completion  (Software Project) POKE 37062,45 
+
+Reduce air drain in Solar Power Generator (Bug-Byte) POKE 36236,0: POKE 36237,0: POKE 36238,0: POKE 36239,0: POKE 36240,0: POKE 36241,0 
+Reduce air drain in Solar Power Generator (Software Project) POKE 36247,0: POKE 36248,0: POKE 36249,0: POKE 36250,0 : POKE 36251,0 : POKE 36252,0  
+'''
     # scrapePokesFromText(text)

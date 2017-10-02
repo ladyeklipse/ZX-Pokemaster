@@ -29,6 +29,8 @@ class Database():
     cache_by_wos_id = {}
     cache_by_name = {}
     cache_by_md5 = {}
+    game_name_aliases = {}
+    publisher_aliases = {}
 
     def __init__(self):
         self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
@@ -66,7 +68,34 @@ class Database():
             for file in release.files:
                 self.cache_by_md5[file.md5]=game
 
+    def loadLookupTables(self):
+        with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if not line[1]:
+                    break
+                self.publisher_aliases[line[0]]=line[1]
+        with open('game_name_aliases.csv', 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.strip().split(';')
+                if not line[1]:
+                    break
+                self.game_name_aliases[line[0]]=line[1]
+
     def addGame(self, game):
+        if not self.publisher_aliases:
+            self.loadLookupTables()
+        if game.publisher in self.publisher_aliases:
+            game.publisher = self.publisher_aliases[game.publisher]
+        if game.name in self.game_name_aliases:
+            game.name = self.game_name_aliases[game.name]
+        for release in game.releases:
+            if release.getName() in self.game_name_aliases:
+                release.aliases = [self.game_name_aliases[release.name]]
+            if release.publisher in self.publisher_aliases:
+                release.publisher = self.publisher_aliases[release.publisher]
+            if not release.publisher or release.publisher=='-':
+                release.publisher = game.publisher
         values = [game.wos_id if game.wos_id else None,
                   game.name,
                   game.publisher,

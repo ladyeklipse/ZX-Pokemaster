@@ -295,6 +295,14 @@ class TestTOSECScraper(unittest.TestCase):
         for file in game.getFiles():
             self.assertNotIn('[CSSCGC]', file.notes)
 
+    def testDCKFile(self):
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test\\')
+        ts.scrapeTOSEC()
+        ts.addUnscraped()
+        game = ts.db.getGameByFileMD5('2d3b702a9cd22cb84b3cf3032fb1ef46')
+        file = game.findFileByMD5('2d3b702a9cd22cb84b3cf3032fb1ef46')
+        self.assertGreater(len(file.tosec_path), 0)
+
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
         ts.db.execute(sql)

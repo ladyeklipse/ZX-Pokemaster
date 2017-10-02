@@ -321,12 +321,12 @@ class ZXDBScraper():
     def getInfoFromLocalFiles(self, games):
         for game in games:
             game.setCountryFromFiles()
-            if game.publisher in self.publisher_aliases:
-                game.publisher = self.publisher_aliases[game.publisher]
+            # if game.publisher in self.publisher_aliases:
+            #     game.publisher = self.publisher_aliases[game.publisher]
             for release in game.releases:
                 release.getInfoFromLocalFiles()
-                if release.publisher in self.publisher_aliases:
-                    release.publisher = self.publisher_aliases[release.publisher]
+                # if release.publisher in self.publisher_aliases:
+                #     release.publisher = self.publisher_aliases[release.publisher]
                 for game_file in release.files:
                     file_exclusion_key = game_file.wos_name + '|' + game_file.wos_path
                     if file_exclusion_key in self.file_exclusion_list:

@@ -35,6 +35,8 @@ class GameRelease(object):
         if country == 'UK':
             country = 'GB'
         self.country = country
+        if publisher == 'Timex Portugal':
+            self.country = 'PT'
         self.files = []
         self.aliases = []
         self.addAliases(aliases)
@@ -57,7 +59,7 @@ class GameRelease(object):
         return filepath
 
     def getName(self, language=None):
-        return '/'.join(self.aliases) if self.aliases else self.game.name
+        return '/'.join(self.getAllAliases()) if self.aliases else self.game.name
 
     def getPublisher(self):
         if self.publisher:

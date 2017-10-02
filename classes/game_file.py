@@ -115,6 +115,8 @@ class GameFile(object):
             self.content_desc = other_file.content_desc
         if overwrite or other_file.is_demo:
             self.is_demo = other_file.is_demo
+        if overwrite or other_file.release_date:
+            self.release_date = other_file.release_date
         if overwrite or other_file.size:
             self.size = other_file.size
         if overwrite or other_file.language:
@@ -414,14 +416,17 @@ class GameFile(object):
         if 'pentagon 128' in filename or '(pentagon' in filename or '[pentagon' in filename:
             self.machine_type = 'Pentagon 128K'
         elif 'timex' in filename or 'tc2048' in filename or 'ts2068' in filename:
-            self.machine_type = 'TC2048-TS2068'
+            if self.format == 'dck':
+                self.machine_type = 'TC2068-TS2068'
+            else:
+                self.machine_type = 'TC2048-TS2068'
         elif '+2a-+3' in filename:
             self.machine_type = '+2A-+3'
         elif '[+2a' in filename or '(+2a' in filename:
             self.machine_type = '+2A'
         elif '[+2' in filename or '(+2' in filename:
             self.machine_type = '+2'
-        elif '[+3' in filename or '(+3' in filename:
+        elif '[+3' in filename or '(+3' in filename or self.format=='dsk':
             self.machine_type = '+3'
         elif '128k' in filename and '48' in filename:
             self.machine_type = '48K-128K'

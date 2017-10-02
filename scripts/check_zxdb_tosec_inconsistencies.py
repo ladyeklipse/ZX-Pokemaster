@@ -67,7 +67,7 @@ for game in games:
                     problems.append('Undetermined')
                     undetermined_problems += 1
             else:
-                continue
+                problems.append('All fine')
         elif not file.tosec_path:
             problems.append('File not in TOSEC')
             original_tosec_game_name = ''
