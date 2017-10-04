@@ -295,6 +295,15 @@ class TestTOSECScraper(unittest.TestCase):
         for file in game.getFiles():
             self.assertNotIn('[CSSCGC]', file.notes)
 
+    def test_tau_ceti_2(self):
+        wos_id = 5156
+        ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
+        ts.paths = [path for path in ts.paths if 'Tau Ceti' in path['path']]
+        self.scrape(ts.paths, wos_id)
+        game = ts.db.getGameByWosID(wos_id)
+        for game_file in game.getFiles():
+            print(game_file.getTOSECName())
+
     def testDCKFile(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test\\')
         ts.scrapeTOSEC()

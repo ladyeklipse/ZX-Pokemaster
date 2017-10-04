@@ -58,7 +58,7 @@ for game in games:
                         problems.append('Marked as (demo)')
                     else:
                         problems.append('Unmarked as (demo)')
-                if file_from_path.getGameName()!=file.getGameName():
+                if file_from_path.getGameName(for_filename=True)!=file.getGameName(for_filename=True):
                     if game_from_path.name not in file.release.aliases:
                         problems.append('Game Title not in ZXDB')
                     else:

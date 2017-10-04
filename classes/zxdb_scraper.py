@@ -283,6 +283,7 @@ class ZXDBScraper():
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         if alias == 'Pozycje Milosne':
             alias = '22 Pozycje milosne'
+        alias = alias.replace('BubbleLand', 'Bubble Land')
         alias = alias.replace('F-14 Afterburner', 'Afterburner')
         alias = ' - '.join([alias]+round_brackets_contents)
         if alias.endswith(', 3D'):

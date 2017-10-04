@@ -26,4 +26,3 @@ if __name__=='__main__':
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
     import scrape_tosec
-    import create_tosec_dats

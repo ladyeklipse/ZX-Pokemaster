@@ -750,6 +750,8 @@ class GameFile(object):
                 self.type += os.sep+'Mixed'
             else:
                 self.type += os.sep+'Games'
+        elif 'Firmware' in genre:
+            self.type += 'Firmware'
         elif 'Education' in genre:
             self.type += 'Educational'
         elif genre.startswith('Utility') or \
@@ -787,7 +789,7 @@ class GameFile(object):
     def setAka(self):
         if '[aka' not in self.notes:
             aliases_search_strings = []
-            game_name_search_string = getSearchStringFromGameName(self.getGameName())
+            game_name_search_string = getSearchStringFromGameName(self.getGameName(for_filename=True))
             aliases_search_strings.append(game_name_search_string)
             for alias in self.release.getAllAliases():
                 alias_search_string = getSearchStringFromGameName(alias)

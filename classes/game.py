@@ -131,7 +131,7 @@ class Game(object):
         for file in self.getFiles():
             if file.getLanguage() in ['pl', 'ru', 'cs', 'sl', 'bs']:
                 if file.getCountry() in ['GB', 'ES']:
-                    mod_flag = '[tr {}]'.format(file.language)
+                    mod_flag = '[tr {}]'.format(file.getLanguage())
                     if mod_flag not in file.mod_flags:
                         file.mod_flags += mod_flag
                     file.language = ''
@@ -166,6 +166,8 @@ class Game(object):
                 self.genre += ' - Mixed'
             else:
                 self.genre += ' - Games'
+        elif 'firmware' in path:
+            self.genre = 'Firmware'
         elif 'magazines' in path:
             self.genre = 'Electronic Magazine'
         elif 'application' in path:
