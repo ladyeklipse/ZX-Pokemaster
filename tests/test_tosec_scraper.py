@@ -65,11 +65,12 @@ class TestTOSECScraper(unittest.TestCase):
             "tosec\Sinclair ZX Spectrum\Games\[Z80]\Saboteur II - Avenging Angel (1987)(Durell Software)[t].zip",
         ]
         wos_id = 4295
+        paths = ts.generateTOSECPathsArrayFromList(paths)
         self.scrape(paths, wos_id)
         game = ts.db.getGameByWosID(wos_id)
         self.assertTrue(len(game.getFiles())>=2)
         for file in game.getFiles():
-            if 'Durell Software' in file.tosec_path:
+            if 'Durell' in file.tosec_path:
                 self.assertEqual(file.getReleaseSeq(), 0)
 
     def test_dat_files_scraping(self):
@@ -295,14 +296,25 @@ class TestTOSECScraper(unittest.TestCase):
         for file in game.getFiles():
             self.assertNotIn('[CSSCGC]', file.notes)
 
-    def test_tau_ceti_2(self):
-        wos_id = 5156
-        ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
-        ts.paths = [path for path in ts.paths if 'Tau Ceti' in path['path']]
+    def test_game_with_randomness_in_name(self):
+        wos_id = 2247
+        paths = ts.generateTOSECPathsArrayFromDatFiles()
+        paths = [path for path in paths if 'H.A.T.E.' in path['path']]
+        ts.paths = copy(paths)
+
+        # ts.manually_corrected_notes = {}
+        # ts.manually_corrected_content_descriptions = {}
+        # ts.manually_entered_tosec_aliases = {}
+        # ts.getManuallyCorrectedContentDescriptionsAndNotes()
+        # ts.getManuallyEnteredTOSECAliases()
+
         self.scrape(ts.paths, wos_id)
         game = ts.db.getGameByWosID(wos_id)
         for game_file in game.getFiles():
-            print(game_file.getTOSECName())
+            print(game_file.getTOSECName(), game_file.getMD5())
+        # tosec_names = sorted([game_file.getTOSECName() for game_file in game.getFiles()])
+        # for name in tosec_names:
+        #     print(name)
 
     def testDCKFile(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test\\')
@@ -316,8 +328,9 @@ class TestTOSECScraper(unittest.TestCase):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
         ts.db.execute(sql)
         ts.db.commit()
-        ts.db.loadCache()
+        # ts.db.loadCache()
         ts.paths = paths
+        ts.sortPaths()
         ts.scrapeTOSEC()
         ts.addUnscraped()
         unscraped = ts.showUnscraped()

@@ -29,13 +29,24 @@ def createTOSECDATs():
     dats_files = {}
     db = Database()
     games = db.getAllGames()
-    # games = db.getAllGames('game.wos_id=30508')
+    # games = db.getAllGames('game.wos_id=27')
     for game in games:
-        for file in game.getFiles():
+        files = game.getFiles()
+        # files = sorted(files, key = lambda file: file.getMD5())
+        files = sorted(files, key = lambda file:
+        (file.tosec_path.startswith('Sinclair ZX Spectrum'),
+         str(len(re.findall('\[a[0-9]{1,}\]', file.tosec_path))),
+         '[a]' in file.tosec_path,
+         file.wos_path,
+         file.wos_name,
+         file.tosec_path,
+         file.getMD5()))
+        for file in files:
             dat_name = file.getTOSECDatName()
             if not dats_files.get(dat_name):
                 dats_files[dat_name] = []
             dats_files[dat_name].append(file)
+
     for dat_name, files in dats_files.items():
         dat = TOSECDat(dat_name)
         dat.files = []
@@ -45,5 +56,5 @@ def createTOSECDATs():
         dat.export()
 
 createTOSECDATs()
-createPOKTOSECDat()
-updateROMVaultDATs()
+# createPOKTOSECDat()
+# updateROMVaultDATs()

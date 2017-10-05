@@ -144,6 +144,8 @@ class Database():
                     print('Bad file:', file, 'for game:', game)
                     print(traceback.format_exc())
                     continue
+                file.sortModFlags()
+                file.sortNotes()
                 values = [game.wos_id,
                           release.release_seq,
                           file.wos_name,

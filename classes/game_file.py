@@ -342,7 +342,7 @@ class GameFile(object):
                 note = '[{}]'.format(each)
                 if note not in self.notes:
                     self.notes += note
-        self.sortModFlags()
+        # self.sortModFlags()
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
 
@@ -362,18 +362,23 @@ class GameFile(object):
             mod_flags_array.append(mod_flags_array.pop(mod_flags_array.index('b')))
         self.mod_flags = ''.join('[{}]'.format(x) for x in mod_flags_array)
 
+    def sortNotes(self):
+        notes_array = re.findall(SQUARE_BRACKETS_REGEX, self.notes)
+        notes_array = sorted(set(notes_array))
+        self.notes = ''.join('[{}]'.format(x) for x in notes_array)
+
     def setContentDesc(self, filename):
         if self.game and self.game.wos_id:
             game_name = filename.split('(')[0].strip()
-            # aliases = sorted(self.game.getAliases(), key=len, reverse=True)
             aliases = self.game.getAliases()
             alias_found = False
-            for alias in aliases:
-                alias = alias.lower()
-                if alias in game_name.lower():
-                    self.content_desc = game_name[game_name.lower().find(alias)+len(alias):].rstrip()
-                    alias_found = True
-                    break
+            # for alias in aliases:
+            #     alias = alias.lower()
+            #     alias = getSearchStringFromGameName(alias)
+                # if alias in game_name.lower():
+                #     self.content_desc = game_name[game_name.lower().find(alias)+len(alias):].rstrip()
+                #     alias_found = True
+                #     break
             if not self.content_desc and not alias_found:
                 if ' - ' in game_name:
                     self.content_desc = ' - '+' - '.join(game_name.split(' - ')[1:])
@@ -384,7 +389,13 @@ class GameFile(object):
             ss_content_desc = getSearchStringFromGameName(self.content_desc)
             if ss_content_desc in getSearchStringFromGameName(self.getGameName()):
                 self.content_desc = ''
-            elif ss_content_desc in getSearchStringFromGameName(self.notes):
+            for alias in aliases:
+                if ss_content_desc in getSearchStringFromGameName(alias):
+                    self.content_desc = ''
+                    return
+                self.content_desc = self.content_desc.replace(alias+' - ', '')
+                self.content_desc = self.content_desc.replace(' - '+alias, '')
+            if ss_content_desc in getSearchStringFromGameName(self.notes):
                 self.content_desc = ''
             elif ' - Issue' in self.content_desc:
                 self.content_desc = ''
@@ -501,11 +512,11 @@ class GameFile(object):
                 self.language = each[0]
                 break
 
-    def setContentDescFromWosName(self):
-        content_desc = os.path.splitext(self.wos_name)[0].replace(' - ', '')
-        for alias in self.release.getAllAliases():
-            content_desc = content_desc.replace(alias, '')
-        self.content_desc = ' - '+content_desc
+    # def setContentDescFromWosName(self):
+    #     content_desc = os.path.splitext(self.wos_name)[0].replace(' - ', '')
+    #     for alias in self.release.getAllAliases():
+    #         content_desc = content_desc.replace(alias, '')
+    #     self.content_desc = ' - '+content_desc
 
     def getMedia(self):
         return ' '.join((self.getPart(), self.getSide())).strip()
@@ -809,8 +820,9 @@ class GameFile(object):
             print('No game_name for file:', self)
             return ''
         game_name = filepath_regex.sub('', game_name.replace('/', '-').replace(':', ' -')).strip()
-        while game_name.endswith('.'):
-            game_name = game_name[:-1]
+        if not for_filename:
+            while game_name.endswith('.'):
+                game_name = game_name[:-1]
         if short:
             return getMeaningfulEightLetterName(game_name)
         if for_filename and self.content_desc:

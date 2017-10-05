@@ -96,7 +96,7 @@ class TOSECScraper():
     def getPathsFromDatFile(self, dat_file):
         paths = []
         with open(dat_file, 'rb') as f:
-            print(dat_file)
+            # print(dat_file)
             contents = f.read()
             root = etree.XML(contents)
             header = root[0]
@@ -121,8 +121,8 @@ class TOSECScraper():
 
     def sortPaths(self):
         paths = self.paths
-        paths = sorted(paths, key=lambda path_dict: path_dict['name'])
-        paths = sorted(paths, key=lambda path_dict: 'Compilation' in path_dict['path'])
+        paths = sorted(paths, key=lambda path_dict: (path_dict['name'], path_dict['crc32']))
+        paths = sorted(paths, key=lambda path_dict: ('Compilation' in path_dict['path']))
         self.paths = paths
 
     def scrapeTOSEC(self):
@@ -200,9 +200,6 @@ class TOSECScraper():
         game.setNotesForFiles(lookup_table=self.manually_corrected_notes)
         game.setTypeFromFiles()
         game.setCountryFromFiles()
-        # for release in game.releases:
-        #     if release.publisher in self.publisher_aliases:
-        #         release.publisher = self.publisher_aliases[release.publisher]
         self.db.addGame(game)
 
     def showUnscraped(self):

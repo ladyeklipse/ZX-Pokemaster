@@ -149,7 +149,12 @@ class TOSECDat():
     def export(self):
         root = etree.Element('datafile')
         root.append(self.header)
-        self.files = sorted(self.files, key=lambda file: file.alt_dest)
+        self.files = sorted(self.files, key=lambda file:
+            (file.getGameName(),
+             file.game.wos_id,
+            str(len(re.findall('\[a[0-9]{1,}\]', file.alt_dest))),
+            '[a]' in file.alt_dest,
+            file.alt_dest))
         for file in self.files:
             file_tag = self.getFileTag(file)
             root.append(file_tag)

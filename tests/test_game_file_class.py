@@ -319,6 +319,12 @@ class GameFileTests(unittest.TestCase):
         game_file = GameFile('Three Octopuses (2017)(kas29)(RU).tap')
         self.assertEqual(game_file.getLanguage(), 'ru')
 
+    def test_dot_in_game_name(self):
+        game = Game('H.E.R.O.')
+        file = GameFile('H.E.R.O. (19xx)(-).tap')
+        file.game = game
+        self.assertEqual(file.getTOSECName(),'H.E.R.O. (19xx)(-).tap')
+
 
 if __name__=='__main__':
     unittest.main()

@@ -75,8 +75,8 @@ class Game(object):
         aliases = []
         for release in self.releases:
             aliases += release.aliases
-        aliases = sorted(aliases, key=len, reverse=True)
-        return [getFileSystemFriendlyName(alias) for alias in set(aliases)]
+        aliases = sorted(aliases, key=lambda alias: (len(alias), alias), reverse=True)
+        return [getFileSystemFriendlyName(alias) for alias in aliases]
 
     def getWosID(self):
         return str(self.wos_id).zfill(7)
@@ -108,8 +108,8 @@ class Game(object):
             if md5 in lookup_table:
                 file.notes = lookup_table[md5]
             else:
-                file.setReRelease()
                 file.setAka()
+            file.setReRelease()
 
 
     def setTypeFromFiles(self):
