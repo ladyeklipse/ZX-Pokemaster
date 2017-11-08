@@ -74,7 +74,6 @@ class GameFile(object):
         if source == 'wos':
             self.wos_path = path
         elif source == 'tosec':
-            # self.getGameFromFileName(path)
             self.getParamsFromTOSECPath(path)
         else:
             self.path = path
@@ -306,10 +305,10 @@ class GameFile(object):
                     self.setLanguage(each)
                 elif each.isupper():
                     self.setCountry(each)
-            elif 'Side' in each:
-                self.setSide(each)
             elif 'Part' in each or 'Disk' in each or 'Tape' in each:
                 self.setPart(each)
+            elif 'Side' in each:
+                self.setSide(each)
         square_brackets_matches = re.findall(SQUARE_BRACKETS_REGEX, filename)
         for each in square_brackets_matches:
             if len(re.findall('^a[0-9]?[0-9]?$', each)):
@@ -504,6 +503,8 @@ class GameFile(object):
                         else:
                             part_num += part[index]
                     self.part = int(part_num)
+        if 'side' in part:
+            self.setSide(part)
 
     def setLanguageFromWosName(self):
         name = self.wos_name.lower()
@@ -620,7 +621,7 @@ class GameFile(object):
         format = os.path.split(os.path.dirname(path))[-1].replace('[', '').replace(']', '').lower()
         if format in GAME_EXTENSIONS:
             return format
-        if path.endswith('.zip'):
+        if path.endswith('.zip') and os.path.exists(path):
             with zipfile.ZipFile(path, 'r') as zf:
                 for zfname in zf.namelist():
                     zfname_ext = zfname.split('.')[-1].lower()

@@ -2,7 +2,7 @@ from settings import *
 import re
 import unicodedata
 
-publisher_regex = re.compile(' Software| inc$|inc[ .]|ltda|ltd|plc|S\.A\.', re.IGNORECASE)
+publisher_regex = re.compile(' Software$| inc$|inc[ .]| GmbH|ltda|ltd|plc|S\.A\.', re.IGNORECASE)
 filepath_regex = re.compile('\*|\?|\:|\||\\|/|\"|<|>|\"')
 remove_brackets_regex = re.compile('[\[|\(][^\]]*[\]|\)]')
 remove_square_brackets_regex = re.compile('\[[^\]]*\]')

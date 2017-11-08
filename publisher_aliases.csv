@@ -35,6 +35,7 @@ P. Boulton;Boulton, P.
 br0mba;Br0mba
 brutal Creators;Brutal Creators
 Tony Bryan;Bryan, Tony
+Budgie Budget;Budgie
 Jesse Burneko;Burneko, Jesse
 Equinox - Busy;Busy - Equinox
 M-Beaton - Busy - Fuxoft;Busy - Fuxoft - M-Beaton
@@ -67,7 +68,7 @@ Elite Systems - Crash;Crash - Elite Systems
 Empire - Crash;Crash - Empire
 Firebird - Crash;Crash - Firebird
 Gremlin Graphics - Crash;Crash - Gremlin Graphics
-Hewson Consultants - Crash;Crash - Heewson Consultants
+Hewson Consultants - Crash;Crash - Hewson Consultants
 Incentive - Crash;Crash - Incentive
 Mind Games - Crash;Crash - Mind Games
 Ocean - Crash;Crash - Ocean
@@ -88,6 +89,8 @@ Croup, deVandemar;deVandemar Croup
 The Devil;Devil, The
 Ignacio Diaz;Diaz, Ignacio
 Dimiksoft;DimikSoft
+BEEP, Dr;Dr. BEEP
+mAsTeR, the DrUnKeN;DrUnKeN mAsTeR
 mAsTeR, DrUnKeN;DrUnKeN mAsTeR
 Dunn, Paul 'Dunny' - Dunn, Eddie;Dunn, Eddie - Dunn, Paul 'Dunny'
 Jason Dyer;Dyer, Jason
@@ -127,6 +130,8 @@ Barbarian, Ganad The;Gonad The Barbarian
 Barbarian, Gonad The;Gonad The Barbarian
 Malcolm Goodman;Goodman, Malcolm
 J K Gosden;Gosden, J.K.
+Grandslam Entertainments;Grandslam
+Grandslam Entertainments - Your Sinclair;Grandslam - Your Sinclair
 Kez Gray;Gray, Kez
 Ashley Greenup;Greenup, Ashley
 H. de Groot;Groot, H. de
@@ -198,6 +203,7 @@ Twins, Mojon;Mojon Twins, The
 Twins, The Mojon;Mojon Twins, The
 P. Monger;Monger, P.
 Dominic Morris;Morris, Dominic
+Incognito, Mr.;Mr. Incognito
 naughty Crew;Naughty Crew
 Yuri Nazarenko;Nazarenko, Yuri
 Jeremic Nebojsa;Nebojsa, Jeremic
@@ -249,8 +255,8 @@ F. Shillito;Shillito, F.
 Alexandru Simion;Simion, Alexandru
 Softcat Micros - Sinclair User;Sinclair User - Softcat Micros
 U.S. Gold - Sinclair User;Sinclair User - U.S. Gold
-Vortex - Sinclair User;Sinclair Usr - Vortex
-Zenobi - Sinclair User;Sinclair Usr - Zenobi
+Vortex Softare - Sinclair User;Sinclair User - Vortex
+Zenobi - Sinclair User;Sinclair User - Zenobi
 Chris Skapura;Skapura, Chris
 Michael Slatford;Slatford, Michael
 Sminrnov, Dmitry;Smirnov, Dmitry
@@ -289,6 +295,7 @@ Ansgar Zerfass;Zerfass, Ansgar
 Michael Zey;Zey, Michael
 Igor Zrinski;Zrinski, Igor
 ZXstudio;ZX-Studio
+Lerm;LERM
 #speccy;
 02-S Soft;
 1024K Studio;
@@ -775,7 +782,6 @@ Bech, Jorgen;
 Beck, Edward;
 Beddoe, K.S.;
 Bee, Philip;
-BEEP, Dr;
 Beermanz;
 Beja Soft;
 Bel Tech;
@@ -996,7 +1002,6 @@ Buck;
 Bucket, R.;
 Bucsoft;
 Budder;
-Budgie Budget;
 Buening, Christor;
 Buffer Micro;
 Bugbear Games;
@@ -2415,8 +2420,6 @@ Graham Nelson;
 Granada Publishing;
 Grand;
 Grandslam;
-Grandslam Entertainments;
-Grandslam Entertainments - Your Sinclair;
 Grao, Juan Pablo Lopez;
 Graphics;
 Graphtext 128;
@@ -2782,7 +2785,6 @@ Incantation;
 Incentive;
 Incentive - Your Sinclair;
 Incley, Mark;
-Incognito, Mr.;
 Independent;
 Indescomp;
 Indigo;
@@ -3272,7 +3274,6 @@ Lenguaje Maquina Spectrum;
 L'Ensouleiado;
 Leon, Antonio de Haro;
 LERM;
-Lerm;
 Leroysoft;
 Les Aventures;
 Les Quinn;

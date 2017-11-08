@@ -176,7 +176,7 @@ class TestTOSECScraper(unittest.TestCase):
         self.assertNotEqual(game.wos_id, 0)
 
     def test_unpacked_files_folder(self):
-        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\lost_and_found')[:20]
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\From old DATs')[:20]
         self.assertGreater(len(ts.paths), 0)
         ts.scrapeTOSEC()
         game = ts.db.getGameByFileMD5('4ec946e32464a0fde05bb27728d23b56')
@@ -187,7 +187,7 @@ class TestTOSECScraper(unittest.TestCase):
         ]
         ts.scrapeTOSEC()
         game = ts.db.getGameByFileMD5('2911f21ca8af69be1ceff10be53702c6')
-        self.assertEqual(game.genre, 'Utilities')
+        self.assertEqual(game.genre, 'Utility')
 
     def test_fikus_pikus(self):
         sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
@@ -198,17 +198,15 @@ class TestTOSECScraper(unittest.TestCase):
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()
-        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\ZXAAA Compilations\\Fikus Pikus Games')
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\ZXAAA Compilations\\Fikus Pikus Games')
         ts.paths = ts.paths[:5]
         ts.scrapeTOSEC()
         ts.addUnscraped()
-        game = ts.db.getGameByName('Fikus Pikus Games')
+        game = ts.db.getGameByName('Fikus Pikus Games 001')
         self.assertEqual(game.genre, 'Compilation - Games')
-        self.assertGreater(len(game.getFiles()), 2)
-        self.assertGreater(game.parts, 2)
         for file in game.getFiles():
             self.assertEqual(file.getCountry(), 'RU')
-            self.assertGreater(file.part, 0)
+            self.assertEqual(file.part, 0)
 
     def test_missing_files(self):
         dat_files = ['tests/files/Sinclair ZX Spectrum - Games - [Z80] (miss).dat',
@@ -216,7 +214,6 @@ class TestTOSECScraper(unittest.TestCase):
         ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
         ts.scrapeTOSEC()
         ts.addUnscraped()
-        # ts.db.loadCache()
         md5s = [
             'ba78c16a2e6dbb3fdf47a6e23d805a7e',
             'e07dcc8d415684c71f246ffce6ebcf5c',
@@ -266,7 +263,7 @@ class TestTOSECScraper(unittest.TestCase):
         ts.db.execute(sql)
         ts.db.commit()
         ts.paths = ts.generateTOSECPathsArrayFromList([
-            'tosec\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
+            'tosec\\reviewed files\\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
         ts.scrapeTOSEC()
         ts.db.commit()
         game = ts.db.getGameByWosID(30410)
@@ -315,6 +312,18 @@ class TestTOSECScraper(unittest.TestCase):
         # tosec_names = sorted([game_file.getTOSECName() for game_file in game.getFiles()])
         # for name in tosec_names:
         #     print(name)
+
+    def test_duplicate_aka(self):
+        wos_id = 13615
+        paths = ts.generateTOSECPathsArrayFromDatFiles()
+        paths = [path for path in paths if 'Semanal - Issue 001' in path['path']]
+        ts.paths  = copy(paths)
+        self.scrape(ts.paths, wos_id)
+        ts.db.commit()
+        game = ts.db.getGameByWosID(wos_id)
+        game_file = game.getFiles()[0]
+        self.assertFalse('aka' in game_file.notes)
+
 
     def testDCKFile(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test\\')

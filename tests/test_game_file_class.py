@@ -55,7 +55,7 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.mod_flags, '[m]')
         file = GameFile("Test (19xx)(Publisher)[a][m][hacked]")
         self.assertEqual(file.mod_flags, '[m]')
-        file = GameFile("Test (19xx)(Publisher)[a][m][h by SKiDROW]")
+        file = GameFile("Test (19xx)(Publisher)[a][h by SKiDROW][m]")
         self.assertEqual(file.mod_flags, '[h by SKiDROW][m]')
         file = GameFile("Test (19xx)(Publisher)[a][re-release]")
         self.assertEqual(file.mod_flags, '')
@@ -82,6 +82,9 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.game.name, 'A Treat!')
 
     def test_tape_as_part(self):
+        file = GameFile('Bridge Master (1983)(Serin Software)(Tape 1 of 2 Side A).tzx')
+        self.assertEqual(file.part, 1)
+        self.assertEqual(file.side, 1)
         file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)[Master Tape].tap')
         self.assertEqual(file.part, 0)
         file = GameFile('tosec\Games\[TZX]\Blood of Bogmole, The (1986)(Compass Software)(Tape 1).tap')
@@ -147,14 +150,14 @@ class GameFileTests(unittest.TestCase):
         f = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Picapiedra, Los (1989)(MCM Software)[48-128K][aka Flintstones, The].tap')
         r.addFile(f)
         f.setAka()
-        self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48K-128K)(ES)(en)[aka Flintstones, The].tap')
+        self.assertEqual(f.getTOSECName(),'Flintstones, The (1989)(MCM)(48K-128K)(ES)(en)[aka Picapiedra, Los].tap')
         g = Game('Alcatraz II')
         r = GameRelease(game=g, aliases='Alcatraz II - The Doomsday Mission/Alcatraz II/Alcatrazz 2 - The Doomsday Mission'.split('/'))
         f = GameFile('Doomsday Mission.tap')
         r.addFile(f)
         f.setAka()
         self.assertEqual(f.getTOSECName(),
-                 'Alcatraz II - The Doomsday Mission (19xx)(-)[aka Alcatrazz 2 - The Doomsday Mission].tap')
+                         'Alcatraz II - The Doomsday Mission (19xx)(-)[aka Alcatrazz 2 - The Doomsday Mission].tap')
         g = Game('Cribbage')
         r = GameRelease(game=g)
         f = GameFile('Cribbage - Intro (19xx)(-).tap')
@@ -162,8 +165,8 @@ class GameFileTests(unittest.TestCase):
         f.setAka()
         self.assertEqual(f.getTOSECName(), 'Cribbage (19xx)(-).tap')
         g = Game('Everyday Tale of a Seeker of Gold, An')
-        r = GameRelease(game=g, aliases=\
-        'Everyday Tale of a Seeker of Gold, An/An Everyday Tale of a Seeker of Gold'.split('/'))
+        r = GameRelease(game=g, aliases= \
+            'Everyday Tale of a Seeker of Gold, An/An Everyday Tale of a Seeker of Gold'.split('/'))
         f = GameFile('Tale of a Seeker of Gold.mgt')
         r.addFile(f)
         f.setAka()
@@ -181,8 +184,8 @@ class GameFileTests(unittest.TestCase):
         f.setAka()
         self.assertEqual(f.getTOSECName(), 'Where Time Stood Still (19xx)(-)[aka Land That Time Forgot, The][aka Tibet].tap')
         g = Game('Adventures of St. Bernard, The')
-        r = GameRelease(game=g, aliases=\
-        'Adventures of Saint Bernard, The/Adventures of St. Bernard, The/The Adventures of St. Bernard'.split('/'))
+        r = GameRelease(game=g, aliases= \
+            'Adventures of Saint Bernard, The/Adventures of St. Bernard, The/The Adventures of St. Bernard'.split('/'))
         f = GameFile('saint bernard.tap')
         r.addFile(f)
         f.setAka()
@@ -190,6 +193,7 @@ class GameFileTests(unittest.TestCase):
 
     def test_sort_mod_flags(self):
         game_file = GameFile('Game (19xx)(-)[f +2][cr by Someone][MaxBoot]')
+        game_file.sortModFlags()
         self.assertEqual(game_file.mod_flags, '[cr by Someone][f +2]')
         self.assertEqual(game_file.notes, '[MaxBoot]')
 

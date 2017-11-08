@@ -220,7 +220,7 @@ class Game(object):
     def setPublisher(self, publisher):
         if publisher=='unknown' or not publisher:
             publisher = ''
-        publisher = publisher.replace('/', '-')
+        publisher = publisher.replace('/', '-').strip()
         publisher = publisher_regex.sub('', publisher)
         publisher = remove_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher

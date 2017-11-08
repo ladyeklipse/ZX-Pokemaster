@@ -32,7 +32,7 @@ class GameRelease(object):
         self.game = game if game else Game()
         self.year = year if year else self.game.year
         self.setPublisher(publisher if publisher else self.game.publisher)
-        if country == 'UK':
+        if country in ['UK', 'JP']:
             country = 'GB'
         self.country = country
         if publisher == 'Timex Portugal':
@@ -77,10 +77,22 @@ class GameRelease(object):
             return str(self.year)
 
     def getAllAliases(self):
-        aliases = sorted(set(self.aliases), key=lambda x: (len(x), -self.aliases.index(x)), reverse=True)
-        for i, alias in enumerate(aliases):
-            if self.game.name in alias:
-                return [aliases.pop(i)]+aliases
+        # aliases = sorted(set(self.aliases), key=lambda x:
+        #     (len(x), -self.aliases.index(x)), reverse=True)
+        if self.release_seq==0:
+            aliases = sorted(set(self.aliases), key=lambda x:
+                (len(x), -self.aliases.index(x)), reverse=True)
+            for i, alias in enumerate(aliases):
+                if getSearchStringFromGameName(self.game.name) in \
+                        getSearchStringFromGameName(alias):
+                    return [aliases.pop(i)]+aliases
+        else:
+            aliases = self.aliases
+            for i, alias in enumerate(aliases):
+                if getSearchStringFromGameName(self.game.name) in \
+                        getSearchStringFromGameName(alias):
+                    return aliases
+            return aliases + [self.game.name]
         return aliases
 
     def getIngameScreenFilePath(self, format='scr'):

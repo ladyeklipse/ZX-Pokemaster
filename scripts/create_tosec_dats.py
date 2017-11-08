@@ -13,8 +13,8 @@ def updateROMVaultDATs():
         break
     for root, dirs, files in os.walk(latest_dats_dir):
         for file in files:
-            if '[POK]' in file:
-                continue
+            # if '[POK]' in file:
+            #     continue
             dat_path = os.path.join(root, file)
             dat_name = os.path.basename(dat_path)
             dir_path = '\\'.join(dat_name.split('(')[0].split(' - ')[1:]).strip()
@@ -28,11 +28,13 @@ def updateROMVaultDATs():
 def createTOSECDATs():
     dats_files = {}
     db = Database()
+    db.loadCache(force_reload=True)
     games = db.getAllGames()
+    kolbeck_dict = {}
     # games = db.getAllGames('game.wos_id=27')
     for game in games:
+        kolbeck_dict[game.getWosID()] = []
         files = game.getFiles()
-        # files = sorted(files, key = lambda file: file.getMD5())
         files = sorted(files, key = lambda file:
         (file.tosec_path.startswith('Sinclair ZX Spectrum'),
          str(len(re.findall('\[a[0-9]{1,}\]', file.tosec_path))),
@@ -52,8 +54,18 @@ def createTOSECDATs():
         dat.files = []
         print('adding files to DAT')
         dat.addFiles(files)
+        for file in files:
+            if file.game.wos_id<9000000:
+                kolbeck_dirname = dat.getBaseFileName().replace(' - ', '\\')
+                kolbeck_filepath = os.path.join(kolbeck_dirname, file.alt_dest)
+                kolbeck_dict[file.game.getWosID()].append(kolbeck_filepath)
         print('exporting a DAT')
         dat.export()
+
+    with open('kolbeck.csv', 'w+', encoding='utf-8') as f:
+        for game_wos_id in kolbeck_dict:
+            for filepath in kolbeck_dict[game_wos_id]:
+                f.write(';'.join((game_wos_id, filepath))+'\n')
 
 createTOSECDATs()
 # createPOKTOSECDat()

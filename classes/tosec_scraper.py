@@ -192,6 +192,7 @@ class TOSECScraper():
                          file_tosec_name))
                 else:
                     current_release.addFile(game_file)
+                self.addGameToLocalDB(current_game)
         self.addGameToLocalDB(current_game)
         self.db.commit()
 
@@ -234,6 +235,7 @@ class TOSECScraper():
         return unscraped_paths
 
     def getGameFileFromFilePath(self, file_path):
+        file_path = file_path.replace('Lerm ', '')
         game_file = GameFile(file_path, source='tosec')
         if file_path.endswith('.zip'):
             game_file.format = os.path.split(file_path)[0][-4:-1].lower()
@@ -249,6 +251,7 @@ class TOSECScraper():
 
     def getGameFileFromFilePathDict(self, file_path_dict):
         file_path = file_path_dict['path']
+        file_path = file_path.replace('Lerm ', '')
         game_file = GameFile(file_path, source='tosec')
         filename = file_path_dict['name']
         if filename.endswith('.zip'):
@@ -355,7 +358,7 @@ class TOSECScraper():
                 for line in f.readlines():
                     line = line.split(';')
                     decision = line[7]
-                    if not decision.startswith('KEEP'):
+                    if not decision.startswith('KEEP') and line[11]:
                         self.file_exclusion_list.append(line[11])
 
     # def getPublisherAliases(self):

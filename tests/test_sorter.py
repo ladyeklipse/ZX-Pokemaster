@@ -387,13 +387,13 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = s.output_location+'/H. de Groot/Spectrum Automatic Copier/Spectrum Automatic Copier (1985)(H. de Groot).z80'
+        expected_file = s.output_location+'/Groot, H. de/Spectrum Automatic Copier/Spectrum Automatic Copier (1985)(Groot, H. de).z80'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2 - The Sequel/Super Advanced Lawnmower Simulator Adventure 2 - The Sequel (1993)(Creative Radical Alternative).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/Proxima/Fuxoft Uvadi/Fuxoft Uvadi (1992)(Proxima)(CZ)(en).tzx'
+        expected_file = s.output_location+'/Proxima/Fuxoft Uvadi/Fuxoft Uvadi... (1992)(Proxima)(CZ)(en).tzx'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/Zenobi\Why is the World Round Anyway\Why is the World Round Anyway (demo) (1995)(Zenobi)(Side B).tzx'
+        expected_file = s.output_location+'/Zenobi\Why is the World Round Anyway\Why is the World Round Anyway ... (demo) (1995)(Zenobi)(Side B).tzx'
         self.assertTrue(os.path.exists(expected_file))
 
     def test_weird_publisher(self):

@@ -260,8 +260,8 @@ class ZXDBScraper():
                               row['country'],
                               game,
                               [release_name])
-        # if release.release_seq>0:
-        release.addAlias(row['name'])
+        if release.release_seq>0:
+            release.addAlias(game.name)
         return release
 
     def publisherNameFromRow(self, row):
@@ -279,12 +279,16 @@ class ZXDBScraper():
     def sanitizeAlias(self, alias):
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
         alias = remove_brackets_regex.sub('', alias).strip()
+        alias = alias.replace('Lerm ', '').replace('LERM ', '')
         alias = alias.replace('AlchNews', 'Alchemist News')
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         if alias == 'Pozycje Milosne':
             alias = '22 Pozycje milosne'
         alias = alias.replace('BubbleLand', 'Bubble Land')
         alias = alias.replace('F-14 Afterburner', 'Afterburner')
+        alias = alias.replace('Santa Clause', 'Santa Claus')
+        if 'Dalek Attack' in alias or 'the Daleks' in alias:
+            alias = 'Dalek Attack'
         alias = ' - '.join([alias]+round_brackets_contents)
         if alias.endswith(', 3D'):
             alias = '3D ' + alias[:-4]
@@ -322,12 +326,8 @@ class ZXDBScraper():
     def getInfoFromLocalFiles(self, games):
         for game in games:
             game.setCountryFromFiles()
-            # if game.publisher in self.publisher_aliases:
-            #     game.publisher = self.publisher_aliases[game.publisher]
             for release in game.releases:
                 release.getInfoFromLocalFiles()
-                # if release.publisher in self.publisher_aliases:
-                #     release.publisher = self.publisher_aliases[release.publisher]
                 for game_file in release.files:
                     file_exclusion_key = game_file.wos_name + '|' + game_file.wos_path
                     if file_exclusion_key in self.file_exclusion_list:

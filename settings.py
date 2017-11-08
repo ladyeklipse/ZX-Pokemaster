@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.2-beta5'
+ZX_POKEMASTER_VERSION = '1.21-final'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
@@ -17,7 +17,7 @@ GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk',
                    'trd', 'tzx', 'img', 'mgt', 'rom',
                    'scl', 'slt', 'szx', 'fdi', 'opd',
                    'mdr', 'wdr', 'd80', 'd40', 'sp',
-                   'dck', 'ipf', 'csw']
+                   'dck', 'ipf', 'csw', 'udi']
 DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ['zip', 'pok']
 DISK_FORMATS = ('dsk', 'trd', 'scl')
 TAPE_FORMATS = ('tzx', 'tap')

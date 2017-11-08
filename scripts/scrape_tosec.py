@@ -14,7 +14,7 @@ for path in ts.paths:
 # ts.sortPaths()
 ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\')
 # ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\test')
-# ts.paths = [path for path in ts.paths if 'Shadow of the Unicorn' in path['path']]
+# ts.paths = [path for path in ts.paths if 'Starburst + Ice Attack' in path['path']]
 ts.sortPaths()
 ts.scrapeTOSEC()
 ts.addUnscraped()

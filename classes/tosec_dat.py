@@ -66,7 +66,7 @@ class TOSECDat():
         name.text = self.getBaseFileName()
         header.append(name)
         description = etree.Element('description')
-        description.text = self.getExportFileName()
+        description.text = self.getExportFileName().replace('_CM', '')
         header.append(description)
         category = etree.Element('category')
         category.text = 'TOSEC'

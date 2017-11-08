@@ -1,6 +1,7 @@
 import shutil
 from classes.zxdb_scraper import *
 from classes.tosec_scraper import *
+from scripts.tipshop_excel_converter import *
 if (os.getcwd().endswith('scripts')):
     os.chdir('..')
 if __name__=='__main__':
@@ -22,6 +23,7 @@ if __name__=='__main__':
     for game in games:
         db.addGame(game)
     db.commit()
+    xlsx2db()
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')

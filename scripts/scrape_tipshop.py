@@ -189,6 +189,8 @@ def createPOKTOSECDat():
             # print(game_file)
             dat.addFile(game_file)
     dat.export()
+    shutil.copy(dat.getExportPath(),
+                os.path.join('AllTipshopPokes', 'Sinclair ZX Spectrum - Pokes - [POK] (TOSEC).dat'))
 
 if __name__=='__main__':
     # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
@@ -196,7 +198,7 @@ if __name__=='__main__':
     # print('total wos_ids = ', len(wos_ids))
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
-    updateMods()
+    # updateMods()
     extractPokFiles()
     createPOKTOSECDat()
     # TEMPORARY BELOW

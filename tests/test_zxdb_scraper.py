@@ -184,3 +184,23 @@ class TestZXDBScraper(unittest.TestCase):
         self.assertEqual(games[0].releases[0].publisher, 'Baldomero, Garcia')
         db.addGame(games[0])
         db.commit()
+
+    def test_santa_clause(self):
+        where_clause = 'AND entries.id IN (12789)'
+        games = zxdb.getGames(where_clause)
+        zxdb.getInfoFromLocalFiles(games)
+        self.assertEqual(games[0].name, 'Crime Santa Claus')
+        self.assertEqual(games[0].releases[0].aliases, ['Crime Santa Claus'])
+        db.addGame(games[0])
+        db.commit()
+
+    def test_un_dos_tres(self):
+        where_clause = 'AND entries.id IN (5512)'
+        games = zxdb.getGames(where_clause)
+        self.assertEqual(games[0].releases[1].getAllAliases(), ['3-2-1', 'Un, Dos, Tres Responda Otra Vez'])
+
+    def test_semanal(self):
+        where_clause = 'AND entries.id IN (13615)'
+        games = zxdb.getGames(where_clause)
+        game_file = games[0].getFiles()[0]
+        self.assertFalse('aka' in game_file.notes)
