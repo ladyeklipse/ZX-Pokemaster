@@ -56,8 +56,8 @@ def createTOSECDATs():
         dat.addFiles(files)
         for file in files:
             if file.game.wos_id<9000000:
-                kolbeck_dirname = dat.getBaseFileName().replace(' - ', '\\')
-                kolbeck_filepath = os.path.join(kolbeck_dirname, file.alt_dest)
+                kolbeck_dirname = dat.getBaseFileName().replace(' - ', '/')
+                kolbeck_filepath = kolbeck_dirname+'/'+file.alt_dest
                 kolbeck_dict[file.game.getWosID()].append(kolbeck_filepath)
         print('exporting a DAT')
         dat.export()
@@ -68,5 +68,5 @@ def createTOSECDATs():
                 f.write(';'.join((game_wos_id, filepath))+'\n')
 
 createTOSECDATs()
-# createPOKTOSECDat()
-# updateROMVaultDATs()
+createPOKTOSECDat()
+updateROMVaultDATs()

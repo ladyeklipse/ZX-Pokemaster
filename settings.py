@@ -125,3 +125,4 @@ OUTPUT_PATH_STRUCTURE_KEYS = [
 ]
 MOD_FLAGS_ORDER = ['cr', 'f', 'h', 'm', 'p', 't', 'tr', 'o', 'u', 'v', 'b']
 X_RATED_FLAG = '[adult]'
+COVERTAPE_PUBLISHERS = ['Your Sinclair', 'Crash', 'Sinclair User', 'Run Magazine']

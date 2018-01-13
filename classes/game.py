@@ -14,7 +14,6 @@ class Game(object):
     year = None
     genre = ''
     type = 'Unknown'
-    type = 'Unknown'
     x_rated = False
     number_of_players = 1
     multiplayer_type = ''
@@ -132,8 +131,9 @@ class Game(object):
             if file.getLanguage() in ['pl', 'ru', 'cs', 'sl', 'bs']:
                 if file.getCountry() in ['GB', 'ES']:
                     mod_flag = '[tr {}]'.format(file.getLanguage())
-                    if mod_flag not in file.mod_flags:
-                        file.mod_flags += mod_flag
+                    file.addModFlag(mod_flag)
+                    # if mod_flag not in file.mod_flags:
+                    #     file.mod_flags += mod_flag
                     file.language = ''
                 elif not file.getCountry():
                     if file.getLanguage()=='cs':

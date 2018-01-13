@@ -317,8 +317,7 @@ class GameFile(object):
                 self.setMachineType(each)
             elif self.isModFlag(each):
                 mod_flag = '[{}]'.format(each)
-                if mod_flag not in self.mod_flags:
-                    self.mod_flags += mod_flag
+                self.addModFlag(mod_flag)
             elif each.startswith('aka '):
                 aka = getSearchStringFromGameName(each[4:])
                 if aka == getSearchStringFromGameName(self.game.name):
@@ -353,6 +352,18 @@ class GameFile(object):
                 match[len(each)] in (' 0123456789'):
                 return True
         return False
+
+    def addModFlag(self, new_mod_flag):
+        if new_mod_flag not in self.mod_flags:
+            mod_flags_array = re.findall(SQUARE_BRACKETS_REGEX, self.mod_flags)
+            for i, flag in enumerate(mod_flags_array):
+                if len(flag)>1 and new_mod_flag[1:-1].startswith(flag):
+                    self.mod_flags = self.mod_flags.replace('['+flag+']', new_mod_flag)
+                    return
+                elif len(new_mod_flag)>1 and flag.startswith(new_mod_flag[1:-1]):
+                    self.mod_flags = self.mod_flags.replace(new_mod_flag, '['+flag+']')
+                    return
+            self.mod_flags += new_mod_flag
 
     def sortModFlags(self):
         mod_flags_array = re.findall(SQUARE_BRACKETS_REGEX, self.mod_flags)

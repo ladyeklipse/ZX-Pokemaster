@@ -150,7 +150,7 @@ class GameFileTests(unittest.TestCase):
         f = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Picapiedra, Los (1989)(MCM Software)[48-128K][aka Flintstones, The].tap')
         r.addFile(f)
         f.setAka()
-        self.assertEqual(f.getTOSECName(),'Flintstones, The (1989)(MCM)(48K-128K)(ES)(en)[aka Picapiedra, Los].tap')
+        self.assertEqual(f.getTOSECName(),'Picapiedra, Los (1989)(MCM)(48K-128K)(ES)(en)[aka Flintstones, The].tap')
         g = Game('Alcatraz II')
         r = GameRelease(game=g, aliases='Alcatraz II - The Doomsday Mission/Alcatraz II/Alcatrazz 2 - The Doomsday Mission'.split('/'))
         f = GameFile('Doomsday Mission.tap')
@@ -329,6 +329,15 @@ class GameFileTests(unittest.TestCase):
         file.game = game
         self.assertEqual(file.getTOSECName(),'H.E.R.O. (19xx)(-).tap')
 
+    def test_double_tr_ru(self):
+        game = Game('Saboteur II')
+        file = GameFile('Saboteur II (19xx)(-)[h Crudesoft ru][t][tr ru].tap')
+        file.getParamsFromTOSECPath('Saboteur II (19xx)(-)[tr ru Rybkin].tap')
+        self.assertEqual(file.mod_flags, '[h Crudesoft ru][t][tr ru Rybkin]')
+        file = GameFile('Saboteur II (19xx)(-)[h Crudesoft ru][t][tr ru Rybkin].tap')
+        file.getParamsFromTOSECPath('Saboteur II (19xx)(-)[tr ru].tap')
+        file.sortModFlags()
+        self.assertEqual(file.mod_flags, '[h Crudesoft ru][t][tr ru Rybkin]')
 
 if __name__=='__main__':
     unittest.main()
