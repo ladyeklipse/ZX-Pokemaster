@@ -3,6 +3,7 @@ import glob
 import zipfile
 import shutil
 import re
+from html.parser import HTMLParser
 from transliterate import translit
 from functions.game_name_functions import *
 if (os.getcwd().endswith('scripts')):
@@ -10,12 +11,203 @@ if (os.getcwd().endswith('scripts')):
 
 from classes.scraper import *
 from classes.database import *
+h = HTMLParser()
 
-def scrape_vtrdos():
+def scrape_demos():
+    pattern = 'http://vtrd.in/'
+    vars = ['russian.php', 'other.php']
+    scrape_vtrdos(pattern, vars, 'demos')
+
+
+def scrape_demos_comps():
     s = Scraper()
+    pattern = 'http://vtrd.in/demo.php?party='
+    vars = range(1, 200)
+    src = 'tosec/unsorted files/vtrdos.ru/demos_comps/src/'
+    dest = 'tosec/unsorted files/vtrdos.ru/demos_comps/dest/'
+    for var in vars:
+        selector = s.loadUrl(pattern+str(var))
+        all_works_link = selector.xpath('//tr/td/div/b/a').extract_first()
+        if not all_works_link:
+            continue
+        aw_selector = Selector(all_works_link)
+        download_link = aw_selector.xpath('//@href').extract_first().replace('../','')
+        filename = aw_selector.xpath('//text()').extract_first()
+        if not filename:
+            continue
+        dest_name = filename.replace('. All Works', '').replace('. All ZX Works', '').strip()
+        date = selector.xpath('//td/div/font/text()').extract_first().split('//')[-1].split('.')
+        date = '-'.join([x.strip() for x in reversed(date)])
+        dest_name += ' ({})(vtrdos.ru)(RU)'.format(date)
+        print(download_link, dest_name)
+        download_and_unpack(s, download_link, src, dest, dest_name)
+
+def scrape_press():
+    s = Scraper()
+    pattern = 'http://vtrd.in/press.php?l='
+    vars = ['1', '2']
+    src = 'tosec/unsorted files/vtrdos.ru/press/src/'
+    dest = 'tosec/unsorted files/vtrdos.ru/press/dest/'
+    for var in vars:
+        selector = s.loadUrl(pattern+var)
+        magazines = selector.xpath('//tr').extract_all()
+        for magazine in magazines:
+            m_selector = Selector(magazine)
+            magazine_name = m_selector.xpath('//td//b/text()').extract_first()
+            issues = m_selector.xpath('//a').extract_all()
+            for issue in issues:
+                i_selector = Selector(issue)
+                issue_num = i_selector.xpath('//text()').extract_first()
+                download_link = i_selector.xpath('//@href').extract_first()
+                dest_name = "{} - Issue {} (19xx)(vtrdos.ru)(RU)".format(magazine_name, issue_num)
+                print(download_link, dest_name)
+                download_and_unpack(s, download_link, src, dest, dest_name)
+
+def scrape_gs():
+    s = Scraper()
+    pattern = 'http://vtrd.in/gs.php'
+    selector = s.loadUrl(pattern)
+    src = 'tosec/unsorted files/vtrdos.ru/gs/src/'
+    dest = 'tosec/unsorted files/vtrdos.ru/gs/dest_players/'
+    players = selector.xpath('//table[2]//tr//a').extract_all()
+    # print(players)
+    for link in players:
+        link = h.unescape(link.decode('utf-8'))
+        link = link.encode('ISO-8859-1').decode('utf-8')
+        link_sel = Selector(link)
+        download_link = link_sel.xpath('//a/@href').extract_first()
+        if not download_link:
+            continue
+        # print(link)
+        desc = ' '.join(link_sel.xpath('//text()').extract_all())
+        dest_name = translit(desc, 'ru', reversed=True)
+        # print('!', download_link, desc)
+        # download_and_unpack(s, download_link, src, dest, dest_name)
+    dest = 'tosec/unsorted files/vtrdos.ru/gs/dest_games/'
+    games = selector.xpath('//tr[@bgcolor="#787878" or @bgcolor="#999999"]').extract_all()
+    print(games)
+    for row in games:
+        cells = Selector(row).xpath('//td').extract_all()
+        game_name = Selector(cells[0]).xpath('//a/text()').extract_first()
+        game_name = game_name.encode('ISO-8859-1').decode('utf-8').strip()
+        download_link = Selector(cells[0]).xpath('//a/@href').extract_first()
+        game_aka = None
+        game_aka = re.findall("\([^\)]*\)", game_name)
+        if game_aka:
+            game_name = game_name.replace(game_aka[0], '').strip()
+            game_aka = translit(game_aka[0][1:-1], 'ru', reversed=True).strip()
+        game_name = translit(game_name, 'ru', reversed=True)
+        publisher_and_year = Selector(cells[1]).xpath('//text()').extract_first().split("'")
+        if len(publisher_and_year) != 2:
+            year = None
+            publisher = "'".join(publisher_and_year)
+        else:
+            publisher, year = publisher_and_year
+        if year and year.isnumeric():
+            year = int(year)
+            if year > 80:
+                year = 1900 + year
+            elif year < 20:
+                year = 2000 + year
+            else:
+                print('Wrong year:', year)
+        else:
+            year = '19xx'
+        publisher = publisher.encode('ISO-8859-1').decode('utf-8').strip()
+        publisher = translit(publisher, 'ru', reversed=True)
+        publisher = publisher.split(', ')[-1]
+        publisher = publisher_regex.sub('', publisher)
+        publisher = publisher.replace(',', ' - ')
+        hacker = Selector(cells[2]).xpath('//text()').extract_first()
+        if hacker in ['author', 'n/a', 'unknown']:
+            hacker = ''
+        hacker = hacker.encode('ISO-8859-1').decode('utf-8').strip()
+        hacker = hacker.replace(',', ', ').replace("'", " '").replace('  ', ' ')
+        dest_name = '{} ({})({})'.format(game_name, year, publisher)
+        if hacker:
+            dest_name += '[h ' + translit(hacker, 'ru', reversed=True) + ']'
+        if game_aka:
+            dest_name += '[aka ' + game_aka + ']'
+        dest_name += '[GS]'
+        print(download_link, 'dest_name=', dest_name)
+        download_and_unpack(s, download_link, src, dest, dest_name)
+
+
+def scrape_sbor():
+    s = Scraper()
+    pattern = 'http://vtrd.in/sbor.php'
+    selector = s.loadUrl(pattern)
+    uls = selector.xpath('//ul').extract_all()
+    cats = selector.xpath('//p/b/font/text()').extract_all()[1:]
+    cats = [translit(cat.encode('ISO-8859-1').decode('utf-8'), 'ru', reversed=True)[:-1] for cat in cats]
+    print(cats)
+    for i, ul in enumerate(uls):
+        ul_selector = Selector(ul)
+        links = ul_selector.xpath('//li').extract_all()
+        for link in links:
+            src = 'tosec/unsorted files/vtrdos.ru/sbor/src/'
+            cat = cats[i]
+            cat = getFileSystemFriendlyName(cat)[:20]
+            dest = 'tosec/unsorted files/vtrdos.ru/sbor/dest/'+cats[i].zfill(2)+'/'
+            link = h.unescape(link.decode('utf-8'))
+            link = link.encode('ISO-8859-1').decode('utf-8')
+            link_sel = Selector(link)
+            download_link = link_sel.xpath('//a/@href').extract_first()
+            if not download_link:
+                continue
+            print(link)
+            desc = ' '.join(link_sel.xpath('//text()').extract_all())
+            dest_name = translit(desc, 'ru', reversed=True)
+            print(download_link, dest_name)
+            download_and_unpack(s, download_link, src, dest, dest_name)
+
+def scrape_system():
+    s = Scraper()
+    pattern = 'http://vtrd.in/system.php'
+    selector = s.loadUrl(pattern)
+    links = selector.xpath('//font[@size="2"]//a').extract_all()
+    for link in links:
+        src = 'tosec/unsorted files/vtrdos.ru/system/src/'
+        dest = 'tosec/unsorted files/vtrdos.ru/system/dest/'
+        link = h.unescape(link.decode('utf-8'))
+        link = link.encode('ISO-8859-1').decode('utf-8')
+        link_sel = Selector('<p>'+link+'</p>')
+        download_link = link_sel.xpath('//a/@href').extract_first()
+        if not download_link:
+            continue
+        print(link)
+        desc = link_sel.xpath('//text()').extract_all()
+        prog_name = desc[0]
+        prog_publisher = desc[1] if len(desc)>1 else '-'
+        prog_publisher = prog_publisher.replace('by ', '').strip().split(',')
+        first_prog_publisher = prog_publisher[0].split("'")
+        if len(prog_publisher)>1:
+            hacker = prog_publisher[1].strip()
+            hacker = publisher_regex.sub('', hacker)
+        else:
+            hacker = ''
+        publisher = first_prog_publisher[0].strip()
+        publisher = publisher_regex.sub('', publisher).strip()
+        if len(first_prog_publisher)>1 and first_prog_publisher[-1].isdigit():
+            year = first_prog_publisher[-1].strip()
+            year = '19'+year if int(year)>60 else '20'+year
+        else:
+            year = '19xx'
+        dest_name = '{} ({})({})'.format(prog_name, year, publisher)
+        if hacker:
+            dest_name += '[h {}]'.format(hacker)
+        dest_name = translit(dest_name, 'ru', reversed=True)
+        print(download_link, dest_name)
+        download_and_unpack(s, download_link, src, dest, dest_name)
+
+def scrape_games():
     pattern = 'http://vtrd.in/games.php?t='
     vars = ['full_ver', 'demo_ver', 'translat', 'remix', 'en']
-    # db = Database()
+    scrape_vtrdos(pattern, vars)
+
+def scrape_vtrdos(pattern, vars, name=""):
+    s = Scraper()
+    db = Database()
     # db.loadCache()
     dest_paths = []
     for var in vars:
@@ -23,8 +215,8 @@ def scrape_vtrdos():
         selector = s.loadUrl(url)
         games_table = selector.xpath('//table[1]//tr').extract_all()[1:-1]
         for row in games_table[1:-1]:
-            src = 'tosec/unsorted files/vtrdos.ru/src/'
-            dest= 'tosec/unsorted files/vtrdos.ru/dest/'
+            src = 'tosec/unsorted files/vtrdos.ru/{}/src/'.format(name)
+            dest= 'tosec/unsorted files/vtrdos.ru/{}/dest/'.format(name)
             cells = Selector(row).xpath('//td').extract_all()
             game_name = Selector(cells[0]).xpath('//a/text()').extract_first()
             game_name = game_name.encode('ISO-8859-1').decode('utf-8').strip()
@@ -57,13 +249,16 @@ def scrape_vtrdos():
             publisher = translit(publisher, 'ru', reversed=True)
             publisher = publisher.split(', ')[-1]
             publisher = publisher_regex.sub('', publisher)
-            hacker = Selector(cells[2]).xpath('//text()').extract_first()
-            if hacker in ['author', 'n/a', 'unknown']:
+            if len(cells)>2:
+                hacker = Selector(cells[2]).xpath('//text()').extract_first()
+                if hacker in ['author', 'n/a', 'unknown']:
+                    hacker = ''
+                hacker = hacker.encode('ISO-8859-1').decode('utf-8').strip()
+                hacker = hacker.replace(',', ', ').replace("'", " '").replace('  ', ' ')
+            else:
                 hacker = ''
-            hacker = hacker.encode('ISO-8859-1').decode('utf-8').strip()
-            hacker = hacker.replace(',', ', ').replace("'", " '").replace('  ', ' ')
             dest_name = '{} ({})({})'.format(game_name, year, publisher)
-            if var=='full_ver':
+            if var=='full_ver' or 'rus' in var:
                 dest_name += '(RU)'
             if hacker:
                 dest_name += '[h '+translit(hacker, 'ru', reversed=True)+']'
@@ -72,47 +267,60 @@ def scrape_vtrdos():
             if game_aka:
                 dest_name += '[aka '+game_aka+']'
             print('dest_name=', dest_name)
-            src += download_link
-            # if not os.path.exists(src):
-            #     s.downloadFile('http://vtrd.in'+download_link, src)
-            dest += getFileSystemFriendlyName(dest_name)
             dest_paths.append(dest)
-            if not os.path.exists(src):
-                print("Couldn't  copy ", src)
-                continue
-            try:
-                with zipfile.ZipFile(src, 'r') as zf:
-                    if len(zf.namelist())>1:
-                        count = 0
-                        for zfname in zf.namelist():
-                            zfname_ext = zfname.split('.')[-1].lower()
-                            if zfname_ext in GAME_EXTENSIONS:
-                                count += 1
-                        if count>1:
-                            dest += '.zip'
-                            shutil.copy(src, dest)
-                            continue
-                    for zfname in zf.namelist():
-                        zfname_ext = zfname.split('.')[-1].lower()
-                        if zfname_ext not in GAME_EXTENSIONS:
-                            continue
-                        dest += '.'+zfname_ext
-                        if os.path.exists(dest):
-                            continue
-                        data = zf.read(zfname)
-                        os.makedirs(os.path.dirname(dest), exist_ok=True)
-                        with open(dest, 'wb+') as output:
-                            output.write(data)
-            except Exception as e:
-                print(src)
-                print(e)
-            # if os.path.exists(src) and not os.path.exists(dest):
-            #     os.makedirs(os.path.dirname(dest), exist_ok=True)
-            #     shutil.copy(src, dest)
-            # elif not os.path.exists(src):
-            #     print("Couldn't  copy ", src)
+            download_and_unpack(s, download_link, src, dest, dest_name)
     with open('tosec/unsorted files/vtrdos.ru/destnames.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(dest_paths))
 
+def download_and_unpack(s, download_link, src, dest, dest_name):
+    src += download_link
+    if not os.path.exists(src):
+        s.downloadFile('http://vtrd.in/'+download_link, src)
+    dest += getFileSystemFriendlyName(dest_name)
+    if not os.path.exists(src):
+        print("Couldn't  copy ", src)
+        return
+    try:
+        with zipfile.ZipFile(src, 'r') as zf:
+            if len(zf.namelist())>1:
+                count = 0
+                for zfname in zf.namelist():
+                    zfname_ext = zfname.split('.')[-1].lower()
+                    if zfname_ext in GAME_EXTENSIONS:
+                        count += 1
+                if count>1:
+                    # dest += '.zip'
+                    os.makedirs(dest, exist_ok=True)
+                    zf.extractall(dest)
+                    # shutil.copy(src, dest)
+                    return
+            for zfname in zf.namelist():
+                zfname_ext = zfname.split('.')[-1].lower()
+                if zfname_ext not in GAME_EXTENSIONS:
+                    return
+                dest += '.'+zfname_ext
+                if os.path.exists(dest):
+                    return
+                data = zf.read(zfname)
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                with open(dest, 'wb+') as output:
+                    output.write(data)
+    except Exception as e:
+        print(src)
+        print(e)
+    # if os.path.exists(src) and not os.path.exists(dest):
+    #     os.makedirs(os.path.dirname(dest), exist_ok=True)
+    #     shutil.copy(src, dest)
+    # elif not os.path.exists(src):
+    #     print("Couldn't  copy ", src)
+
+
+
 if __name__=='__main__':
-    scrape_vtrdos()
+    scrape_demos()
+    # scrape_demos_comps()
+    # scrape_press()
+    # scrape_gs()
+    # scrape_sbor()
+    # scrape_vtrdos()
+    # scrape_system()
