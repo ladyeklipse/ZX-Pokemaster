@@ -3,6 +3,7 @@ CREATE TABLE "game" (
 	`wos_id` INTEGER PRIMARY KEY AUTOINCREMENT, -- ZXDB entries.entry_id. Auto-created entries from TOSEC are assigned IDs > 9000000
 	`name`	VARCHAR(255), -- ZXDB entries.title
 	`publisher`	VARCHAR(255), -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == 0
+	`author` TEXT,
 	`year`	INTEGER, -- ZXDB releases.release_year WHERE releases.release_seq == 0
 	`genre`	VARCHAR(255), -- ZXDB genretypes.text WHERE genretypes.id=entries.genretype_id, or TOSEC if game not in ZXDB
 	`x_rated`	INTEGER DEFAULT 0, -- ZXDB entries.is_xrated

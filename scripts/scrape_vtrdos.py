@@ -13,6 +13,95 @@ from classes.scraper import *
 from classes.database import *
 h = HTMLParser()
 
+def get_magazines_countries():
+    pattern = 'http://zxpress.ru/ezines.php'
+    s = Scraper()
+    selector = s.loadUrl(pattern)
+    rows = selector.xpath('//tr').extract_all()
+    mag_countries = {}
+    mag_cities = {}
+    for row in rows:
+        row_selector = Selector(row)
+        mag_name = row_selector.xpath('//td/a/b/text()').extract_first()
+        mag_country_image = row_selector.xpath('//td/img/@src').extract_first()
+        mag_city = row_selector.xpath('//td[3]/text()').extract_first()
+        if not mag_name or not mag_country_image:
+            continue
+        if mag_name in ['city']:
+            continue
+        if '1.png' in mag_country_image:
+            mag_country = 'RU'
+        if '2.png' in mag_country_image:
+            mag_country = 'BY'
+        if '3.png' in mag_country_image:
+            mag_country = 'UA'
+        mag_name = translit(mag_name, 'ru', reversed=True).lower()
+        if mag_city:
+            mag_cities[mag_name] = translit(mag_city.strip(), 'ru', reversed=True)
+        print(mag_name, mag_country, mag_city)
+        mag_countries[mag_name] = mag_country
+    for root, dirs, files in os.walk('tosec/unsorted files/vtrdos.ru/press/dest_reviewed'):
+        for file in files:
+            for key in mag_countries:
+                if file.lower().startswith(key):
+                    dest_file = file.replace('(RU)', '({})[{}]'.format(mag_countries[key], mag_cities[key]))
+                    src = os.path.join(root, file)
+                    dest = os.path.join(root, 'renamed', dest_file)
+                    print(src, dest)
+                    if os.path.exists(src):
+                        shutil.move(src, dest)
+        break
+
+def get_magazines_dates():
+    pattern = 'http://zxpress.ru/chronology.php'
+    s = Scraper()
+    selector = s.loadUrl(pattern)
+    rows = selector.xpath('//tr').extract_all()
+    year = 2018
+    ru_months = {
+        'января':'1',
+        'февраля':'2',
+        'марта':'3',
+        'апреля':'4',
+        'мая':'5',
+        'июня':'6',
+        'июля':'7',
+        'августа':'8',
+        'сентября':'9',
+        'октября':'10',
+        'ноября':'11',
+        'декабря':'12'
+    }
+    mag_dates = {}
+    for row in rows:
+        # print(date)
+        date_selector = Selector(row)
+        cells = date_selector.xpath('//text()').extract_all()[1:]
+        cells = [cell.strip() for cell in cells if cell.strip()]
+        if len(cells)==1:
+            year = cells[0][:4]
+            print(year)
+        elif len(cells)==2:
+            day, ru_month = cells[0].replace('  ', ' ').split(' ')
+            month = ru_months[ru_month].zfill(2)
+            day = day.zfill(2)
+            date = '{}-{}-{}'.format(year, month, day)
+            mag_name = cells[1].replace('#', '')
+            mag_dates[mag_name] = date
+            # print(date, mag_name)
+    for root, dirs, files in os.walk('tosec/unsorted files/vtrdos.ru/press/dest_reviewed'):
+        for file in files:
+            for key in mag_dates:
+                if file.replace('#', '').startswith(key):
+                    dest_file = file.replace('19xx', mag_dates[key])
+                    src = os.path.join(root, file)
+                    dest = os.path.join(root, 'renamed', dest_file)
+                    print(src, dest)
+                    if os.path.exists(src):
+                        shutil.move(src, dest)
+        break
+
+
 def scrape_demos():
     pattern = 'http://vtrd.in/'
     vars = ['russian.php', 'other.php']
@@ -317,7 +406,9 @@ def download_and_unpack(s, download_link, src, dest, dest_name):
 
 
 if __name__=='__main__':
-    scrape_demos()
+    # get_magazines_dates()
+    get_magazines_countries()
+    # scrape_demos()
     # scrape_demos_comps()
     # scrape_press()
     # scrape_gs()

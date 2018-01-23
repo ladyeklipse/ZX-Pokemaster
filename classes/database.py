@@ -99,6 +99,7 @@ class Database():
         values = [game.wos_id if game.wos_id else None,
                   game.name,
                   game.publisher,
+                  game.author,
                   game.year,
                   game.genre,
                   game.x_rated,
@@ -338,6 +339,7 @@ class Database():
     def gameFromRow(self, row):
         game = Game(row['name'], int(row['wos_id']))
         game.setPublisher(row['publisher'])
+        game.setAuthor(row['author'])
         game.setYear(row['year'])
         game.setGenre(row['genre'])
         game.setNumberOfPlayers(row['number_of_players'])

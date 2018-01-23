@@ -62,9 +62,10 @@ def getFileSystemFriendlyName(name):
     if not name:
         return ''
     name = name.replace(':', ' -').replace('/','-')
-    name = ' '.join([word[0].upper()+word[1:].rstrip()
-                     if len(word)>3 and '.' not in word
-                     else word.strip() for word in name.split(' ')])
+    # name = ' '.join([word[0].upper()+word[1:].rstrip()
+    #                  if len(word)>3 and '.' not in word
+    #                  else word.strip() for word in name.split(' ')])
+    name = ' '.join([word.strip() for word in name.split(' ')])
     name = filepath_regex.sub('', name).strip()
     deunicoded_name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     if deunicoded_name:
@@ -115,6 +116,12 @@ def getSearchStringFromGameName(game_name):
         elif game_name.endswith(', '+prefix):
             game_name = game_name[:len(game_name)-len(prefix)-2]
     return ''.join(filter(str.isalnum, game_name.lower()))
+
+def replaceRomanNumbers(game_name):
+    return game_name.replace(' II', ' 2').replace(' III', ' 3').replace(' IV', ' 4') \
+        .replace(' V ', ' 5 ').replace(' VI', ' 6').replace(' VII', ' 7')
+    if game_name.endswith(' V'):
+        game_name = game_name[:-2]+' 5'
 
 # def sanitizePublisher(publisher, publisher_aliases):
 #     if publisher in publisher_aliases:

@@ -138,6 +138,12 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(out_name, 'Format Utility (1994)(MI & DI).trd')
 
     def test_picking_best_release_name(self):
+        g = Game('Dizzy 2 - Treasure Island Dizzy')
+        r = GameRelease(game=g)
+        f = GameFile('Dizzy II - Treasure Island Dizzy (19xx)(-).tap')
+        r.addFile(f)
+        f.setAka()
+        self.assertEqual(f.getTOSECName(), 'Dizzy 2 - Treasure Island Dizzy (19xx)(-).tap')
         g = Game('Bug-Eyes')
         r = GameRelease(game=g)
         f = GameFile('Bor-Fies (19xx)(-)[aka Bug-Eyes].tap')

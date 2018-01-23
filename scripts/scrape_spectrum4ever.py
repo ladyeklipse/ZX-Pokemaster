@@ -39,12 +39,14 @@ def scrape_spectrum4ever():
         selector = s.loadUrl(url)
         games = selector.xpath('//table[2]//tr').extract_all()[2:-1]
         for game in games:
-            src = 'tosec/spectrum4ever.org/src/'
-            dest = 'tosec/spectrum4ever.org/dest/'
+            src = 'tosec/unsorted files/spectrum4ever.org/src/'
+            dest = 'tosec/unsorted files/spectrum4ever.org/dest/'
             data = Selector(game)
             game_name = data.xpath('//a[@class="yel"]/text()').extract_first()
             if not game_name:
                 continue
+            download_link = data.xpath('//td[@class="yel"]/a/@href').extract_first()
+            internal_id = download_link.split('id=')[1]
             src += getFileSystemFriendlyName(game_name).upper()
             game_name = translit(getFileSystemFriendlyName(game_name.title()), 'ru', reversed=True)
             format = data.xpath('//td[@class="cian"]/text()').extract_first()
@@ -66,6 +68,7 @@ def scrape_spectrum4ever():
                 game_file.mod_flags += '[h '+hacker_name+']'
             else:
                 src += ' (-)'
+            src += '[' + internal_id + ']'
             src += '.'+format
             notes = data.xpath('//td[@class="red"]/text()').extract_first()
             if notes:
@@ -100,11 +103,11 @@ def scrape_spectrum4ever():
             print('dest=', dest)
             total_games += 1
             if not os.path.exists(src):
-                download_link = data.xpath('//td[@class="yel"]/a/@href').extract_first()
                 download_link = 'http://spectrum4ever.org/'+download_link
                 s.downloadFile(download_link, src)
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copy(src, dest)
+            if os.path.exists(src):
+                shutil.copy(src, dest)
     print(sorted(list(set(mod_flags))))
     print(len(mod_flags))
     print('Noted:', noted_games)

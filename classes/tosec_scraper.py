@@ -141,6 +141,8 @@ class TOSECScraper():
             if game_file.tosec_path in self.file_exclusion_list:
                 print(game_file.tosec_path, 'in exclusion list.')
                 continue
+            if 'Covertape' in file_path['path']:
+                self.setCovertapeNote(game_file)
             new_tosec_name = game_file.game.getTOSECName()
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
@@ -266,6 +268,13 @@ class TOSECScraper():
         game_file.setSize(file_path_dict['size'])
         return game_file
 
+    def setCovertapeNote(self, game_file):
+        file_publisher = game_file.game.publisher
+        for covertape_publisher in COVERTAPE_PUBLISHERS:
+            if covertape_publisher in file_publisher and len(file_publisher)>len(covertape_publisher):
+                game_file.notes += '[{} Covertape]'.format(covertape_publisher)
+                break
+
     def updateTOSECAliasesCSV(self):
         self.getManuallyEnteredTOSECAliases()
         written_game_names = []
@@ -285,18 +294,15 @@ class TOSECScraper():
                     written_game_names.append(game_name)
 
     def getUnscraped(self):
-        # dat_paths = self.generateTOSECPathsArrayFromDatFiles()
         have = []
         miss = []
         md5s = [row['md5'] for row in self.db.execute('SELECT md5 FROM game_file')]
         for path in self.paths:
             if path['path'] in self.file_exclusion_list:
-                # print(path, 'in exclusion list.')
                 continue
             if path['md5'] in md5s:
                 have.append(path)
             else:
-                # print('Miss:', path)
                 miss.append(path)
         print('Have:', len(have))
         print('Miss:', len(miss))
@@ -360,14 +366,3 @@ class TOSECScraper():
                     decision = line[7]
                     if not decision.startswith('KEEP') and line[11]:
                         self.file_exclusion_list.append(line[11])
-
-    # def getPublisherAliases(self):
-    #     self.publisher_aliases = {}
-    #     with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
-    #         for line in f.readlines():
-    #             line = line.strip().split(';')
-    #             if not line[1]:
-    #                 break
-    #             self.publisher_aliases[line[0]]=line[1]
-    #     return self.publisher_aliases
-

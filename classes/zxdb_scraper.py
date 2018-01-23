@@ -46,7 +46,7 @@ class ZXDBScraper():
                 if not decision.startswith('KEEP'):
                     self.file_exclusion_list.append(line[9]+'|'+line[10])
         self.manually_corrected_content_descriptions = {}
-        with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
+        with open('content_desc_aliases.csv', 'r', encoding='latin-1') as f:
             for line in f.readlines():
                 line = line.strip().split(';')
                 if len(line)<5 or not line[4]:
@@ -69,8 +69,6 @@ class ZXDBScraper():
                 if not line[1]:
                     break
                 self.publisher_aliases[line[0]]=line[1]
-
-
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -130,7 +128,7 @@ class ZXDBScraper():
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
               'LEFT JOIN publishers ON publishers.entry_id=entries.id AND publishers.release_seq=releases.release_seq  ' \
               'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
-              'LEFT JOIN authors ON authors.entry_id=entries.id AND authors.author_seq=1  ' \
+              'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
               'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id ' \
               'LEFT JOIN aliases ON aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq ' \
               'LEFT JOIN filetypes ON downloads.filetype_id=filetypes.id ' \
@@ -140,7 +138,6 @@ class ZXDBScraper():
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
-              '(publisher_seq IS NULL OR publisher_seq=1) AND ' \
               '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1)'
         if sql_where:
             sql += sql_where+' '
@@ -151,6 +148,7 @@ class ZXDBScraper():
         release = GameRelease()
         games = []
         for row in self.cur:
+            print(row['publisher'])
             #Skipping ZX80/ZX81 files
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
@@ -164,6 +162,18 @@ class ZXDBScraper():
             if row['release_seq'] and row['release_seq']!=release.release_seq:
                 release = self.releaseFromRow(row, game)
                 game.addRelease(release)
+            if game.publisher and row['publisher'] and game.raw_publisher and row['publisher'] not in game.raw_publisher:
+                game.raw_publisher.append(row['publisher'])
+                publisher = self.publisherNameFromRow(row)
+                publishers = game.publisher.split(' - ')
+                publishers.append(publisher)
+                game.publisher = ' - '.join(sorted(publishers))
+            if game.author and row['author'] and game.raw_author and row['author'] not in game.raw_author:
+                game.raw_author.append(row['author'])
+                author = self.authorNameFromRow(row)
+                authors = game.author.split(' - ')
+                authors.append(author)
+                game.author = ' - '.join(sorted(authors))
             if row['file_link'] and not (row['file_link'].endswith('.mlt')):
                 if row['file_type']=='Loading screen':
                     if row['file_format']=='Picture':
@@ -229,7 +239,6 @@ class ZXDBScraper():
                 if row['alt_name'] and row['alt_language'] in (None, 'en'):
                     alias = self.sanitizeAlias(row['alt_name'])
                     release.addAlias(alias)
-
         games.append(game)
         return games
 
@@ -239,6 +248,8 @@ class ZXDBScraper():
         game = Game(game_name, int(row['wos_id']))
         publisher = self.publisherNameFromRow(row)
         game.setPublisher(publisher)
+        author = self.authorNameFromRow(row)
+        game.setAuthor(author)
         game.setYear(row['year'])
         game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
@@ -248,6 +259,7 @@ class ZXDBScraper():
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])
         game.tipshop_page = row['tipshop_page']
+        game.raw_publisher, game.raw_author = [row['publisher']], [row['author']]
         return game
 
     def releaseFromRow(self, row, game):
@@ -265,16 +277,16 @@ class ZXDBScraper():
         return release
 
     def publisherNameFromRow(self, row):
-        if row['publisher']:
-            if row['publisher_is_company'] in (None, 1):
-                return putPrefixToEnd(row['publisher'])
-            elif row['publisher_is_company'] == 0:
-                return putInitialsToEnd(row['publisher'])
-        elif row['author']:
-            if row['author_is_company'] in (None, 1):
-                return putPrefixToEnd(row['author'])
-            elif row['author_is_company'] == 0:
-                return putInitialsToEnd(row['author'])
+        if row['publisher_is_company'] in (None, 1):
+            return putPrefixToEnd(row['publisher'])
+        elif row['publisher_is_company'] == 0:
+            return putInitialsToEnd(row['publisher'])
+
+    def authorNameFromRow(self, row):
+        if row['author_is_company'] in (None, 1):
+            return putPrefixToEnd(row['author'])
+        elif row['author_is_company'] == 0:
+            return putInitialsToEnd(row['author'])
 
     def sanitizeAlias(self, alias):
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
@@ -284,6 +296,18 @@ class ZXDBScraper():
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         if alias == 'Pozycje Milosne':
             alias = '22 Pozycje milosne'
+        elif alias == 'Treasure Island Dizzy':
+            alias = 'Dizzy 2 - '+alias
+        elif alias == 'Fantasy World Dizzy':
+            alias = 'Dizzy 3 - ' + alias
+        elif alias == 'Magicland Dizzy':
+            alias = 'Dizzy 4 - '+alias
+        elif alias == 'Spellbound Dizzy':
+            alias = 'Dizzy 5 - '+alias
+        elif alias == 'Dizzy, Prince of the YolkFolk':
+            alias = 'Dizzy 6 - '+alias
+        elif alias == 'Crystal Kingdom Dizzy':
+            alias = 'Dizzy 7 - '+alias
         alias = alias.replace('BubbleLand', 'Bubble Land')
         alias = alias.replace('F-14 Afterburner', 'Afterburner')
         alias = alias.replace('Santa Clause', 'Santa Claus')
@@ -292,6 +316,10 @@ class ZXDBScraper():
         alias = ' - '.join([alias]+round_brackets_contents)
         if alias.endswith(', 3D'):
             alias = '3D ' + alias[:-4]
+        if alias.endswith(' +'):
+            alias = alias.replace(' +', '+')
+        if alias.startswith('The '):
+            alias = alias [4:] + ', The'
         return alias
 
     def gameFileFromRow(self, row, game):

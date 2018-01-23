@@ -4,7 +4,7 @@ import os
 if (os.getcwd().endswith('functions')):
     os.chdir('..')
 
-def move_known(src, dest=None):
+def move_known(src, dest=None, rename=False):
     src = src.replace('//', '/')
     if not dest:
         dest = src+'known/'
@@ -19,14 +19,17 @@ def move_known(src, dest=None):
             if game:
                 print(file, 'known as', game.findFileByMD5(file.md5).getTOSECName())
                 dest_path = dest+file_path.replace(src, '')
-                print(file_path, os.path.dirname(dest_path))
-                print(dest_path)
+                # print(file_path, os.path.dirname(dest_path))
+                # print(dest_path)
                 # continue
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 if os.path.exists(dest_path):
                     os.unlink(dest_path)
-                shutil.move(file_path, os.path.dirname(dest_path))
+                dest_dir = os.path.dirname(dest_path)
+                shutil.move(file_path, dest_dir)
+                if rename:
+                    os.rename(dest_path, os.path.join(dest_dir, game.findFileByMD5(file.md5).getTOSECName()))
 
 if __name__=='__main__':
-    move_known('tosec/unsorted files/vtrdos.ru/demos/dest/')
+    move_known('tosec/unsorted files/spectrum4ever.org/dest/renamed/Unknown/', rename=True)
     pass

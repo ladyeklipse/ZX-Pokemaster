@@ -812,7 +812,8 @@ class GameFile(object):
     def setAka(self):
         if '[aka' not in self.notes:
             aliases_search_strings = []
-            game_name_search_string = getSearchStringFromGameName(self.getGameName(for_filename=True))
+            game_name = self.getGameName(for_filename=True)
+            game_name_search_string = getSearchStringFromGameName(game_name)
             aliases_search_strings.append(game_name_search_string)
             for alias in self.release.getAllAliases():
                 alias_search_string = getSearchStringFromGameName(alias)

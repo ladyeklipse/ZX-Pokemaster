@@ -11,6 +11,7 @@ class Game(object):
     wos_id = 0
     name = ''
     publisher = ''
+    author = ''
     year = None
     genre = ''
     type = 'Unknown'
@@ -109,7 +110,10 @@ class Game(object):
             else:
                 file.setAka()
             file.setReRelease()
-
+            if 'Covertape' in file.notes:
+                covertape_comment = '[{} Covertape]'.format(file.release.getPublisher())
+                if covertape_comment in file.notes:
+                    file.notes = file.notes.replace(covertape_comment, '')
 
     def setTypeFromFiles(self):
         if self.genre and self.genre!='Compilation':
@@ -224,6 +228,10 @@ class Game(object):
         publisher = publisher_regex.sub('', publisher)
         publisher = remove_brackets_regex.sub('', publisher).strip()
         self.publisher = publisher
+
+    def setAuthor(self, author):
+        if author:
+            self.author = author
 
     def setYear(self, year):
         self.year = year

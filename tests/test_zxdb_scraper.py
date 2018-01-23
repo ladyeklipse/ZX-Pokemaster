@@ -204,3 +204,15 @@ class TestZXDBScraper(unittest.TestCase):
         games = zxdb.getGames(where_clause)
         game_file = games[0].getFiles()[0]
         self.assertFalse('aka' in game_file.notes)
+
+    def test_multipublisher(self):
+        where_clause = 'AND entries.id in (10959)'
+        games = zxdb.getGames(where_clause)
+        publisher = games[0].publisher
+        self.assertEqual('Davie, C. - Yacomine, Gordon', publisher)
+
+    def test_multiauthor(self):
+        where_clause = 'AND entries.id in (19089)'
+        games = zxdb.getGames(where_clause)
+        author = games[0].author
+        self.assertEqual('Myslivec, Jaroslav - Zyka, Radek', author)

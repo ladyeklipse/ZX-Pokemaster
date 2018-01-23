@@ -17,7 +17,7 @@ GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk',
                    'trd', 'tzx', 'img', 'mgt', 'rom',
                    'scl', 'slt', 'szx', 'fdi', 'opd',
                    'mdr', 'wdr', 'd80', 'd40', 'sp',
-                   'dck', 'ipf', 'csw', 'udi']
+                   'dck', 'ipf', 'csw', 'udi', 'spg']
 DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ['zip', 'pok']
 DISK_FORMATS = ('dsk', 'trd', 'scl')
 TAPE_FORMATS = ('tzx', 'tap')

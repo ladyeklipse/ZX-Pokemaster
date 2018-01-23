@@ -140,7 +140,9 @@ class GameRelease(object):
         if new_file.game and 'Your Sinclair - Issue' not in new_file.game.name:
             add_aka = True
             for alias in self.getAllAliases():
-                ss_newfile = getSearchStringFromGameName(new_file.game.name)
+                game_name = replaceRomanNumbers(new_file.game.name)
+                ss_newfile = getSearchStringFromGameName(game_name)
+                alias = replaceRomanNumbers(alias)
                 ss_self = getSearchStringFromGameName(alias)
                 if ss_newfile==ss_self or ss_self in ss_newfile or ss_newfile in ss_self:
                     add_aka = False
