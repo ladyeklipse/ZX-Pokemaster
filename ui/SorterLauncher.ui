@@ -95,7 +95,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -282,7 +282,7 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,1">
        <property name="spacing">
         <number>7</number>
        </property>
@@ -438,7 +438,20 @@
        <item>
         <widget class="QCheckBox" name="chkIncludeUnknownFiles">
          <property name="text">
-          <string extracomment="Files, which are not in database, will be included. Use {Genre} as a folder pattern to put them into &quot;Unknown&quot; folder.">Include files which are not in database</string>
+          <string extracomment="Files, which are not in database, will be included, but not renamed.">Include unknown files</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkSeparateUknownFiles">
+         <property name="text">
+          <string extracomment="If unchecked, unknown files will be mixed with known and properly renamed ones.">Put unknown files into &quot;Unknown&quot; folder</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -472,6 +485,7 @@
       <zorder>chkIncludeSupplementaryFiles</zorder>
       <zorder>horizontalLayoutWidget</zorder>
       <zorder>chkIncludeUnknownFiles</zorder>
+      <zorder>chkSeparateUknownFiles</zorder>
      </widget>
      <widget class="QWidget" name="tabAbout">
       <attribute name="title">

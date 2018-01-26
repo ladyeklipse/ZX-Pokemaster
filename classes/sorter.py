@@ -48,7 +48,10 @@ class Sorter():
         self.include_hacks = kwargs.get('include_hacks', True)
         self.include_xrated = kwargs.get('include_xrated', True)
         self.include_bad_dumps = kwargs.get('include_bad_dumps', False)
+        self.include_unknown_files = kwargs.get('include_unknown_files', True)
+        self.separate_unknown_files = kwargs.get('separate_unknown_files', True)
         self.include_supplementary_files = kwargs.get('include_supplementary_files', False)
+        self.max_archive_size = int(kwargs.get('max_archive_size', 1))*1024*1024
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
         self.place_pok_files_in_pokes_subfolders = kwargs.get('place_pok_files_in_pokes_subfolders', True)
@@ -210,7 +213,7 @@ class Sorter():
             game_file.dest = self.getDestination(game_file)
             game_files.append(game_file)
         elif ext=='zip':
-            if os.path.getsize(file_path)>MAX_ZIP_FILE_SIZE:
+            if os.path.getsize(file_path)>self.max_archive_size:
                 return []
             try:
                 with zipfile.ZipFile(file_path) as zf:
@@ -254,17 +257,22 @@ class Sorter():
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
         #Publisher name will be cropped to 3 words if dest length is too long
-        kwargs = game_file.getOutputPathFormatKwargs(
-            game_name_length=game_name_length)
-        structure = self.output_folder_structure
-        if '{Type}' in structure and '{Genre}' in structure and \
-            kwargs['Type'] not in ['Applications', 'Games']:
-            structure = structure.replace('{Genre}', '')
-        dest_dir = structure.format(**kwargs)
-        dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
-                                                game_name_length=game_name_length)
+        if game_file.game.wos_id or not self.separate_unknown_files:
+            kwargs = game_file.getOutputPathFormatKwargs(
+                game_name_length=game_name_length)
+            structure = self.output_folder_structure
+            if '{Type}' in structure and '{Genre}' in structure and \
+                kwargs['Type'] not in ['Applications', 'Games']:
+                structure = structure.replace('{Genre}', '')
+            dest_dir = structure.format(**kwargs)
+        else:
+            dest_dir = 'Unknown Files'
+        if game_file.game.wos_id:
+            dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
+                                                    game_name_length=game_name_length)
+        else:
+            dest_filename = os.path.basename(game_file.src)
         if self.short_filenames:
-            dest_filename = os.path.splitext(dest_filename)
             dest_filename = ''.join((getMeaningfulEightLetterName(game_file.getGameName()), '.', game_file.format.upper()))
             dest_dir = dest_dir.split(os.sep)
             dest_dir = [getMeaningfulEightLetterName(x) for x in dest_dir]
@@ -280,6 +288,8 @@ class Sorter():
         for game_name, files in self.collected_files.items():
             min_release = min([file.getReleaseSeq() for file in files])
             for i, file in enumerate(files):
+                if not self.include_unknown_files and not file.game.wos_id:
+                    self.collected_files[game_name][i] = None
                 if not self.include_rereleases and file.getReleaseSeq()>min_release:
                     self.collected_files[game_name][i] = None
                 if not self.include_alternate and file.isAlternate():

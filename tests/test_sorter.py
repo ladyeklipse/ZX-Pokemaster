@@ -153,11 +153,13 @@ class TestSorter(unittest.TestCase):
                    output_location='tests/files/sort_unknown_files_out',
                    output_folder_structure='{Genre}/{Publisher}/{Language}/{Year}',
                    formats_preference=['tap', 'z80', 'dsk', 'trd'],
+                   include_unknown_files=True,
+                   separate_unknown_files=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_unknown_files_out/Unknown Games/Rebit Soft Bank/it/19xx/Air Fire (19xx)(Rebit Soft Bank)(it).z80'
+        expected_file = 'tests/files/sort_unknown_files_out/Various Games/Rebit Soft Bank/it/19xx/Air Fire (19xx)(Rebit Soft Bank)(it).z80'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = \
             'tests/files/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1991/AlchNews 01 (1991)(Alchemist Research).z80'
@@ -169,6 +171,14 @@ class TestSorter(unittest.TestCase):
         expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017).tap'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
+        s.separate_unknown_files = True
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_unknown_files_out/Unknown Files/Треугольник (2017).tap')
+        self.assertFileExists('tests/files/sort_unknown_files_out/Unknown Files/AlchNews 01 (1991)(Alchemist Research).z80')
+        self.assertEqual(len(s.errors), 0)
+
 
     def test_doublesided_archive(self):
         s = Sorter(input_locations=['tests/files/sort_doublesided_in'],
