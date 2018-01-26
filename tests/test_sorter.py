@@ -24,6 +24,22 @@ class TestSorter(unittest.TestCase):
         self.assertGreater(os.path.getsize(expected_file), 0)
         self.assertEqual(len(s.errors), 0)
 
+    def test_sorting_by_author(self):
+        s = Sorter(input_locations=['tests/files/sort_single_file_in'],
+                   output_location='tests/files/sort_by_author_out',
+                   output_folder_structure='{Author}',
+                   output_filename_structure='{GameName} ({Year})({Author})',
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).tap'
+        self.assertTrue(os.path.exists(expected_file))
+        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/POKES/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).pok'
+        self.assertTrue(os.path.exists(expected_file))
+        self.assertGreater(os.path.getsize(expected_file), 0)
+        self.assertEqual(len(s.errors), 0)
+
     def test_placing_pokes_alongside_files(self):
         s = Sorter(input_locations=['tests/files/sort_single_file_in'],
                    output_location='tests/files/sort_single_file_out_2',
@@ -53,7 +69,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_alt_files_in'],
                    output_location='tests/files/sort_alt_files_out',
                    output_folder_structure='',
-                   ignore_alternate=False,
+                   include_alternate=True,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -75,8 +91,8 @@ class TestSorter(unittest.TestCase):
                    output_location='tests/files/sort_best_candidates_out',
                    output_folder_structure='',
                    formats_preference=['tap', 'z80', 'dsk', 'trd'],
-                   ignore_alternate=True,
-                   ignore_alternate_formats=False,
+                   include_alternate=False,
+                   include_alternate_formats=True,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -99,8 +115,8 @@ class TestSorter(unittest.TestCase):
                    output_location='tests/files/sort_ignoring_alternate_formats_out',
                    output_folder_structure='',
                    formats_preference=['tap', 'z80', 'dsk', 'trd', 'tzx'],
-                   ignore_alternate=True,
-                   ignore_alternate_formats=True,
+                   include_alternate=False,
+                   include_alternate_formats=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -121,7 +137,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_unzipped_in'],
                    output_location='tests/files/sort_unzipped_out',
                    output_folder_structure='',
-                   ignore_alternate=False,
+                   include_alternate=True,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -150,7 +166,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = 'tests/files/sort_unknown_files_out/Electronic Magazine\Alchemist Research\en\\1993/Alchemist News 09 (1993)(Alchemist Research)(128K).z80'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017)(-).tap'
+        expected_file = 'tests/files/sort_unknown_files_out/Unknown/Unknown Publisher/en/2017/Треугольник (2017).tap'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 
@@ -158,7 +174,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_doublesided_in'],
                    output_location='tests/files/sort_doublesided_out',
                    output_folder_structure='',
-                   ignore_alternate=False,
+                   include_alternate=True,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -177,7 +193,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_ignore_rereleases_in'],
                    output_location='tests/files/sort_ignore_rereleases_out',
                    output_folder_structure='',
-                   ignore_rereleases=True,
+                   include_rereleases=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -192,7 +208,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_ignore_hacks_in'],
                    output_location='tests/files/sort_ignore_hacks_out',
                    output_folder_structure='',
-                   ignore_hacks=True,
+                   include_hacks=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -229,14 +245,14 @@ class TestSorter(unittest.TestCase):
 
     def test_sort_false_alt(self):
         s = Sorter(
-                   input_locations=['tests/files/sort_false_alt_in'],
-                   output_location='tests/files/sort_false_alt_out',
-                   formats_preference='tap,dsk,z80,sna,tzx,trd'.split(','),
-                   ignore_alternate_formats=True,
-                   ignore_alternate=False,
-                   ignore_rereleases=False,
-                   output_folder_structure='',
-                   cache=False)
+                input_locations=['tests/files/sort_false_alt_in'],
+                output_location='tests/files/sort_false_alt_out',
+                formats_preference='tap,dsk,z80,sna,tzx,trd'.split(','),
+                include_alternate_formats=False,
+                include_alternate=True,
+                include_rereleases=True,
+                output_folder_structure='',
+                cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -247,13 +263,12 @@ class TestSorter(unittest.TestCase):
         self.assertEqual(len(s.errors), 0)
 
     def test_multilang_games(self):
-        s = Sorter(
-                   input_locations=['tests/files/sort_multilang_in'],
+        s = Sorter(input_locations=['tests/files/sort_multilang_in'],
                    output_location='tests/files/sort_multilang_out',
                    formats_preference='tap,dsk,z80,sna,tzx,trd'.split(','),
-                   ignore_alternate_formats=True,
-                   ignore_alternate=True,
-                   ignore_rereleases=True,
+                   include_alternate_formats=False,
+                   include_alternate=False,
+                   include_rereleases=False,
                    output_folder_structure='',
                    cache=False)
         if os.path.exists(s.output_location):
@@ -273,14 +288,14 @@ class TestSorter(unittest.TestCase):
 
     def test_multipart_games(self):
         s = Sorter(
-                   input_locations=['C:/ZX Pokemaster/tests/files/sort_multipart_in'],
-                   output_location='C:/ZX Pokemaster/tests/files/sort_multipart_out',
-                   formats_preference=['tap', 'z80'],
-                   ignore_alternate_formats=True,
-                   ignore_alternate=True,
-                   ignore_rereleases=True,
-                   output_folder_structure='',
-                   cache=False)
+                input_locations=['C:/ZX Pokemaster/tests/files/sort_multipart_in'],
+                output_location='C:/ZX Pokemaster/tests/files/sort_multipart_out',
+                formats_preference=['tap', 'z80'],
+                include_alternate_formats=False,
+                include_alternate=False,
+                include_rereleases=False,
+                output_folder_structure='',
+                cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -297,7 +312,7 @@ class TestSorter(unittest.TestCase):
                    input_locations=['tests/files/sort_extremely_long_in'],
                    output_location='tests/files/sort_extremely_long_out',
                    output_folder_structure='unnecessarily_long_subfolder_name\\{Publisher}\\{GameName}',
-                   ignore_alternate=False,
+                   include_alternate=True,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -315,15 +330,15 @@ class TestSorter(unittest.TestCase):
 
     def test_saboteur_2(self):
         s = Sorter(
-                   input_locations=['tests/files/sort_saboteur_in'],
-                   output_location='tests/files/sort_saboteur_out',
-                   output_folder_structure='',
-                   formats_preference=['tap', 'tzx', 'z80'],
-                   ignore_alternate_formats=True,
-                   ignore_alternate=True,
-                   ignore_rereleases=True,
-                   ignore_hacks=True,
-                   cache=False)
+                    input_locations=['tests/files/sort_saboteur_in'],
+                    output_location='tests/files/sort_saboteur_out',
+                    output_folder_structure='',
+                    formats_preference=['tap', 'tzx', 'z80'],
+                    include_alternate_formats=False,
+                    include_alternate=False,
+                    include_rereleases=False,
+                    include_hacks=False,
+                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -414,7 +429,6 @@ class TestSorter(unittest.TestCase):
                    input_locations=['tests/files/sort_die_hard_in'],
                    output_location='tests/files/sort_die_hard_out',
                    output_folder_structure='{Format}',
-                   include_xrated=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -429,7 +443,7 @@ class TestSorter(unittest.TestCase):
                    input_locations=[input_location],
                    output_location=output_location,
                    output_folder_structure='',
-                   ignore_xrated=True,
+                   include_xrated=False,
                    cache=False)
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
@@ -485,10 +499,9 @@ class TestSorter(unittest.TestCase):
                    input_locations=[input_location],
                    output_location=output_location,
                    traverse_subfolders=True,
-                   ignore_alternate=True,
+                   include_alternate=False,
                    short_filenames=True,
                    output_folder_structure='{Genre}\{MachineType}',
-                   # output_filename_structure='{GameName}',
                    cache=False)
         if os.path.exists(s.output_location):
             # shutil.rmtree(s.output_location)
@@ -515,7 +528,7 @@ class TestSorter(unittest.TestCase):
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=False,
-            ignore_alternate=True,
+            include_alternate=False,
             output_folder_structure='',
             max_files_per_folder = 50,
             cache=True)
@@ -535,7 +548,7 @@ class TestSorter(unittest.TestCase):
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=True,
-            ignore_alternate=False,
+            include_alternate=True,
             output_folder_structure='{MachineType}/{Type}/{Genre}/{Format}',
             max_files_per_folder = 25,
             cache=True)
@@ -559,7 +572,7 @@ class TestSorter(unittest.TestCase):
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=True,
-            ignore_alternate=False,
+            include_alternate=True,
             output_folder_structure='{Language}',
             max_files_per_folder = 10,
             cache=False)
@@ -586,7 +599,7 @@ class TestSorter(unittest.TestCase):
             input_locations=[input_location],
             output_location=output_location,
             traverse_subfolders=True,
-            ignore_alternate=False,
+            include_alternate=True,
             output_folder_structure='{Language}\\{Format}\\{GameName}',
             max_files_per_folder = 10,
             cache=False)
@@ -641,7 +654,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=True,
+            include_alternate=False,
             output_filename_structure='{ZXDB_ID} - {GameName}',
             output_folder_structure='',
             cache=False)
@@ -676,7 +689,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=False,
+            include_alternate=True,
             use_camel_case=True,
             output_folder_structure='{Publisher}',
             cache=False)
@@ -699,7 +712,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=False,
+            include_alternate=True,
             use_camel_case=True,
             output_folder_structure='{Publisher}',
             cache=False)
@@ -716,7 +729,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=False,
+            include_alternate=True,
             output_folder_structure='',
             cache=False)
         if os.path.exists(s.output_location):
@@ -735,7 +748,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=True,
+            include_alternate=False,
             output_folder_structure='{GameName}',
             output_filename_structure='{GameName} {Publisher}',
             short_filenames=True,
@@ -753,7 +766,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(
             input_locations=input_locations,
             output_location=output_location,
-            ignore_alternate=True,
+            include_alternate=False,
             output_folder_structure='{Type}\{Genre}',
             cache=True)
         if s.errors:
@@ -814,9 +827,9 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.output_folder_structure = ''
         s.include_supplementary_files = False
-        s.ignore_alternate = False
-        s.ignore_alternate_formats = False
-        s.ignore_bad_dumps = False
+        s.include_alternate = True
+        s.include_alternate_formats = True
+        s.include_bad_dumps = True
         s.sortFiles()
         expected_crc = [
                         "adecd734", "2d91dd36", "7f16d967",

@@ -96,6 +96,9 @@ class Database():
                 release.publisher = self.publisher_aliases[release.publisher]
             if not release.publisher or release.publisher=='-':
                 release.publisher = game.publisher
+        if  not game.wos_id:
+            for file in game.getFiles():
+                file.sortPublishers()
         values = [game.wos_id if game.wos_id else None,
                   game.name,
                   game.publisher,

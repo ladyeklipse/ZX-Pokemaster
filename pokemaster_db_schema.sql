@@ -16,7 +16,7 @@ CREATE TABLE "game" (
 	`pok_file_contents`	BLOB, -- Retrieved by scraping the-tipshop.co.uk and manual correction
 	`tipshop_multiface_pokes_section` BLOB -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
 );
-INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 DELETE FROM game WHERE wos_id = 9000000;
 CREATE TABLE "game_release" (
 	`wos_id`	INTEGER, -- ZXDB entries.entry_id

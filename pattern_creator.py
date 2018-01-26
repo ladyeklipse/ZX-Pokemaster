@@ -23,8 +23,8 @@ class PatternCreatorDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.buttons = [
-            self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnMedia, #self.ui.btnPart,
-            self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, #self.ui.btnSide,
+            self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnMedia,
+            self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, self.ui.btnAuthor,
             self.ui.btnLetter, self.ui.btnNumberOfPlayers, self.ui.btnSlash, self.ui.btnModFlags,
             self.ui.btnFormat, self.ui.btnZXDB_ID, self.ui.btnHyphen, self.ui.btnUnderscore,
             self.ui.btnType, self.ui.btnNotes, self.ui.btnCountry, self.ui.btnOriginalName

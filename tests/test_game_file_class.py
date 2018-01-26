@@ -308,7 +308,7 @@ class GameFileTests(unittest.TestCase):
     def test_game_type(self):
         game_file = GameFile('C:\ZX Pokemaster\\tosec\\reviewed files\\CSSCGC Games Reviewed\\1997\\Advanced Advocacy Simulator (1997)(Jolly, Derek)[CSSCGC].sna')
         self.assertEqual(game_file.getTOSECDatName(), 'Sinclair ZX Spectrum - Games - [SNA]')
-        self.assertEqual(game_file.game.getGenre(), 'Unknown Games')
+        self.assertEqual(game_file.game.getGenre(), 'Various Games')
         self.assertEqual(game_file.getType(), 'Games')
 
     def test_file_length(self):
@@ -344,6 +344,11 @@ class GameFileTests(unittest.TestCase):
         file.getParamsFromTOSECPath('Saboteur II (19xx)(-)[tr ru].tap')
         file.sortModFlags()
         self.assertEqual(file.mod_flags, '[h Crudesoft ru][t][tr ru Rybkin]')
+
+    def test_multipublisher(self):
+        file = GameFile('test (19xx)(Your Sinclair - crash - Orion)')
+        file.sortPublishers()
+        self.assertEqual('crash - Orion - Your Sinclair', file.getPublisher())
 
 if __name__=='__main__':
     unittest.main()

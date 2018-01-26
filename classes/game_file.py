@@ -290,6 +290,13 @@ class GameFile(object):
         self.game.setGenreFromFilePath(path)
         self.getParamsFromTOSECPath(path)
 
+    def sortPublishers(self):
+        publisher = self.release.getPublisher()
+        if ' - ' in publisher:
+            publisher = ' - '.join(sorted(publisher.split(' - '), key=str.lower))
+            # self.game.publisher = publisher
+            self.release.publisher = publisher
+
     def getParamsFromTOSECPath(self, tosec_path):
         self.tosec_path = tosec_path
         filename = os.path.splitext(os.path.basename(tosec_path).replace('(demo)', ''))[0]
@@ -703,6 +710,9 @@ class GameFile(object):
         publisher = self.getPublisher(restrict_length=game_name_length<MAX_GAME_NAME_LENGTH)
         if publisher == '-' and not for_filename:
             publisher = 'Unknown Publisher'
+        author = self.getAuthor(restrict_length=game_name_length<MAX_GAME_NAME_LENGTH)
+        if author == '-' and not for_filename:
+            author = 'Unknown Author'
         return {
             'Type':self.getType(),
             'Genre':self.getGenre(),
@@ -710,6 +720,7 @@ class GameFile(object):
             'Letter':getWosSubfolder(game_name),
             'MachineType':self.getMachineType(),
             'Publisher':publisher,
+            'Author':author,
             'MaxPlayers':self.getMaxPlayers(),
             'GameName':game_name,
             'Country':self.getCountry(),
@@ -813,9 +824,11 @@ class GameFile(object):
         if '[aka' not in self.notes:
             aliases_search_strings = []
             game_name = self.getGameName(for_filename=True)
+            game_name = replaceRomanNumbers(game_name)
             game_name_search_string = getSearchStringFromGameName(game_name)
             aliases_search_strings.append(game_name_search_string)
             for alias in self.release.getAllAliases():
+                alias = replaceRomanNumbers(alias)
                 alias_search_string = getSearchStringFromGameName(alias)
                 if not [x for x in aliases_search_strings if x in alias_search_string or alias_search_string in x]:
                     alias = putPrefixToEnd(alias)
@@ -891,6 +904,16 @@ class GameFile(object):
                 publisher = publisher[:-1]
             publisher = ' '.join(publisher).strip()
         return publisher
+
+    def getAuthor(self, restrict_length = False):
+        author = self.game.getAuthor()
+        if restrict_length:
+            author = [x for x in author.split(' - ') if x][:3]
+            if len(author)==3 and len(author[-1])<3:
+                author = author[:-1]
+            author = ' '.join(author).strip()
+        return author
+
 
     def getMaxPlayers(self):
         result = str(self.game.number_of_players) + 'P'

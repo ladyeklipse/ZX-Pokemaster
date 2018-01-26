@@ -98,6 +98,8 @@ def putInitialsToEnd(name):
     name = remove_square_brackets_regex.sub('', name).strip()
     if name in ('Mad Max', 'Alone Coder', 'Digital Prawn'):
         return name
+    if name.startswith('The '):
+        return name[4:]+', The'
     name = name.split(' ')
     name = ' '.join([name[-1]+',']+name[:-1]).strip()
     if name.endswith(','):

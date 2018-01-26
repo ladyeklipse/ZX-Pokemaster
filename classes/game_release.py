@@ -137,7 +137,7 @@ class GameRelease(object):
             if file == new_file:
                 file.importCredentialsFromFile(new_file)
                 return
-        if new_file.game and 'Your Sinclair - Issue' not in new_file.game.name:
+        if new_file.game and 'Your Sinclair - Issue' not in new_file.game.name and 'Dizzy X' not in new_file.game.name:
             add_aka = True
             for alias in self.getAllAliases():
                 game_name = replaceRomanNumbers(new_file.game.name)

@@ -1,0 +1,16 @@
+Integrity check algorythm.
+1. Write a universal reader for Z80, SNA and SZX based on Skoolkit's code.
+2. Convert all TAP and TZX files to Z80.
+3. Detect machine type from snapshot headers.
+ - Test out converted TAP/TZX files if they contain correct machine type
+ - If machine type is generally correct, import them into lookup table to use in TOSEC
+4. Make a database of CRC hashes of uncompressed snapshots.
+ - Calculate CRC for each 1024 bytes of each snapshot.
+5. Using Levenstein algorythm, make a table of similar files.
+ - At this stage, we need to make several different tables, using different number of similarity percentage, e. g. do we regard files as similar at 80% coincidence, or maybe 70%, or even lower it down to 60%? The table with the most consistent and reliable results wins.
+ - Thus, we determine the best value of a constant - MIN_SIMILARITY. If an unknown file is very similar to an existing one, make it derive its name with [a] flag. If there are several of such files, use the one with the highest similarity value.
+7. Make another similar table, with files of very high coincidense rates (presumably 90% and higher).
+ - Files with major [a*] numbers will go into a separate set of dats - TOSEC-DUPES, which will or will not be included in TOSEC releases - as the team decides.
+ 8. Integrate all known loading screens from ZXDB in .SCR format into TOSEC.
+ 9. Extract loading screens from unknown TAP and TZX files.
+  - If an extracted loading screen is in the database, rename the tap file accordingly.

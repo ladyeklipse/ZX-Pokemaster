@@ -187,7 +187,7 @@ Q: How to stop ZX Pokemaster from creating .POK files?
 A: This easily could be an option, but it will never ever be. ZX Pokemaster is called that for a reason. I've devoted a huge amount of time to make AllTipshopPokes database and I REALLY want people to use it instead of entering pokes manually in emulators. I want people who use ZX Pokemaster and don't know what .POK files are at least look it up and maybe then they will take advantage of this awesome but very underused feature of many emulators and even DivIDE/DivMMC firmwares.
 So if you're not interested in pokes, just ignore those files - they are less than 1MB in size combined. Or you can find and remove them by the means of your operating system.
 
-Q: I know that this game is an Action game, but it went into "Unknown Games" folder when sorted by genre.
+Q: I know that this game is an Action game, but it went into "Various Games" folder when sorted by genre.
 A: The database of ZX Pokemaster is yet to be perfected and it's my primary goal for future versions. If you know for sure what that game is, you can help me by finding it on some of ZXDB-based sides, e. g. http://spectrumcomputing.co.uk/ and send me a link to it.
 
 Q: What does the logo of ZX Pokemaster mean?
@@ -261,7 +261,7 @@ https://twitter.com/lady_eklipse
 You are welcome to contact me personally via email:
 mailto:eklipse2009@gmail.com
 or write to me on Facebook:
-https://www.facebook.com/ladyeklipsegamer
+https://www.facebook.com/ladyeklipse
 or on VK.com:
 https://vk.com/lady_eklipse
 I speak Russian, English and German.

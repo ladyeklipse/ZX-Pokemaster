@@ -229,19 +229,6 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="3">
-    <widget class="QPushButton" name="btnLetter">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>First letter of game name or '123' if starts from digit</string>
-     </property>
-     <property name="text">
-      <string>{Letter}</string>
-     </property>
-    </widget>
-   </item>
    <item row="9" column="2">
     <widget class="QPushButton" name="btnFormat">
      <property name="focusPolicy">
@@ -252,32 +239,6 @@
      </property>
      <property name="text">
       <string>{Format}</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="3">
-    <widget class="QPushButton" name="btnMachineType">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>48K, 128K, +2, +2A, +3, Timex, Pentagon etc.</string>
-     </property>
-     <property name="text">
-      <string>{MachineType}</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="3">
-    <widget class="QPushButton" name="btnMedia">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>Tape 1 of 3 Side A, Disk 1 of 2 etc.</string>
-     </property>
-     <property name="text">
-      <string>{Media}</string>
      </property>
     </widget>
    </item>
@@ -330,6 +291,58 @@
      </property>
      <property name="text">
       <string>{OriginalName}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="3">
+    <widget class="QPushButton" name="btnMedia">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Tape 1 of 3 Side A, Disk 1 of 2 etc.</string>
+     </property>
+     <property name="text">
+      <string>{Media}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3">
+    <widget class="QPushButton" name="btnMachineType">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>48K, 128K, +2, +2A, +3, Timex, Pentagon etc.</string>
+     </property>
+     <property name="text">
+      <string>{MachineType}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="3">
+    <widget class="QPushButton" name="btnLetter">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>First letter of game name or '123' if starts from digit</string>
+     </property>
+     <property name="text">
+      <string>{Letter}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="3">
+    <widget class="QPushButton" name="btnAuthor">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Software publisher</string>
+     </property>
+     <property name="text">
+      <string>{Author}</string>
      </property>
     </widget>
    </item>

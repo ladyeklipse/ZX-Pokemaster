@@ -1,4 +1,5 @@
 from scripts.restore_db import *
+restoreDB()
 from classes.tosec_scraper import *
 import  unittest
 if (os.getcwd().endswith('tests')):
@@ -18,14 +19,14 @@ class TestTOSECScraper(unittest.TestCase):
 
     def test_aknadach(self):
         paths = [
-            "tosec\Sinclair ZX Spectrum\Games\[Z80]\Aknadach (1990)(Proxima Software)(cs)[128K].zip"
+            "tosec\\Sinclair ZX Spectrum\Games\[Z80]\Aknadach (1990)(Proxima Software)(cs)[128K].zip"
             ]
         self.scrape(paths, 133)
 
     def test_100_km(self):
         paths = [
-            "tosec\Sinclair ZX Spectrum\Games\[TZX]\\100 km Race (19xx)(Coyote Software).zip",
-            "tosec\Sinclair ZX Spectrum\Games\[Z80]\\100 km Race (19xx)(Coyote Software).zip"
+            "tosec\\Sinclair ZX Spectrum\Games\[TZX]\\100 km Race (19xx)(Coyote Software).zip",
+            "tosec\\Sinclair ZX Spectrum\Games\[Z80]\\100 km Race (19xx)(Coyote Software).zip"
         ]
         wos_id = 10
         self.scrape(paths, wos_id)
@@ -72,6 +73,7 @@ class TestTOSECScraper(unittest.TestCase):
         for file in game.getFiles():
             if 'Durell' in file.tosec_path:
                 self.assertEqual(file.getReleaseSeq(), 0)
+            self.assertTrue('aka Saboteur 2' not in file.notes)
 
     def test_dat_files_scraping(self):
         wos_id = 9
@@ -236,7 +238,7 @@ class TestTOSECScraper(unittest.TestCase):
         sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
         ts.db.execute(sql)
         ts.db.commit()
-        ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\mia')
+        ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\mia')
         ts.scrapeTOSEC()
         ts.updateTOSECAliasesCSV()
         ts.addUnscraped()
@@ -247,7 +249,7 @@ class TestTOSECScraper(unittest.TestCase):
     def test_getting_ext_from_zip_files(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test')
         ts.paths = ts.generateTOSECPathsArrayFromList([
-            'tosec\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
+            'tosec\\reviewed files\\itch.io\Games\Break-Space v1.1 (2017-06-14)(Blerkotron)[BASIC Jam].tap'])
         for path in ts.paths:
             print(path)
             game_file = ts.getGameFileFromFilePathDict(path)
@@ -285,7 +287,7 @@ class TestTOSECScraper(unittest.TestCase):
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache(force_reload=True)
-        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\csscgc Games test\\')
+        ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\csscgc Games test\\')
         ts.scrapeTOSEC()
         ts.addUnscraped()
         ts.db.commit()
@@ -332,6 +334,18 @@ class TestTOSECScraper(unittest.TestCase):
         game = ts.db.getGameByFileMD5('2d3b702a9cd22cb84b3cf3032fb1ef46')
         file = game.findFileByMD5('2d3b702a9cd22cb84b3cf3032fb1ef46')
         self.assertGreater(len(file.tosec_path), 0)
+
+    def testDizzyXandY(self):
+        paths = ts.generateTOSECPathsArrayFromDatFiles()
+        paths = [path for path in paths if '\Dizzy X ' in path['path']]
+        ts.paths = paths
+        ts.scrapeTOSEC()
+        ts.addUnscraped()
+        game = ts.db.getGameByWosID(1408)
+        self.assertGreater(len(game.getFiles()), 0)
+        for file in game.getFiles():
+            print(file.notes)
+            self.assertFalse('aka' in file.notes)
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

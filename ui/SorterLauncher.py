@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Sun Oct  1 19:55:59 2017
+# Created: Fri Jan 26 20:33:41 2018
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -173,6 +173,20 @@ class Ui_Dialog(object):
         self.txtLanguages.setObjectName(_fromUtf8("txtLanguages"))
         self.horizontalLayout_4.addWidget(self.txtLanguages)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_8 = QtGui.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
+        self.label_4 = QtGui.QLabel(self.tabFileFiltering)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.horizontalLayout_8.addWidget(self.label_4)
+        self.txtMaxArchiveSize = QtGui.QSpinBox(self.tabFileFiltering)
+        self.txtMaxArchiveSize.setMinimum(1)
+        self.txtMaxArchiveSize.setMaximum(10000)
+        self.txtMaxArchiveSize.setObjectName(_fromUtf8("txtMaxArchiveSize"))
+        self.horizontalLayout_8.addWidget(self.txtMaxArchiveSize)
+        self.label_5 = QtGui.QLabel(self.tabFileFiltering)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.horizontalLayout_8.addWidget(self.label_5)
+        self.verticalLayout.addLayout(self.horizontalLayout_8)
         self.chkIncludeAlternate = QtGui.QCheckBox(self.tabFileFiltering)
         self.chkIncludeAlternate.setObjectName(_fromUtf8("chkIncludeAlternate"))
         self.verticalLayout.addWidget(self.chkIncludeAlternate)
@@ -200,22 +214,30 @@ class Ui_Dialog(object):
         self.chkIncludeSupplementaryFiles.setChecked(True)
         self.chkIncludeSupplementaryFiles.setObjectName(_fromUtf8("chkIncludeSupplementaryFiles"))
         self.verticalLayout.addWidget(self.chkIncludeSupplementaryFiles)
+        self.chkIncludeUnknownFiles = QtGui.QCheckBox(self.tabFileFiltering)
+        self.chkIncludeUnknownFiles.setChecked(True)
+        self.chkIncludeUnknownFiles.setTristate(False)
+        self.chkIncludeUnknownFiles.setObjectName(_fromUtf8("chkIncludeUnknownFiles"))
+        self.verticalLayout.addWidget(self.chkIncludeUnknownFiles)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
-        self.verticalLayout.setStretch(2, 1)
         self.verticalLayout.setStretch(3, 1)
         self.verticalLayout.setStretch(4, 1)
         self.verticalLayout.setStretch(5, 1)
         self.verticalLayout.setStretch(6, 1)
         self.verticalLayout.setStretch(7, 1)
-        self.verticalLayout.setStretch(9, 1)
+        self.verticalLayout.setStretch(8, 1)
+        self.verticalLayout.setStretch(11, 1)
         self.tabWidget.addTab(self.tabFileFiltering, _fromUtf8(""))
         self.tabAbout = QtGui.QWidget()
         self.tabAbout.setObjectName(_fromUtf8("tabAbout"))
-        self.textEdit = QtGui.QTextEdit(self.tabAbout)
-        self.textEdit.setGeometry(QtCore.QRect(20, 10, 441, 331))
-        self.textEdit.setStyleSheet(_fromUtf8("background-color: transparent;"))
-        self.textEdit.setObjectName(_fromUtf8("textEdit"))
+        self.textBrowser = QtGui.QTextBrowser(self.tabAbout)
+        self.textBrowser.setGeometry(QtCore.QRect(20, 10, 441, 331))
+        self.textBrowser.setStyleSheet(_fromUtf8("background-color: transparent;"))
+        self.textBrowser.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextBrowserInteraction|QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
+        self.textBrowser.setOpenExternalLinks(True)
+        self.textBrowser.setOpenLinks(True)
+        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.btnReadme = QtGui.QPushButton(self.tabAbout)
         self.btnReadme.setGeometry(QtCore.QRect(20, 350, 241, 28))
         self.btnReadme.setObjectName(_fromUtf8("btnReadme"))
@@ -283,6 +305,8 @@ class Ui_Dialog(object):
         self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx", None))
         self.label_3.setText(_translate("Dialog", "Languages:", None))
         self.txtLanguages.setPlaceholderText(_translate("Dialog", "en,es,ru,pl,cz,fr,de,nl,hu,cr,pl,sr,sl,sv,no", None))
+        self.label_4.setText(_translate("Dialog", "Max archive size to look into:", None))
+        self.label_5.setText(_translate("Dialog", "MB", None))
         self.chkIncludeAlternate.setText(_translate("Dialog", "Include alternate files (marked [a] in TOSEC)", None))
         self.chkIncludeDemos.setText(_translate("Dialog", "Include demos (non-full versions of games)", None))
         self.chkIncludeRereleases.setText(_translate("Dialog", "Include re-releases", None))
@@ -292,27 +316,29 @@ class Ui_Dialog(object):
         self.chkIncludeXRated.setText(_translate("Dialog", "Include x-rated games", None))
         self.chkIncludeSupplementaryFiles.setToolTip(_translate("Dialog", "If a ZX Spectrum file has got other files with the same name in the same folder or in a subfolder, include those as well. May be handy tor maps, manuals etc.", None))
         self.chkIncludeSupplementaryFiles.setText(_translate("Dialog", "Include supplementary files (Warning: may be slow!)", None))
+        self.chkIncludeUnknownFiles.setText(_translate("Dialog", "Include files which are not in database", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFileFiltering), _translate("Dialog", "File filtering", None))
-        self.textEdit.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Brought to you by Helga Iliashenko aka Lady Eklipse</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">with the sencere feelings to the ZX Spectrum community.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For those willing to support ZX Pokemaster, please consider donating:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">BitCoin: </span><a href=\"bitcoin:1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9</span></a></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">LiteCoin: </span><a href=\"litecoin:Laugnn4XqAUEZ8FSvJvLW3n62BuFHhgraT\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Laugnn4XqAUEZ8FSvJvLW3n62BuFHhgraT</span></a></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Etherium: 0xF60Dc0c3d32b12Ae02A68723Af9133AD1938a178</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Special thanks to:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Anna Soloviova for moral support;</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Gerard Sweeney for www.the-tipshop.co.uk;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Gerard Sweeney for </span><a href=\"http://www.the-tipshop.co.uk\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">www.the-tipshop.co.uk</span></a><span style=\" font-size:8pt;\">;</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Einar Saukas for ZXDB;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Peter Jones for </span><a href=\"https://spectrumcomputing.co.uk\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">spectrumcomputing.co.uk</span></a><span style=\" font-size:8pt;\">;</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">D. Kampschulte aka Der Eratosthenes for beta testing;</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">blinkydoos for beta testing;</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The TOSEC team, especially:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">gorski,</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">maddog,</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">dziuber,</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">panda</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">and others.</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The </span><a href=\"https://www.tosecdev.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">TOSEC</span></a><span style=\" font-size:8pt;\"> team, especially:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">gorski, maddog, dziuber, duncantwain, mictlantecuhtle, panda and others.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
         self.btnReadme.setText(_translate("Dialog", "View README", None))

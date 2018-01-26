@@ -107,8 +107,7 @@ class Game(object):
             md5 = file.getMD5()
             if md5 in lookup_table:
                 file.notes = lookup_table[md5]
-            else:
-                file.setAka()
+            file.setAka()
             file.setReRelease()
             if 'Covertape' in file.notes:
                 covertape_comment = '[{} Covertape]'.format(file.release.getPublisher())
@@ -185,7 +184,7 @@ class Game(object):
         elif 'documentation' in path:
             self.genre = 'Documentation'
         elif 'games' in path:
-            self.genre = 'Unknown Games'
+            self.genre = 'Various Games'
 
     def getGenre(self):
         return self.genre if self.genre else 'Unknown'
@@ -200,7 +199,18 @@ class Game(object):
         return str(self.year) if self.year else '19xx'
 
     def getPublisher(self):
-        return self.publisher if self.publisher else '-'
+        if self.publisher:
+            return self.publisher
+        elif self.author:
+            return self.author
+        else:
+            return '-'
+
+    def getAuthor(self):
+        if self.author:
+            return self.author
+        else:
+            return '-'
 
     def setAvailability(self, value):
         self.availability = value

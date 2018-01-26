@@ -41,13 +41,13 @@ class Sorter():
         self.max_files_per_folder = kwargs.get('max_files_per_folder', None)
         self.output_folder_structure = kwargs.get('output_folder_structure', '')
         self.output_filename_structure = kwargs.get('output_filename_structure', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
-        self.delete_original_files = kwargs.get('delete_original_files', False)
-        self.ignore_alternate = kwargs.get('ignore_alternate', True)
-        self.ignore_alternate_formats = kwargs.get('ignore_alternate_formats', False)
-        self.ignore_rereleases = kwargs.get('ignore_rereleases', False)
-        self.ignore_hacks = kwargs.get('ignore_hacks', False)
-        self.ignore_xrated = kwargs.get('ignore_xrated', False)
-        self.ignore_bad_dumps = kwargs.get('ignore_bad_dumps', True)
+        # self.delete_original_files = kwargs.get('delete_original_files', False) #YAGNI
+        self.include_alternate = kwargs.get('include_alternate', False)
+        self.include_alternate_formats = kwargs.get('include_alternate_formats', True)
+        self.include_rereleases = kwargs.get('include_rereleases', True)
+        self.include_hacks = kwargs.get('include_hacks', True)
+        self.include_xrated = kwargs.get('include_xrated', True)
+        self.include_bad_dumps = kwargs.get('include_bad_dumps', False)
         self.include_supplementary_files = kwargs.get('include_supplementary_files', False)
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
@@ -78,9 +78,9 @@ class Sorter():
         print('Got', len(self.input_files), 'raw input files')
         self.collected_files = self.collectFiles(self.input_files)
         print('Files collected')
-        if self.ignore_hacks or \
-            self.ignore_alternate or \
-            self.ignore_rereleases or \
+        if not self.include_hacks or \
+            not self.include_alternate or \
+            not self.include_rereleases or \
             self.languages:
             self.filterCollectedFiles()
         if self.max_files_per_folder:
@@ -280,20 +280,20 @@ class Sorter():
         for game_name, files in self.collected_files.items():
             min_release = min([file.getReleaseSeq() for file in files])
             for i, file in enumerate(files):
-                if self.ignore_rereleases and file.getReleaseSeq()>min_release:
+                if not self.include_rereleases and file.getReleaseSeq()>min_release:
                     self.collected_files[game_name][i] = None
-                if self.ignore_alternate and file.isAlternate():
+                if not self.include_alternate and file.isAlternate():
                     self.collected_files[game_name][i] = None
-                if self.ignore_hacks and file.isHack():
+                if not self.include_hacks and file.isHack():
                     self.collected_files[game_name][i] = None
-                if self.ignore_bad_dumps and file.isBadDump():
+                if not self.include_bad_dumps and file.isBadDump():
                     self.collected_files[game_name][i] = None
-                if self.ignore_xrated and file.isXRated():
+                if not self.include_xrated and file.isXRated():
                     self.collected_files[game_name][i] = None
                 if self.languages and file.getLanguage() not in self.languages:
                     self.collected_files[game_name][i] = None
             files = [file for file in files if file]
-            if self.ignore_alternate_formats and files and game_name:
+            if not self.include_alternate_formats and files and game_name:
                 self.collected_files[game_name] = self.filterOutAlternateFormats(files)
         return self.collected_files
 

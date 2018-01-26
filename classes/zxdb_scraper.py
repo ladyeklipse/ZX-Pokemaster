@@ -118,8 +118,9 @@ class ZXDBScraper():
               'aliases.idiom_id AS alt_language, ' \
               'publisher_labels.name AS publisher, ' \
               'publisher_labels.is_company AS publisher_is_company, ' \
-              'author_labels.name AS author, ' \
-              'author_labels.is_company AS author_is_company, ' \
+              'IF(author_team_labels.name IS NOT NULL, author_team_labels.name, author_labels.name) AS author, ' \
+              'IF(author_team_labels.name IS NOT NULL, author_team_labels.is_company, author_labels.is_company) AS author_is_company, ' \
+              'author_team_labels.name AS author_team,' \
               'releases.release_year AS year,' \
               'publisher_labels.country_id AS country ' \
               'FROM entries ' \
@@ -130,6 +131,7 @@ class ZXDBScraper():
               'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
               'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
               'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id ' \
+              'LEFT JOIN labels AS author_team_labels ON author_team_labels.id=authors.team_id ' \
               'LEFT JOIN aliases ON aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq ' \
               'LEFT JOIN filetypes ON downloads.filetype_id=filetypes.id ' \
               'LEFT JOIN formattypes ON downloads.formattype_id=formattypes.id ' \
@@ -148,7 +150,6 @@ class ZXDBScraper():
         release = GameRelease()
         games = []
         for row in self.cur:
-            print(row['publisher'])
             #Skipping ZX80/ZX81 files
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
@@ -162,18 +163,24 @@ class ZXDBScraper():
             if row['release_seq'] and row['release_seq']!=release.release_seq:
                 release = self.releaseFromRow(row, game)
                 game.addRelease(release)
-            if game.publisher and row['publisher'] and game.raw_publisher and row['publisher'] not in game.raw_publisher:
+            if release.release_seq==0 and game.publisher and row['publisher'] and game.raw_publisher and row['publisher'] not in game.raw_publisher:
                 game.raw_publisher.append(row['publisher'])
                 publisher = self.publisherNameFromRow(row)
                 publishers = game.publisher.split(' - ')
                 publishers.append(publisher)
-                game.publisher = ' - '.join(sorted(publishers))
+                game.publisher = ' - '.join(sorted(publishers, key=str.lower))
+            if release.publisher and row['publisher'] and row['publisher'] not in release.raw_publisher:
+                release.raw_publisher.append(row['publisher'])
+                publisher = self.publisherNameFromRow(row)
+                release_publishers = release.publisher.split(' - ')
+                release_publishers.append(publisher)
+                release.publisher = ' - '.join(sorted(release_publishers, key=str.lower))
             if game.author and row['author'] and game.raw_author and row['author'] not in game.raw_author:
                 game.raw_author.append(row['author'])
                 author = self.authorNameFromRow(row)
                 authors = game.author.split(' - ')
                 authors.append(author)
-                game.author = ' - '.join(sorted(authors))
+                game.author = ' - '.join(sorted(authors, key = str.lower))
             if row['file_link'] and not (row['file_link'].endswith('.mlt')):
                 if row['file_type']=='Loading screen':
                     if row['file_format']=='Picture':
@@ -272,6 +279,7 @@ class ZXDBScraper():
                               row['country'],
                               game,
                               [release_name])
+        release.raw_publisher = [row['publisher']]
         if release.release_seq>0:
             release.addAlias(game.name)
         return release
@@ -284,7 +292,10 @@ class ZXDBScraper():
 
     def authorNameFromRow(self, row):
         if row['author_is_company'] in (None, 1):
-            return putPrefixToEnd(row['author'])
+            author = putPrefixToEnd(row['author'])
+            if row['author_is_company']:
+                author = publisher_regex.sub('', author)
+            return author.strip()
         elif row['author_is_company'] == 0:
             return putInitialsToEnd(row['author'])
 

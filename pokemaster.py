@@ -180,11 +180,11 @@ class MainDialog(QDialog):
             'output_folder_structure':output_folder_structure,
             'output_filename_structure':output_filename_structure,
             'max_files_per_folder':self.getMaxFilesPerFolder(),
-            'ignore_alternate':not self.ui.chkIncludeAlternate.isChecked(),
-            'ignore_alternate_formats':not self.ui.chkIncludeAlternateFileFormats.isChecked(),
-            'ignore_rereleases':not self.ui.chkIncludeRereleases.isChecked(),
-            'ignore_hacks':not self.ui.chkIncludeHacked.isChecked(),
-            'ignore_xrated':not self.ui.chkIncludeXRated.isChecked(),
+            'include_alternate':self.ui.chkIncludeAlternate.isChecked(),
+            'include_alternate_formats':self.ui.chkIncludeAlternateFileFormats.isChecked(),
+            'include_rereleases':self.ui.chkIncludeRereleases.isChecked(),
+            'include_hacks':self.ui.chkIncludeHacked.isChecked(),
+            'include_xrated':self.ui.chkIncludeXRated.isChecked(),
             'include_supplementary_files':self.ui.chkIncludeSupplementaryFiles.isChecked(),
             'use_camel_case':self.ui.chkCamelCase.isChecked(),
             'short_filenames':self.ui.chkShortFilenames.isChecked(),
@@ -273,11 +273,12 @@ class MainDialog(QDialog):
                   self.getDefaultLanguages())))
                 self.ui.chkCamelCase.setChecked(settings.get('use_camel_case', False))
                 self.ui.chkShortFilenames.setChecked(settings.get('short_filenames', False))
-                self.ui.chkIncludeAlternate.setChecked(not settings.get('ignore_alternate', True))
-                self.ui.chkIncludeAlternateFileFormats.setChecked(not settings.get('ignore_alternate_formats', False))
-                self.ui.chkIncludeRereleases.setChecked(not settings.get('ignore_rereleases', False))
-                self.ui.chkIncludeHacked.setChecked(not settings.get('ignore_hacks', False))
-                self.ui.chkIncludeXRated.setChecked(not settings.get('ignore_xrated', False))
+                self.ui.chkIncludeAlternate.setChecked(not settings.get('include_alternate', False))
+                self.ui.chkIncludeAlternateFileFormats.setChecked(not settings.get('include_alternate_formats', True))
+                self.ui.chkIncludeRereleases.setChecked(not settings.get('include_rereleases', True))
+                self.ui.chkIncludeHacked.setChecked(settings.get('include_hacks', True))
+                self.ui.chkIncludeXRated.setChecked(settings.get('include_xrated', True))
+                self.ui.chkIncludeUnknownFiles.setChecked(settings.get('include_unknown_files', True))
                 self.ui.chkIncludeSupplementaryFiles.setChecked(settings.get('include_supplementary_files', False))
                 self.ui.chkPlacePokFilesIntoPOKESSubfolders.setChecked(settings.get('place_pok_files_in_pokes_subfolders', True))
                 if settings.get('max_files_per_folder') and \
