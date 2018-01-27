@@ -143,25 +143,6 @@ class GameFile(object):
     def countAlternateDumpsIn(self, collection=[]):
         count = 0
         for other_file in collection:
-            # if self.game.wos_id==other_file.game.wos_id and \
-            #     self.game.name==other_file.game.name and \
-            #     self.getYear()==other_file.getYear() and \
-            #     self.getPublisher()==other_file.getPublisher() and \
-            #     self.getReleaseSeq() == other_file.getReleaseSeq() and \
-            #     self.getMachineType() == other_file.getMachineType() and \
-            #     self.getMedia() == other_file.getMedia() and \
-            #     self.getLanguage() == other_file.getLanguage() and \
-            #     self.mod_flags == other_file.mod_flags and \
-            #     self.is_demo == other_file.is_demo and \
-            #     self.getContentDesc() == other_file.getContentDesc() and \
-            #     self.format == other_file.format and \
-            #     self.getNotes() == other_file.getNotes():
-            #     count += 1
-
-            # if self.game.wos_id != other_file.game.wos_id:
-            #     continue
-            # if self.getGameName().lower()!=other_file.getGameName().lower():
-            #     continue
             if self.game.name != other_file.game.name:
                 continue
             if self.getYear() != other_file.getYear():
@@ -217,6 +198,10 @@ class GameFile(object):
             dir_path = os.path.split(dest[0])
             self.alt_dest = os.path.join(dir_path[0],
                                          dir_path[1][:(8-len(alt_mod_flag))]+alt_mod_flag+dest[1])
+        elif not self.game.wos_id:
+            dir_path = os.path.split(dest[0])
+            alt_mod_flag = '_'+str(copies_count+1)
+            self.alt_dest = os.path.join(dir_path[0], dir_path[1]+alt_mod_flag+dest[1])
         elif tosec_compliant:
             if copies_count == 1:
                 self.alt_mod_flag = '[a]'
@@ -232,7 +217,7 @@ class GameFile(object):
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
 
     def isAlternate(self):
-        if self.is_alternate:
+        if self.game.wos_id and self.is_alternate:
             return True
         else:
             return False

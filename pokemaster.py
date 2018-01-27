@@ -187,7 +187,8 @@ class MainDialog(QDialog):
             'include_xrated':self.ui.chkIncludeXRated.isChecked(),
             'include_supplementary_files':self.ui.chkIncludeSupplementaryFiles.isChecked(),
             'include_unknown_files':self.ui.chkIncludeUnknownFiles.isChecked(),
-            'separate_unknown_files':self.ui.chkSeparateUknownFiles.isChecked(),
+            'separate_unknown_files':self.ui.chkSeparateUnknownFiles.isChecked(),
+            'retain_relative_structure':self.ui.chkRetainFoldersForUnknownFiles.isChecked(),
             'max_archive_size':self.ui.txtMaxArchiveSize.value(),
             'use_camel_case':self.ui.chkCamelCase.isChecked(),
             'short_filenames':self.ui.chkShortFilenames.isChecked(),
@@ -283,6 +284,7 @@ class MainDialog(QDialog):
                 self.ui.chkIncludeXRated.setChecked(settings.get('include_xrated', True))
                 self.ui.chkIncludeUnknownFiles.setChecked(settings.get('include_unknown_files', True))
                 self.ui.chkSeparateUnknownFiles.setChecked(settings.get('separate_unknown_files', True))
+                self.ui.chkRetainFoldersForUnknownFiles.setChecked(settings.get('retain_relative_structure', False))
                 self.ui.chkIncludeSupplementaryFiles.setChecked(settings.get('include_supplementary_files', False))
                 self.ui.chkPlacePokFilesIntoPOKESSubfolders.setChecked(settings.get('place_pok_files_in_pokes_subfolders', True))
                 self.ui.txtMaxArchiveSize.setValue(settings.get('max_archive_size', 1))

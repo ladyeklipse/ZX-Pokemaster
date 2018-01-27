@@ -50,6 +50,7 @@ class Sorter():
         self.include_bad_dumps = kwargs.get('include_bad_dumps', False)
         self.include_unknown_files = kwargs.get('include_unknown_files', True)
         self.separate_unknown_files = kwargs.get('separate_unknown_files', True)
+        self.retain_relative_structure = kwargs.get('retain_relative_structure', False)
         self.include_supplementary_files = kwargs.get('include_supplementary_files', False)
         self.max_archive_size = int(kwargs.get('max_archive_size', 1))*1024*1024
         self.short_filenames = kwargs.get('short_filenames', False)
@@ -97,6 +98,7 @@ class Sorter():
 
     def checkOutputPath(self):
         gf = GameFile('test.tap')
+        gf.game.wos_id = 9999999
         try:
             self.getDestination(gf)
             return True
@@ -155,7 +157,10 @@ class Sorter():
                 else:
                     if game_file in collected_files[game_name]:
                         continue
-                    copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
+                    if game_file.game.wos_id:
+                        copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
+                    else:
+                        copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
                     if not tosec_compliant:
                         copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
                     game_file.addAlternateModFlag(copies_count,
@@ -265,6 +270,11 @@ class Sorter():
                 kwargs['Type'] not in ['Applications', 'Games']:
                 structure = structure.replace('{Genre}', '')
             dest_dir = structure.format(**kwargs)
+        elif not game_file.game.wos_id and self.retain_relative_structure:
+            original_path = os.path.dirname(game_file.src)
+            for path in self.input_locations:
+                original_path = original_path.replace(path, '')
+            dest_dir = 'Unknown Files\\' + original_path
         else:
             dest_dir = 'Unknown Files'
         if game_file.game.wos_id:

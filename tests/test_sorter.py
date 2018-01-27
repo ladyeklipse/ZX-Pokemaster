@@ -177,7 +177,23 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         self.assertFileExists('tests/files/sort_unknown_files_out/Unknown Files/Треугольник (2017).tap')
         self.assertFileExists('tests/files/sort_unknown_files_out/Unknown Files/AlchNews 01 (1991)(Alchemist Research).z80')
+        self.assertFileExists('tests/files/sort_unknown_files_out/Unknown Files/AlchNews 01 (1991)(Alchemist Research)_2.z80')
         self.assertEqual(len(s.errors), 0)
+
+    def test_retain_relative_structure(self):
+        s = Sorter(input_locations=['tests/files/sort_unknown_files_in'],
+                   output_location='tests/files/sort_unknown_files_out_3',
+                   output_folder_structure='{Genre}/{Publisher}/{Language}/{Year}',
+                   formats_preference=['tap', 'z80', 'dsk', 'trd'],
+                   include_unknown_files=True,
+                   separate_unknown_files=True,
+                   retain_relative_structure=True,
+                   cache=False)
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_unknown_files_out_3/Unknown Files/Треугольник (2017).tap')
+        self.assertFileExists('tests/files/sort_unknown_files_out_3/Unknown Files/relative_structure/AlchNews 01 (1991)(Alchemist Research).z80')
 
 
     def test_doublesided_archive(self):
