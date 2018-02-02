@@ -868,6 +868,34 @@ class TestSorter(unittest.TestCase):
                         ]
         self.assertFilesWithCRCsExist(expected_crc, s.output_location)
 
+    def test_max_archive_size(self):
+        s= Sorter(cache=False)
+        s.input_locations = [
+            'tests/files/sort_max_archive_in/',
+        ]
+        s.output_location = 'tests/files/sort_max_archive_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.max_archive_size = 1*1024*1024
+        s.sortFiles()
+        self.assertFileNotExists('tests/files/sort_max_archive_out/Accelerator (1984)(Century City).z80')
+        s.max_archive_size = 5*1024*1024
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_max_archive_out/Accelerator (1984)(Century City).z80')
+
+    def test_other_archives(self):
+        s = Sorter(cache=False)
+        s.input_locations = [
+            'tests/files/sort_other_archives_in/',
+        ]
+        s.output_location = 'tests/files/sort_other_archives_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_other_archives_out/Zaxxon (1985)(US Gold).tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Kosov, Sergey - Marco Antonio del Campo - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).tap')
+
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)
         expected_crc_found = 0

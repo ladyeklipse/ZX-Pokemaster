@@ -140,7 +140,8 @@ class ZXDBScraper():
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
-              '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1)'
+              '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) and '\
+              'authors.author_seq<=3'
         if sql_where:
             sql += sql_where+' '
         sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
