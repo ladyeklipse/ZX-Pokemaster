@@ -7,6 +7,7 @@ import re
 import os
 import sqlite3
 import traceback
+import pickle
 
 SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game.wos_id AS wos_id, ' \
@@ -29,11 +30,15 @@ class Database():
     cache_by_wos_id = {}
     cache_by_name = {}
     cache_by_md5 = {}
+    cache_by_crc32 = {}
     game_name_aliases = {}
     publisher_aliases = {}
 
     def __init__(self):
-        self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
+        if os.path.exists(POKEMASTER_DB_PATH):
+            self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
+        else:
+            self.conn = sqlite3.connect(POKEMASTER_MIN_DB_PATH)
         # self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
@@ -42,13 +47,48 @@ class Database():
     def execute(self, sql, params=[]):
         return self.cur.execute(sql, params).fetchall()
 
+    # This has proved to be inefficient
+    # def loadCacheFromDisk(self):
+    #     with open(DB_DISK_CACHE_FILE, 'rb') as f:
+    #         caches = pickle.load(f)
+    #     self.cache_by_wos_id = caches['cache_by_wos_id']
+    #     self.cache_by_name = caches['cache_by_name']
+    #     self.cache_by_md5 = caches['cache_by_md5']
+    #     self.cache_by_crc32 = caches['cache_by_crc32']
+
+    # def saveDiskCache(self):
+    #     if not len(self.cache_by_crc32):
+    #         self.loadCache()
+    #     caches = {
+    #         'cache_by_wos_id':self.cache_by_wos_id,
+    #         'cache_by_name':self.cache_by_name,
+    #         'cache_by_md5':self.cache_by_md5,
+    #         'cache_by_crc32':self.cache_by_crc32
+    #     }
+    #     for game in self.cache_by_wos_id.values():
+    #         for file in game.getFiles():
+    #             file.wos_name = None
+    #             file.wos_path = None
+    #             file.tosec_path = None
+    #         for release in game.releases:
+    #             release.loading_screen_gif_filepath = None
+    #             release.loading_screen_scr_filepath = None
+    #             release.manual_filepath = None
+    #             release.modded_by = None
+    #     with open(DB_DISK_CACHE_FILE, 'wb') as f:
+    #         pickle.dump(caches, f)
+
     def loadCache(self, force_reload=False):
         if force_reload:
             self.cache_by_wos_id = {}
             self.cache_by_name = {}
             self.cache_by_md5 = {}
-        if self.cache_by_name and self.cache_by_md5 and self.cache_by_wos_id:
+            self.cache_by_crc32 = {}
+        if len(self.cache_by_md5):
             return
+        # if os.path.exists(DB_DISK_CACHE_FILE):
+        #     self.loadCacheFromDisk()
+        #     return
         print('started loading cache')
         games = self.getAllGames()
         print('got ', len(games), 'games')
@@ -67,6 +107,9 @@ class Database():
                     self.cache_by_name[name].append(game)
             for file in release.files:
                 self.cache_by_md5[file.md5]=game
+                if not self.cache_by_crc32.get(file.crc32):
+                    self.cache_by_crc32[file.crc32] = []
+                self.cache_by_crc32[file.crc32].append(game)
 
     def loadLookupTables(self):
         with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
@@ -126,17 +169,17 @@ class Database():
                       release.year,
                       release.publisher,
                       release.country,
-                      release.modded_by,
-                      release.ingame_screen_gif_filepath,
-                      release.ingame_screen_gif_filesize,
-                      release.ingame_screen_scr_filepath,
-                      release.ingame_screen_scr_filesize,
-                      release.loading_screen_gif_filepath,
-                      release.loading_screen_gif_filesize,
-                      release.loading_screen_scr_filepath,
-                      release.loading_screen_scr_filesize,
-                      release.manual_filepath,
-                      release.manual_filesize
+                      # release.modded_by,
+                      # release.ingame_screen_gif_filepath,
+                      # release.ingame_screen_gif_filesize,
+                      # release.ingame_screen_scr_filepath,
+                      # release.ingame_screen_scr_filesize,
+                      # release.loading_screen_gif_filepath,
+                      # release.loading_screen_gif_filesize,
+                      # release.loading_screen_scr_filepath,
+                      # release.loading_screen_scr_filesize,
+                      # release.manual_filepath,
+                      # release.manual_filesize
                       ]
             sql = "INSERT OR REPLACE INTO game_release VALUES " \
                   "({})".format(','.join(['?'] * len(values)))
@@ -306,12 +349,25 @@ class Database():
         raw_data = self.cur.execute(sql, [wos_id]).fetchall()
         return self.gameFromRawData(raw_data)
 
+
     def getGameByFile(self, file):
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
         if not game:
             game = self.getGameByFilePath(file.getPath())
         return game
+
+    def getGameByFileCRC32(self, crc32):
+        if self.cache_by_crc32:
+            return self.cache_by_crc32[crc32]
+        sql = SELECT_GAME_SQL_START
+        sql += 'WHERE game_file.crc32 IN ' \
+               '(SELECT crc32 FROM game_file ' \
+               'WHERE game_file.crc32="{}")'.format(crc32)
+        sql += SELECT_GAME_SQL_END
+        print(sql)
+        raw_data = self.cur.execute(sql).fetchall()
+        return self.getGamesFromRawData(raw_data)
 
     def getGameByFileMD5(self, md5, zipped=False):
         if self.cache_by_md5:
@@ -346,16 +402,17 @@ class Database():
         game.setYear(row['year'])
         game.setGenre(row['genre'])
         game.setNumberOfPlayers(row['number_of_players'])
-        game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])
         game.x_rated = row['x_rated']
         game.addRelease(self.releaseFromRow(row, game))
-        game.tipshop_page = row['tipshop_page']
+        if 'multiplayer_type' in row:
+            game.setMultiplayerType(row['multiplayer_type'])
+            game.tipshop_page = row['tipshop_page']
+            game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
         if game.tipshop_page or row['pok_file_contents']:
             game.importPokFile(text=str(row['pok_file_contents']))
-            game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
         if row['md5']:
             file = self.fileFromRow(row)
             game.addFile(file)
@@ -369,17 +426,17 @@ class Database():
                               row['release_publisher'],
                               row['release_country'],
                               game)
-        release.modded_by = row['modded_by']
-        release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
-        release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
-        release.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
-        release.ingame_screen_scr_size = row['ingame_screen_scr_filesize']
-        release.loading_screen_gif_filepath = row['loading_screen_gif_filepath']
-        release.loading_screen_gif_size = row['loading_screen_gif_filesize']
-        release.loading_screen_scr_filepath = row['loading_screen_scr_filepath']
-        release.loading_screen_scr_size = row['loading_screen_scr_filesize']
-        release.manual_filepath = row['manual_filepath']
-        release.manual_size = row['manual_filesize']
+        # release.modded_by = row.get('modded_by')
+        # release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
+        # release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
+        # release.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
+        # release.ingame_screen_scr_size = row['ingame_screen_scr_filesize']
+        # release.loading_screen_gif_filepath = row['loading_screen_gif_filepath']
+        # release.loading_screen_gif_size = row['loading_screen_gif_filesize']
+        # release.loading_screen_scr_filepath = row['loading_screen_scr_filepath']
+        # release.loading_screen_scr_size = row['loading_screen_scr_filesize']
+        # release.manual_filepath = row['manual_filepath']
+        # release.manual_size = row['manual_filesize']
         if row['aliases']:
             aliases = row['aliases'].split('/')
             release.aliases = aliases
@@ -390,10 +447,11 @@ class Database():
         if not row['md5']:
             return None
         file = GameFile()
-        file.wos_name = row['wos_name']
-        file.wos_path = row['wos_path']
+        if 'wos_name' in row:
+            file.wos_name = row['wos_name']
+            file.wos_path = row['wos_path']
+            file.tosec_path = row['tosec_path']
         file.format = row['format']
-        file.tosec_path = row['tosec_path']
         file.size = row['size']
         file.content_desc = row['content_desc']
         file.release_date = row['release_date']

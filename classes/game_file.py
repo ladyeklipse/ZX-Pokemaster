@@ -41,6 +41,7 @@ class GameFile(object):
     size_zipped = 0
     md5 = ''
     crc32 = ''
+    has_crc32_duplicate = False
     sha1 = ''
     src=''
     dest=''

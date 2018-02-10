@@ -262,7 +262,7 @@ class ZXDBScraper():
         game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
         game.setNumberOfPlayers(row['number_of_players'])
-        game.setMultiplayerType(row['multiplayer_type'])
+        # game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
         game.setLanguage(row['language'])
         game.setAvailability(row['availability'])

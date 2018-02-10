@@ -229,15 +229,20 @@ class Sorter():
                             continue
                         game_file = GameFile(file_path)
                         game_file.format = zfext
-                        game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:]
-                        unzipped_file = zf.read(zfname)
-                        unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
-                        game_file.md5 = unzipped_file_md5
-                        game = db.getGameByFileMD5(unzipped_file_md5)
-                        if game:
+                        game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
+                        games = db.getGameByFileCRC32(game_file.crc32)
+                        if len(games)>1:
+                            unzipped_file = zf.read(zfname)
+                            unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
+                            game_file.md5 = unzipped_file_md5
+                            game = db.getGameByFileMD5(unzipped_file_md5)
                             game_file = game.findFileByMD5(unzipped_file_md5)
                             game_file.release = game.releases[game_file.release_seq]
-                            game_file.tosec_path = None
+                            game_file.has_crc32_duplicate = True
+                        elif len(games)==1:
+                            game = games[0]
+                            game_file = game.findFileByCRC32(game_file.crc32)
+                            game_file.release = game.releases[game_file.release_seq]
                         else:
                             game_file.zfname = zfname
                             self.files_not_in_database.append(game_file)
@@ -438,8 +443,12 @@ class Sorter():
         with zipfile.ZipFile(game_file.src) as zf:
             for zfname in zf.namelist():
                 crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
-                if crc32 == game_file.crc32.zfill(8):
+                if crc32 == game_file.getCRC32():
                     data = zf.read(zfname)
+                    if game_file.has_crc32_duplicate:
+                        zipped_md5 = hashlib.md5(data).hexdigest()
+                        if game_file.md5!=zipped_md5:
+                            continue
                     dest = game_file.getDestPath()
                     try:
                         os.makedirs(os.path.dirname(dest), exist_ok=True)

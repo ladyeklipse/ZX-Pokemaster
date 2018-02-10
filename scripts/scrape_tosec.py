@@ -21,3 +21,4 @@ ts.addUnscraped()
 ts.db.commit()
 import scripts.check_zxdb_tosec_inconsistencies
 import scripts.create_tosec_dats
+import scripts.minify_database

@@ -86,7 +86,7 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 
-    def  test_picking_best_candidate(self):
+    def test_picking_best_candidate(self):
         s = Sorter(input_locations=['tests/files/sort_best_candidates_in'],
                    output_location='tests/files/sort_best_candidates_out',
                    output_folder_structure='',
@@ -896,6 +896,19 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Kosov, Sergey - Marco Antonio del Campo - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
         self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).tap')
 
+    def test_crc_collision_zip(self):
+        s = Sorter(cache=False)
+        s.input_locations = [
+            'tests/files/sort_crc_collision_zip_in/',
+        ]
+        s.output_location = 'tests/files/sort_crc_collision_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
+        self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 01 (1996-01-31)(Vozrazhdenie)(RU)[Omsk].udi')
+
+
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)
         expected_crc_found = 0
@@ -917,7 +930,10 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(file_path))
 
 if __name__=='__main__':
+    os.rename('pokemaster.db', '_pokemaster.db')
     unittest.main()
+    if os.path.exists('_pokemaster.db'):
+        os.rename('_pokemaster.db', 'pokemaster.db')
     # t = TestSorter()
     # t.test_alt_files()
     # t.test_same_name()

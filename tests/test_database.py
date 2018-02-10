@@ -5,6 +5,7 @@ from classes.zxdb_scraper import ZXDBScraper
 from functions.game_name_functions import *
 from classes.tipshop_scraper import TipshopScraper
 import  unittest
+import time
 if (os.getcwd().endswith('tests')):
     os.chdir('..')
 
@@ -208,6 +209,23 @@ class TestDatabase(unittest.TestCase):
         output_name = game_file.getOutputName(pattern)
         self.assertEqual(output_name, 'Souls (2013) (Retrobytes Productions) (48K).tap')
         game_file = GameFile('ftp/pub/sinclair/games/s/Souls.tzx.zip')
+
+    def test_disk_cache(self):
+        time_start = time.clock()
+        db.loadCache()
+        print('Loaded cache from sql in ', time.clock()-time_start)
+        # db.saveDiskCache()
+        db.cache_by_crc32, db.cache_by_wos_id, db.cache_by_name, db.cache_by_md5 = {}, {}, {}, {}
+        time_start = time.clock()
+        db.loadCacheFromDisk()
+        print('Loaded cache from disk in ', time.clock()-time_start)
+        crc32 = 'e0bd1ed3'
+        games = db.getGameByFileCRC32(crc32)
+        self.assertEqual(len(games), 1)
+        game = games[0]
+        file = game.findFileByCRC32(crc32)
+        self.assertEqual(file.md5, '341881d1991f14e5382b4daa193f7bcc')
+
 
 
 if __name__=='__main__':

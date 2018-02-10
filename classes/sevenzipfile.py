@@ -1,22 +1,8 @@
 import subprocess
-import sys
+# import sys
 import os
 import traceback
 
-# def get_console_enc(sys_enc="utf-8"):
-#     try:
-#         enc = sys_enc
-#         if sys.platform.startswith("win"):
-#             import ctypes
-#             enc = "cp%d" % ctypes.windll.kernel32.GetOEMCP()
-#         else: #Linux
-#             enc = (sys.stdout.encoding if sys.stdout.isatty() else
-#                         sys.stderr.encoding if sys.stderr.isatty() else
-#                             sys.getfilesystemencoding() or sys_enc)
-#     except Exception as e:
-#         print(traceback.format_exc())
-#     finally:
-#         return enc
 SEVENZIP_LIST_CMD = '7z l -slt {archive_path} -sccUTF-8'
 SEVENZIP_EXTRACT_CMD = '7z e {archive_path} -o{dest_dir} {src_file} -y -sccUTF-8'
 
@@ -40,7 +26,6 @@ class SevenZipFile():
             if not file.path:
                 continue
             files.append(file)
-            # print(file.__dict__)
         return files
 
 class ArchivedFile():
@@ -69,7 +54,6 @@ class ArchivedFile():
             archive_path=self.parent.filepath,
             dest_dir=dest_dir,
             src_file=self.path)
-        print(command)
         s = subprocess.Popen(command,
                          stdout = subprocess.PIPE,
                          stderr = subprocess.PIPE,
@@ -77,4 +61,4 @@ class ArchivedFile():
         print(s.communicate()[0].decode('UTF-8'))
         unrenamed_path = os.path.join(dest_dir, os.path.basename(self.path))
         if os.path.exists(unrenamed_path):
-            os.rename(unrenamed_path, dest_path)
+            os.replace(unrenamed_path, dest_path)

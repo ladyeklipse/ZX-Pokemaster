@@ -27,7 +27,7 @@ setup(
     ],
     data_files = [
         ('', ['README.txt',
-              'pokemaster.db',
+              ('pokemaster.min.db', 'pokemaster.db'),
               'default_settings\\settings.json'
               ])
     ],

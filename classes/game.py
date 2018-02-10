@@ -398,6 +398,11 @@ class Game(object):
         pok_file_contents += 'Y'
         return pok_file_contents
 
+    def findFileByCRC32(self, crc32):
+        for file in self.getFiles():
+            if file.crc32 == crc32:
+                return file #assuming there are NO CRC collisions within a single game entry.
+
     def findFileByMD5(self, md5):
         for file in self.getFiles():
             if file.md5 == md5:
