@@ -361,11 +361,10 @@ class Database():
         if self.cache_by_crc32:
             return self.cache_by_crc32[crc32]
         sql = SELECT_GAME_SQL_START
-        sql += 'WHERE game_file.crc32 IN ' \
-               '(SELECT crc32 FROM game_file ' \
+        sql += 'WHERE game.wos_id IN ' \
+               '(SELECT game_wos_id FROM game_file ' \
                'WHERE game_file.crc32="{}")'.format(crc32)
         sql += SELECT_GAME_SQL_END
-        print(sql)
         raw_data = self.cur.execute(sql).fetchall()
         return self.getGamesFromRawData(raw_data)
 
@@ -441,7 +440,6 @@ class Database():
             aliases = row['aliases'].split('/')
             release.aliases = aliases
         return release
-
 
     def fileFromRow(self, row):
         if not row['md5']:

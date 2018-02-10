@@ -41,13 +41,14 @@ class GameFile(object):
     size_zipped = 0
     md5 = ''
     crc32 = ''
-    has_crc32_duplicate = False
     sha1 = ''
     src=''
     dest=''
     alt_dest=''
     is_tosec_compliant = False
     is_alternate = False
+    # has_crc32_duplicate = False
+    path_in_archive = None
 
     def __init__(self, path='', size=0, game=None, release=None,
                  source=None):

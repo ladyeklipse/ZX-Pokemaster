@@ -20,7 +20,12 @@ GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk',
                    'scl', 'slt', 'szx', 'fdi', 'opd',
                    'mdr', 'wdr', 'd80', 'd40', 'sp',
                    'dck', 'ipf', 'csw', 'udi', 'spg']
-DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ['zip', 'pok']
+ARCHIVE_EXTENSIONS =   ['zip', 'rar', '7z', 'gz', 'iso', 'tar',
+                        'bz2', 'bzip2', 'tbz2', 'tbz',
+                        'gz', 'gzip', 'tgz', 'tar',
+                        'xz', 'txz', 'arj', 'dmg', 'iso',
+                        'lzh', 'lha', 'lzma', 'r00', 'z', 'taz']
+DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ARCHIVE_EXTENSIONS + ['zip', 'pok']
 DISK_FORMATS = ('dsk', 'trd', 'scl')
 TAPE_FORMATS = ('tzx', 'tap')
 MAX_GAME_NAME_LENGTH = 100

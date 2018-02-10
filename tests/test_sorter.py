@@ -908,6 +908,17 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 01 (1996-01-31)(Vozrazhdenie)(RU)[Omsk].udi')
 
+    def test_crc_collision_each_own_zip(self):
+        s = Sorter(cache=False)
+        s.input_locations = [
+            'tests/files/sort_crc_collision_each_own_zip_in/',
+        ]
+        s.output_location = 'tests/files/sort_crc_collision_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
+        self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 01 (1996-01-31)(Vozrazhdenie)(RU)[Omsk].udi')
 
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)

@@ -1,5 +1,6 @@
 from classes.database import *
 from classes.file_bundler import *
+from classes.archive_handler import *
 from functions.game_name_functions import *
 from settings import *
 import os
@@ -41,7 +42,6 @@ class Sorter():
         self.max_files_per_folder = kwargs.get('max_files_per_folder', None)
         self.output_folder_structure = kwargs.get('output_folder_structure', '')
         self.output_filename_structure = kwargs.get('output_filename_structure', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
-        # self.delete_original_files = kwargs.get('delete_original_files', False) #YAGNI
         self.include_alternate = kwargs.get('include_alternate', False)
         self.include_alternate_formats = kwargs.get('include_alternate_formats', True)
         self.include_rereleases = kwargs.get('include_rereleases', True)
@@ -207,7 +207,7 @@ class Sorter():
     def getGameFilesFromInputPath(self, file_path):
         game_files = []
         ext = os.path.splitext(file_path)[1][1:].lower()
-        if ext in self.formats_preference:
+        if ext in self.formats_preference: #file is not in archive
             game_file = GameFile(file_path)
             game = db.getGameByFile(game_file)
             if game:
@@ -217,10 +217,12 @@ class Sorter():
             game_file.src = file_path
             game_file.dest = self.getDestination(game_file)
             game_files.append(game_file)
-        elif ext=='zip':
+        elif ext in ARCHIVE_EXTENSIONS:
             if os.path.getsize(file_path)>self.max_archive_size:
                 return []
-            try:
+            if ext=='zip':
+                # archive = Archive(file_path)
+                # for file in archive.listFiles():
                 with zipfile.ZipFile(file_path) as zf:
                     for zfname in zf.namelist():
                         zfbasename, zfext = os.path.splitext(zfname)
@@ -229,7 +231,8 @@ class Sorter():
                             continue
                         game_file = GameFile(file_path)
                         game_file.format = zfext
-                        game_file.crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
+                        zfinfo = zf.getinfo(zfname)
+                        game_file.crc32 = hex(zfinfo.CRC)[2:].zfill(8)
                         games = db.getGameByFileCRC32(game_file.crc32)
                         if len(games)>1:
                             unzipped_file = zf.read(zfname)
@@ -238,7 +241,6 @@ class Sorter():
                             game = db.getGameByFileMD5(unzipped_file_md5)
                             game_file = game.findFileByMD5(unzipped_file_md5)
                             game_file.release = game.releases[game_file.release_seq]
-                            game_file.has_crc32_duplicate = True
                         elif len(games)==1:
                             game = games[0]
                             game_file = game.findFileByCRC32(game_file.crc32)
@@ -251,6 +253,7 @@ class Sorter():
                             if zfbasename_lower not in game_file_lower and \
                                 game_file_lower not in zfbasename_lower:
                                 game_file.content_desc = ' - '+zfbasename
+                        game_file.path_in_archive = zfinfo.filename
                         game_file.src = file_path
                         game_file.dest = self.getDestination(game_file)
                         game_file.alt_dest = ''
@@ -258,11 +261,10 @@ class Sorter():
                         game_file.game_name_differentiator = ''
                         game_file.bundled_times = 0
                         game_files.append(game_file)
-            except OSError:
-                self.errors += 'Error while examinig {}:\n{}\n'.format(
-                    file_path, traceback.format_exc())
-                self.files_skipped += 1
-                return []
+            # except OSError:
+            #     self.errors += 'Error while examinig {}:\n{}\n'.format(
+            #         file_path, traceback.format_exc())
+            #     self.files_skipped += 1
         return game_files
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
@@ -440,27 +442,28 @@ class Sorter():
         return sum([len(x) for x in self.collected_files.values()])
 
     def unpackFile(self, game_file):
-        with zipfile.ZipFile(game_file.src) as zf:
-            for zfname in zf.namelist():
-                crc32 = hex(zf.getinfo(zfname).CRC)[2:].zfill(8)
-                if crc32 == game_file.getCRC32():
-                    data = zf.read(zfname)
-                    if game_file.has_crc32_duplicate:
-                        zipped_md5 = hashlib.md5(data).hexdigest()
-                        if game_file.md5!=zipped_md5:
-                            continue
-                    dest = game_file.getDestPath()
-                    try:
-                        os.makedirs(os.path.dirname(dest), exist_ok=True)
-                        with open(dest, 'wb+') as output:
-                            output.write(data)
-                    except PermissionError:
-                        os.chmod(dest, stat.S_IWRITE)
-                        with open(dest, 'wb+') as output:
-                            output.write(data)
-                    finally:
-                        self.files_sorted += 1
-                    break
+        archive = SevenZipArchive(game_file.src)
+        for file in archive.listFiles():
+            if game_file.path_in_archive == file.path:
+                file.extractTo(game_file.getDestPath())
+                self.files_sorted += 1
+                break
+        # with zipfile.ZipFile(game_file.src) as zf:
+        #     for zfname in zf.namelist():
+        #         if game_file.path_in_archive == zf.getinfo(zfname).filename:
+        #             data = zf.read(zfname)
+        #             dest = game_file.getDestPath()
+        #             try:
+        #                 os.makedirs(os.path.dirname(dest), exist_ok=True)
+        #                 with open(dest, 'wb+') as output:
+        #                     output.write(data)
+        #             except PermissionError:
+        #                 os.chmod(dest, stat.S_IWRITE)
+        #                 with open(dest, 'wb+') as output:
+        #                     output.write(data)
+        #             finally:
+        #                 self.files_sorted += 1
+        #             break
 
     def cancel(self):
         self.should_cancel = True
