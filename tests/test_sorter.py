@@ -892,9 +892,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        self.assertFileExists('tests/files/sort_other_archives_out/Zaxxon (1985)(US Gold).tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Zaxxon (1985)(U.S. Gold).tap')
         self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Kosov, Sergey - Marco Antonio del Campo - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
-        self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).z80')
 
     def test_crc_collision_zip(self):
         s = Sorter(cache=False)

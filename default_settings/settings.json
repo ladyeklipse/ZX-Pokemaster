@@ -1,0 +1,30 @@
+{
+    "max_files_per_folder": null, 
+    "input_locations": [
+
+    ], 
+    "languages": [], 
+    "ignore_hacks": false, 
+    "ignore_rereleases": false, 
+    "ignore_xrated": false, 
+    "ignore_alternate": true, 
+    "ignore_alternate_formats": false, 
+    "traverse_subdirectories": true,  
+    "short_filenames": false, 
+    "output_location": "C:\\ZX Pokemaster\\", 
+    "patterns": [
+		"{Letter}\\{TOSECName}",
+        "{GameName}\\{TOSECName}", 
+		"{TOSECName}",
+        "{Letter}\\{TOSECName}[ZXDB={ZXDB_ID}]", 
+        "{Letter}\\{GameName}\\{TOSECName}", 
+        "{Genre}\\{Year}\\{TOSECName}", 
+        "{Publisher}\\{Year}\\{GameName}\\{TOSECName}", 
+        "{Genre}\\{Publisher}\\{TOSECName}", 
+        "{MachineType}\\{MaxPlayers}\\{Genre}\\{TOSECName}"
+    ], 
+    "use_camel_case": false, 
+    "place_pok_files_in_pokes_subfolders": true, 
+    "output_filename_structure": "{TOSECName}", 
+    "formats_preference": []
+}

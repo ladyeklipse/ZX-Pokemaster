@@ -20,11 +20,6 @@ class Archive():
 
 class SevenZipArchive(Archive):
 
-    # def __init__(self, filepath):
-    #     if filepath.lower().endswith('zip'):
-    #         self.__class__ = ZipArchive
-    #     self.filepath = filepath
-
     def listFiles(self):
         command = SEVENZIP_LIST_CMD.format(archive_path=self.filepath)
         s = subprocess.Popen(command,
@@ -48,9 +43,6 @@ class SevenZipArchive(Archive):
         return files
 
 class ZipArchive(Archive):
-
-    # def __init__(self, filepath):
-    #     self.filepath = filepath
 
     def listFiles(self):
         files = []
@@ -147,4 +139,3 @@ class ArchivedFile():
                 return md5
             else:
                 return None
-

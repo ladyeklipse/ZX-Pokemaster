@@ -190,7 +190,8 @@ class Sorter():
         if not input_locations:
             input_locations = self.input_locations
         input_files = []
-        formats = ['zip']+GAME_EXTENSIONS
+        # formats = ['zip']+GAME_EXTENSIONS
+        formats = GAME_EXTENSIONS + ARCHIVE_EXTENSIONS
         for location in input_locations:
             if self.should_cancel:
                 break
@@ -198,7 +199,8 @@ class Sorter():
                 self.gui.updateProgressBar(0, 0, 'Traversing '+location)
             for root, dirs, files in os.walk(location):
                 for file in files:
-                    if file[-3:].lower() in formats:
+                    ext = os.path.splitext(file)[-1].lower()[1:]
+                    if ext in formats:
                         input_files.append(os.path.join(root, file))
                 if not self.traverse_subfolders:
                     break
@@ -220,51 +222,41 @@ class Sorter():
         elif ext in ARCHIVE_EXTENSIONS:
             if os.path.getsize(file_path)>self.max_archive_size:
                 return []
-            if ext=='zip':
-                # archive = Archive(file_path)
-                # for file in archive.listFiles():
-                with zipfile.ZipFile(file_path) as zf:
-                    for zfname in zf.namelist():
-                        zfbasename, zfext = os.path.splitext(zfname)
-                        zfext = zfext[1:].lower()
-                        if zfext not in self.formats_preference:
-                            continue
-                        game_file = GameFile(file_path)
-                        game_file.format = zfext
-                        zfinfo = zf.getinfo(zfname)
-                        game_file.crc32 = hex(zfinfo.CRC)[2:].zfill(8)
-                        games = db.getGameByFileCRC32(game_file.crc32)
-                        if len(games)>1:
-                            unzipped_file = zf.read(zfname)
-                            unzipped_file_md5 = hashlib.md5(unzipped_file).hexdigest()
-                            game_file.md5 = unzipped_file_md5
-                            game = db.getGameByFileMD5(unzipped_file_md5)
-                            game_file = game.findFileByMD5(unzipped_file_md5)
-                            game_file.release = game.releases[game_file.release_seq]
-                        elif len(games)==1:
-                            game = games[0]
-                            game_file = game.findFileByCRC32(game_file.crc32)
-                            game_file.release = game.releases[game_file.release_seq]
-                        else:
-                            game_file.zfname = zfname
-                            self.files_not_in_database.append(game_file)
-                            game_file_lower = game_file.game.name.lower()
-                            zfbasename_lower = zfbasename.lower()
-                            if zfbasename_lower not in game_file_lower and \
-                                game_file_lower not in zfbasename_lower:
-                                game_file.content_desc = ' - '+zfbasename
-                        game_file.path_in_archive = zfinfo.filename
-                        game_file.src = file_path
-                        game_file.dest = self.getDestination(game_file)
-                        game_file.alt_dest = ''
-                        game_file.alt_mod_flag = ''
-                        game_file.game_name_differentiator = ''
-                        game_file.bundled_times = 0
-                        game_files.append(game_file)
-            # except OSError:
-            #     self.errors += 'Error while examinig {}:\n{}\n'.format(
-            #         file_path, traceback.format_exc())
-            #     self.files_skipped += 1
+            archive = Archive(file_path)
+            for file in archive.listFiles():
+                basename, ext = os.path.splitext(file.path)
+                ext = ext[1:].lower()
+                if ext not in self.formats_preference:
+                    continue
+                game_file = GameFile(file_path)
+                game_file.format = ext
+                game_file.crc32 = file.crc32 #hex(zfinfo.CRC)[2:].zfill(8)
+                games = db.getGameByFileCRC32(game_file.crc32)
+                if len(games)>1:
+                    md5 = file.getMD5hash()
+                    game = db.getGameByFileMD5(md5)
+                    game_file = game.findFileByMD5(md5)
+                    game_file.release = game.releases[game_file.release_seq]
+                elif len(games)==1:
+                    game = games[0]
+                    game_file = game.findFileByCRC32(game_file.crc32)
+                    game_file.release = game.releases[game_file.release_seq]
+                else:
+                    # game_file.zfname = zfname
+                    self.files_not_in_database.append(game_file)
+                    game_file_lower = game_file.game.name.lower()
+                    basename_lower = basename.lower()
+                    if basename_lower not in game_file_lower and \
+                        game_file_lower not in basename_lower:
+                        game_file.content_desc = ' - '+basename
+                game_file.path_in_archive = file.path#zfinfo.filename
+                game_file.src = file_path
+                game_file.dest = self.getDestination(game_file)
+                game_file.alt_dest = ''
+                game_file.alt_mod_flag = ''
+                game_file.game_name_differentiator = ''
+                game_file.bundled_times = 0
+                game_files.append(game_file)
         return game_files
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
@@ -448,22 +440,6 @@ class Sorter():
                 file.extractTo(game_file.getDestPath())
                 self.files_sorted += 1
                 break
-        # with zipfile.ZipFile(game_file.src) as zf:
-        #     for zfname in zf.namelist():
-        #         if game_file.path_in_archive == zf.getinfo(zfname).filename:
-        #             data = zf.read(zfname)
-        #             dest = game_file.getDestPath()
-        #             try:
-        #                 os.makedirs(os.path.dirname(dest), exist_ok=True)
-        #                 with open(dest, 'wb+') as output:
-        #                     output.write(data)
-        #             except PermissionError:
-        #                 os.chmod(dest, stat.S_IWRITE)
-        #                 with open(dest, 'wb+') as output:
-        #                     output.write(data)
-        #             finally:
-        #                 self.files_sorted += 1
-        #             break
 
     def cancel(self):
         self.should_cancel = True
