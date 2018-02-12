@@ -230,26 +230,28 @@ class Sorter():
                     continue
                 game_file = GameFile(file_path)
                 game_file.format = ext
-                game_file.crc32 = file.crc32 #hex(zfinfo.CRC)[2:].zfill(8)
-                games = db.getGameByFileCRC32(game_file.crc32)
-                if len(games)>1:
+                game_file.crc32 = file.crc32
+                games, game = [], None
+                if game_file.crc32:
+                    games = db.getGamesByFileCRC32(game_file.crc32)
+                if not game_file.crc32 or len(games)>1:
                     md5 = file.getMD5hash()
                     game = db.getGameByFileMD5(md5)
-                    game_file = game.findFileByMD5(md5)
-                    game_file.release = game.releases[game_file.release_seq]
+                    if game:
+                        game_file = game.findFileByMD5(md5)
+                        game_file.release = game.releases[game_file.release_seq]
                 elif len(games)==1:
                     game = games[0]
                     game_file = game.findFileByCRC32(game_file.crc32)
                     game_file.release = game.releases[game_file.release_seq]
-                else:
-                    # game_file.zfname = zfname
+                if not game:
                     self.files_not_in_database.append(game_file)
                     game_file_lower = game_file.game.name.lower()
                     basename_lower = basename.lower()
                     if basename_lower not in game_file_lower and \
                         game_file_lower not in basename_lower:
                         game_file.content_desc = ' - '+basename
-                game_file.path_in_archive = file.path#zfinfo.filename
+                game_file.path_in_archive = file.path
                 game_file.src = file_path
                 game_file.dest = self.getDestination(game_file)
                 game_file.alt_dest = ''
@@ -279,6 +281,9 @@ class Sorter():
         if game_file.game.wos_id:
             dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
                                                     game_name_length=game_name_length)
+        elif game_file.path_in_archive:
+            dest_dir = os.path.join(dest_dir, os.path.dirname(game_file.path_in_archive))
+            dest_filename = os.path.basename(game_file.path_in_archive)
         else:
             dest_filename = os.path.basename(game_file.src)
         if self.short_filenames:
@@ -354,7 +359,7 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             try:
-                if file.src.lower().endswith('zip'):
+                if file.path_in_archive:
                     self.unpackFile(file)
                 else:
                     self.copyFile(file)
@@ -384,7 +389,7 @@ class Sorter():
         glob_regex = glob_regex.translate({ord('['):'[\[]', ord(']'):'[\]]'})
         for sup_file in glob.glob(glob_regex):
             subdirname = os.path.split(os.path.dirname(sup_file))[-1]
-            ext = os.path.splitext(sup_file)[-1]
+            ext = os.path.splitext(sup_file)[-1].lower()
             if ext[1:] in DISALLOWED_SUPPLEMENTARY_FILES:
                 continue
             dest = file.getDestPath()

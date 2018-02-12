@@ -16,11 +16,11 @@ class TestZXDBScraper(unittest.TestCase):
             db.addGame(game)
         db.commit()
         game = db.getGameByWosID(1155)
-        self.assertTrue(len(game.releases[0].aliases), 2)
+        self.assertEqual(2, len(game.releases[0].aliases))
         self.assertTrue('Crime Busters' in game.releases[0].aliases)
         for file in game.getFiles():
             if file.md5=='c358b7b95459f583c9e2bc11d9830d68':
-                self.assertGreater(len(file.wos_path), 0)
+                self.assertGreater(len(file.wos_path),0)
                 self.assertGreater(len(file.wos_name), 0)
 
 
@@ -30,11 +30,11 @@ class TestZXDBScraper(unittest.TestCase):
         game = games[0]
         for release in game.releases:
             release.getInfoFromLocalFiles()
-        self.assertEqual(len(game.releases), 4)
+        self.assertEqual(4, len(game.releases))
         db.addGame(games[0])
         db.commit()
         game = db.getGameByWosID(4)
-        self.assertEqual(len(game.releases), 4)
+        self.assertEqual(4, len(game.releases))
         print(game.releases)
 
     def test_square_brackets_elimination(self):
@@ -47,7 +47,7 @@ class TestZXDBScraper(unittest.TestCase):
         db.commit()
         game = db.getGameByWosID(26303)
         release = game.releases[0]
-        self.assertEqual(release.publisher, "Load 'n' Run")
+        self.assertEqual("Load 'n' Run", release.publisher)
         self.assertIn('Tombola', release.aliases)
         self.assertNotIn('Tombola [2]', release.aliases)
 
@@ -60,8 +60,8 @@ class TestZXDBScraper(unittest.TestCase):
         db.commit()
         game = db.getGameByWosID(10)
         for file in game.getFiles():
-            self.assertGreater(len(file.crc32), 0)
-            self.assertGreater(len(file.sha1), 0)
+            self.assertGreater(0, len(file.crc32))
+            self.assertGreater(0, len(file.sha1))
 
     def test_games_with_format_mismatch(self):
         where_clause = 'AND entries.id = 26541'
@@ -73,7 +73,7 @@ class TestZXDBScraper(unittest.TestCase):
         game = db.getGameByWosID(26541)
         for file in game.getFiles():
             if file.md5 == '4c279cc851f59bcffffd6a34c7236b75':
-                self.assertEqual(file.format, 'z80')
+                self.assertEqual('z80', file.format)
 
     def test_multiplayer_type(self):
         where_clause = 'AND entries.id = 30265'
@@ -83,7 +83,7 @@ class TestZXDBScraper(unittest.TestCase):
         db.addGame(games[0])
         db.commit()
         game = db.getGameByWosID(30265)
-        self.assertEqual(game.getMultiplayerType(), 'Vs')
+        self.assertEqual('Vs', game.getMultiplayerType())
 
     def test_side(self):
         where_clause = 'AND entries.id = 5856'
@@ -115,7 +115,7 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id = 5140'
         games = zxdb.getGames(where_clause)
         aliases = games[0].releases[2].getAllAliases()
-        self.assertEqual(aliases, ['3D-Tanx', '3D Tanks'])
+        self.assertEqual(aliases, ['3D Tanks', '3D-Tanx'])
 
     def test_multitape_game(self):
         where_clause = 'AND entries.id = 11433'
@@ -129,7 +129,7 @@ class TestZXDBScraper(unittest.TestCase):
         alias = 'Jet Set Willy (again)'
         new_alias = zxdb.sanitizeAlias(alias)
         game = Game(new_alias)
-        self.assertEqual(game.name, 'Jet Set Willy - Again')
+        self.assertEqual(game.name, 'Jet Set Willy - again')
 
     def test_alt_content_desc(self):
         where_clause = 'AND entries.id IN (30155, 11170)'
@@ -157,19 +157,23 @@ class TestZXDBScraper(unittest.TestCase):
         db.commit()
         game = db.getGameByWosID(20176)
         for file in game.getFiles():
-            self.assertNotEqual(file.content_desc, '')
-            self.assertEqual(file.release_date, '')
+            if file.getMD5() == 'aeac4c85b51cc34dad9275abdfd09837':
+                self.assertEqual(file.content_desc, ' v4.7')
+                self.assertEqual(file.release_date, '2017-03-06')
+            else:
+                self.assertEqual(file.content_desc, '')
+                self.assertEqual(file.release_date, '')
 
     def test_authors_as_publishers(self):
         where_clause = 'AND entries.id IN (30155, 21575, 7727)'
         games = zxdb.getGames(where_clause)
         for game in games:
             if game.wos_id == 30155:
-                self.assertEqual(game.publisher, 'Grussu, Alessandro')
+                self.assertEqual('Grussu, Alessandro', game.getPublisher())
             elif game.wos_id == 21575:
-                self.assertEqual(game.publisher, 'Owen, Andrew')
+                self.assertEqual('Owen, Andrew', game.getPublisher())
             elif game.wos_id == 7727:
-                self.assertEqual(game.publisher, 'Mad Max')
+                self.assertEqual('Mad Max', game.getPublisher())
 
     def test_downloading(self):
         where_clause = 'AND entries.id IN (24888)'
@@ -180,24 +184,26 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id IN (24406)'
         games = zxdb.getGames(where_clause)
         zxdb.getInfoFromLocalFiles(games)
-        self.assertEqual(games[0].publisher, 'Baldomero, Garcia')
-        self.assertEqual(games[0].releases[0].publisher, 'Baldomero, Garcia')
         db.addGame(games[0])
         db.commit()
+        game = db.getGameByWosID(24406)
+        self.assertEqual('Baldomero, Garcia', game.publisher)
+        self.assertEqual('Baldomero, Garcia', game.author)
+        self.assertEqual('Baldomero, Garcia', game.releases[0].publisher)
 
     def test_santa_clause(self):
         where_clause = 'AND entries.id IN (12789)'
         games = zxdb.getGames(where_clause)
         zxdb.getInfoFromLocalFiles(games)
-        self.assertEqual(games[0].name, 'Crime Santa Claus')
-        self.assertEqual(games[0].releases[0].aliases, ['Crime Santa Claus'])
+        self.assertEqual('Crime Santa Claus', games[0].name)
+        self.assertEqual(['Crime Santa Claus'], games[0].releases[0].aliases)
         db.addGame(games[0])
         db.commit()
 
     def test_un_dos_tres(self):
         where_clause = 'AND entries.id IN (5512)'
         games = zxdb.getGames(where_clause)
-        self.assertEqual(games[0].releases[1].getAllAliases(), ['3-2-1', 'Un, Dos, Tres Responda Otra Vez'])
+        self.assertEqual(['3-2-1', 'Un, Dos, Tres Responda Otra Vez'], games[0].releases[1].getAllAliases())
 
     def test_semanal(self):
         where_clause = 'AND entries.id IN (13615)'
@@ -224,4 +230,11 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id in (4559)'
         games = zxdb.getGames(where_clause)
         author = games[0].author
-        self.assertEqual('Lewis, John - Martin, Ian - Orpheus - Redmond, Damon', author)
+        # self.assertEqual('Lewis, John - Martin, Ian - Orpheus - Redmond, Damon', author)
+        self.assertEqual('Lewis, John - Orpheus', author)
+
+    def test_pozycje_milosne(self):
+        where_clause = 'AND entries.id in (3861)'
+        games = zxdb.getGames(where_clause)
+        self.assertGreater(len(games), 0)
+        self.assertEqual(3861, games[0].wos_id)

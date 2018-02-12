@@ -884,7 +884,7 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_max_archive_out/Accelerator (1984)(Century City).z80')
 
     def test_other_archives(self):
-        s = Sorter(cache=False)
+        s = Sorter(cache=True)
         s.input_locations = [
             'tests/files/sort_other_archives_in/',
         ]
@@ -893,8 +893,11 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertFileExists('tests/files/sort_other_archives_out/Zaxxon (1985)(U.S. Gold).tap')
-        self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Kosov, Sergey - Marco Antonio del Campo - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
         self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).z80')
+        self.assertFileExists('tests/files/sort_other_archives_out/Unknown files/LASTHERO.TRD')
+        gamefile = GameFile('tests/files/sort_other_archives_out/Unknown files/LASTHERO.TRD')
+        self.assertEqual(gamefile.getCRC32(), '52725975')
 
     def test_crc_collision_zip(self):
         s = Sorter(cache=False)

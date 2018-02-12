@@ -30,8 +30,8 @@ class TipshopScraperTests(unittest.TestCase):
         pp.pprint(game.cheats)
         self.assertEquals(game.cheats[0].description, "Lives")
         self.assertEquals(game.cheats[1].description, "Time")
-        self.assertEquals(game.cheats[2].description, "Lives (alt)")
-        self.assertEquals(game.cheats[3].description, "Time (alt)")
+        self.assertEquals(game.cheats[2].description, "Lives")
+        self.assertEquals(game.cheats[3].description, "Time")
 
     def test_complex_pokes_scraping(self):
         game = Game(name="Ghost Hunters", wos_id=9350)
@@ -63,7 +63,6 @@ class TipshopScraperTests(unittest.TestCase):
     def test_short_desc_elimination(self):
         game = Game(name='Zzoom', wos_id=5894)
         self.ts.scrapePokes(game)
-        # game.mergeDescriptionsWithOldDBFile()
         pp.pprint(game.cheats)
         self.assertEquals(len(game.cheats), 1)
         self.assertTrue(self.game_has_cheat_named(game, 'infinite lives'))
@@ -79,7 +78,7 @@ class TipshopScraperTests(unittest.TestCase):
         self.ts.scrapePokes(game)
         pp.pprint(game.cheats)
         self.assertEquals(len(game.cheats), 5)
-        self.assertEquals(game.cheats[0].description, "PART 1 Infinite lives")
+        self.assertEquals(game.cheats[0].description, "Infinite lives")
 
     def test_variable_poke(self):
         game = Game(name="Pinball", wos_id=3718)
@@ -101,7 +100,7 @@ class TipshopScraperTests(unittest.TestCase):
         game = Game(name='Addams Family', wos_id=82)
         self.ts.scrapePokes(game)
         print(game.cheats)
-        self.assertEqual(len(game.cheats), 6)
+        self.assertEqual(4, len(game.cheats))
 
 
     def test_stonkers(self):
@@ -152,15 +151,15 @@ class TipshopScraperTests(unittest.TestCase):
         print(game.cheats)
         self.assertEqual(len(game.cheats), 4)
 
-    def test_ghostbusters(self):
-        # THIS SHOULD BE FIXED MANUALLY
-        game = Game(name='Ghostbusters', wos_id=2025, db=self.db)
-        self.ts.scrapePokes(game)
-        game.exportPokFile('test.pok')
-        game.cheats = []
-        game.importPokFile('test.pok')
-        pp.pprint(game.cheats)
-        self.assertFalse(self.game_has_cheat_named(game, 'randomize usr'))
+    # THIS SHOULD BE FIXED MANUALLY
+    # def test_ghostbusters(self):
+    #     game = Game(name='Ghostbusters', wos_id=2025, db=self.db)
+    #     self.ts.scrapePokes(game)
+    #     game.exportPokFile('test.pok')
+    #     game.cheats = []
+    #     game.importPokFile('test.pok')
+    #     pp.pprint(game.cheats)
+    #     self.assertFalse(self.game_has_cheat_named(game, 'randomize usr'))
 
     def game_has_cheat_named(self, game, cheat_description):
         for cheat in game.cheats:
@@ -185,8 +184,8 @@ class TipshopScraperTests(unittest.TestCase):
         self.assertEqual(len(game.cheats), 6)
 
     def test_multiline_pok(self):
-        game = Game('Crazy Balloons', 1118)
-        self.ts.scrapePokes()
+        game = Game(name='Crazy Balloons', wos_id=1118)
+        self.ts.scrapePokes(game)
         self.assertEqual(len(game.cheats), 4)
 
 if __name__=='__main__':

@@ -47,7 +47,7 @@ if __name__=='__main__':
         setattr(TestFunctions, 'test_short_game_name_%d' % i, test_f)
 
     game_names = [
-        ('jetSet Willy II', 'JetSet Willy II'),
+        ('jetSet Willy II', 'jetSet Willy II'),
         ('AlchNews 23', 'AlchNews 23')
     ]
     for i, game_name in enumerate(game_names):

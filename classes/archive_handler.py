@@ -30,12 +30,12 @@ class SevenZipArchive(Archive):
         output = s.communicate()[0].decode('UTF-8').replace('\r\n', '\n')
         # print(output)
         if 'Errors:' in output:
-            errors = output.split('Errors:')[1]
+            errors = output.split('Error')[1]
             raise Exception('Could not open ' + self.filepath + ':' + errors)
         raw_files_list = output.split('----------')[-1].split('\n\n')
         files = []
         for item in raw_files_list:
-            if item:
+            if item and 'Folder = +' not in item:
                 file = ArchivedFile(sevenzip_text=item, parent=self)
                 if not file.path:
                     continue
@@ -87,16 +87,20 @@ class ArchivedFile():
     def extractTo(self, dest_path):
         dest_dir, dest_name = os.path.dirname(dest_path), os.path.basename(dest_path)
         if type(self.parent).__name__=='ZipArchive':
-            with zipfile.ZipFile(self.parent.filepath) as zf:
-                data = zf.read(self.path)
-                try:
-                    os.makedirs(dest_dir, exist_ok=True)
-                    with open(dest_path, 'wb+') as output:
-                        output.write(data)
-                except PermissionError:
-                    os.chmod(dest_path, stat.S_IWRITE)
-                    with open(dest_path, 'wb+') as output:
-                        output.write(data)
+            try:
+                with zipfile.ZipFile(self.parent.filepath) as zf:
+                    data = zf.read(self.path)
+                    try:
+                        os.makedirs(dest_dir, exist_ok=True)
+                        with open(dest_path, 'wb+') as output:
+                            output.write(data)
+                    except PermissionError:
+                        os.chmod(dest_path, stat.S_IWRITE)
+                        with open(dest_path, 'wb+') as output:
+                            output.write(data)
+            except (zipfile.BadZipFile, NotImplementedError):
+                self.parent.__class__ = SevenZipArchive
+                self.extractTo(dest_path)
         else:
             command = SEVENZIP_EXTRACT_CMD.format(
                 archive_path=self.parent.filepath,

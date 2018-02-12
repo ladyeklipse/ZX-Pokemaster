@@ -62,13 +62,13 @@ class ZXDBScraper():
                 line = line.strip().split(';')
                 if len(line)==2:
                     self.pok_file_paths[int(line[0])] = line[1].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
-        self.publisher_aliases = {}
-        with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
-            for line in f.readlines():
-                line = line.strip().split(';')
-                if not line[1]:
-                    break
-                self.publisher_aliases[line[0]]=line[1]
+        # self.publisher_aliases = {}
+        # with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
+        #     for line in f.readlines():
+        #         line = line.strip().split(';')
+        #         if not line[1]:
+        #             break
+        #         self.publisher_aliases[line[0]]=line[1]
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -141,7 +141,7 @@ class ZXDBScraper():
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
               'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
               '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) and '\
-              'authors.author_seq<=3'
+              '(authors.author_seq<=3 OR authors.author_seq IS NULL) '
         if sql_where:
             sql += sql_where+' '
         sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \

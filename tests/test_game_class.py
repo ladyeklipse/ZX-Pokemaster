@@ -35,11 +35,11 @@ class GameTests(unittest.TestCase):
     def test_set_publisher(self):
         g = Game()
         g.setPublisher('Apogee Software [1]')
-        self.assertEqual(g.publisher, 'Apogee')
+        self.assertEqual('Apogee', g.publisher)
         g.setPublisher('Ariolasoft UK Ltd')
-        self.assertEqual(g.publisher, 'Ariolasoft UK')
+        self.assertEqual('Ariolasoft UK', g.publisher)
         g.setPublisher('Incentive Software Ltd')
-        self.assertEqual(g.publisher, 'Incentive')
+        self.assertEqual('Incentive', g.publisher)
         g.setPublisher('16/48 Tape Magazine')
         self.assertEqual(g.publisher, '16-48 Tape Magazine')
 

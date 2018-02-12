@@ -64,8 +64,6 @@ class WosScraper(Scraper):
                 game.setGenre(value)
             elif caption == 'Availability':
                 game.setAvailability(value)
-        # if game.availability > AVAILABILITY_AVAILABLE:
-        #     return
         has_tipshop_pokes = selector.xpath('//img[@title="Search The Tipshop"]/@title').extract_first()
         if has_tipshop_pokes=='Search The Tipshop':
             game.has_tipshop_pokes = True
@@ -79,7 +77,6 @@ class WosScraper(Scraper):
             cells = game_file_info.xpath('//td').extract()
             java_link = Selector(cells[0]).xpath('//a/@title').extract_first()
             file_link = Selector(cells[2]).xpath('//a/@href').extract_first()
-            # file_link = game.sanitizeWosUrl(file_link)
             file_size = Selector(cells[3]).xpath('//text()').extract_first()
             game_file = GameFile(file_link, file_size, game)
             if game_file.format not in GAME_EXTENSIONS:
@@ -87,9 +84,6 @@ class WosScraper(Scraper):
             if java_link:
                 if '128K' in java_link:
                     game.setMachineType('128K')
-                    # game_file.machine_type = '128K'
-                # elif '48K' in java_link:
-                #     game_file.machine_type = '48K'
             game.addFile(game_file)
 
     def scrapeAdditionalMaterials(self, game, additional_materials):
@@ -105,11 +99,9 @@ class WosScraper(Scraper):
             elif type=='(Loading screen dump)':
                 game.setLoadingScreenUrl(*self.fileInfoFromRow(cells))
             elif type=='(In-game screen)':
-                # url = Selector(cells[1]).xpath('//a/@href').extract_first()
                 game.setIngameScreenUrl(*self.fileInfoFromRow(cells))
             elif 'instructions' in type:
                 if 'English' in type or not game.getManualUrl():
-                    # manual_url = Selector(cells[1]).xpath('//a/@href').extract_first()
                     url, size = self.fileInfoFromRow(cells)
                     if url.endswith('.txt'):
                         game.setManualUrl(url, size)

@@ -68,6 +68,8 @@ class TipshopScraper(Scraper):
             return
         url = game.getTipshopUrl()
         print(url)
+        if not url:
+            url = "http://www.the-tipshop.co.uk/cgi-bin/info.pl?wosid={}".format(game.getWosID())
         try:
             selector = self.loadUrl(url)
             pure_text = selector.xpath('//text()').extract_all()

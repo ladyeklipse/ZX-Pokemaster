@@ -6,8 +6,10 @@ if (os.getcwd().endswith('scripts')):
     os.chdir('..')
 if __name__=='__main__':
     LOCAL_FTP_ROOT = os.path.join(os.getcwd(), 'ftp')
-    if os.path.exists('pokemaster.db'):
-        os.unlink('pokemaster.db')
+    if os.path.exists(POKEMASTER_DB_PATH):
+        os.unlink(POKEMASTER_DB_PATH)
+    if os.path.exists(POKEMASTER_MIN_DB_PATH):
+        os.unlink(POKEMASTER_MIN_DB_PATH)
     db = Database()
     with open('pokemaster_db_schema.sql', 'r', encoding='utf-8') as f:
         sql = f.read().split(';\n')

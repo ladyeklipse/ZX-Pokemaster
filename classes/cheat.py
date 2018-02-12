@@ -16,8 +16,6 @@ class Cheat(object):
 
 
     def __eq__(self, other):
-        # if len(self.pokes)!=len(other.pokes):
-        #     return False
         for poke in self.pokes:
             if poke not in other.pokes:
                 return False

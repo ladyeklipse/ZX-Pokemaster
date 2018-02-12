@@ -14,7 +14,7 @@ class TestSevenZip(unittest.TestCase):
         with self.assertRaises(Exception):
             files = archive.listFiles()
 
-    def test_bad_zip_file(self):
+    def test_broken_zip_file(self):
         file_path = os.path.join(self.test_dir, 'breakout_2.tzx.zip')
         archive = ZipArchive(file_path)
         files = archive.listFiles()
@@ -61,3 +61,18 @@ class TestSevenZip(unittest.TestCase):
             md5 = file.getMD5hash()
             self.assertGreater(len(md5), 0)
             print(file.getMD5hash())
+
+    def test_bad_zip_archive(self):
+        file_paths = ['MIRAGE4.ZIP', 'Spf13.zip', 'Tranto1r.zip']
+        for file_path in file_paths:
+            archive = Archive(os.path.join(self.test_dir, file_path))
+            files = archive.listFiles()
+            self.assertGreater(len(files), 0)
+            for file in files:
+                file.extractTo(os.path.join(self.test_dir, 'bad_zip', file.path))
+
+    def test_iso(self):
+        file_path = 'E:\Emulators\\ZX Spectrum\iso\COLLECTION.ISO'
+        archive = Archive(file_path)
+        files = archive.listFiles()
+        self.assertGreater(len(files), 0)

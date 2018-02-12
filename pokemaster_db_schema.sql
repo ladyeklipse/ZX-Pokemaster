@@ -24,18 +24,18 @@ CREATE TABLE "game_release" (
 	`name`	TEXT, -- ZXDB aliases.title WHERE aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq
 	`year`	INTEGER, -- ZXDB releases.release_year
 	`publisher`	TEXT, -- ZXDB labels.name WHERE labels.id=publishers.label_id AND publishers.entry_id=entries.id AND releases.release_seq == publishers.release_seq
-	`country`	TEXT, -- ZXDB labels.country
-	`modded_by` TEXT, -- TOSEC md5 of file which has better information about year and/or publisher and/or country
-	`ingame_screen_gif_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Picture" AND filetypes.text = "Loading screen"
-	`ingame_screen_gif_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
-	`ingame_screen_scr_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Screen Dump" AND filetypes.text = "Loading screen"
-	`ingame_screen_scr_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
-	`loading_screen_gif_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Picture" AND filetypes.text = "In-game screen"
-	`loading_screen_gif_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
-	`loading_screen_scr_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Screen Dump" AND filetypes.text = "In-game screen"
-	`loading_screen_scr_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
-	`manual_filepath`	TEXT, -- ZXDB downloads.file_link WHERE download.file_link.endswith('.txt') AND filetypes.text = "In-game screen"
-	`manual_filesize`	INTEGER -- ZXDB downloads.file_size for abovementioned row
+	`country`	TEXT -- ZXDB labels.country
+	-- `modded_by` TEXT, -- TOSEC md5 of file which has better information about year and/or publisher and/or country
+	-- `ingame_screen_gif_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Picture" AND filetypes.text = "Loading screen"
+	-- `ingame_screen_gif_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
+	-- `ingame_screen_scr_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Screen Dump" AND filetypes.text = "Loading screen"
+	-- `ingame_screen_scr_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
+	-- `loading_screen_gif_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Picture" AND filetypes.text = "In-game screen"
+	-- `loading_screen_gif_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
+	-- `loading_screen_scr_filepath`	TEXT, -- ZXDB downloads.file_link WHERE formattypes.text = "Screen Dump" AND filetypes.text = "In-game screen"
+	-- `loading_screen_scr_filesize`	INTEGER, -- ZXDB downloads.file_size for abovementioned row
+	-- `manual_filepath`	TEXT, -- ZXDB downloads.file_link WHERE download.file_link.endswith('.txt') AND filetypes.text = "In-game screen"
+	-- `manual_filesize`	INTEGER -- ZXDB downloads.file_size for abovementioned row
 );
 CREATE TABLE "game_file" (
 	`game_wos_id`	INT NOT NULL,  -- ZXDB entries.entry_id

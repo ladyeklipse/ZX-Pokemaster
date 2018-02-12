@@ -9,7 +9,8 @@ sys.path.append("classes")
 sys.path.append("functions")
 if __name__ == '__main__':
     sys.argv.append('py2exe')
-
+if os.path.exists(os.path.join('dist', POKEMASTER_DB_PATH)):
+    os.remove(os.path.join('dist', POKEMASTER_DB_PATH))
 setup(
     options=
     {'py2exe':
@@ -27,12 +28,15 @@ setup(
     ],
     data_files = [
         ('', ['README.txt',
-              ('pokemaster.min.db', 'pokemaster.db'),
+              POKEMASTER_MIN_DB_PATH,
+              '7z.exe',
+              '7z.dll',
               'default_settings\\settings.json'
               ])
     ],
     zipfile=None,
 )
+os.rename(os.path.join('dist', POKEMASTER_MIN_DB_PATH), os.path.join('dist', POKEMASTER_DB_PATH))
 zfname = '_'.join(('ZXPokemaster', sys.platform, ZX_POKEMASTER_VERSION))
 zfpath = os.path.join('dist', zfname+'.zip')
 with zipfile.ZipFile(zfpath, 'w', zipfile.ZIP_DEFLATED) as zf:

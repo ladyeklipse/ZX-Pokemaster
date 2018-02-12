@@ -234,10 +234,10 @@ class Game(object):
     def setPublisher(self, publisher):
         if publisher=='unknown' or not publisher:
             publisher = ''
+        publisher = remove_brackets_regex.sub('', publisher).strip()
         publisher = publisher.replace('/', '-').strip()
         publisher = publisher_regex.sub('', publisher)
-        publisher = remove_brackets_regex.sub('', publisher).strip()
-        self.publisher = publisher
+        self.publisher = publisher.strip()
 
     def setAuthor(self, author):
         if author:
@@ -327,14 +327,16 @@ class Game(object):
     def addCheat(self, cheat, cheat_source=CHEAT_SOURCE_SCRAPE):
         if type(cheat)!=Cheat:
             raise TypeError()
-        if cheat_source == CHEAT_SOURCE_OLD_DB:
-            if cheat in self.cheats:
-                self.cheats[self.cheats.index(cheat)].description = cheat.description
-        else:
-            if cheat not in self.cheats:
-                if cheat.description in [x.description for x in self.cheats]:
-                    cheat.description += ' (alt)'
-                self.cheats.append(cheat)
+        if cheat not in self.cheats:
+            self.cheats.append(cheat)
+        # if cheat_source == CHEAT_SOURCE_OLD_DB:
+        #     if cheat in self.cheats:
+        #         self.cheats[self.cheats.index(cheat)].description = cheat.description
+        # else:
+        # if cheat not in self.cheats:
+            # if cheat.description in [x.description for x in self.cheats]:
+            #     cheat.description += ' (alt)'
+            # self.cheats.append(cheat)
 
     def mergeDescriptionsWithOldDBFile(self):
         self.importPokFile()
@@ -378,8 +380,8 @@ class Game(object):
             return pok_files[0]
         else:
             for pok_file in pok_files:
-                if str(self.year) in pok_file and \
-                   self.publisher in pok_file:
+                if str(self.getYear()) in pok_file and \
+                   self.getPublisher() in pok_file:
                     return pok_file
 
     def exportPokFile(self, file_path):

@@ -1,28 +1,30 @@
 from classes.game import *
-from classes.wos_scraper import *
+from classes.game_release import *
 import unittest
 import os
 
 class PokReader(unittest.TestCase):
 
-    def test_find_ambiguous_pok_file(self):
-        expected_pok_file_basename = 'Invaders (1983)(DK\'Tronics)(16k).pok'
-        game = Game('Invaders', wos_id=2531)
-        ws = WosScraper()
-        ws.scrapeGameData(game)
-        self.assertEqual(game.publisher, 'DK\'Tronics')
-        pok_file_path = game.findPokFile()
-        print(pok_file_path)
-        self.assertEqual(os.path.basename(pok_file_path), expected_pok_file_basename)
+    # This test uses WoS scraper, which is outdated.
+    # def test_find_ambiguous_pok_file(self):
+    #     expected_pok_file_basename = 'Invaders (1983)(DK\'Tronics)(16k).pok'
+    #     game = Game('Invaders', wos_id=2531)
+    #     ws = WosScraper()
+    #     ws.scrapeGameData(game)
+    #     self.assertEqual(game.publisher, 'DK\'Tronics')
+    #     pok_file_path = game.findPokFile()
+    #     print(pok_file_path)
+    #     self.assertEqual(os.path.basename(pok_file_path), expected_pok_file_basename)
 
     def test_pok_import(self):
         game = Game(name="Ghost Hunters", wos_id=9350)
+        game.release = GameRelease(year=1987, publisher='Code Masters')
         game.importPokFile()
-        self.assertEqual(len(game.cheats), 22)
+        self.assertEqual(18, len(game.cheats))
         first_cheat = game.cheats[0]
         last_cheat = game.cheats[-1]
-        self.assertEqual(first_cheat.name, 'Infinite Energy')
-        self.assertEqual(last_cheat.name, 'You don\'t need shoe (You see the EXIT)')
+        self.assertEqual(first_cheat.description, 'Infinite Energy')
+        self.assertEqual(last_cheat.description, 'You don\'t need shoe (You see the EXIT)')
         self.assertEqual(len(first_cheat.pokes), 1)
         first_cheat_poke = first_cheat.pokes[0]
         self.assertEqual(first_cheat_poke.address, 55510)

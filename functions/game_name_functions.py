@@ -79,19 +79,6 @@ def putPrefixToEnd(game_name):
         if game_name.startswith(prefix + ' '):
             game_name = ' '.join(game_name.split(' ')[1:]) + ', ' + prefix
             break
-    # components = re.split(' - | \+ ', game_name)
-    # for i, component in enumerate(components):
-    #     if len(component)<5:
-    #         continue
-    #     if component.startswith('Die Hard'):
-    #         continue
-    #     if component.endswith(', 3D'):
-    #         component = '3D '+component[:-4]
-    #     for prefix in GAME_PREFIXES:
-    #         if component.startswith(prefix + ' '):
-    #             components[i] = ' '.join(component.split(' ')[1:]) + ', ' + prefix
-    #             break
-    # game_name = ' - '.join(components)
     return game_name
 
 def putInitialsToEnd(name):

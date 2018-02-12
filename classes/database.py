@@ -37,8 +37,10 @@ class Database():
     def __init__(self):
         if os.path.exists(POKEMASTER_DB_PATH):
             self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
-        else:
+        elif os.path.exists(POKEMASTER_MIN_DB_PATH):
             self.conn = sqlite3.connect(POKEMASTER_MIN_DB_PATH)
+        else:
+            self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
         # self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
@@ -46,37 +48,6 @@ class Database():
 
     def execute(self, sql, params=[]):
         return self.cur.execute(sql, params).fetchall()
-
-    # This has proved to be inefficient
-    # def loadCacheFromDisk(self):
-    #     with open(DB_DISK_CACHE_FILE, 'rb') as f:
-    #         caches = pickle.load(f)
-    #     self.cache_by_wos_id = caches['cache_by_wos_id']
-    #     self.cache_by_name = caches['cache_by_name']
-    #     self.cache_by_md5 = caches['cache_by_md5']
-    #     self.cache_by_crc32 = caches['cache_by_crc32']
-
-    # def saveDiskCache(self):
-    #     if not len(self.cache_by_crc32):
-    #         self.loadCache()
-    #     caches = {
-    #         'cache_by_wos_id':self.cache_by_wos_id,
-    #         'cache_by_name':self.cache_by_name,
-    #         'cache_by_md5':self.cache_by_md5,
-    #         'cache_by_crc32':self.cache_by_crc32
-    #     }
-    #     for game in self.cache_by_wos_id.values():
-    #         for file in game.getFiles():
-    #             file.wos_name = None
-    #             file.wos_path = None
-    #             file.tosec_path = None
-    #         for release in game.releases:
-    #             release.loading_screen_gif_filepath = None
-    #             release.loading_screen_scr_filepath = None
-    #             release.manual_filepath = None
-    #             release.modded_by = None
-    #     with open(DB_DISK_CACHE_FILE, 'wb') as f:
-    #         pickle.dump(caches, f)
 
     def loadCache(self, force_reload=False):
         if force_reload:
@@ -86,9 +57,6 @@ class Database():
             self.cache_by_crc32 = {}
         if len(self.cache_by_md5):
             return
-        # if os.path.exists(DB_DISK_CACHE_FILE):
-        #     self.loadCacheFromDisk()
-        #     return
         print('started loading cache')
         games = self.getAllGames()
         print('got ', len(games), 'games')
@@ -130,6 +98,8 @@ class Database():
             self.loadLookupTables()
         if game.publisher in self.publisher_aliases:
             game.publisher = self.publisher_aliases[game.publisher]
+        if game.author in self.publisher_aliases:
+            game.author = self.publisher_aliases[game.author]
         if game.name in self.game_name_aliases:
             game.name = self.game_name_aliases[game.name]
         for release in game.releases:
@@ -271,7 +241,7 @@ class Database():
                     search_string = getSearchStringFromGameName(game_release.split(' + ')[0])
                     games = self.cache_by_name.get(search_string)
         else:
-            game_release = '%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])
+            game_release = '%'+'%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])+'%'
             sql = SELECT_GAME_SQL_START
             sql += 'WHERE game.wos_id IN ' \
                    '(SELECT wos_id FROM game_release ' \
@@ -357,9 +327,9 @@ class Database():
             game = self.getGameByFilePath(file.getPath())
         return game
 
-    def getGameByFileCRC32(self, crc32):
+    def getGamesByFileCRC32(self, crc32):
         if self.cache_by_crc32:
-            return self.cache_by_crc32[crc32]
+            return self.cache_by_crc32.get(crc32, [])
         sql = SELECT_GAME_SQL_START
         sql += 'WHERE game.wos_id IN ' \
                '(SELECT game_wos_id FROM game_file ' \
@@ -406,8 +376,9 @@ class Database():
         game.setAvailability(row['availability'])
         game.x_rated = row['x_rated']
         game.addRelease(self.releaseFromRow(row, game))
-        if 'multiplayer_type' in row:
+        if 'multiplayer_type' in row.keys():
             game.setMultiplayerType(row['multiplayer_type'])
+        if 'tipshop_page' in row.keys():
             game.tipshop_page = row['tipshop_page']
             game.tipshop_multiface_pokes_section = row['tipshop_multiface_pokes_section']
         if game.tipshop_page or row['pok_file_contents']:
@@ -445,9 +416,10 @@ class Database():
         if not row['md5']:
             return None
         file = GameFile()
-        if 'wos_name' in row:
+        if 'wos_name' in row.keys():
             file.wos_name = row['wos_name']
             file.wos_path = row['wos_path']
+        if 'tosec_path' in row.keys():
             file.tosec_path = row['tosec_path']
         file.format = row['format']
         file.size = row['size']
