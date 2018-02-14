@@ -19,7 +19,8 @@ GAME_EXTENSIONS = ['tap', 'dsk', 'z80', 'sna', 'dsk',
                    'trd', 'tzx', 'img', 'mgt', 'rom',
                    'scl', 'slt', 'szx', 'fdi', 'opd',
                    'mdr', 'wdr', 'd80', 'd40', 'sp',
-                   'dck', 'ipf', 'csw', 'udi', 'spg']
+                   'dck', 'ipf', 'csw', 'udi', 'spg',
+                   'wmf']
 ARCHIVE_EXTENSIONS =   ['zip', 'rar', '7z', 'gz', 'iso', 'tar',
                         'bz2', 'bzip2', 'tbz2', 'tbz',
                         'gz', 'gzip', 'tgz', 'tar',

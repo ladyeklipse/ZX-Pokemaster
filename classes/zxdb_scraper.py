@@ -13,6 +13,39 @@ def get_win_friendly_alias(alias):
     win_friendly_alias = filepath_regex.sub('-', alias)
     return win_friendly_alias
 
+IDIOM_IDS_TO_TOSEC_LANGS = {
+    '?0':'en-hr',
+    '?1':'cz-en',
+    '?2':'en-nl',
+    '?3':'de-en',
+    '?4':'en-pl',
+    '?5':'en-pt',
+    '?6':'en-ru',
+    '?7':'en-sk',
+    '?8':'en-es',
+    '?9':'ca-es',
+    '?a':'M3',
+    '?b':'M3',
+    '?c':'M5',
+    '?d':'M5',
+    '?e':'M3',
+    '?f':'M4',
+    '?g':'M3',
+    '?h':'M4',
+    '?i':'M4',
+    '?j':'es-la',
+    '?k':'en-fr',
+    '?l':'M4',
+    '?m':'M4',
+    '?n':'M6',
+    '?o':'M3',
+    '?p':'M5',
+    '?q':'M6',
+    '?r':'M3',
+    '?s':'M8',
+    '?t':'en-it'
+}
+
 class RowConverter(connector.conversion.MySQLConverter):
 
     def row_to_python(self, row, fields):
@@ -108,6 +141,7 @@ class ZXDBScraper():
               'downloads.file_size AS file_size, ' \
               'downloads.filetype_id AS file_type_id, ' \
               'downloads.formattype_id AS file_format_id, ' \
+              'downloads.idiom_id AS file_language, ' \
               'filetypes.text AS file_type, ' \
               'formattypes.text AS file_format,' \
               'entry_machinetype.text AS machine_type, ' \
@@ -259,12 +293,27 @@ class ZXDBScraper():
         author = self.authorNameFromRow(row)
         game.setAuthor(author)
         game.setYear(row['year'])
-        game.setGenre(row['genre'])
+        #TEMPORARY
+        if not row['genre']:
+            if game.wos_id in [
+                            32168, 32169, 32170, 32171,
+                            32172, 32173, 32174, 32180,
+                            30349, 32176, 32201, 32175
+                            ]:
+                game.setGenre('Various Games')
+            elif game.wos_id in [32176]:
+                game.setGenre('Utilities - Screen')
+        else:
+            game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
         game.setNumberOfPlayers(row['number_of_players'])
-        # game.setMultiplayerType(row['multiplayer_type'])
+        game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
-        game.setLanguage(row['language'])
+        if row['language']:
+            if row['language'] in IDIOM_IDS_TO_TOSEC_LANGS:
+                game.setLanguage(IDIOM_IDS_TO_TOSEC_LANGS[row['language']])
+            else:
+                game.setLanguage(row['language'])
         game.setAvailability(row['availability'])
         game.tipshop_page = row['tipshop_page']
         game.raw_publisher, game.raw_author = [row['publisher']], [row['author']]
@@ -339,6 +388,11 @@ class ZXDBScraper():
         game_file.size_zipped = row['file_size']
         game_file.setMachineType(row['machine_type'])
         game_file.setProtectionScheme(row['protection_scheme'])
+        if row['file_language']:
+            if row['file_language'] in IDIOM_IDS_TO_TOSEC_LANGS:
+                game_file.setLanguage(IDIOM_IDS_TO_TOSEC_LANGS[row['file_language']])
+            else:
+                game_file.setLanguage(row['file_language'])
         return game_file
 
     def downloadMissingFilesForGames(self, games):

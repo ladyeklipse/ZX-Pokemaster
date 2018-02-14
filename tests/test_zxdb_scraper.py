@@ -60,8 +60,8 @@ class TestZXDBScraper(unittest.TestCase):
         db.commit()
         game = db.getGameByWosID(10)
         for file in game.getFiles():
-            self.assertGreater(0, len(file.crc32))
-            self.assertGreater(0, len(file.sha1))
+            self.assertGreater(len(file.crc32), 0)
+            self.assertGreater(len(file.sha1), 0)
 
     def test_games_with_format_mismatch(self):
         where_clause = 'AND entries.id = 26541'
@@ -238,3 +238,14 @@ class TestZXDBScraper(unittest.TestCase):
         games = zxdb.getGames(where_clause)
         self.assertGreater(len(games), 0)
         self.assertEqual(3861, games[0].wos_id)
+
+    def test_lost_in_my_spectrum(self):
+        where_clause = 'AND entries.id in (27974)'
+        games = zxdb.getGames(where_clause)
+        game = games[0]
+        for file in game.getFiles():
+            # print(file.wos_name, file.wos_path)
+            # print(file.getTOSECName(), file.language)
+            if 'DE' in file.wos_path:
+                self.assertTrue('(IT)(de)' in file.getTOSECName())
+

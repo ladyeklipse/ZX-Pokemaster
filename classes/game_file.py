@@ -475,7 +475,7 @@ class GameFile(object):
 
     def setLanguage(self, language):
         # language = language.lower() if language.isalpha() else language.upper()
-        if len(language)==2 or len(language)==5:
+        if language and (len(language)==2 or len(language)==5):
             self.language = language
 
     def setCountry(self, country):
@@ -761,12 +761,16 @@ class GameFile(object):
             self.type += 'Compilations'
             if 'Utilities' in genre:
                 self.type += os.sep+'Applications'
-            elif 'Educational' in genre:
+            elif 'Education' in genre:
                 self.type += os.sep+'Educational'
             elif 'Demo' in genre:
                 self.type += os.sep+'Demos'
             elif 'Magazine' in genre:
                 self.type += os.sep+'Magazines'
+            elif 'Book' in genre:
+                self.type += os.sep+'Books'
+            elif 'Music' in genre:
+                self.type += os.sep+'Music'
             elif 'Mixed' in genre:
                 self.type += os.sep+'Mixed'
             else:
@@ -786,14 +790,14 @@ class GameFile(object):
             self.type += 'Covertapes'
         elif 'Demo' in genre:
             self.type += 'Demos'
-        elif 'Music' in genre:
-            self.type += 'Music'
-        elif 'e-Book' in genre:
-            self.type += 'eBooks'
+        elif 'Book' in genre:
+            self.type += 'Books'
         elif 'Documentation' in genre:
             self.type += 'Documentation'
         elif 'Game' in genre:
             self.type += 'Games'
+        elif 'Music' in genre:
+            self.type += 'Music'
         else:
             self.type = 'Unknown'
         return self.type

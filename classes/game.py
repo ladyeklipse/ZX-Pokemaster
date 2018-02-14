@@ -165,6 +165,10 @@ class Game(object):
                 self.genre += ' - Magazines'
             elif 'application' in path:
                 self.genre += ' - Utilities'
+            elif 'book' in path:
+                self.genre += 'Books'
+            elif 'music' in path:
+                self.genre += 'Music'
             elif 'mixed' in path:
                 self.genre += ' - Mixed'
             else:
@@ -179,12 +183,16 @@ class Game(object):
             self.genre = 'Covertape'
         elif 'demos' in path:
             self.genre = 'Scene Demo'
-        elif 'educational' in path:
+        elif 'education' in path:
             self.genre = 'General - Education'
         elif 'documentation' in path:
             self.genre = 'Documentation'
         elif 'games' in path:
             self.genre = 'Various Games'
+        elif 'music' in path:
+            self.genre = 'Music'
+        elif 'book' in path:
+            self.genre = 'Books'
 
     def getGenre(self):
         return self.genre if self.genre else 'Unknown'
@@ -293,14 +301,16 @@ class Game(object):
             self.type = genre.replace(' - ', '/')
         if 'Utilit' in genre:
             self.type = 'Applications'
-        elif 'Music' in genre:
-            self.type = 'Music'
         elif 'Covertape' in genre:
             self.type = 'Covertapes'
         elif 'Magazine' in genre:
             self.type = 'Magazines'
         elif 'Game' in genre:
             self.type = 'Games'
+        elif 'Music' in genre:
+            self.type = 'Music'
+        elif 'Book' in genre:
+            self.type = 'Books'
 
     def setmanualUrl(self, url):
         self.manual_url = url

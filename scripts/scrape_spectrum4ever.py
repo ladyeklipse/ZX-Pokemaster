@@ -11,9 +11,6 @@ from classes.scraper import *
 from classes.database import *
 
 mod_flags_dict = {
-    # 'DISTRIBUTED BY':'h',
-    # 'DISKED BY':'h',
-    # 'BROKEN BY':'h',
     'бессмертие':'[t]',
     'неубиваемость':'[t]',
     'poke':'[t]',
@@ -22,6 +19,9 @@ mod_flags_dict = {
     'russian':'[tr ru]',
     'украинский':'[tr ua]',
 }
+
+#THIS SCRIPT IS BUGGY!!!
+#Does not add [a] tag instead of overwriting games with same notes.
 
 def scrape_spectrum4ever():
     s = Scraper()

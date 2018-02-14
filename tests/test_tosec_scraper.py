@@ -358,6 +358,19 @@ class TestTOSECScraper(unittest.TestCase):
             print(file.notes)
             self.assertFalse('aka' in file.notes)
 
+    def testMusicFile(self):
+        paths = [
+            'c:\\ZX Pokemaster\\tosec\\reviewed files\\vtrdos.ru\Demo_comps\Music\\Unfunny Joke (2011)(Darkman007)(RU)[DiHalt][Beeper].tap'
+        ]
+        game = ts.db.getGameByFileMD5('1fe31ff48fde8a74d1e1f34fe0694dc8')
+        wos_id = game.wos_id if game else 0
+        ts.paths = ts.generateTOSECPathsArrayFromList(paths)
+        self.scrape(ts.paths, wos_id)
+        game = ts.db.getGameByFileMD5('1fe31ff48fde8a74d1e1f34fe0694dc8')
+        print(game.getGenre())
+        self.assertEqual('Music', game.getFiles()[0].getGenre())
+
+
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
         ts.db.execute(sql)

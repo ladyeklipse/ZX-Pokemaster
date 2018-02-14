@@ -197,6 +197,18 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.3.
+ - Added games from vtrdos.ru;
+ - Applied all changes made in ZXDB by 1st March 2018;
+ - Updated games added from spectrum4ever.org;
+ - Added language for many files;
+ - Now files can be sorted not by Publisher, but by Author as well;
+ - Thanks to bundled 7z.exe, you can now unpack games from all known archive formats (rar, 7z, gz etc., even iso);
+ - Added the option to include archives larger than 1MB (may be slow!);
+ - "Books" and "Music" added as file types;
+ - Unknown files are not renamed anymore, they are collected into a separate folder instead;
+ - Updated "About" tab. Now you know where to send Bitcoins ;)
+
 1.2.
  - Full TOSEC-compliance achieved.
  - This release fully matches the October 31st TOSEC release.
