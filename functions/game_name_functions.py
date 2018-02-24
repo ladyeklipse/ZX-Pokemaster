@@ -15,7 +15,6 @@ MEANINGLESS_WORDS = [
 def getMeaningfulEightLetterName(game_name):
     if not game_name:
         return ''
-    # if ',' in game_name and [x for x in GAME_PREFIXES if x in game_name.lower()]:
     game_name_split = game_name.split(',')[0]
     if len(game_name_split)>2:
         game_name = game_name_split
@@ -23,7 +22,6 @@ def getMeaningfulEightLetterName(game_name):
     game_name = ' '.join([x for x in game_name.split(' ') if \
                           x.lower() not in MEANINGLESS_WORDS])
     game_name = game_name.replace(' II', ' 2').replace(' III', ' 3').replace(' IV', ' 4')
-    # words = [word for word in game_name.split(' ') if len(word)>1 or word.isdigit()]
     words = [word for word in game_name.split(' ') if word]
     if len(words)==1:
         name = words[0][:8]
@@ -62,15 +60,13 @@ def getFileSystemFriendlyName(name):
     if not name:
         return ''
     name = name.replace(':', ' -').replace('/','-')
-    # name = ' '.join([word[0].upper()+word[1:].rstrip()
-    #                  if len(word)>3 and '.' not in word
-    #                  else word.strip() for word in name.split(' ')])
     name = ' '.join([word.strip() for word in name.split(' ')])
     name = filepath_regex.sub('', name).strip()
     deunicoded_name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-    if deunicoded_name:
+    if len(deunicoded_name)==len(name):
         return deunicoded_name
-    return name
+    else:
+        return name
 
 def putPrefixToEnd(game_name):
     if not game_name:

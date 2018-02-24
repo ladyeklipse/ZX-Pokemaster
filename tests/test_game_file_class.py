@@ -350,5 +350,18 @@ class GameFileTests(unittest.TestCase):
         file.sortPublishers()
         self.assertEqual('crash - Orion - Your Sinclair', file.getPublisher())
 
+    def test_badanov_bug(self):
+        file = GameFile('Треугольник.scl')
+        self.assertEqual('Треугольник', file.getGameName())
+        # file = GameFile('Mini-draiver diskovyh operatsiy.scl')
+        # self.assertEqual('Mini-draiver diskovyh operatsiy', file.getGameName())
+        file = GameFile('Минидрайвер дисковых операций.scl')
+        game_name = file.getGameName()
+        self.assertEqual('Минидрайвер дисковых операций', game_name)
+        file = GameFile('Мини-драйвер дисковых операций.scl')
+        self.assertEqual('Мини-драйвер дисковых операций', file.getGameName())
+        # file = GameFile('Мини-драйвер дисковых операций (стр. 10).scl')
+        # self.assertEqual('Мини-драйвер дисковых операций', file.getGameName())
+
 if __name__=='__main__':
     unittest.main()

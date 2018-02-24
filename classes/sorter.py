@@ -136,37 +136,37 @@ class Sorter():
                     self.gui.updateProgressBar(i)
             try:
                 game_files = self.getGameFilesFromInputPath(file_path)
+                if not game_files:
+                    print('Nothing found for', file_path)
+                    continue
+                if not self.short_filenames:
+                    for game_file in game_files:
+                        self.shortenGameFileDestination(game_file)
+                if self.too_long_path:
+                    print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
+                    break
+                for game_file in game_files:
+                    game_name = game_file.getGameName(short=self.short_filenames)
+                    if game_name not in collected_files.keys():
+                        collected_files[game_name] = []
+                    else:
+                        if game_file in collected_files[game_name]:
+                            continue
+                        if game_file.game.wos_id:
+                            copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
+                        else:
+                            copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
+                        if not tosec_compliant:
+                            copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
+                        game_file.addAlternateModFlag(copies_count,
+                                                      tosec_compliant=tosec_compliant,
+                                                      short_filenames=self.short_filenames)
+                    collected_files[game_name].append(copy(game_file))
             except:
                 game_files = None
                 self.errors += 'Error while examining {}\n{}\n'.format(file_path, traceback.format_exc())
                 self.files_skipped += 1
                 print(traceback.format_exc())
-            if not game_files:
-                print('Nothing found for', file_path)
-                continue
-            if not self.short_filenames:
-                for game_file in game_files:
-                    self.shortenGameFileDestination(game_file)
-            if self.too_long_path:
-                print('Path', self.too_long_path, 'is too long. Exiting prematurely.')
-                break
-            for game_file in game_files:
-                game_name = game_file.getGameName(short=self.short_filenames)
-                if game_name not in collected_files.keys():
-                    collected_files[game_name] = []
-                else:
-                    if game_file in collected_files[game_name]:
-                        continue
-                    if game_file.game.wos_id:
-                        copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
-                    else:
-                        copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
-                    if not tosec_compliant:
-                        copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
-                    game_file.addAlternateModFlag(copies_count,
-                                                  tosec_compliant=tosec_compliant,
-                                                  short_filenames=self.short_filenames)
-                collected_files[game_name].append(copy(game_file))
         return collected_files
 
     def shortenGameFileDestination(self, game_file):

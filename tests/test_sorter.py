@@ -348,9 +348,9 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).pok'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en)[a].tap'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en)[a].pok'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 
@@ -609,7 +609,7 @@ class TestSorter(unittest.TestCase):
         for root, dirs, files in os.walk(output_location):
             for dir in dirs:
                 print(dir)
-                self.assertEqual(len(dir), 2)
+                self.assertTrue(len(dir) in [2, 5])
             break
         for root, dirs, files in os.walk(output_location+'\\en'):
             for dir in dirs:
@@ -693,8 +693,9 @@ class TestSorter(unittest.TestCase):
         self.assertTrue(os.path.exists(expected_file))
         expected_file = output_location+'/0004295 - Saboteur II - Avenging Angel_2.tap'
         self.assertTrue(os.path.exists(expected_file))
-        not_expected_file = output_location + '/0027953 - Maritrini, Freelance Monster Slayer en - Las Increibles Vicisitudes de Despertarse Resacosa con Fred_2.tap'
-        self.assertFalse(os.path.exists(not_expected_file))
+        #Apparently, when this test was designed, we didn't know that this file is not an alternate, but a version with a different language (although ZXDB might be wrong in this case, we'll see
+        # not_expected_file = output_location + '/0027953 - Maritrini, Freelance Monster Slayer en - Las Increibles Vicisitudes de Despertarse Resacosa con Fred_2.tap'
+        # self.assertFalse(os.path.exists(not_expected_file))
         expected_md5 = '3610ee643dcefc3eb4ae12f2664ef004'
         expected_md5_found = False
         for root, dirs, files in os.walk(output_location):
@@ -884,7 +885,7 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_max_archive_out/Accelerator (1984)(Century City).z80')
 
     def test_other_archives(self):
-        s = Sorter(cache=True)
+        s = Sorter(cache=False)
         s.input_locations = [
             'tests/files/sort_other_archives_in/',
         ]
@@ -896,6 +897,7 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
         self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).z80')
         self.assertFileExists('tests/files/sort_other_archives_out/Unknown files/LASTHERO.TRD')
+        self.assertFileExists('tests/files/sort_other_archives_out/Unknown files/SPCOM9 - alt.TAP')
         gamefile = GameFile('tests/files/sort_other_archives_out/Unknown files/LASTHERO.TRD')
         self.assertEqual(gamefile.getCRC32(), '52725975')
 
@@ -922,6 +924,17 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 01 (1996-01-31)(Vozrazhdenie)(RU)[Omsk].udi')
+
+    def test_badanov_bug(self):
+        s = Sorter(cache=False)
+        s.input_locations = [
+            'tests/files/sort_badanov_bug_in/',
+        ]
+        s.output_location = 'tests/files/sort_badanov_bug_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+        # self.assertFileExists('tests/files/sort_badanov_bug_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
 
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)

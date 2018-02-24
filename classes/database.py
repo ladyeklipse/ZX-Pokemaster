@@ -27,13 +27,20 @@ SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
 
 class Database():
 
+    cache_by_wos_id = {}
+    cache_by_name = {}
+    cache_by_md5 = {}
+    cache_by_crc32 = {}
+    game_name_aliases = {}
+    publisher_aliases = {}
+
     def __init__(self, path=POKEMASTER_DB_PATH):
-        self.cache_by_wos_id = {}
-        self.cache_by_name = {}
-        self.cache_by_md5 = {}
-        self.cache_by_crc32 = {}
-        self.game_name_aliases = {}
-        self.publisher_aliases = {}
+        # self.cache_by_wos_id = {}
+        # self.cache_by_name = {}
+        # self.cache_by_md5 = {}
+        # self.cache_by_crc32 = {}
+        # self.game_name_aliases = {}
+        # self.publisher_aliases = {}
 
         if os.path.exists(path):
             self.conn = sqlite3.connect(path)

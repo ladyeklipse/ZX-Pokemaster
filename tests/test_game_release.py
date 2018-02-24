@@ -20,4 +20,16 @@ class TestGameRelease(unittest.TestCase):
         r = GameRelease(game=g)
         r.addAliases(['Saboteur II', 'Saboteur 2 - The Avenging Angel'])
         aliases = r.getAllAliases()
-        self.assertEqual(aliases[0], 'Saboteur II')
+        self.assertEqual('Saboteur II', aliases[0])
+
+    def test_badanov_bug(self):
+        g = Game('Треугольник')
+        r = GameRelease(game=g)
+        self.assertEqual(["Треугольник"], r.aliases)
+        g = Game('3угольник')
+        r = GameRelease(game=g)
+        self.assertEqual(["3угольник"], r.aliases)
+        g = Game('Минидрайвер дисковых операций')
+        r = GameRelease(game=g)
+        aliases = r.getAllAliases()
+        self.assertEqual(aliases, ['Минидрайвер дисковых операций'])
