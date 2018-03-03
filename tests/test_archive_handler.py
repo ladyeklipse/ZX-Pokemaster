@@ -1,5 +1,6 @@
 import  unittest
 import os
+import shutil
 from classes.archive_handler import *
 if (os.getcwd().endswith('tests')):
     os.chdir('..')
@@ -76,3 +77,19 @@ class TestSevenZip(unittest.TestCase):
         archive = Archive(file_path)
         files = archive.listFiles()
         self.assertGreater(len(files), 0)
+
+    def test_file_removal(self):
+        shutil.copy(os.path.join(self.test_dir, 'arkos.rar'), os.path.join(self.test_dir, 'arkos - copy.rar'))
+        file_path = os.path.join(self.test_dir, 'arkos - copy.rar')
+        archive = ZipArchive(file_path)
+        files = archive.listFiles()
+        for file in files:
+            file.remove()
+        self.assertFalse(os.path.exists(os.path.join(self.test_dir, 'arkos - copy.rar')))
+        shutil.copy(os.path.join(self.test_dir, 'arkos.zip'), os.path.join(self.test_dir, 'arkos - copy.zip'))
+        file_path = os.path.join(self.test_dir, 'arkos - copy.zip')
+        archive = ZipArchive(file_path)
+        files = archive.listFiles()
+        for file in files:
+            file.remove()
+        self.assertFalse(os.path.exists(os.path.join(self.test_dir, 'arkos - copy.zip')))

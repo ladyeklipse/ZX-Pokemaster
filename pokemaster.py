@@ -192,6 +192,7 @@ class MainDialog(QDialog):
             'max_archive_size':self.ui.txtMaxArchiveSize.value(),
             'use_camel_case':self.ui.chkCamelCase.isChecked(),
             'short_filenames':self.ui.chkShortFilenames.isChecked(),
+            'delete_source_files':self.ui.chkDeleteSourceFiles.isChecked(),
             'place_pok_files_in_pokes_subfolders':self.ui.chkPlacePokFilesIntoPOKESSubfolders.isChecked(),
         }
         return kwargs
@@ -286,6 +287,7 @@ class MainDialog(QDialog):
                 self.ui.chkSeparateUnknownFiles.setChecked(settings.get('separate_unknown_files', True))
                 self.ui.chkRetainFoldersForUnknownFiles.setChecked(settings.get('retain_relative_structure', False))
                 self.ui.chkIncludeSupplementaryFiles.setChecked(settings.get('include_supplementary_files', False))
+                self.ui.chkDeleteSourceFiles.setChecked(settings.get('delete_source_files', False))
                 self.ui.chkPlacePokFilesIntoPOKESSubfolders.setChecked(settings.get('place_pok_files_in_pokes_subfolders', True))
                 self.ui.txtMaxArchiveSize.setValue(settings.get('max_archive_size', 1))
                 if settings.get('max_files_per_folder') and \

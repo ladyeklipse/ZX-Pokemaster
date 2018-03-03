@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created: Sat Jan 27 23:55:42 2018
+# Created: Sat Feb 24 18:37:35 2018
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -229,6 +229,11 @@ class Ui_Dialog(object):
         self.chkRetainFoldersForUnknownFiles.setTristate(False)
         self.chkRetainFoldersForUnknownFiles.setObjectName(_fromUtf8("chkRetainFoldersForUnknownFiles"))
         self.verticalLayout.addWidget(self.chkRetainFoldersForUnknownFiles)
+        self.chkDeleteSourceFiles = QtGui.QCheckBox(self.tabFileFiltering)
+        self.chkDeleteSourceFiles.setChecked(False)
+        self.chkDeleteSourceFiles.setTristate(False)
+        self.chkDeleteSourceFiles.setObjectName(_fromUtf8("chkDeleteSourceFiles"))
+        self.verticalLayout.addWidget(self.chkDeleteSourceFiles)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
         self.verticalLayout.setStretch(3, 1)
@@ -237,7 +242,7 @@ class Ui_Dialog(object):
         self.verticalLayout.setStretch(6, 1)
         self.verticalLayout.setStretch(7, 1)
         self.verticalLayout.setStretch(8, 1)
-        self.verticalLayout.setStretch(13, 1)
+        self.verticalLayout.setStretch(14, 1)
         self.tabWidget.addTab(self.tabFileFiltering, _fromUtf8(""))
         self.tabAbout = QtGui.QWidget()
         self.tabAbout.setObjectName(_fromUtf8("tabAbout"))
@@ -329,6 +334,7 @@ class Ui_Dialog(object):
         self.chkIncludeUnknownFiles.setText(_translate("Dialog", "Include unknown files", None))
         self.chkSeparateUnknownFiles.setText(_translate("Dialog", "Put unknown files into \"Unknown\" folder", None))
         self.chkRetainFoldersForUnknownFiles.setText(_translate("Dialog", "Retain relative folder structure for unknown files", None))
+        self.chkDeleteSourceFiles.setText(_translate("Dialog", "Delete source files after sorting (USE AT YOUR OWN RISK!)", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFileFiltering), _translate("Dialog", "File filtering", None))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

@@ -282,7 +282,7 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,0,0,1">
        <property name="spacing">
         <number>7</number>
        </property>
@@ -475,6 +475,19 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="chkDeleteSourceFiles">
+         <property name="text">
+          <string extracomment="If unchecked, unknown files will be mixed with known and properly renamed ones.">Delete source files after sorting (USE AT YOUR OWN RISK!)</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -499,6 +512,7 @@
       <zorder>chkIncludeUnknownFiles</zorder>
       <zorder>chkSeparateUnknownFiles</zorder>
       <zorder>chkRetainFoldersForUnknownFiles</zorder>
+      <zorder>chkDeleteSourceFiles</zorder>
      </widget>
      <widget class="QWidget" name="tabAbout">
       <attribute name="title">

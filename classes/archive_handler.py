@@ -8,6 +8,7 @@ import stat
 
 SEVENZIP_LIST_CMD = '7z l -slt "{archive_path}" -sccUTF-8'
 SEVENZIP_EXTRACT_CMD = '7z e "{archive_path}" -o"{dest_dir}" "{src_file}" -y -sccUTF-8'
+SEVENZIP_DELETE_CMD = '7z d "{archive_path}" "{file_path}"'
 
 class Archive():
 
@@ -143,3 +144,22 @@ class ArchivedFile():
                 return md5
             else:
                 return None
+
+    def remove(self):
+        #Removes file from archive.
+        #Also removes the archive itself, if after removing of the file it becomes empty.
+        if type(self.parent).__name__=='ZipArchive':
+            pass
+        elif type(self.parent).__name__ == 'SevenZipArchive':
+            command = SEVENZIP_DELETE_CMD.format(
+                archive_path=self.parent.filepath,
+                file_path=self.path)
+            print(command)
+            s = subprocess.Popen(command,
+                             stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE,
+                             shell=True)
+            print(s.communicate()[0].decode('UTF-8'))
+            files = self.parent.listFiles()
+            if not files:
+                os.unlink(self.parent.filepath)

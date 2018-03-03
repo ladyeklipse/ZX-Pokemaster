@@ -52,6 +52,7 @@ class Sorter():
         self.separate_unknown_files = kwargs.get('separate_unknown_files', True)
         self.retain_relative_structure = kwargs.get('retain_relative_structure', False)
         self.include_supplementary_files = kwargs.get('include_supplementary_files', False)
+        self.delete_source_files = kwargs.get('delete_source_files', False)
         self.max_archive_size = int(kwargs.get('max_archive_size', 1))*1024*1024
         self.short_filenames = kwargs.get('short_filenames', False)
         self.use_camel_case = kwargs.get('use_camel_case', False)
@@ -380,6 +381,8 @@ class Sorter():
             os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
             shutil.copyfile(file.src, dest)
         finally:
+            if self.delete_source_files:
+                os.unlink(file.src)
             self.files_sorted += 1
 
     def copySupplementaryFiles(self, file):
