@@ -268,16 +268,16 @@ class ZXDBScraper():
                              'cartridge' in file_format:
                             game_file = self.gameFileFromRow(row, game)
                             release.addFile(game_file)
-                elif row['file_type']=='POK pokes file':
-                    try:
-                        pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
-                        game.importPokFile(file_path=pok_file_path)
-                    except FileNotFoundError:
-                        pok_file_path = self.pok_file_paths.get(game.wos_id)
-                        if not pok_file_path:
-                            print('Poke not found for:', game)
-                        else:
-                            game.importPokFile(file_path=pok_file_path)
+                # elif row['file_type']=='POK pokes file':
+                #     try:
+                #         pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
+                #         game.importPokFile(file_path=pok_file_path)
+                #     except FileNotFoundError:
+                #         pok_file_path = self.pok_file_paths.get(game.wos_id)
+                #         if not pok_file_path:
+                #             print('Poke not found for:', game)
+                #         else:
+                #             game.importPokFile(file_path=pok_file_path)
                 if row['alt_name'] and row['alt_language'] in (None, 'en'):
                     alias = self.sanitizeAlias(row['alt_name'])
                     release.addAlias(alias)
@@ -293,6 +293,9 @@ class ZXDBScraper():
         author = self.authorNameFromRow(row)
         game.setAuthor(author)
         game.setYear(row['year'])
+        pok_file_path = self.pok_file_paths.get(game.wos_id)
+        if pok_file_path:
+            game.importPokFile(file_path=pok_file_path)
         #TEMPORARY
         if not row['genre']:
             if game.wos_id in [
@@ -303,6 +306,8 @@ class ZXDBScraper():
                 game.setGenre('Various Games')
             elif game.wos_id in [32176]:
                 game.setGenre('Utilities - Screen')
+            elif game.wos_id in [32257, 32258, 32259]:
+                game.setGenre('Utilities')
         else:
             game.setGenre(row['genre'])
         game.x_rated = row['x_rated']

@@ -52,7 +52,7 @@ def xlsx2db():
             #raise e
         sql = 'UPDATE game SET pok_file_contents = ? WHERE wos_id=?'
         params = [pok_file_contents, wos_id]
-        print(sql, params)
+        # print(sql, params)
         db.execute(sql, params)
     db.commit()
 

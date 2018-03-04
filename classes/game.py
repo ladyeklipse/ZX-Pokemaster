@@ -334,19 +334,15 @@ class Game(object):
             files.extend(release.files)
         return files
 
-    def addCheat(self, cheat, cheat_source=CHEAT_SOURCE_SCRAPE):
+    def addCheat(self, cheat, cheat_source=CHEAT_SOURCE_SCRAPE, modify_description_on_collision=False):
         if type(cheat)!=Cheat:
             raise TypeError()
         if cheat not in self.cheats:
             self.cheats.append(cheat)
-        # if cheat_source == CHEAT_SOURCE_OLD_DB:
-        #     if cheat in self.cheats:
-        #         self.cheats[self.cheats.index(cheat)].description = cheat.description
-        # else:
-        # if cheat not in self.cheats:
-            # if cheat.description in [x.description for x in self.cheats]:
-            #     cheat.description += ' (alt)'
-            # self.cheats.append(cheat)
+        elif modify_description_on_collision:
+            for existing_cheat in self.cheats:
+                if existing_cheat == cheat:
+                    existing_cheat.description = cheat.description
 
     def mergeDescriptionsWithOldDBFile(self):
         self.importPokFile()

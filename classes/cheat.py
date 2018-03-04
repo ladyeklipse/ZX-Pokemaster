@@ -14,7 +14,6 @@ class Cheat(object):
     def pokesToString(self):
         return ':'.join([poke.toString() for poke in self.pokes])
 
-
     def __eq__(self, other):
         for poke in self.pokes:
             if poke not in other.pokes:

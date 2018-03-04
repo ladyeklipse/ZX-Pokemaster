@@ -17,7 +17,7 @@ ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\')
 ts.sortPaths()
 ts.scrapeTOSEC()
 ts.addUnscraped()
-# ts.updateContentDescAndNotesLookupTable() #doesn't work well
+ts.updateContentDescAndNotesLookupTable() #doesn't work well
 ts.db.commit()
 import scripts.check_zxdb_tosec_inconsistencies
 import scripts.create_tosec_dats

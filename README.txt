@@ -207,6 +207,7 @@ V. Version history
  - Added the option to include archives larger than 1MB (may be slow!);
  - "Books" and "Music" added as file types;
  - Unknown files are not renamed anymore, they are collected into a separate folder instead;
+ - Now you may delete original files after sorting them (USE AT YOUR OWN RISK!)
  - Updated "About" tab. Now you know where to send Bitcoins ;)
 
 1.2.

@@ -112,7 +112,7 @@ def updateMods():
             print('Game with ID', mod['id'], 'not found')
             continue
         for cheat in mod_of.cheats:
-            mod_game.addCheat(cheat)
+            mod_game.addCheat(cheat, modify_description_on_collision=True)
         for cheat in mod_of.cheats:
             if cheat.description=='Having already applied the poke simply add these':
                 cheat.description = 'Moves invisible object from First Landing to The Hall'
@@ -197,10 +197,11 @@ def createPOKTOSECDat():
 
 if __name__=='__main__':
     #FIRST PART
-    wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
-    games = getAllPokes()
-    games2xlsx(games, new_only=True)
+    # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    # updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
+    # games = getAllPokes()
+    # games2xlsx(games, new_only=True)
+    # xlsx2db()
     #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
     xlsx2db()
     updateMods()

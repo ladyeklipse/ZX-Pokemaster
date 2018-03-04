@@ -442,11 +442,17 @@ class Sorter():
         return sum([len(x) for x in self.collected_files.values()])
 
     def unpackFile(self, game_file):
-        archive = SevenZipArchive(game_file.src)
-        for file in archive.listFiles():
+        archive = Archive(game_file.src)
+        files = archive.listFiles()
+        for file in files:
             if game_file.path_in_archive == file.path:
                 file.extractTo(game_file.getDestPath())
                 self.files_sorted += 1
+                if self.delete_source_files:
+                    if len(files)==1:
+                        os.unlink(archive.filepath)
+                    else:
+                        file.remove()
                 break
 
     def cancel(self):

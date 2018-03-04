@@ -759,7 +759,7 @@ class GameFile(object):
         self.type = ''
         if 'Compilation' in genre:
             self.type += 'Compilations'
-            if 'Utilities' in genre:
+            if 'Utilit' in genre:
                 self.type += os.sep+'Applications'
             elif 'Education' in genre:
                 self.type += os.sep+'Educational'
@@ -779,7 +779,7 @@ class GameFile(object):
             self.type += 'Firmware'
         elif 'Education' in genre:
             self.type += 'Educational'
-        elif genre.startswith('Utility') or \
+        elif genre.startswith('Utilit') or \
             'Programming' in genre or \
             'General' in genre or \
             'Emulator' in genre:

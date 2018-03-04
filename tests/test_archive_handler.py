@@ -30,6 +30,9 @@ class TestSevenZip(unittest.TestCase):
         self.assertEqual('Arkos (1988)(Zigurat)(ES)(Part 1 of 3)[Тест юникода].z80', files[0].path)
         self.assertEqual('e0bd1ed3', files[0].crc32)
         self.assertEqual(36986, files[2].size)
+        file_path = os.path.join(self.test_dir, 'arkos.zip')
+        archive = ZipArchive(file_path)
+        files = archive.listFiles()
 
     def test_file_unpacking(self):
         file_path = os.path.join(self.test_dir, 'chars.rar')
@@ -79,17 +82,18 @@ class TestSevenZip(unittest.TestCase):
         self.assertGreater(len(files), 0)
 
     def test_file_removal(self):
-        shutil.copy(os.path.join(self.test_dir, 'arkos.rar'), os.path.join(self.test_dir, 'arkos - copy.rar'))
-        file_path = os.path.join(self.test_dir, 'arkos - copy.rar')
-        archive = ZipArchive(file_path)
-        files = archive.listFiles()
-        for file in files:
-            file.remove()
-        self.assertFalse(os.path.exists(os.path.join(self.test_dir, 'arkos - copy.rar')))
+        # shutil.copy(os.path.join(self.test_dir, 'arkos.rar'), os.path.join(self.test_dir, 'arkos - copy.rar'))
+        # file_path = os.path.join(self.test_dir, 'arkos - copy.rar')
+        # archive = ZipArchive(file_path)
+        # files = archive.listFiles()
+        # for file in files:
+        #     file.remove()
+        # self.assertFalse(os.path.exists(os.path.join(self.test_dir, 'arkos - copy.rar')))
         shutil.copy(os.path.join(self.test_dir, 'arkos.zip'), os.path.join(self.test_dir, 'arkos - copy.zip'))
         file_path = os.path.join(self.test_dir, 'arkos - copy.zip')
-        archive = ZipArchive(file_path)
+        archive = SevenZipArchive(file_path)
         files = archive.listFiles()
         for file in files:
+            print(file.path)
             file.remove()
         self.assertFalse(os.path.exists(os.path.join(self.test_dir, 'arkos - copy.zip')))

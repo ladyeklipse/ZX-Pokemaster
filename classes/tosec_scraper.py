@@ -341,7 +341,7 @@ class TOSECScraper():
 
     def getManuallyCorrectedContentDescriptionsAndNotes(self):
         if not self.manually_corrected_content_descriptions:
-            with open('content_desc_aliases.csv', 'r', encoding='utf-8') as f:
+            with open('content_desc_aliases.csv', 'r', encoding='utf-8', errors='replace') as f:
                 for line in f.readlines():
                     line = line.strip().replace('\t', ';').split(';')
                     if len(line)<3 or not line[3]:
