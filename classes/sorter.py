@@ -93,6 +93,8 @@ class Sorter():
             fileBundler = FileBundler(self.max_files_per_folder, bundle_depth)
             fileBundler.bundleFilesInEqualFolders(self.collected_files)
         self.redistributeFiles()
+        if self.delete_source_files:
+            self.removeEmptyDirs()
         if self.original_output_location:
             self.renameOutputLocation()
         self.saveLog()
@@ -132,10 +134,9 @@ class Sorter():
         for i, file_path in enumerate(input_files):
             if self.should_cancel:
                 break
-            if i % 100 == 0:
-                if self.gui:
-                    self.gui.updateProgressBar(i)
             try:
+                if i % 100 == 0 and self.gui:
+                    self.gui.updateProgressBar(i)
                 game_files = self.getGameFilesFromInputPath(file_path)
                 if not game_files:
                     print('Nothing found for', file_path)
@@ -152,6 +153,11 @@ class Sorter():
                         collected_files[game_name] = []
                     else:
                         if game_file in collected_files[game_name]:
+                            existing_game_file = [x for x in collected_files[game_name] if x==game_file][0]
+                            if game_file.file_in_archive and not game_file.file_is_alone_in_archive:
+                                    existing_game_file.alt_files_in_archives.append(game_file.file_in_archive)
+                            else:
+                                existing_game_file.alt_src.append(game_file.src)
                             continue
                         if game_file.game.wos_id:
                             copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
@@ -191,7 +197,6 @@ class Sorter():
         if not input_locations:
             input_locations = self.input_locations
         input_files = []
-        # formats = ['zip']+GAME_EXTENSIONS
         formats = GAME_EXTENSIONS + ARCHIVE_EXTENSIONS
         for location in input_locations:
             if self.should_cancel:
@@ -224,7 +229,8 @@ class Sorter():
             if os.path.getsize(file_path)>self.max_archive_size:
                 return []
             archive = Archive(file_path)
-            for file in archive.listFiles():
+            archive_files = archive.listFiles()
+            for file in archive_files:
                 basename, ext = os.path.splitext(file.path)
                 ext = ext[1:].lower()
                 if ext not in self.formats_preference:
@@ -252,7 +258,10 @@ class Sorter():
                     if basename_lower not in game_file_lower and \
                         game_file_lower not in basename_lower:
                         game_file.content_desc = ' - '+basename
-                game_file.path_in_archive = file.path
+                # game_file.path_in_archive = file.path
+                game_file.file_in_archive = file
+                if len(archive_files)==1:
+                    game_file.file_is_alone_in_archive = True
                 game_file.src = file_path
                 game_file.dest = self.getDestination(game_file)
                 game_file.alt_dest = ''
@@ -282,9 +291,9 @@ class Sorter():
         if game_file.game.wos_id:
             dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
                                                     game_name_length=game_name_length)
-        elif game_file.path_in_archive:
-            dest_dir = os.path.join(dest_dir, os.path.dirname(game_file.path_in_archive))
-            dest_filename = os.path.basename(game_file.path_in_archive)
+        elif game_file.file_in_archive:
+            dest_dir = os.path.join(dest_dir, os.path.dirname(game_file.file_in_archive.path))
+            dest_filename = os.path.basename(game_file.file_in_archive.path)
         else:
             dest_filename = os.path.basename(game_file.src)
         if self.short_filenames:
@@ -360,7 +369,7 @@ class Sorter():
                 if self.gui:
                     self.gui.updateProgressBar(i)
             try:
-                if file.path_in_archive:
+                if file.file_in_archive:
                     self.unpackFile(file)
                 else:
                     self.copyFile(file)
@@ -372,18 +381,49 @@ class Sorter():
                     file.src, traceback.format_exc())
                 self.files_skipped += 1
 
-    def copyFile(self, file):
-        dest = file.getDestPath()
+    def copyFile(self, game_file):
+        dest = game_file.getDestPath()
         try:
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copyfile(file.src, dest)
+            shutil.copyfile(game_file.src, dest)
         except PermissionError:
-            os.chmod(file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
-            shutil.copyfile(file.src, dest)
+            os.chmod(game_file.dest, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
+            shutil.copyfile(game_file.src, dest)
         finally:
             if self.delete_source_files:
-                os.unlink(file.src)
+                self.removeAllSourceFiles(game_file)
             self.files_sorted += 1
+
+    def removeAllSourceFiles(self, game_file):
+        for src in [game_file.src] + game_file.alt_src:
+            self.removeFile(src)
+            pok_path = os.path.splitext(game_file.src)[0] + '.pok'
+            if os.path.exists(pok_path):
+                self.removeFile(pok_path)
+            alt_pok_path = os.path.join(os.path.dirname(pok_path), 'POKES', os.path.basename(pok_path))
+            if os.path.exists(alt_pok_path):
+                self.removeFile(alt_pok_path)
+        for file in [game_file.file_in_archive] + game_file.alt_files_in_archives:
+            file.remove()
+
+    def removeFile(self, src):
+        try:
+            print('src=',src)
+            os.unlink(src)
+        except PermissionError:
+            os.chmod(src, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
+            os.unlink(src)
+
+    def removeEmptyDirs(self):
+        for path in self.input_locations:
+            for dirpath, _, _ in os.walk(path, topdown=False):  # Listing the files
+                if dirpath == path:
+                    break
+                try:
+                    os.rmdir(dirpath)
+                except OSError as ex:
+                    pass
+                    # print(ex)
 
     def copySupplementaryFiles(self, file):
         dirname = os.path.dirname(file.src)
@@ -400,7 +440,10 @@ class Sorter():
             dest_filename = os.path.splitext(os.path.basename(dest))[0]
             dest = os.path.join(dest_dir, subdirname, dest_filename)+ext
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copy(sup_file, dest)
+            if not self.delete_source_files:
+                shutil.copy(sup_file, dest)
+            else:
+                shutil.move(sup_file, dest)
         glob_regex = dirname+'/'+filename+'.*'
         glob_regex = glob_regex.translate({ord('['):'[[]', ord(']'):'[]]'})
         for sup_file in glob.glob(glob_regex):
@@ -412,7 +455,10 @@ class Sorter():
             dest_filename = os.path.splitext(os.path.basename(dest))[0]
             dest = os.path.join(dest_dir, dest_filename)+ext
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copy(sup_file, dest)
+            if not self.delete_source_files:
+                shutil.copy(sup_file, dest)
+            else:
+                shutil.move(sup_file, dest)
 
     def extractPokFile(self, file):
         dest = file.getDestPath()
@@ -442,18 +488,22 @@ class Sorter():
         return sum([len(x) for x in self.collected_files.values()])
 
     def unpackFile(self, game_file):
-        archive = Archive(game_file.src)
-        files = archive.listFiles()
-        for file in files:
-            if game_file.path_in_archive == file.path:
-                file.extractTo(game_file.getDestPath())
-                self.files_sorted += 1
-                if self.delete_source_files:
-                    if len(files)==1:
-                        os.unlink(archive.filepath)
-                    else:
-                        file.remove()
-                break
+        game_file.file_in_archive.extractTo(game_file.getDestPath())
+        if self.delete_source_files:
+            self.removeAllSourceFiles(game_file)
+            # game_file.file_in_archive.remove()
+        # archive = Archive(game_file.src)
+        # files = archive.listFiles()
+        # for file in files:
+        #     if game_file.path_in_archive == file.path:
+        #         file.extractTo(game_file.getDestPath())
+        #         self.files_sorted += 1
+        #         if self.delete_source_files:
+        #             if len(files)==1:
+        #                 self.removeFile(archive.filepath)
+        #             else:
+        #                 file.remove()
+        #         break
 
     def cancel(self):
         self.should_cancel = True
@@ -466,6 +516,7 @@ class Sorter():
         self.log_path = os.path.abspath(os.path.join('logs', log_name))
         os.makedirs('logs', exist_ok=True)
         with open(self.log_path, 'w+', encoding='utf-8') as f:
+            f.write('ZX Pokemaster version: {}\n\n'.format(ZX_POKEMASTER_VERSION))
             f.write('Files sorted: {}\n'.format(self.files_sorted))
             f.write('Files skipped: {}\n'.format(self.files_skipped))
             f.write('\n')

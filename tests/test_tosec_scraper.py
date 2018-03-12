@@ -370,6 +370,18 @@ class TestTOSECScraper(unittest.TestCase):
         print(game.getGenre())
         self.assertEqual('Music', game.getFiles()[0].getGenre())
 
+    def testAltAka(self):
+        paths = ts.generateTOSECPathsArrayFromDatFiles()
+        paths = [path for path in paths if '\Games Compendium -' in path['path']]
+        ts.paths = paths
+        wos_id = 14685
+        self.scrape(paths, wos_id)
+        game = ts.db.getGameByWosID(wos_id)
+        for file in game.getFiles():
+            # print(file.md5, file.notes)
+            self.assertEqual('NONE', file.notes)
+        # self.fail()
+
 
     def scrape(self, paths, wos_id):
         sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)

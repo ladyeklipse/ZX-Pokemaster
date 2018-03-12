@@ -938,7 +938,8 @@ class TestSorter(unittest.TestCase):
 
     def test_deleting(self):
         s = Sorter(cache=False,
-                   delete_source_files=True
+                   delete_source_files=True,
+                   include_alternate=True,
                    )
         s.input_locations = [
             'tests/files/sort_deleting_in/',
@@ -946,16 +947,25 @@ class TestSorter(unittest.TestCase):
         s.output_location = 'tests/files/sort_deleting_out/'
         backup_location = 'tests/files/sort_deleting_in_backup'
         if os.path.exists(s.input_locations[0]):
-            shutil.rmtree(s.input_locations[0])
+            shutil.rmtree(s.input_locations[0], ignore_errors=True)
         shutil.copytree(backup_location, s.input_locations[0])
+        # if not os.path.exists(s.output_location):
+        #     s.sortFiles()
+            # shutil.rmtree(s.input_locations[0], ignore_errors=True)
+            # shutil.copytree(backup_location, s.input_locations[0])
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertFileNotExists(os.path.join(s.input_locations[0], '2 ExtendedBASIC.tzx.zip'))
-        #Check if protected file is in place
-        self.assertFileExists(os.path.join(s.input_locations[0], 'Dizzy VII - Crystal Kindom Dizzy (2017).7z'))
+        self.assertFileNotExists(os.path.join(s.input_locations[0], 'Dizzy VII - Crystal Kindom Dizzy (2017).7z'))
         self.assertFileNotExists(os.path.join(s.input_locations[0], '0004295 - Saboteur II.z80'))
         self.assertFileNotExists(os.path.join(s.input_locations[0], 'arkos.zip'))
+        self.assertFileNotExists(os.path.join(s.input_locations[0], '3D Lunattack (1984)(Hewson Consultants)(48K)(GB)(en)en_4.pok'))
+        self.assertFileNotExists(os.path.join(s.input_locations[0], 'POKES/3D Lunattack (1984)(Hewson Consultants)(48K)(GB)(en)en_4.pok'))
+        self.assertFileNotExists(os.path.join(s.input_locations[0], 'POKES'))
+        self.assertFileExists(os.path.join(s.input_locations[0], 'non speccy related stuff'))
+        self.assertFileNotExists(os.path.join(s.input_locations[0], 'subdir'))
+
 
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)

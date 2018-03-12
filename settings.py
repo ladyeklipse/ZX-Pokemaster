@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.3-beta2'
+ZX_POKEMASTER_VERSION = '1.3-beta4'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 POKEMASTER_MIN_DB_PATH = 'pokemaster.min.db'
 DB_DISK_CACHE_FILE = 'hashes.dat'
@@ -26,7 +26,8 @@ ARCHIVE_EXTENSIONS =   ['zip', 'rar', '7z', 'gz', 'iso', 'tar',
                         'gz', 'gzip', 'tgz', 'tar',
                         'xz', 'txz', 'arj', 'dmg', 'iso',
                         'lzh', 'lha', 'lzma', 'r00', 'z', 'taz']
-DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ARCHIVE_EXTENSIONS + ['zip', 'pok']
+DISALLOWED_SUPPLEMENTARY_FILES = GAME_EXTENSIONS + ARCHIVE_EXTENSIONS + \
+    ['pok', '$b', '$c', '$m', '$t', '$u', '$w', '$x', '$z']
 DISK_FORMATS = ('dsk', 'trd', 'scl')
 TAPE_FORMATS = ('tzx', 'tap')
 MAX_GAME_NAME_LENGTH = 100

@@ -3,6 +3,7 @@ from classes.game import *
 from classes.database import *
 from lxml import etree
 from copy import copy
+import pickle
 
 def refresh_tosec_aliases():
     with open('tosec_aliases.bak', 'r', encoding='utf-8') as f:
@@ -40,6 +41,10 @@ class TOSECScraper():
 
     def generateTOSECPathsArrayFromFolder(self, folder):
         paths = []
+        cache_file = os.path.join(folder, 'cache.dump')
+        if os.path.exists(cache_file):
+            paths = pickle.load(cache_file)
+            return paths
         for root, dirs, files in os.walk(folder):
             for filename in files:
                 file_path_dict = {}
@@ -62,6 +67,9 @@ class TOSECScraper():
                 file_path_dict['crc32'] = game_file.getCRC32()
                 file_path_dict['sha1'] = game_file.getSHA1()
                 paths.append(file_path_dict)
+        with open(cache_file, 'wb') as f:
+            pickle.dump(paths, f)
+        print('Paths cached.')
         return paths
 
     def generateTOSECPathsArrayFromList(self, list):
@@ -151,6 +159,7 @@ class TOSECScraper():
                 current_game.files = []
                 current_game = None
                 if games_found % 1000 == 0:
+                    print('Committing ', games_found)
                     self.db.commit()
             if not current_game:
                 current_game = game_file.game
@@ -344,19 +353,21 @@ class TOSECScraper():
             with open('content_desc_aliases.csv', 'r', encoding='utf-8', errors='replace') as f:
                 for line in f.readlines():
                     line = line.strip().replace('\t', ';').split(';')
-                    if len(line)<3 or not line[3]:
-                        continue
-                    else:
-                         line[3] = line[3][:-4]
+                    # if len(line)<3 or not line[3]:
+                    #     continue
+                    # else:
+                    #      line[3] = line[3][:-4]
                     if line[2].startswith('NONE') or line[2].startswith('ALT'):
-                        self.manually_corrected_content_descriptions[line[3]] = line[2]
-                    if len(line)<8:
-                        continue
-                    else:
-                        notes = line[6]
-                        if notes.startswith('NONE') or notes.startswith('ALT'):
-                            md5 = line[7]
-                            self.manually_corrected_notes[md5] = notes
+                        md5 = line[7]
+                        # self.manually_corrected_content_descriptions[line[3]] = line[2]
+                        self.manually_corrected_content_descriptions[md5] = line[2]
+                    # if len(line)<8:
+                    #     continue
+                    # else:
+                    notes = line[6]
+                    if notes.startswith('NONE') or notes.startswith('ALT'):
+                        md5 = line[7]
+                        self.manually_corrected_notes[md5] = notes
 
     def getSameMD5ExclusionList(self):
         if not self.file_exclusion_list:

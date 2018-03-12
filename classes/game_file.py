@@ -43,12 +43,15 @@ class GameFile(object):
     crc32 = ''
     sha1 = ''
     src=''
+    # alt_src = [] #for deleting
     dest=''
     alt_dest=''
     is_tosec_compliant = False
     is_alternate = False
-    # has_crc32_duplicate = False
-    path_in_archive = None
+    # path_in_archive = None
+    file_is_alone_in_archive = False
+    file_in_archive = None
+    # alt_files_in_archives = []
 
     def __init__(self, path='', size=0, game=None, release=None,
                  source=None):
@@ -56,6 +59,8 @@ class GameFile(object):
         self.dest = ''
         self.alt_dest = ''
         self.alt_mod_flag = ''
+        self.alt_src = []
+        self.alt_files_in_archives = []
         self.game_name_differentiator = ''
         self.is_alternate = False
         if not path:
@@ -332,8 +337,8 @@ class GameFile(object):
                 self.game.x_rated = 1
             else:
                 note = '[{}]'.format(each)
-                if note not in self.notes:
-                    self.notes += note
+                # if note not in self.notes:
+                self.addNotes(note)
         # self.sortModFlags()
         if '(demo' in tosec_path.lower():
             self.is_demo = 1
@@ -367,6 +372,8 @@ class GameFile(object):
         self.mod_flags = ''.join('[{}]'.format(x) for x in mod_flags_array)
 
     def sortNotes(self):
+        if self.notes.startswith('NONE') or self.notes.startswith('ALT'):
+            return
         notes_array = re.findall(SQUARE_BRACKETS_REGEX, self.notes)
         notes_array = sorted(set(notes_array))
         self.notes = ''.join('[{}]'.format(x) for x in notes_array)
@@ -376,13 +383,6 @@ class GameFile(object):
             game_name = filename.split('(')[0].strip()
             aliases = self.game.getAliases()
             alias_found = False
-            # for alias in aliases:
-            #     alias = alias.lower()
-            #     alias = getSearchStringFromGameName(alias)
-                # if alias in game_name.lower():
-                #     self.content_desc = game_name[game_name.lower().find(alias)+len(alias):].rstrip()
-                #     alias_found = True
-                #     break
             if not self.content_desc and not alias_found:
                 if ' - ' in game_name:
                     self.content_desc = ' - '+' - '.join(game_name.split(' - ')[1:])
@@ -410,7 +410,6 @@ class GameFile(object):
                     self.part = int(part)
                     split_content_desc[1] = split_content_desc[1][1:]
                     self.content_desc = ''.join(split_content_desc).strip()
-
 
     def setReleaseDate(self, release_date):
         release_date = re.findall('([12][90][x0-9][x0-9](-[x01][x0-9](-[x0-3][x0-9])?)?)', release_date)
@@ -465,7 +464,7 @@ class GameFile(object):
             protection_scheme not in ('None', 'Undetermined', 'Unknown', 'Unspecified custom loader'):
             protection_scheme = protection_scheme.replace('Firebird ', '')
             protection_scheme = remove_brackets_regex.sub('', protection_scheme).strip()
-            self.notes += '['+protection_scheme+']'
+            self.addNotes('['+protection_scheme+']')
 
     def getMachineType(self):
         if self.machine_type:
@@ -474,7 +473,6 @@ class GameFile(object):
             return self.game.machine_type
 
     def setLanguage(self, language):
-        # language = language.lower() if language.isalpha() else language.upper()
         if language and (len(language)==2 or len(language)==5):
             self.language = language
 
@@ -517,12 +515,6 @@ class GameFile(object):
             if '('+each[0]+')' in name or '('+each[1].lower()+')' in name:
                 self.language = each[0]
                 break
-
-    # def setContentDescFromWosName(self):
-    #     content_desc = os.path.splitext(self.wos_name)[0].replace(' - ', '')
-    #     for alias in self.release.getAllAliases():
-    #         content_desc = content_desc.replace(alias, '')
-    #     self.content_desc = ' - '+content_desc
 
     def getMedia(self):
         return ' '.join((self.getPart(), self.getSide())).strip()
@@ -738,6 +730,12 @@ class GameFile(object):
         else:
             return notes
 
+    def addNotes(self, note):
+        if self.notes == 'NONE' or self.notes.startswith('ALT ') or note in self.notes:
+            return
+        else:
+            self.notes += note
+
     def getTOSECDatName(self):
         parts = ['Sinclair ZX Spectrum'] #Hardcoded until ZX81 and other machines' support is about to be added
         parts += self.getType().split('\\')
@@ -749,7 +747,6 @@ class GameFile(object):
             return self.game.getGenre()
         else:
             return 'Unknown'
-        return 'Unknown'
 
     def getType(self):
         if self.game.name.startswith('ZZZ-UNK'):
@@ -803,12 +800,11 @@ class GameFile(object):
         return self.type
 
     def setReRelease(self):
-        if '[re-release]' not in self.notes and \
-                self.release.release_seq>0:
+        if self.release.release_seq>0:
             for release in self.game.releases:
                 if self.release.release_seq != release.release_seq and \
                     self.release.getYear()==release.getYear():
-                    self.notes += '[re-release]'
+                    self.addNotes('[re-release]')
                     break
 
     def setAka(self):
@@ -823,7 +819,7 @@ class GameFile(object):
                 alias_search_string = getSearchStringFromGameName(alias)
                 if not [x for x in aliases_search_strings if x in alias_search_string or alias_search_string in x]:
                     alias = putPrefixToEnd(alias)
-                    self.notes += '[aka '+alias+']'
+                    self.addNotes('[aka '+alias+']')
                     aliases_search_strings.append(alias_search_string)
 
     def getGameName(self, game_name_length=MAX_GAME_NAME_LENGTH,

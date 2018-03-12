@@ -21,7 +21,7 @@ def getMeaningfulEightLetterName(game_name):
     game_name = ''.join([x for x in game_name if x.isalnum() or x==' '])
     game_name = ' '.join([x for x in game_name.split(' ') if \
                           x.lower() not in MEANINGLESS_WORDS])
-    game_name = game_name.replace(' II', ' 2').replace(' III', ' 3').replace(' IV', ' 4')
+    game_name = game_name.replace(' III', ' 3').replace(' IV', ' 4').replace(' II', ' 2')
     words = [word for word in game_name.split(' ') if word]
     if len(words)==1:
         name = words[0][:8]
@@ -103,11 +103,5 @@ def getSearchStringFromGameName(game_name):
     return ''.join(filter(str.isalnum, game_name.lower()))
 
 def replaceRomanNumbers(game_name):
-    return game_name.replace(' II', ' 2').replace(' III', ' 3').replace(' IV', ' 4') \
-        .replace(' V ', ' 5 ').replace(' VI', ' 6').replace(' VII', ' 7')
-    if game_name.endswith(' V'):
-        game_name = game_name[:-2]+' 5'
-
-# def sanitizePublisher(publisher, publisher_aliases):
-#     if publisher in publisher_aliases:
-#         return publisher_aliases[publisher]
+    return game_name.replace(' III', ' 3').replace(' II', ' 2').replace(' IV', ' 4') \
+        .replace(' VI', ' 6').replace(' VII', ' 7').replace(' V ', ' 5 ')

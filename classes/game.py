@@ -94,8 +94,8 @@ class Game(object):
     def setContentDescForFiles(self, lookup_table={}):
         files = self.getFiles()
         for file in files:
-            if file.tosec_path[:-4] in lookup_table:
-                file.content_desc = lookup_table[file.tosec_path[:-4]]
+            if file.md5 in lookup_table:
+                file.content_desc = lookup_table[file.md5]
                 continue
             if file.tosec_path and not file.content_desc:
                 filename = os.path.basename(file.tosec_path)
@@ -107,12 +107,13 @@ class Game(object):
             md5 = file.getMD5()
             if md5 in lookup_table:
                 file.notes = lookup_table[md5]
-            file.setAka()
-            file.setReRelease()
-            if 'Covertape' in file.notes:
-                covertape_comment = '[{} Covertape]'.format(file.release.getPublisher())
-                if covertape_comment in file.notes:
-                    file.notes = file.notes.replace(covertape_comment, '')
+            else:
+                file.setAka()
+                file.setReRelease()
+                if 'Covertape' in file.notes:
+                    covertape_comment = '[{} Covertape]'.format(file.release.getPublisher())
+                    if covertape_comment in file.notes:
+                        file.notes = file.notes.replace(covertape_comment, '')
 
     def setTypeFromFiles(self):
         if self.genre and self.genre!='Compilation':
