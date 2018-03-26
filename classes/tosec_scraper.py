@@ -43,7 +43,8 @@ class TOSECScraper():
         paths = []
         cache_file = os.path.join(folder, 'cache.dump')
         if os.path.exists(cache_file):
-            paths = pickle.load(cache_file)
+            with open(cache_file, 'rb') as f:
+                paths = pickle.load(f)
             return paths
         for root, dirs, files in os.walk(folder):
             for filename in files:

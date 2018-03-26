@@ -95,13 +95,6 @@ class ZXDBScraper():
                 line = line.strip().split(';')
                 if len(line)==2:
                     self.pok_file_paths[int(line[0])] = line[1].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
-        # self.publisher_aliases = {}
-        # with open('publisher_aliases.csv', 'r', encoding='utf-8') as f:
-        #     for line in f.readlines():
-        #         line = line.strip().split(';')
-        #         if not line[1]:
-        #             break
-        #         self.publisher_aliases[line[0]]=line[1]
 
     def update(self, script_path):
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
@@ -142,6 +135,7 @@ class ZXDBScraper():
               'downloads.filetype_id AS file_type_id, ' \
               'downloads.formattype_id AS file_format_id, ' \
               'downloads.idiom_id AS file_language, ' \
+              'downloads.comments AS file_version, ' \
               'filetypes.text AS file_type, ' \
               'formattypes.text AS file_format,' \
               'entry_machinetype.text AS machine_type, ' \
@@ -173,7 +167,7 @@ class ZXDBScraper():
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
-              'WHERE (entries.id>4000000 OR entries.id<1000000) AND ' \
+              'WHERE (entries.id>4000000 OR entries.id<2000000) AND ' \
               '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) and '\
               '(authors.author_seq<=3 OR authors.author_seq IS NULL) '
         if sql_where:
@@ -308,6 +302,10 @@ class ZXDBScraper():
                 game.setGenre('Utilities - Screen')
             elif game.wos_id in [32257, 32258, 32259]:
                 game.setGenre('Utilities')
+            elif game.wos_id in [27590, 1000246]:
+                game.setGenre('Firmware')
+        elif game.wos_id in [8100]:
+            game.setGenre('Compilation - Educational')
         else:
             game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
@@ -358,6 +356,7 @@ class ZXDBScraper():
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
         alias = remove_brackets_regex.sub('', alias).strip()
         alias = alias.replace('Lerm ', '').replace('LERM ', '')
+        alias = alias.replace(' ,', ',')
         alias = alias.replace('AlchNews', 'Alchemist News')
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         if alias == 'Pozycje Milosne':
@@ -377,6 +376,7 @@ class ZXDBScraper():
         alias = alias.replace('BubbleLand', 'Bubble Land')
         alias = alias.replace('F-14 Afterburner', 'Afterburner')
         alias = alias.replace('Santa Clause', 'Santa Claus')
+        alias = alias.replace('Trooper -Point', 'Trooper Point')
         if 'Dalek Attack' in alias or 'the Daleks' in alias:
             alias = 'Dalek Attack'
         alias = ' - '.join([alias]+round_brackets_contents)
@@ -398,6 +398,10 @@ class ZXDBScraper():
                 game_file.setLanguage(IDIOM_IDS_TO_TOSEC_LANGS[row['file_language']])
             else:
                 game_file.setLanguage(row['file_language'])
+        if row['file_version'] and row['file_version'].lower().startswith('v') \
+                and row['file_version'][1].isdigit():
+            game_file.content_desc = ' '+remove_brackets_regex.sub('', row['file_version']).strip()
+
         return game_file
 
     def downloadMissingFilesForGames(self, games):

@@ -10,10 +10,7 @@ ts.paths = ts.generateTOSECPathsArrayFromDatFiles()
 for path in ts.paths:
     if 'SCGC' in path['path']:
         path['path'] = path['path'].replace('(CSSCGC)', '(-)[CSSCGC]').replace('(CCSCGC)', '(-)[CSSCGC]')
-        # print(path['path'], path['md5'])
-# ts.sortPaths()
 ts.paths += ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\')
-# ts.paths = [path for path in ts.paths if 'Covertape' in path['path']]
 ts.sortPaths()
 ts.scrapeTOSEC()
 ts.addUnscraped()

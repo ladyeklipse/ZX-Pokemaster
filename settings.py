@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.3-beta4'
+ZX_POKEMASTER_VERSION = '1.3-beta6'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 POKEMASTER_MIN_DB_PATH = 'pokemaster.min.db'
 DB_DISK_CACHE_FILE = 'hashes.dat'

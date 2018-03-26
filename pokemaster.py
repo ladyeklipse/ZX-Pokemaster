@@ -10,6 +10,7 @@ import itertools
 import stat
 import shutil
 import zipfile
+import zlib
 import hashlib
 import json
 import traceback
@@ -23,10 +24,7 @@ sys.path.append("ui")
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui.SorterLauncher import *
-import traceback
 from pattern_creator import PatternCreatorDialog
-import json
-from settings import MESSAGE_BOX_TITLE
 
 def PyQtExceptHook(exc_cls, ex, tb):
     MESSAGE = str(ex)+'\n'

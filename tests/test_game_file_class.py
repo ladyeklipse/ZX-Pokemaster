@@ -306,6 +306,11 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(tosec_name, 'Game (19xx)(-)[a][adult].tap')
 
     def test_game_type(self):
+        game_file = GameFile('Sinclair ZX Spectrum\Applications\[TZX]\MGT Plus D - System Tape (1987)(Miles Gordon Technology).tzx')
+        game_file.game.genre = 'Hardware - Disk'
+        self.assertEqual(game_file.getType(), 'Applications')
+        game_file = GameFile('Sinclair ZX Spectrum\Games\[ROM]\Shadow of the Unicorn ROM Loader (2001)(Ross, Fraser)(GB).rom')
+        self.assertEqual(game_file.getType(), 'Games')
         game_file = GameFile('C:\ZX Pokemaster\\tosec\\reviewed files\\CSSCGC Games Reviewed\\1997\\Advanced Advocacy Simulator (1997)(Jolly, Derek)[CSSCGC].sna')
         self.assertEqual(game_file.getTOSECDatName(), 'Sinclair ZX Spectrum - Games - [SNA]')
         self.assertEqual(game_file.game.getGenre(), 'Various Games')

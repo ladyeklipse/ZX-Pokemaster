@@ -839,7 +839,7 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertEqual(s.errors, '')
-        self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe (2005)(Zaniboni, Marcello)(IT)(en).gif')
+        self.assertFileExists(output_location+'/SCRSHOT/A.I. Tic Tac Toe v1.0 (2005)(Zaniboni, Marcello)(IT)(en).gif')
         self.assertFileExists(output_location+'/Accelerator (1984)(Century City).gif')
         self.assertFileNotExists(output_location+'/Accelerator (1984)(Century City).zip')
         self.assertFileExists(output_location+"/UDG's Machine (1985)(Sagesoft)[aka UDG Machine].txt")

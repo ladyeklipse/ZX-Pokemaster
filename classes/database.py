@@ -7,7 +7,6 @@ import re
 import os
 import sqlite3
 import traceback
-import pickle
 
 SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game.wos_id AS wos_id, ' \
@@ -282,7 +281,8 @@ class Database():
             for release in game.releases:
                 release_publisher = getSearchStringFromGameName(release.getPublisher())
                 game_file_publisher = getSearchStringFromGameName(game_file.game.getPublisher())
-                if release_publisher==game_file_publisher:
+                # if release_publisher==game_file_publisher:
+                if game_file_publisher in release_publisher:
                     candidates.append(game)
         if len(candidates)==1:
             return candidates[0]

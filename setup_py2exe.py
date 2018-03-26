@@ -1,6 +1,7 @@
 from settings import *
-from distutils.core import setup
 import sys
+sys.setrecursionlimit(1000)
+from distutils.core import setup
 import os
 import zipfile
 import py2exe
@@ -9,8 +10,11 @@ sys.path.append("classes")
 sys.path.append("functions")
 if __name__ == '__main__':
     sys.argv.append('py2exe')
-if os.path.exists(os.path.join('dist', POKEMASTER_DB_PATH)):
-    os.remove(os.path.join('dist', POKEMASTER_DB_PATH))
+# dbpath = 'dist/'+POKEMASTER_DB_PATH
+dbpath = os.path.join('dist', POKEMASTER_DB_PATH)
+if os.path.exists(dbpath):
+    os.remove('dist/'+POKEMASTER_DB_PATH)
+
 setup(
     options=
     {'py2exe':
@@ -18,6 +22,7 @@ setup(
         'bundle_files': 1,
         'compressed': True,
         'includes':['sip', 'PyQt4.QtCore', 'PyQt4.QtGui', '_ctypes'],
+        # 'excludes':['cryptography']
         }
     },
     windows=[
@@ -36,9 +41,9 @@ setup(
     ],
     zipfile=None,
 )
-os.rename(os.path.join('dist', POKEMASTER_MIN_DB_PATH), os.path.join('dist', POKEMASTER_DB_PATH))
+os.rename('dist/'+POKEMASTER_MIN_DB_PATH, 'dist/'+POKEMASTER_DB_PATH)
 zfname = '_'.join(('ZXPokemaster', sys.platform, ZX_POKEMASTER_VERSION))
-zfpath = os.path.join('dist', zfname+'.zip')
+zfpath = 'dist/'+zfname+'.zip'
 with zipfile.ZipFile(zfpath, 'w', zipfile.ZIP_DEFLATED) as zf:
     for root, dirs, files in os.walk('dist'):
         for file in files:

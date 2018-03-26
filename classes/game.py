@@ -312,6 +312,8 @@ class Game(object):
             self.type = 'Music'
         elif 'Book' in genre:
             self.type = 'Books'
+        elif 'Hardware' in genre:
+            self.type = 'Firmware'
 
     def setmanualUrl(self, url):
         self.manual_url = url

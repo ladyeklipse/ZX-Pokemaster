@@ -71,6 +71,13 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(game.cheats), 0)
 
     def test_getting_game_by_file_name(self):
+        'He had such a big head that if he were a mouse he would have to toss the mice from under the bed with a brow - Part II'
+        filename = 'He Had Such A Big Head That If He Were A Cat He Would Have To Toss The Mice From Under The Bed With A Brow - Part II (2011)(Apenao)[CSSCGC].tap'
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 31193)
+        filename = '2048 (2014)(Alone Coder).tap'
+        game = self.db.getGameByFilePath(filename)
+        self.assertEqual(game.wos_id, 30134)
         filename = 'Helter Skelter + Editor (1991)(Audiogenic)[h Rajsoft].tap'
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.wos_id, 2291)

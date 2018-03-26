@@ -1,7 +1,6 @@
 from classes.game import Game
 from functions.game_name_functions import *
 from classes.game_release import GameRelease
-import requests
 import os
 import zipfile
 import zlib
@@ -772,8 +771,8 @@ class GameFile(object):
                 self.type += os.sep+'Mixed'
             else:
                 self.type += os.sep+'Games'
-        elif 'Firmware' in genre:
-            self.type += 'Firmware'
+        elif ('Firmware' in genre or 'Hardware' in genre) and self.format!='rom':
+            self.type += 'Applications'
         elif 'Education' in genre:
             self.type += 'Educational'
         elif genre.startswith('Utilit') or \
@@ -797,6 +796,8 @@ class GameFile(object):
             self.type += 'Music'
         else:
             self.type = 'Unknown'
+        if self.format == 'rom' and 'Games' not in self.type:
+            self.type = 'Firmware'
         return self.type
 
     def setReRelease(self):

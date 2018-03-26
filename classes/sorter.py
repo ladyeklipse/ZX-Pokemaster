@@ -491,6 +491,7 @@ class Sorter():
         game_file.file_in_archive.extractTo(game_file.getDestPath())
         if self.delete_source_files:
             self.removeAllSourceFiles(game_file)
+        self.files_sorted += 1
             # game_file.file_in_archive.remove()
         # archive = Archive(game_file.src)
         # files = archive.listFiles()
