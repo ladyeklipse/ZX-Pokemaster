@@ -21,8 +21,9 @@ from classes.sorter import *
 import webbrowser
 
 sys.path.append("ui")
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from ui.SorterLauncher import *
 from pattern_creator import PatternCreatorDialog
 

@@ -3,8 +3,8 @@
 # from PyQt5.QtWidgets import *
 import os
 import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 from classes.game_file import GameFile
 from functions.is_pathname_valid import *

@@ -21,7 +21,7 @@ setup(
         {
         'bundle_files': 1,
         'compressed': True,
-        'includes':['sip', 'PyQt4.QtCore', 'PyQt4.QtGui', '_ctypes'],
+        'includes':['sip', 'PyQt5.QtCore', 'PyQt5.QtGui', '_ctypes'],
         # 'excludes':['cryptography']
         }
     },

@@ -95,7 +95,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -175,7 +175,7 @@
               <property name="editable">
                <bool>false</bool>
               </property>
-              <property name="currentText" stdset="0">
+              <property name="currentText">
                <string/>
               </property>
              </widget>
@@ -282,9 +282,12 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,0,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,0,0,0">
        <property name="spacing">
         <number>7</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -336,6 +339,9 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
@@ -488,17 +494,17 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QLabel" name="label_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
+         <property name="text">
+          <string/>
          </property>
-        </spacer>
+        </widget>
        </item>
       </layout>
       <zorder>chkIncludeAlternate</zorder>
@@ -507,12 +513,12 @@
       <zorder>chkIncludeHacked</zorder>
       <zorder>chkIncludeRereleases</zorder>
       <zorder>chkIncludeXRated</zorder>
-      <zorder>verticalSpacer</zorder>
       <zorder>chkIncludeSupplementaryFiles</zorder>
       <zorder>chkIncludeUnknownFiles</zorder>
       <zorder>chkSeparateUnknownFiles</zorder>
       <zorder>chkRetainFoldersForUnknownFiles</zorder>
       <zorder>chkDeleteSourceFiles</zorder>
+      <zorder>label_6</zorder>
      </widget>
      <widget class="QWidget" name="tabAbout">
       <attribute name="title">
