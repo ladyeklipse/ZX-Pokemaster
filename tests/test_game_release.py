@@ -22,7 +22,7 @@ class TestGameRelease(unittest.TestCase):
         aliases = r.getAllAliases()
         self.assertEqual('Saboteur II', aliases[0])
 
-    def test_badanov_bug(self):
+    def test_cyrillic(self):
         g = Game('Треугольник')
         r = GameRelease(game=g)
         self.assertEqual(["Треугольник"], r.aliases)

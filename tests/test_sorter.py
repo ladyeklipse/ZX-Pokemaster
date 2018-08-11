@@ -925,16 +925,16 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
         self.assertFileExists('tests/files/sort_crc_collision_out/Vozrazhdenie 01 (1996-01-31)(Vozrazhdenie)(RU)[Omsk].udi')
 
-    def test_badanov_bug(self):
+    def test_cyrillic(self):
         s = Sorter(cache=False)
         s.input_locations = [
-            'tests/files/sort_badanov_bug_in/',
+            'tests/files/sort_cyrillic_in/',
         ]
-        s.output_location = 'tests/files/sort_badanov_bug_out/'
+        s.output_location = 'tests/files/sort_cyrillic_out/'
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        # self.assertFileExists('tests/files/sort_badanov_bug_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
+        self.assertFileExists('tests/files/sort_cyrillic_out/Vozrazhdenie 00 (1996-01-01)(Vozrazhdenie)(RU)[Omsk].udi')
 
     def test_deleting(self):
         s = Sorter(cache=False,

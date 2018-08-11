@@ -271,7 +271,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.tabWidget, self.lstInputPaths)
         Dialog.setTabOrder(self.lstInputPaths, self.btnAddPath)
@@ -351,7 +351,7 @@ class Ui_Dialog(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For those willing to support ZX Pokemaster, please consider donating:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">BitCoin: </span><a href=\"bitcoin:1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9</span></a></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">LiteCoin: </span><a href=\"litecoin:Laugnn4XqAUEZ8FSvJvLW3n62BuFHhgraT\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Laugnn4XqAUEZ8FSvJvLW3n62BuFHhgraT</span></a></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">LiteCoin: </span><a href=\"litecoin:LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh</span></a></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Etherium: 0xF60Dc0c3d32b12Ae02A68723Af9133AD1938a178</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Special thanks to:</span></p>\n"

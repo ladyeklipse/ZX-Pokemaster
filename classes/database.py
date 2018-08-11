@@ -34,13 +34,6 @@ class Database():
     publisher_aliases = {}
 
     def __init__(self, path=POKEMASTER_DB_PATH):
-        # self.cache_by_wos_id = {}
-        # self.cache_by_name = {}
-        # self.cache_by_md5 = {}
-        # self.cache_by_crc32 = {}
-        # self.game_name_aliases = {}
-        # self.publisher_aliases = {}
-
         if os.path.exists(path):
             self.conn = sqlite3.connect(path)
         elif os.path.exists(POKEMASTER_MIN_DB_PATH):
@@ -145,17 +138,6 @@ class Database():
                       release.year,
                       release.publisher,
                       release.country,
-                      # release.modded_by,
-                      # release.ingame_screen_gif_filepath,
-                      # release.ingame_screen_gif_filesize,
-                      # release.ingame_screen_scr_filepath,
-                      # release.ingame_screen_scr_filesize,
-                      # release.loading_screen_gif_filepath,
-                      # release.loading_screen_gif_filesize,
-                      # release.loading_screen_scr_filepath,
-                      # release.loading_screen_scr_filesize,
-                      # release.manual_filepath,
-                      # release.manual_filesize
                       ]
             sql = "INSERT OR REPLACE INTO game_release VALUES " \
                   "({})".format(','.join(['?'] * len(values)))
@@ -404,17 +386,6 @@ class Database():
                               row['release_publisher'],
                               row['release_country'],
                               game)
-        # release.modded_by = row.get('modded_by')
-        # release.ingame_screen_gif_filepath = row['ingame_screen_gif_filepath']
-        # release.ingame_screen_gif_size = row['ingame_screen_gif_filesize']
-        # release.ingame_screen_scr_filepath = row['ingame_screen_scr_filepath']
-        # release.ingame_screen_scr_size = row['ingame_screen_scr_filesize']
-        # release.loading_screen_gif_filepath = row['loading_screen_gif_filepath']
-        # release.loading_screen_gif_size = row['loading_screen_gif_filesize']
-        # release.loading_screen_scr_filepath = row['loading_screen_scr_filepath']
-        # release.loading_screen_scr_size = row['loading_screen_scr_filesize']
-        # release.manual_filepath = row['manual_filepath']
-        # release.manual_size = row['manual_filesize']
         if row['aliases']:
             aliases = row['aliases'].split('/')
             release.aliases = aliases
