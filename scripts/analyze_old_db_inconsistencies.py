@@ -5,7 +5,7 @@ if (os.getcwd().endswith('scripts')):
 
 def analyze():
     new_db = Database()
-    old_db = Database('pokemaster_v1.21.db')
+    old_db = Database('pokemaster_v1.3-beta6')
     old_db.loadCache()
     new_db.loadCache()
     for md5 in old_db.cache_by_md5.keys():

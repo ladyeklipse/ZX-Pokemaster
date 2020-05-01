@@ -7,6 +7,18 @@ db = Database()
 
 class TestZXDBScraper(unittest.TestCase):
 
+    def test_cheesy_chase(self):
+        where_clause = 'AND entries.id=35141'
+        games = zxdb.getGames(where_clause)
+        for game in games:
+            for release in game.releases:
+                release.getInfoFromLocalFiles()
+            db.addGame(game)
+        db.commit()
+        game = db.getGameByWosID(35141)
+        self.assertNotEqual('', game.name)
+
+
     def test_crime_busters(self):
         where_clause = 'AND entries.id=1155'
         games = zxdb.getGames(where_clause)

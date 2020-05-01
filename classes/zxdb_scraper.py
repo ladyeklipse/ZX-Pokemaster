@@ -271,7 +271,11 @@ class ZXDBScraper():
         return games
 
     def gameFromRow(self, row):
-        game_name = row.get('tosec_compliant_name', row['name'])
+        # print(row['name'])
+        # print('game_name=', row.get('tosec_compliant_name', row['name']))
+        game_name = row.get('tosec_compliant_name', '').strip()
+        if not game_name:
+            game_name = row['name']
         game_name = self.sanitizeAlias(game_name)
         game = Game(game_name, int(row['wos_id']))
         publisher = self.publisherNameFromRow(row)
@@ -447,4 +451,3 @@ class ZXDBScraper():
                     if file_exclusion_key in self.file_exclusion_list:
                         release.removeFile(file_exclusion_key)
             game.setContentDescForZXDBFiles(self.manually_corrected_content_descriptions)
-
