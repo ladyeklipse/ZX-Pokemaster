@@ -124,20 +124,17 @@ class ZXDBScraper():
               'entries.title AS name, ' \
               'entries.library_title AS tosec_compliant_name, ' \
               'entries.is_xrated AS x_rated, ' \
-              'relatedlinks.link AS tipshop_page, ' \
+              'webrefs.link AS tipshop_page, ' \
               'genretypes.text AS genre, ' \
               'entries.max_players AS number_of_players, ' \
-              'entries.multiplaytype_id AS multiplayer_type, ' \
               'entries.idiom_id AS language, ' \
               'entries.availabletype_id AS availability, ' \
               'downloads.file_link AS file_link, ' \
               'downloads.file_size AS file_size, ' \
               'downloads.filetype_id AS file_type_id, ' \
-              'downloads.formattype_id AS file_format_id, ' \
               'downloads.idiom_id AS file_language, ' \
               'downloads.comments AS file_version, ' \
               'filetypes.text AS file_type, ' \
-              'formattypes.text AS file_format,' \
               'entry_machinetype.text AS machine_type, ' \
               'download_machinetype.text AS file_machine_type, ' \
               'schemetypes.text AS protection_scheme, ' \
@@ -145,24 +142,21 @@ class ZXDBScraper():
               'aliases.library_title AS alt_name, ' \
               'aliases.idiom_id AS alt_language, ' \
               'publisher_labels.name AS publisher, ' \
-              'publisher_labels.is_company AS publisher_is_company, ' \
-              'IF(author_team_labels.name IS NOT NULL, author_team_labels.name, author_labels.name) AS author, ' \
-              'IF(author_team_labels.name IS NOT NULL, author_team_labels.is_company, author_labels.is_company) AS author_is_company, ' \
-              'author_team_labels.name AS author_team,' \
+              'publisher_labels.labeltype_id AS publisher_type, ' \
+              'author_labels.name AS author, ' \
+              'author_labels.labeltype_id AS author_type, ' \
               'releases.release_year AS year,' \
               'publisher_labels.country_id AS country ' \
               'FROM entries ' \
-              'LEFT JOIN relatedlinks ON entries.id=relatedlinks.entry_id AND relatedlinks.website_id=9 ' \
+              'LEFT JOIN webrefs ON entries.id=webrefs.entry_id AND webrefs.website_id=9 ' \
               'LEFT JOIN releases ON entries.id=releases.entry_id ' \
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
               'LEFT JOIN publishers ON publishers.entry_id=entries.id AND publishers.release_seq=releases.release_seq  ' \
               'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
               'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
-              'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id ' \
-              'LEFT JOIN labels AS author_team_labels ON author_team_labels.id=authors.team_id ' \
+              'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id  ' \
               'LEFT JOIN aliases ON aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq ' \
               'LEFT JOIN filetypes ON downloads.filetype_id=filetypes.id ' \
-              'LEFT JOIN formattypes ON downloads.formattype_id=formattypes.id ' \
               'LEFT JOIN genretypes ON genretypes.id=entries.genretype_id ' \
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
@@ -212,14 +206,16 @@ class ZXDBScraper():
                 game.author = ' - '.join(sorted(authors, key = str.lower))
             if row['file_link'] and not (row['file_link'].endswith('.mlt')):
                 if row['file_type']=='Loading screen':
-                    if row['file_format']=='Picture':
+                    # if row['file_format']=='Picture':
+                    if row['file_link'].endswith('.gif'):
                         if release.loading_screen_gif_filepath and \
                                         release.loading_screen_gif_filepath!=row['file_link']:
                             pass
                         else:
                             release.loading_screen_gif_filepath = row['file_link']
                             release.loading_screen_gif_filesize = row['file_size']
-                    elif row['file_format']=='Screen dump':
+                    # elif row['file_format']=='Screen dump':
+                    elif row['file_link'].endswith('scr'):
                         if release.loading_screen_scr_filepath and \
                                         release.loading_screen_scr_filepath!=row['file_link']:
                             pass
@@ -227,14 +223,16 @@ class ZXDBScraper():
                             release.loading_screen_scr_filepath = row['file_link']
                             release.loading_screen_scr_filesize = row['file_size']
                 elif row['file_type']=='In-game screen':
-                    if row['file_format']=='Picture':
+                    # if row['file_format']=='Picture':
+                    if row['file_link'].endswith('gif'):
                         if release.ingame_screen_gif_filepath and \
                                         release.ingame_screen_gif_filepath!=row['file_link']:
                             pass
                         else:
                             release.ingame_screen_gif_filepath = row['file_link']
                             release.ingame_screen_gif_filesize = row['file_size']
-                    elif row['file_format'] == 'Screen dump':
+                    # elif row['file_format'] == 'Screen dump':
+                    elif row['file_link'].endswith('scr'):
                         if release.ingame_screen_scr_filepath and \
                                         release.ingame_screen_scr_filepath != row['file_link']:
                             pass
@@ -248,30 +246,24 @@ class ZXDBScraper():
                     else:
                         release.manual_filepath = row['file_link']
                         release.manual_filesize = row['file_size']
-                elif row['file_format']:
+                # elif row['file_format']:
+                else:
                     if row['publisher'] and \
                             ('Nyitrai' in row['publisher'] or 'Jatekgyaros' in row['publisher']) and \
                             row['genre'] and row['genre'] == 'Compilation':
                         pass
                     else:
-                        file_format = row['file_format'].lower()
-                        if 'snapshot' in file_format or \
-                             'disk' in file_format or \
-                             'tape' in file_format or \
-                             'rom' in file_format or \
-                             'cartridge' in file_format:
+                        # file_format = row['file_format'].lower()
+                        file_type = row['file_type'].lower()
+                        if 'snapshot' in file_type or \
+                             'disk' in file_type or \
+                             'tape' in file_type or \
+                             'rom' in file_type or \
+                             'covertape' in file_type or \
+                             'tr-dos' in file_type or \
+                             'cartridge' in file_type:
                             game_file = self.gameFileFromRow(row, game)
                             release.addFile(game_file)
-                # elif row['file_type']=='POK pokes file':
-                #     try:
-                #         pok_file_path = row['file_link'].replace('/zxdb/sinclair/pokes', 'AllTipshopPokes')
-                #         game.importPokFile(file_path=pok_file_path)
-                #     except FileNotFoundError:
-                #         pok_file_path = self.pok_file_paths.get(game.wos_id)
-                #         if not pok_file_path:
-                #             print('Poke not found for:', game)
-                #         else:
-                #             game.importPokFile(file_path=pok_file_path)
                 if row['alt_name'] and row['alt_language'] in (None, 'en'):
                     alias = self.sanitizeAlias(row['alt_name'])
                     release.addAlias(alias)
@@ -310,7 +302,6 @@ class ZXDBScraper():
             game.setGenre(row['genre'])
         game.x_rated = row['x_rated']
         game.setNumberOfPlayers(row['number_of_players'])
-        game.setMultiplayerType(row['multiplayer_type'])
         game.setMachineType(row['machine_type'])
         if row['language']:
             if row['language'] in IDIOM_IDS_TO_TOSEC_LANGS:
@@ -338,19 +329,31 @@ class ZXDBScraper():
         return release
 
     def publisherNameFromRow(self, row):
-        if row['publisher_is_company'] in (None, 1):
-            return putPrefixToEnd(row['publisher'])
-        elif row['publisher_is_company'] == 0:
+        if row['publisher_type']=='+': #person
             return putInitialsToEnd(row['publisher'])
+        elif row['publisher_type']=='-': #nickname
+            return row['publisher']
+        else: #company
+            return putPrefixToEnd(row['publisher'])
+        # if row['publisher_is_company'] in (None, 1):
+        #     return putPrefixToEnd(row['publisher'])
+        # elif row['publisher_is_company'] == 0:
+        #     return putInitialsToEnd(row['publisher'])
 
     def authorNameFromRow(self, row):
-        if row['author_is_company'] in (None, 1):
-            author = putPrefixToEnd(row['author'])
-            if row['author_is_company']:
-                author = publisher_regex.sub('', author)
-            return author.strip()
-        elif row['author_is_company'] == 0:
+        if row['author_type']=='+': #person
             return putInitialsToEnd(row['author'])
+        elif row['author_type']=='-': #nickname
+            return row['author']
+        else: #company
+            return putPrefixToEnd(row['author'])
+        # if row['author_is_company'] in (None, 1):
+        #     author = putPrefixToEnd(row['author'])
+        #     if row['author_is_company']:
+        #         author = publisher_regex.sub('', author)
+        #     return author.strip()
+        # elif row['author_is_company'] == 0:
+        #     return putInitialsToEnd(row['author'])
 
     def sanitizeAlias(self, alias):
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
@@ -413,18 +416,26 @@ class ZXDBScraper():
                         (os.path.getsize(local_path) == file.size_zipped or \
                         not file.size_zipped):
                     continue
-                elif os.path.exists(local_path) and \
-                                os.path.getsize(local_path) != file.size_zipped:
+                local_size = os.path.getsize(local_path) if os.path.exists(local_path) else 0
+                if local_size and local_size != file.size_zipped:
                     print('wrong file size:', local_path)
+                    continue
+                if 'pub\sinclair' in local_path:
+                    local_path = local_path.replace('/pub/sinclair', '/sinclair')
+                    mirror = WOS_MIRRORS[0] #archive.org
                 else:
-                    for mirror in WOS_MIRRORS:
-                        try:
-                            status = s.downloadFile(file.getWosPath(wos_mirror_root=mirror), local_path)
-                            time.sleep(.5)
-                        except:
-                            print(traceback.format_exc())
-                        if status == 200:
-                            break
+                    mirror = WOS_MIRRORS[1] #spectrumcomputing.co.uk
+                try:
+                    file_url = file.getWosPath(wos_mirror_root=mirror).replace('pub/sinclair', 'sinclair')
+                    status = s.downloadFile(file_url, local_path)
+                    if os.path.exists(local_path) and \
+                            os.path.getsize(local_path) != file.size_zipped:
+                        print('wrong file size after download:', local_path)
+                    time.sleep(.5)
+                except:
+                    print(traceback.format_exc())
+                # if status == 200:
+                #     continue
 
     def getInfoFromLocalFiles(self, games):
         for game in games:

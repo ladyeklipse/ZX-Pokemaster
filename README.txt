@@ -1,5 +1,5 @@
 ===========================================================
-ZX Pokemaster 1.3 README
+ZX Pokemaster 1.4 README
 ===========================================================
 
 CONTENTS.
@@ -197,6 +197,13 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.4
+ - Switched to newer version of PyQt framework;
+ - Added Windows installer for easier setup;
+ - Compiled and deployed a MacOS version;
+ - Fixed 12 files for "Robin of the Wood" game by Odin, incorrectly renamed as "Robin of Sherwood"
+ - Added new pokes.
+
 1.3.
  - Added games from vtrdos.ru;
  - Applied all changes made in ZXDB by 1st March 2018;
@@ -248,19 +255,8 @@ V. Version history
  
 1.0. First version.
 
-VI. Planned features.
 ===========================================================
-
-- Adding more MD5 hashes to the database. 
-Currently around 3000 files in TOSEC have no corresponding entry in ZXDB and it requires manual checking of each one.
-
-- Taking over updating TOSEC using ZX Pokemaster itself to add files from WoS FTP, which are not currently in TOSEC, to the latter, thus creating a unified source of files, so you can download a single archive and be sure you have everything that is out there on the Net.
-
-- Deploy ZX Pokemaster for Ubuntu/Debian and OSX. 
-This is relatively easy, if not the fact that I have to install those operating systems on virtual machines. I use Windows 7 exclusively for all the work I'm doing.
-
-===========================================================
-VII. Contacts.
+VI. Contacts.
 ===========================================================
 You can always download the latest version of ZX Pokemaster from Sourceforge:
 https://sourceforge.net/projects/zx-pokemaster/
@@ -283,4 +279,4 @@ If you're interested in hiring me as a programmer, you're welcome to contact me 
 https://www.upwork.com/freelancers/~01621f640af26c1cb3
 
 Sincerely yours,
-Helga Iliashenko aka Lady Eklipse.
+Elia Iliashenko aka Lady Eklipse.

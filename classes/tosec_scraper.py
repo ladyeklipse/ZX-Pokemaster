@@ -118,7 +118,6 @@ class TOSECScraper():
                 for rom in roms:
                     file_path_dict = {}
                     file_path_dict['name'] = rom.attrib['name']
-                    # filename = os.path.splitext(rom.attrib['name'])[0]+'.zip'
                     filename = rom.attrib['name']
                     file_path_dict['path'] = os.path.join(dirname, filename)
                     file_path_dict['size'] = rom.attrib['size']
@@ -134,6 +133,23 @@ class TOSECScraper():
         paths = sorted(paths, key=lambda path_dict: ('Compilation' in path_dict['path']))
         self.paths = paths
 
+    def showSameMD5WarningsForFolder(self, folder):
+        reviewed_files =  self.generateTOSECPathsArrayFromFolder(folder)
+        tosec_md5s = {}
+        for tosec_file in self.paths:
+            tosec_md5s[tosec_file['md5']] = GameFile(tosec_file['name']).game.name
+        warnings = 0
+        for i, file in enumerate(reviewed_files):
+            md5 = file['md5']
+            game_name = GameFile(file['name']).game.name
+            for tosec_md5 in tosec_md5s:
+                tosec_game_name = tosec_md5s.get(tosec_md5)
+                if md5 == tosec_md5 and game_name.lower() != tosec_game_name.lower():
+                    print(i, '/', len(reviewed_files))
+                    print(md5, game_name, '|', tosec_game_name)
+                    warnings += 1
+        print(warnings)
+
     def scrapeTOSEC(self):
         if not self.paths:
             raise Exception('TOSECScraper has no paths to scrape.')
@@ -141,6 +157,7 @@ class TOSECScraper():
         current_game = None
         current_tosec_name = ''
         for i, file_path in enumerate(self.paths):
+            # print(file_path)
             if type(file_path)==str:
                 game_file = self.getGameFileFromFilePath(file_path)
             elif type(file_path)==dict:
@@ -153,6 +170,8 @@ class TOSECScraper():
             if 'Covertape' in file_path['path']:
                 self.setCovertapeNote(game_file)
             new_tosec_name = game_file.game.getTOSECName()
+            # print(current_tosec_name, new_tosec_name)
+            # print(file_path['name'])
             if current_tosec_name and current_tosec_name != new_tosec_name:
                 if current_game.wos_id:
                     self.addGameToLocalDB(current_game)
@@ -177,7 +196,12 @@ class TOSECScraper():
                     game_from_db = self.db.getGameByWosID(game_wos_id)
                 else:
                     game_from_db = self.db.getGameByFile(game_file)
+                    # print("got game_from_db by file", game_file)
+                # print("game_from_db=", game_from_db, "current_game=", current_game)
                 if game_from_db and current_game!=game_from_db:
+                    if game_from_db.name != current_game.name:
+                        print("WARNING! Possible error: changing game name from ", game_file.game.name, " to ", game_from_db)
+                        print("md5=", game_file.getMD5())
                     current_release = game_from_db.findReleaseByFile(game_file)
                     current_release.importInfoFromGameFile(game_file)
                     current_release.addFiles([file for file in current_game.files])
@@ -204,6 +228,7 @@ class TOSECScraper():
                          file_tosec_name))
                 else:
                     current_release.addFile(game_file)
+                # print(game_file.game)
                 self.addGameToLocalDB(current_game)
         self.addGameToLocalDB(current_game)
         self.db.commit()
@@ -354,17 +379,9 @@ class TOSECScraper():
             with open('content_desc_aliases.csv', 'r', encoding='utf-8', errors='replace') as f:
                 for line in f.readlines():
                     line = line.strip().replace('\t', ';').split(';')
-                    # if len(line)<3 or not line[3]:
-                    #     continue
-                    # else:
-                    #      line[3] = line[3][:-4]
                     if line[2].startswith('NONE') or line[2].startswith('ALT'):
                         md5 = line[7]
-                        # self.manually_corrected_content_descriptions[line[3]] = line[2]
                         self.manually_corrected_content_descriptions[md5] = line[2]
-                    # if len(line)<8:
-                    #     continue
-                    # else:
                     notes = line[6]
                     if notes.startswith('NONE') or notes.startswith('ALT'):
                         md5 = line[7]

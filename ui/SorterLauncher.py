@@ -2,16 +2,17 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.1
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(500, 550)
+        Dialog.resize(500, 559)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -134,8 +135,8 @@ class Ui_Dialog(object):
         self.tabFileFiltering = QtWidgets.QWidget()
         self.tabFileFiltering.setObjectName("tabFileFiltering")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.tabFileFiltering)
-        self.verticalLayout.setSpacing(7)
         self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.verticalLayout.setSpacing(7)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
@@ -346,7 +347,7 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Brought to you by Helga Iliashenko aka Lady Eklipse</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Brought to you by Elia Iliashenko aka Lady Eklipse</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">with the sencere feelings to the ZX Spectrum community.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For those willing to support ZX Pokemaster, please consider donating:</span></p>\n"
@@ -369,5 +370,6 @@ class Ui_Dialog(object):
         self.btnFacebook.setText(_translate("Dialog", "Visit Facebook tech support group"))
         self.btnSourceForge.setText(_translate("Dialog", "Check for new version on SourceForge"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabAbout), _translate("Dialog", "Help"))
+
 
 import res_rc

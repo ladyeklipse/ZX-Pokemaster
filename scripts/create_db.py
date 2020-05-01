@@ -19,7 +19,9 @@ if __name__=='__main__':
             db.execute(query)
         db.commit()
     zxdb = ZXDBScraper()
+    print("Getting all games from ZXDB...")
     games = zxdb.getAllGames()
+    print("Downloading missing files...")
     zxdb.downloadMissingFilesForGames(games)
     zxdb.getInfoFromLocalFiles(games)
     for game in games:
@@ -29,4 +31,4 @@ if __name__=='__main__':
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
-    import scrape_tosec
+    # import scrape_tosec

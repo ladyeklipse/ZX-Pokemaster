@@ -36,7 +36,7 @@ def getMeaningfulEightLetterName(game_name):
         name = words[0][:first_word_length] + words[1][:(8-first_word_length)]
     else:
         first_word_length = len(words[0])
-        second_word_length = len(words[1])
+        # second_word_length = len(words[1])
         third_word_length = len(words[2])
         if first_word_length>3:
             first_word_length = 8-len(words[2][:2])-len(words[1][:3])

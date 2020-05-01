@@ -1,10 +1,11 @@
-ZX_POKEMASTER_VERSION = '1.3-beta6'
+ZX_POKEMASTER_VERSION = '1.4'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 POKEMASTER_MIN_DB_PATH = 'pokemaster.min.db'
 DB_DISK_CACHE_FILE = 'hashes.dat'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
+    'https://archive.org/download/World_of_Spectrum_June_2017_Mirror/World%20of%20Spectrum%20June%202017%20Mirror.zip/World%20of%20Spectrum%20June%202017%20Mirror',
     'http://spectrumcomputing.co.uk',
     # 'https://wos.meulie.net',
     # WOS_SITE_ROOT,
