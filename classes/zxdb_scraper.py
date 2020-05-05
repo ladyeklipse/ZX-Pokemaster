@@ -204,9 +204,9 @@ class ZXDBScraper():
                 authors = game.author.split(' - ')
                 authors.append(author)
                 game.author = ' - '.join(sorted(authors, key = str.lower))
-            if row['file_link'] and not (row['file_link'].endswith('.mlt')):
+            if row['file_link'] and not (row['file_link'].endswith('.mlt')) and \
+                    not  row['file_link'].endswith('pdf') and not row['file_link'].endswith('.jpg'):
                 if row['file_type']=='Loading screen':
-                    # if row['file_format']=='Picture':
                     if row['file_link'].endswith('.gif'):
                         if release.loading_screen_gif_filepath and \
                                         release.loading_screen_gif_filepath!=row['file_link']:
@@ -214,7 +214,6 @@ class ZXDBScraper():
                         else:
                             release.loading_screen_gif_filepath = row['file_link']
                             release.loading_screen_gif_filesize = row['file_size']
-                    # elif row['file_format']=='Screen dump':
                     elif row['file_link'].endswith('scr'):
                         if release.loading_screen_scr_filepath and \
                                         release.loading_screen_scr_filepath!=row['file_link']:
@@ -223,7 +222,6 @@ class ZXDBScraper():
                             release.loading_screen_scr_filepath = row['file_link']
                             release.loading_screen_scr_filesize = row['file_size']
                 elif row['file_type']=='In-game screen':
-                    # if row['file_format']=='Picture':
                     if row['file_link'].endswith('gif'):
                         if release.ingame_screen_gif_filepath and \
                                         release.ingame_screen_gif_filepath!=row['file_link']:
@@ -231,7 +229,6 @@ class ZXDBScraper():
                         else:
                             release.ingame_screen_gif_filepath = row['file_link']
                             release.ingame_screen_gif_filesize = row['file_size']
-                    # elif row['file_format'] == 'Screen dump':
                     elif row['file_link'].endswith('scr'):
                         if release.ingame_screen_scr_filepath and \
                                         release.ingame_screen_scr_filepath != row['file_link']:
@@ -246,14 +243,12 @@ class ZXDBScraper():
                     else:
                         release.manual_filepath = row['file_link']
                         release.manual_filesize = row['file_size']
-                # elif row['file_format']:
                 else:
                     if row['publisher'] and \
                             ('Nyitrai' in row['publisher'] or 'Jatekgyaros' in row['publisher']) and \
                             row['genre'] and row['genre'] == 'Compilation':
                         pass
                     else:
-                        # file_format = row['file_format'].lower()
                         file_type = row['file_type'].lower()
                         if 'snapshot' in file_type or \
                              'disk' in file_type or \
@@ -261,6 +256,7 @@ class ZXDBScraper():
                              'rom' in file_type or \
                              'covertape' in file_type or \
                              'tr-dos' in file_type or \
+                             'electronic magazine' in file_type or \
                              'cartridge' in file_type:
                             game_file = self.gameFileFromRow(row, game)
                             release.addFile(game_file)
@@ -291,7 +287,8 @@ class ZXDBScraper():
             if game.wos_id in [
                             32168, 32169, 32170, 32171,
                             32172, 32173, 32174, 32180,
-                            30349, 32176, 32201, 32175
+                            30349, 32176, 32201, 32175,
+                            34322
                             ]:
                 game.setGenre('Various Games')
             elif game.wos_id in [32176]:
@@ -334,11 +331,13 @@ class ZXDBScraper():
 
     def publisherNameFromRow(self, row):
         if row['publisher_type']=='+': #person
-            return putInitialsToEnd(row['publisher'])
+            return putInitialsToEnd(row['publisher']).strip()
         elif row['publisher_type']=='-': #nickname
-            return row['publisher']
+            return row['publisher'].strip()
         else: #company
-            return putPrefixToEnd(row['publisher'])
+            publisher = putPrefixToEnd(row['publisher'])
+            publisher = publisher_regex.sub('', publisher)
+            return publisher.strip()
         # if row['publisher_is_company'] in (None, 1):
         #     return putPrefixToEnd(row['publisher'])
         # elif row['publisher_is_company'] == 0:
@@ -346,11 +345,14 @@ class ZXDBScraper():
 
     def authorNameFromRow(self, row):
         if row['author_type']=='+': #person
-            return putInitialsToEnd(row['author'])
+            author = remove_brackets_regex.sub('', row['author'])
+            return putInitialsToEnd(author)
         elif row['author_type']=='-': #nickname
             return row['author']
         else: #company
-            return putPrefixToEnd(row['author'])
+            author = putPrefixToEnd(row['author'])
+            author  = publisher_regex.sub('', author)
+            return putPrefixToEnd(author)
         # if row['author_is_company'] in (None, 1):
         #     author = putPrefixToEnd(row['author'])
         #     if row['author_is_company']:
@@ -438,8 +440,6 @@ class ZXDBScraper():
                     time.sleep(.5)
                 except:
                     print(traceback.format_exc())
-                # if status == 200:
-                #     continue
 
     def getInfoFromLocalFiles(self, games):
         for game in games:

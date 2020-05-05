@@ -1,0 +1,11 @@
+{
+  "title": "ZX Pokemaster",
+  "background":"assets/bg01.png",
+  "icon":"assets/pokemaster.icns",
+  "icon-size": 80,
+  "format":"ULFO",
+  "contents": [
+    { "x": 130, "y": 130, "type": "file", "path": "/private/tmp/dist-darwin/Bundle/ZX Pokemaster.app"},
+    { "x": 370, "y": 130, "type": "link", "path": "/Applications" }
+  ]
+}

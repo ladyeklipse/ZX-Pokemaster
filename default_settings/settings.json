@@ -1,5 +1,6 @@
 {
     "max_files_per_folder": null, 
+    "bundle_key_length": 3,
     "input_locations": [
     ], 
     "languages": [], 

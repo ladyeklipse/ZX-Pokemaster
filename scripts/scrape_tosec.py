@@ -19,8 +19,6 @@ ts.sortPaths()
 # ts.paths = [path for path in ts.paths if path['name'].startswith('Robin of')]
 ts.scrapeTOSEC()
 ts.addUnscraped()
-ts.updateContentDescAndNotesLookupTable() #doesn't work well, need to back up the CSV
+# ts.updateContentDescAndNotesLookupTable() #doesn't work well, need to back up the CSV
 ts.db.commit()
 # import scripts.check_zxdb_tosec_inconsistencies
-# import scripts.create_tosec_dats
-# import scripts.minify_database

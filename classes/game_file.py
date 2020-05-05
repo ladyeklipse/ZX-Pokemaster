@@ -942,10 +942,10 @@ class GameFile(object):
             src = self.zfname + ' from ' + src
         return src
 
-    def getBundleName(self, depth_level):
+    def getBundleName(self, depth_level, bundle_key_length=3):
         root_dir, bundled_part = self.getSplitDest(depth_level)
         bundle_name = bundled_part.split('\\')[0]
-        bundle_name =  ''.join([x for x in bundle_name if x.isalnum()])[:3].lower()
+        bundle_name =  ''.join([x for x in bundle_name if x.isalnum()])[:bundle_key_length].lower()
         return bundle_name
 
     def setBundle(self, bundle_name, depth_level):

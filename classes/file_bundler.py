@@ -3,9 +3,10 @@ import itertools
 
 class FileBundler():
 
-    def __init__(self, max_files_per_folder, depth):
+    def __init__(self, max_files_per_folder, depth, bundle_key_length=3):
         self.max_files_per_folder = max_files_per_folder
         self.depth = depth
+        self.bundle_key_length=bundle_key_length
 
     def bundleFilesInEqualFolders(self, collected_files):
         for depth_level in range(self.depth):
@@ -35,7 +36,7 @@ class FileBundler():
     def getMiniBundlesFromFilesList(self, files, depth_level):
         mini_bundles = {}
         for file in files:
-            mini_bundle_name = file.getBundleName(depth_level)
+            mini_bundle_name = file.getBundleName(depth_level, self.bundle_key_length)
             if not mini_bundles.get(mini_bundle_name):
                 mini_bundles[mini_bundle_name] = []
             mini_bundles[mini_bundle_name].append(file)
@@ -74,7 +75,6 @@ class FileBundler():
             if not mini_bundles or estimated_current_bundle_size >= self.max_files_per_folder:
                 if current_bundle:
                     current_bundle_name = self.getBundleName(current_bundle, depth_level)
-                    # bundles[current_bundle_name] = self.getFilesFromBundle(current_bundle)
                     bundles[current_bundle_name] = [issue for issue in current_bundle]
                 current_bundle = []
             if not mini_bundles:
@@ -84,8 +84,8 @@ class FileBundler():
     def getBundleName(self, bundle, depth_level):
         first_file = bundle[0][sorted(bundle[0].keys())[0]][0]
         last_file = bundle[-1][sorted(bundle[-1].keys())[-1]][-1]
-        return '{}-{}'.format(first_file.getBundleName(depth_level),
-                              last_file.getBundleName(depth_level))
+        return '{}-{}'.format(first_file.getBundleName(depth_level, self.bundle_key_length),
+                              last_file.getBundleName(depth_level, self.bundle_key_length))
 
     def splitLargeBundles(self, bundles):
         for bundle_name in list(bundles.keys()):

@@ -71,6 +71,7 @@ class MainDialog(QDialog):
 
     def enableMaxFilesPerFolder(self, state):
         self.ui.txtMaxFilesPerFolder.setEnabled(state)
+        self.ui.txtBundleKeyLength.setEnabled(state)
 
     def addInputPath(self):
         dir_path = self.getDirectoryFromFileDialog()
@@ -179,6 +180,7 @@ class MainDialog(QDialog):
             'output_folder_structure':output_folder_structure,
             'output_filename_structure':output_filename_structure,
             'max_files_per_folder':self.getMaxFilesPerFolder(),
+            'bundle_key_length':self.ui.txtBundleKeyLength.value(),
             'include_alternate':self.ui.chkIncludeAlternate.isChecked(),
             'include_alternate_formats':self.ui.chkIncludeAlternateFileFormats.isChecked(),
             'include_rereleases':self.ui.chkIncludeRereleases.isChecked(),
@@ -293,6 +295,7 @@ class MainDialog(QDialog):
                    type(settings['max_files_per_folder'])==int:
                     self.ui.chkMaxFilesPerFolder.toggle()
                     self.ui.txtMaxFilesPerFolder.setValue(settings['max_files_per_folder'])
+                self.ui.txtBundleKeyLength.setValue(settings['bundle_key_length'])
         except:
             print(traceback.format_exc())
             display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in PREDEFINED_OUTPUT_PATH_STRUCTURES]
@@ -329,6 +332,11 @@ class MainDialog(QDialog):
     def getOutputFolderStructurePatterns(self):
         return [self.ui.cmbOutputPathStructure.itemData(i) \
          for i in range(self.ui.cmbOutputPathStructure.count())]
+
+    def closeEvent(self, event):
+        kwargs = self.readSettings()
+        self.saveSettings(kwargs)
+        QDialog.closeEvent(self, event)
 
 if __name__=='__main__':
     sys.excepthook = PyQtExceptHook

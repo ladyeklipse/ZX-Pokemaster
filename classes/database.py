@@ -26,20 +26,22 @@ SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
 
 class Database():
 
-    cache_by_wos_id = {}
-    cache_by_name = {}
-    cache_by_md5 = {}
-    cache_by_crc32 = {}
-    game_name_aliases = {}
-    publisher_aliases = {}
-
     def __init__(self, path=POKEMASTER_DB_PATH):
+        self.cache_by_wos_id = {}
+        self.cache_by_name = {}
+        self.cache_by_md5 = {}
+        self.cache_by_crc32 = {}
+        self.game_name_aliases = {}
+        self.publisher_aliases = {}
         if os.path.exists(path):
             self.conn = sqlite3.connect(path)
+            print("Connected to", path)
         elif os.path.exists(POKEMASTER_MIN_DB_PATH):
             self.conn = sqlite3.connect(POKEMASTER_MIN_DB_PATH)
+            print("Connected to", POKEMASTER_MIN_DB_PATH)
         else:
             self.conn = sqlite3.connect(POKEMASTER_DB_PATH)
+            print("Connected to", POKEMASTER_DB_PATH)
         # self.conn.set_trace_callback(print)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
@@ -171,6 +173,7 @@ class Database():
                           file.getCRC32(),
                           file.getSHA1()
                           ]
+                # print(file.tosec_path, file.getMD5())
                 sql = "INSERT OR REPLACE INTO game_file VALUES " \
                       "({})".format(','.join(['?'] * len(values)))
                 self.cur.execute(sql, values)
@@ -263,7 +266,6 @@ class Database():
             for release in game.releases:
                 release_publisher = getSearchStringFromGameName(release.getPublisher())
                 game_file_publisher = getSearchStringFromGameName(game_file.game.getPublisher())
-                # if release_publisher==game_file_publisher:
                 if game_file_publisher in release_publisher:
                     candidates.append(game)
         if len(candidates)==1:
@@ -312,6 +314,7 @@ class Database():
     def getGameByFile(self, file):
         md5 = file.getMD5()
         game = self.getGameByFileMD5(md5)
+        # print('got game by md5:', md5, game)
         if not game:
             game = self.getGameByFilePath(file.getPath())
         return game
@@ -415,3 +418,13 @@ class Database():
         file.crc32 = row['crc32']
         file.sha1 = row['sha1']
         return file
+
+if __name__=='__main__':
+    os.chdir('..')
+    from scripts.restore_db import *
+    restoreDB()
+    db = Database()
+    game_file = GameFile("Sinclair ZX Spectrum\Games\[TAP]\Robin of the Wood (1985)(Odin Computer Graphics).tap")
+    game_file.md5 = "f16538ac3cb55bbbb878c42c04b17de5"
+    game = db.getGameByFile(game_file)
+    print(game)

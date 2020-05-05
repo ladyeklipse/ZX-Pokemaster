@@ -40,6 +40,7 @@ class Sorter():
             self.formats_preference = GAME_EXTENSIONS
         self.languages = kwargs.get('languages', [])
         self.max_files_per_folder = kwargs.get('max_files_per_folder', None)
+        self.bundle_key_length = kwargs.get('bundle_key_length', 3)
         self.output_folder_structure = kwargs.get('output_folder_structure', '')
         self.output_filename_structure = kwargs.get('output_filename_structure', TOSEC_COMPLIANT_FILENAME_STRUCTURE)
         self.include_alternate = kwargs.get('include_alternate', False)
@@ -90,7 +91,7 @@ class Sorter():
             self.filterCollectedFiles()
         if self.max_files_per_folder:
             bundle_depth = self.getBundleDepth()
-            fileBundler = FileBundler(self.max_files_per_folder, bundle_depth)
+            fileBundler = FileBundler(self.max_files_per_folder, bundle_depth, self.bundle_key_length)
             fileBundler.bundleFilesInEqualFolders(self.collected_files)
         self.redistributeFiles()
         if self.delete_source_files:

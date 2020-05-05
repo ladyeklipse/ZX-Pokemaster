@@ -377,6 +377,7 @@ class Game(object):
                     c.addPoke(address=line[2], value=line[3], memory_bank=line[1], original_value=line[4])
                 except Exception as e:
                     print('Cannot add poke:', line, e)
+                    print(self.wos_id)
                     raise e
                 if line[0]=='Z':
                     self.addCheat(c, cheat_source=cheat_source)

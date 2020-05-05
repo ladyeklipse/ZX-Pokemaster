@@ -41,7 +41,7 @@
    <string>ZX Pokemaster</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="res.qrc">
+   <iconset>
     <normaloff>:/icon/pokemaster.png</normaloff>:/icon/pokemaster.png</iconset>
   </property>
   <property name="locale">
@@ -95,7 +95,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -104,7 +104,7 @@
       <attribute name="title">
        <string>Main options</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,0,0,0,0,0,0">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,0,0,0,0,0,0,0">
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -241,6 +241,39 @@
            </property>
            <property name="value">
             <number>255</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Number of characters for keys:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="txtBundleKeyLength">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>If &quot;Max files for per folder&quot; is selected and the files are sorted into subfolders, the subfolder names will look like &quot;tuj-spa&quot; if this value=3 or &quot;tujad-space&quot; if this value=5</string>
+           </property>
+           <property name="minimum">
+            <number>3</number>
+           </property>
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>3</number>
            </property>
           </widget>
          </item>

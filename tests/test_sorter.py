@@ -545,7 +545,7 @@ class TestSorter(unittest.TestCase):
             self.assertEqual(len(files), 5)
         for root, dirs, files in os.walk(
                 os.path.join(output_location, 'ELECTMAG', '48K')):
-            self.assertEqual(len(files), 8)
+            self.assertEqual(len(files), 10)
 
     def test_files_per_folder(self):
         input_location = 'ftp/pub/sinclair/games/a'

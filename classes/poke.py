@@ -1,4 +1,4 @@
-MIN_POKE_ADDRESS = 16384 #first 16K is ROM
+MIN_POKE_ADDRESS = 13384 #first 16K is ROM #I've lowered this value for Gyruss, which requires modifying ROM
 MAX_POKE_ADDRESS = 65535 #POKE 65536,0 returns error even on 128k Speccy
 
 class Poke(object):

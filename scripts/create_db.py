@@ -1,6 +1,7 @@
 import shutil
 from classes.zxdb_scraper import *
 from classes.tosec_scraper import *
+from analyze_old_db_inconsistencies import restoreDeletedFiles
 from scripts.tipshop_excel_converter import *
 if (os.getcwd().endswith('scripts')):
     os.chdir('..')
@@ -31,4 +32,7 @@ if __name__=='__main__':
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
-    # import scrape_tosec
+    import scrape_tosec
+    restoreDeletedFiles('pokemaster_v1.3-beta6.db')
+    import scripts.create_tosec_dats
+    import scripts.minify_database
