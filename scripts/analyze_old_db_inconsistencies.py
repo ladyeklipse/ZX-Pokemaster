@@ -105,9 +105,9 @@ def diffDatabases(old_database_path, new_database_path='pokemaster.db'):
 
 if __name__=='__main__':
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
-    # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
+    restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreUnknownTypes('pokemaster_v1.3-beta6.db')
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
-    diffDatabases('pokemaster_v1.4-alpha6.db')
+    diffDatabases('pokemaster_v1.4-alpha8.db')
     # diffDatabases('pokemaster_v1.3-beta6.db')
     # showDeletedFiles('pokemaster_v1.4-alpha5.db')

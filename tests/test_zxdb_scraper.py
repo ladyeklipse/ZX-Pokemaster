@@ -87,15 +87,16 @@ class TestZXDBScraper(unittest.TestCase):
             if file.md5 == '4c279cc851f59bcffffd6a34c7236b75':
                 self.assertEqual('z80', file.format)
 
-    def test_multiplayer_type(self):
-        where_clause = 'AND entries.id = 30265'
-        games = zxdb.getGames(where_clause)
-        for release in games[0].releases:
-            release.getInfoFromLocalFiles()
-        db.addGame(games[0])
-        db.commit()
-        game = db.getGameByWosID(30265)
-        self.assertEqual('Vs', game.getMultiplayerType())
+    # multiplayer_type column is obsolete in ZXDB
+    # def test_multiplayer_type(self):
+    #     where_clause = 'AND entries.id = 30265'
+    #     games = zxdb.getGames(where_clause)
+    #     for release in games[0].releases:
+    #         release.getInfoFromLocalFiles()
+    #     db.addGame(games[0])
+    #     db.commit()
+    #     game = db.getGameByWosID(30265)
+    #     self.assertEqual('Vs', game.getMultiplayerType())
 
     def test_side(self):
         where_clause = 'AND entries.id = 5856'
@@ -163,18 +164,18 @@ class TestZXDBScraper(unittest.TestCase):
             for release in game.releases:
                 release.getInfoFromLocalFiles()
         game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
-        for file in game.getFiles():
-            self.assertEqual(file.release_date, '')
+        # for file in game.getFiles():
+        #     self.assertEqual(file.release_date, '')
         db.addGame(game)
         db.commit()
         game = db.getGameByWosID(20176)
         for file in game.getFiles():
             if file.getMD5() == 'aeac4c85b51cc34dad9275abdfd09837':
-                self.assertEqual(file.content_desc, ' v4.7')
-                self.assertEqual(file.release_date, '2017-03-06')
-            else:
-                self.assertEqual(file.content_desc, '')
-                self.assertEqual(file.release_date, '')
+                self.assertEqual(file.content_desc, ' V4.7')
+                self.assertEqual('2017-03-06', file.release_date)
+            # else:
+            #     self.assertEqual(file.content_desc, '')
+            #     self.assertEqual(file.release_date, '')
 
     def test_authors_as_publishers(self):
         where_clause = 'AND entries.id IN (30155, 21575, 7727)'
@@ -183,9 +184,15 @@ class TestZXDBScraper(unittest.TestCase):
             if game.zxdb_id == 30155:
                 self.assertEqual('Grussu, Alessandro', game.getPublisher())
             elif game.zxdb_id == 21575:
-                self.assertEqual('Owen, Andrew', game.getPublisher())
+                self.assertEqual('Owen, Andrew S.', game.getPublisher())
             elif game.zxdb_id == 7727:
                 self.assertEqual('Mad Max', game.getPublisher())
+
+    def test_authors_teams(self):
+        where_clause = 'AND entries.id IN (5448)'
+        games = zxdb.getGames(where_clause)
+        for game in games:
+            self.assertEqual('Orpheus', game.getAuthor())
 
     def test_downloading(self):
         where_clause = 'AND entries.id IN (24888)'
@@ -238,7 +245,7 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id in (9332)'
         games = zxdb.getGames(where_clause)
         author = games[0].author
-        self.assertEqual('Eldridge, Jon Paul - Oliver Twins, The', author)
+        self.assertEqual('Eldridge, Jon Paul - Fletcher, Nigel - Oliver Twins, The', author)
         where_clause = 'AND entries.id in (4559)'
         games = zxdb.getGames(where_clause)
         author = games[0].author

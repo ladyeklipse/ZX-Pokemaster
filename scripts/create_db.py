@@ -5,7 +5,8 @@ from analyze_old_db_inconsistencies import restoreDeletedFiles
 from scripts.tipshop_excel_converter import *
 if (os.getcwd().endswith('scripts')):
     os.chdir('..')
-if __name__=='__main__':
+
+def scrapeZXDB():
     LOCAL_FTP_ROOT = os.path.join(os.getcwd(), 'ftp')
     if os.path.exists(POKEMASTER_DB_PATH):
         os.unlink(POKEMASTER_DB_PATH)
@@ -31,6 +32,9 @@ if __name__=='__main__':
     if os.path.exists('zxdb/pokemaster_zxdb_only.db'):
         os.unlink('zxdb/pokemaster_zxdb_only.db')
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
+
+if __name__=='__main__':
+    scrapeZXDB()
     import scrape_tosec
     restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     import scripts.create_tosec_dats

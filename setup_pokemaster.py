@@ -1,18 +1,18 @@
 import os
 import sys
 import shutil
-import version
+# import version
 import glob
 import zipfile
 from settings import ZX_POKEMASTER_VERSION
 PROJECT_NAME = 'ZX Pokemaster'
-INNOSETUP_APP_ID = '{9D553812-52CF-4FAF-8C56-AD2F573F5EB5}'
+INNOSETUP_APP_ID = '9D553812-52CF-4FAF-8C56-AD2F573F5EB5'
 
 DIST_PATH = 'dist-win32' if sys.platform == 'win32' else '/tmp/dist-darwin'
 original_folder = os.getcwd()
 
 def createInstaller(project_name, python_ver="37"):
-    version.setVersion()
+    # version.setVersion()
     executable = ""
     if 'darwin' in sys.platform:
         # executable = "python3 pyinstaller-dev-2020-01-15/pyinstaller.py"
@@ -61,9 +61,9 @@ def cleanup(project_name):
                 os.remove(file)
     os.chdir('../..')
 
-def zip(project_name):
+def createWin32Portable(project_name, project_version):
     print("Zipping...")
-    zfname = '{}-{}-{}'.format(getExecutableName(project_name), sys.platform, version.getPrefix())
+    zfname = '{}-{}-{}-portable'.format(getExecutableName(project_name), sys.platform, project_version)
     zfpath = '../../Output/'+zfname + '.zip'
     print(zfpath)
     os.chdir('dist-{}/{}'.format(sys.platform, project_name))
@@ -74,28 +74,29 @@ def zip(project_name):
                     continue
                 else:
                     zf.write(os.path.join(root, file), os.path.join(root, file))
+    os.chdir('../..')
 
-def createInnoSetup(app_id, project_name, project_version, copyright_holder):
-    iss_name = "pokemaster_stub.iss"
+def createInnoSetup(app_id, project_name, project_version):
+    iss_name = "zx_pokemaster_stub.iss"
     with open(iss_name, 'r', encoding='utf-8') as temp:
         iss_template = temp.read()
         iss = iss_template.format(app_id=app_id,
                                   project_name=project_name,
                                   project_executable_name=getExecutableName(project_name),
-                                  project_version=project_version,
-                                  copyright_holder=copyright_holder)
+                                  project_version=project_version)
     with open(getExecutableName(project_name)+'.iss', 'w', encoding='utf-8') as f:
         f.write(iss)
     executable = '"C:\\Program Files (x86)\\Inno Setup 6\\iscc.exe" {}.iss'.format(getExecutableName(project_name))
+    print(executable)
     os.system(executable)
-    installer_path = "Output//"+getDatedName(project_name, project_version)+".exe"
+    installer_path = "Output//"+getDatedName(project_name, project_version)+"-installer.exe"
     if os.path.exists(installer_path):
         os.unlink(installer_path)
     os.rename("Output//{}-{}.exe".format(
-        getExecutableName(project_name), project_version), "Output//"+getDatedName(project_name, project_version)+".exe")
+        getExecutableName(project_name), project_version), installer_path)
 
 def getDatedName(project_name, project_version):
-    return '{}-{}-{}-{}'.format(getExecutableName(project_name), project_version, sys.platform, version.getPrefix())
+    return '{}-{}-{}'.format(getExecutableName(project_name), project_version, sys.platform)
 
 def getExecutableName(project_name):
     return project_name.replace(' ', '_')
@@ -135,7 +136,7 @@ def createDmg(project_name, project_version):
     os.system("hdiutil detach /dev/disk2")
     os.system("rm {}.dmg".format(exec_name))
     os.system(executable)
-    os.rename("{}.dmg".format(exec_name), "Output/{}.dmg".format(getDatedName(project_name, project_version)))
+    os.rename("{}-installer.dmg".format(exec_name), "Output/{}.dmg".format(getDatedName(project_name, project_version)))
 
 if __name__=='__main__':
     createInstaller(PROJECT_NAME)
@@ -144,4 +145,5 @@ if __name__=='__main__':
         createBundle(PROJECT_NAME, ZX_POKEMASTER_VERSION)
         createDmg(PROJECT_NAME, ZX_POKEMASTER_VERSION)
     if sys.platform == 'win32':
-        createInnoSetup(INNOSETUP_APP_ID, PROJECT_NAME, PROJECT_VERSION, COPYRIGHT_HOLDER)
+        createWin32Portable(PROJECT_NAME, ZX_POKEMASTER_VERSION)
+        createInnoSetup(INNOSETUP_APP_ID, PROJECT_NAME, ZX_POKEMASTER_VERSION)

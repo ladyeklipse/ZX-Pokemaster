@@ -145,6 +145,8 @@ class ZXDBScraper():
               'publisher_labels.labeltype_id AS publisher_type, ' \
               'author_labels.name AS author, ' \
               'author_labels.labeltype_id AS author_type, ' \
+              'author_teams_labels.name AS author_team, ' \
+              'author_teams_labels.labeltype_id AS author_team_type, ' \
               'releases.release_year AS year,' \
               'publisher_labels.country_id AS country ' \
               'FROM entries ' \
@@ -155,6 +157,7 @@ class ZXDBScraper():
               'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
               'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
               'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id  ' \
+              'LEFT JOIN labels AS author_teams_labels ON author_teams_labels.id=authors.team_id  ' \
               'LEFT JOIN aliases ON aliases.entry_id=entries.id AND aliases.release_seq=releases.release_seq ' \
               'LEFT JOIN filetypes ON downloads.filetype_id=filetypes.id ' \
               'LEFT JOIN genretypes ON genretypes.id=entries.genretype_id ' \
@@ -174,10 +177,14 @@ class ZXDBScraper():
         games = []
         for row in self.cur:
             #Skipping ZX80/ZX81 files
+            # print(row)
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
+            if row['author_team']:
+                row['author'] = row['author_team']
+                row['author_type'] = row['author_team_type']
             if row['zxdb_id'] and row['name'] and row['zxdb_id']!=game.zxdb_id:
                 game = self.gameFromRow(row)
                 release = self.releaseFromRow(row, game)
@@ -346,13 +353,13 @@ class ZXDBScraper():
     def authorNameFromRow(self, row):
         if row['author_type']=='+': #person
             author = remove_brackets_regex.sub('', row['author'])
-            return putInitialsToEnd(author)
+            return putInitialsToEnd(author).strip()
         elif row['author_type']=='-': #nickname
-            return row['author']
+            return row['author'].strip()
         else: #company
             author = putPrefixToEnd(row['author'])
             author  = publisher_regex.sub('', author)
-            return putPrefixToEnd(author)
+            return putPrefixToEnd(author).strip()
         # if row['author_is_company'] in (None, 1):
         #     author = putPrefixToEnd(row['author'])
         #     if row['author_is_company']:

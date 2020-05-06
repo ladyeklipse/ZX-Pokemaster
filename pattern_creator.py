@@ -1,16 +1,13 @@
-# from PyQt5.QtCore import *
-# from PyQt5.QtGui import *
-# from PyQt5.QtWidgets import *
 import os
 import re
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from classes.database import *
 
 from classes.game_file import GameFile
 from functions.is_pathname_valid import *
 from settings import MESSAGE_BOX_TITLE
 from ui.OutputFolderStructureEditor import *
-
 
 class PatternCreatorDialog(QDialog):
 
@@ -22,6 +19,7 @@ class PatternCreatorDialog(QDialog):
         super(QDialog, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+
         self.buttons = [
             self.ui.btnGenre, self.ui.btnMachineType, self.ui.btnYear, self.ui.btnMedia,
             self.ui.btnPublisher, self.ui.btnGameName, self.ui.btnLanguage, self.ui.btnAuthor,
@@ -59,17 +57,19 @@ class PatternCreatorDialog(QDialog):
 
     def initGameFiles(self):
         self.examples = []
-        game_file = GameFile('Tujad (1986)(Ariolasoft UK)[48K].tap')
-        game_file.game.setGenre('Arcade Game - Maze')
-        game_file.game.zxdb_id = 5448
+        database = Database()
+        game = database.getGameByFileMD5('200c35cb8984a40257dd8b317263d752')
+        game_file = game.findFileByMD5('200c35cb8984a40257dd8b317263d752')
+        game_file.src = "/pub/sinclair/games/Tujad"
         self.examples.append(game_file)
-        game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2 Side A)[Spy Hunter].tzx')
-        game_file.game.setNumberOfPlayers(1)
-        game_file.game.zxdb_id = 11598
+        game = database.getGameByFileMD5('93dfecdd9c7db7c39d0c10f2f155f938')
+        game_file = game.findFileByMD5('93dfecdd9c7db7c39d0c10f2f155f938')
+        game_file.src = "Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2 Side A)[Spy Hunter]"
         self.examples.append(game_file)
-        game_file = GameFile('Sinclair ZX Spectrum\Covertapes\[TAP]\Snare (demo) (1992)(Beyond Belief - Sinclair User)[cr][48-128K].tap')
-        game_file.game.setGenre('Game - Puzzle')
-        game_file.game.zxdb_id = 4594
+        game = database.getGameByFileMD5('a951bc3a62f00454eaeb6373395de185')
+        # game.author = "Unknown Author"
+        game_file = game.findFileByMD5('a951bc3a62f00454eaeb6373395de185')
+        game_file.src = "Sinclair ZX Spectrum\Covertapes\[TZX]\Snare (demo) (1992)(Beyond Belief - Sinclair User)[cr][48-128K]"
         self.examples.append(game_file)
 
     def setExamples(self):

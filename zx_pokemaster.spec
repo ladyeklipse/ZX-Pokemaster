@@ -15,7 +15,6 @@ a = Analysis(['pokemaster.py'],
              ],
              datas=[
                 ('ui/res_rc.py', 'ui'),
-                ('__version__.txt', '.'),
                 ('default_settings/settings.json', 'default_settings'),
                 ('assets/pokemaster.png', 'assets'),
                 ('assets/pokemaster.ico', 'assets'),

@@ -144,6 +144,13 @@ class MainDialog(QDialog):
         if not kwargs['input_locations']:
             QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Please add one or more input path(s).'))
             return
+        if kwargs['delete_source_files']:
+            reply = QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("""Warning!
+All files in selected source folders will be deleted after sorting!
+Continue only if you have a backup or uncheck "Delete source files after sorting" on "File filtering" tab.
+Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.No:
+                return
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)

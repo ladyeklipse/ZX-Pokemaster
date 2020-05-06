@@ -13,6 +13,7 @@ import traceback
 import glob
 import time
 from copy import copy
+import operator
 
 db = Database()
 
@@ -363,6 +364,8 @@ class Sorter():
         if self.gui:
             self.gui.updateProgressBar(0, self.getCollectedFilesCount(), 'Redistributing files...')
         files_array = self.getFilesArray()
+        #sort alphabetically, so people don't have to use SD Sorter afterwards.
+        files_array = sorted(files_array, key=operator.attrgetter('dest'))
         for i, file in enumerate(files_array):
             if self.should_cancel:
                 break
@@ -405,7 +408,8 @@ class Sorter():
             if os.path.exists(alt_pok_path):
                 self.removeFile(alt_pok_path)
         for file in [game_file.file_in_archive] + game_file.alt_files_in_archives:
-            file.remove()
+            if file:
+                file.remove()
 
     def removeFile(self, src):
         try:
