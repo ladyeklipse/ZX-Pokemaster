@@ -119,7 +119,7 @@ class ZXDBScraper():
         return self.getGames()
 
     def getGames(self, sql_where='', sql_limit=9999999):
-        sql = 'SELECT entries.id AS wos_id, ' \
+        sql = 'SELECT entries.id AS zxdb_id, ' \
               'releases.release_seq AS release_seq, ' \
               'entries.title AS name, ' \
               'entries.library_title AS tosec_compliant_name, ' \
@@ -166,7 +166,7 @@ class ZXDBScraper():
               '(authors.author_seq<=3 OR authors.author_seq IS NULL) '
         if sql_where:
             sql += sql_where+' '
-        sql +='ORDER BY wos_id, release_seq, entries.title IS NOT NULL ' \
+        sql +='ORDER BY zxdb_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT '+str(sql_limit)
         self.cur.execute(sql)
         game = Game()
@@ -178,7 +178,7 @@ class ZXDBScraper():
                 continue
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
-            if row['wos_id'] and row['name'] and row['wos_id']!=game.wos_id:
+            if row['zxdb_id'] and row['name'] and row['zxdb_id']!=game.zxdb_id:
                 game = self.gameFromRow(row)
                 release = self.releaseFromRow(row, game)
                 game.addRelease(release)
@@ -273,31 +273,31 @@ class ZXDBScraper():
         if not game_name:
             game_name = row['name']
         game_name = self.sanitizeAlias(game_name)
-        game = Game(game_name, int(row['wos_id']))
+        game = Game(game_name, int(row['zxdb_id']))
         publisher = self.publisherNameFromRow(row)
         game.setPublisher(publisher)
         author = self.authorNameFromRow(row)
         game.setAuthor(author)
         game.setYear(row['year'])
-        pok_file_path = self.pok_file_paths.get(game.wos_id)
+        pok_file_path = self.pok_file_paths.get(game.zxdb_id)
         if pok_file_path:
             game.importPokFile(file_path=pok_file_path)
         #TEMPORARY
         if not row['genre']:
-            if game.wos_id in [
+            if game.zxdb_id in [
                             32168, 32169, 32170, 32171,
                             32172, 32173, 32174, 32180,
                             30349, 32176, 32201, 32175,
                             34322
                             ]:
                 game.setGenre('Various Games')
-            elif game.wos_id in [32176]:
+            elif game.zxdb_id in [32176]:
                 game.setGenre('Utilities - Screen')
-            elif game.wos_id in [32257, 32258, 32259]:
+            elif game.zxdb_id in [32257, 32258, 32259]:
                 game.setGenre('Utilities')
-            elif game.wos_id in [27590, 1000246]:
+            elif game.zxdb_id in [27590, 1000246]:
                 game.setGenre('Firmware')
-        elif game.wos_id in [8100]:
+        elif game.zxdb_id in [8100]:
             game.setGenre('Compilation - Educational')
         else:
             game.setGenre(row['genre'])
@@ -414,6 +414,7 @@ class ZXDBScraper():
         return game_file
 
     def downloadMissingFilesForGames(self, games):
+        print("Downloading missing files...")
         s = Scraper()
         for game in games:
             for file in game.getFiles():

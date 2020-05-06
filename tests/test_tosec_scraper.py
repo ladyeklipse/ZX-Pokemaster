@@ -29,10 +29,10 @@ class TestTOSECScraper(unittest.TestCase):
             "tosec\\Sinclair ZX Spectrum\Games\[TZX]\\100 km Race (19xx)(Coyote Software).zip",
             "tosec\\Sinclair ZX Spectrum\Games\[Z80]\\100 km Race (19xx)(Coyote Software).zip"
         ]
-        wos_id = 10
+        zxdb_id = 10
         paths = ts.generateTOSECPathsArrayFromList(paths)
-        self.scrape(paths, wos_id)
-        game = ts.db.getGameByWosID(wos_id)
+        self.scrape(paths, zxdb_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         self.assertTrue(len(game.getFiles())>=2)
         for file in game.getFiles():
             self.assertGreater(len(file.crc32), 0)
@@ -67,10 +67,10 @@ class TestTOSECScraper(unittest.TestCase):
             "tosec\Sinclair ZX Spectrum\Games\[TAP]\Saboteur II - Avenging Angel (1987)(Durell Software)[cr Wixet][t +2 Wixet][128K].zip",
             "tosec\Sinclair ZX Spectrum\Games\[Z80]\Saboteur II - Avenging Angel (1987)(Durell Software)[t].zip",
         ]
-        wos_id = 4295
+        zxdb_id = 4295
         paths = ts.generateTOSECPathsArrayFromList(paths)
-        self.scrape(paths, wos_id)
-        game = ts.db.getGameByWosID(wos_id)
+        self.scrape(paths, zxdb_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         self.assertTrue(len(game.getFiles())>=2)
         for file in game.getFiles():
             if 'Durell' in file.tosec_path:
@@ -78,10 +78,10 @@ class TestTOSECScraper(unittest.TestCase):
             self.assertTrue('aka Saboteur 2' not in file.notes)
 
     def test_dat_files_scraping(self):
-        wos_id = 9
-        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        zxdb_id = 9
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id={} AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_zxdb_id={}'.format(zxdb_id)
         ts.db.execute(sql)
         ts.db.commit()
         ts.db.loadCache()
@@ -95,13 +95,13 @@ class TestTOSECScraper(unittest.TestCase):
         ts.addUnscraped()
         ts.db.commit()
         game = ts.db.getGameByFileMD5('92138fea9309aa229bb7c220dfaf09d6')
-        self.assertEqual(game.wos_id, 8)
+        self.assertEqual(game.zxdb_id, 8)
 
     def test_popeye_collection(self):
-        wos_id = 12013
-        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        zxdb_id = 12013
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id={} AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_zxdb_id={}'.format(zxdb_id)
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()
@@ -115,16 +115,16 @@ class TestTOSECScraper(unittest.TestCase):
             self.assertGreater(len(file.content_desc), 0)
 
     def test_1942(self):
-        wos_id = 9297
-        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        zxdb_id = 9297
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id={} AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game WHERE wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game WHERE zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_release WHERE wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game_release WHERE zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_file WHERE game_wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_zxdb_id={}'.format(zxdb_id)
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()
@@ -132,20 +132,20 @@ class TestTOSECScraper(unittest.TestCase):
                      ]
         ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
         ts.scrapeTOSEC()
-        game = ts.db.getGameByWosID(wos_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         self.assertGreater(len(game.getFiles()), 0)
 
     def test_ghostbusters(self):
-        wos_id = 2025
-        sql = 'DELETE FROM game_file WHERE game_wos_id in({}, 14372, 7433) AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+        zxdb_id = 2025
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id in({}, 14372, 7433) AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game WHERE wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game WHERE zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_release WHERE wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game_release WHERE zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_file WHERE game_wos_id>9000000'.format(wos_id)
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id>9000000'.format(zxdb_id)
         ts.db.execute(sql)
-        sql = 'UPDATE game_file SET tosec_path="" WHERE game_wos_id={}'.format(wos_id)
+        sql = 'UPDATE game_file SET tosec_path="" WHERE game_zxdb_id={}'.format(zxdb_id)
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()
@@ -153,7 +153,7 @@ class TestTOSECScraper(unittest.TestCase):
                      ]
         ts.paths = ts.generateTOSECPathsArrayFromDatFiles(dat_files)
         ts.scrapeTOSEC()
-        game = ts.db.getGameByWosID(wos_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         for release in game.releases:
             if release.release_seq==1:
                 self.assertGreater(len(release.files), 0)
@@ -181,7 +181,7 @@ class TestTOSECScraper(unittest.TestCase):
         game = ts.db.getGameByFileMD5('3bb8fca89941bb3b9ad26ae823c15899')
         if not game:
             self.fail()
-        self.assertNotEqual(game.wos_id, 0)
+        self.assertNotEqual(game.zxdb_id, 0)
 
     def test_unpacked_files_folder(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\From old DATs')[:20]
@@ -201,9 +201,9 @@ class TestTOSECScraper(unittest.TestCase):
     def test_fikus_pikus(self):
         sql = 'DELETE FROM game_file WHERE tosec_path LIKE "tosec\\%"'
         ts.db.execute(sql)
-        sql = 'DELETE FROM game WHERE name LIKE "Fikus Pikus%" AND wos_id>9000000'
+        sql = 'DELETE FROM game WHERE name LIKE "Fikus Pikus%" AND zxdb_id>9000000'
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_release WHERE name LIKE "Fikus Pikus%" AND wos_id>9000000'
+        sql = 'DELETE FROM game_release WHERE name LIKE "Fikus Pikus%" AND zxdb_id>9000000'
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()
@@ -233,7 +233,7 @@ class TestTOSECScraper(unittest.TestCase):
             game = ts.db.getGameByFileMD5(md5)
             if not game:
                 self.fail()
-            self.assertNotEqual(game.wos_id, 0)
+            self.assertNotEqual(game.zxdb_id, 0)
 
     def test_educational(self):
         dat_files = ['tosec/official dats/Sinclair ZX Spectrum - Compilations - Educational - [TRD] (TOSEC-v2011-09-24_CM).dat',
@@ -251,7 +251,7 @@ class TestTOSECScraper(unittest.TestCase):
         ts.addUnscraped()
         ts.db.commit()
         game = ts.db.getGameByFileMD5('dbb91c0fb3a0d583fe14363bd68d3b58')
-        self.assertGreater(game.wos_id, 0)
+        self.assertGreater(game.zxdb_id, 0)
 
     def test_getting_ext_from_zip_files(self):
         ts.paths = ts.generateTOSECPathsArrayFromFolder('tosec\\test')
@@ -264,11 +264,11 @@ class TestTOSECScraper(unittest.TestCase):
             self.assertTrue(game_file.format in GAME_EXTENSIONS)
 
     def test_version_as_release(self):
-        sql = 'DELETE FROM game_file WHERE game_wos_id=30410 AND (wos_name="" OR wos_name IS NULL)'
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id=30410 AND (wos_name="" OR wos_name IS NULL)'
         ts.db.execute(sql)
-        sql = 'DELETE FROM game WHERE name = "Break-Space" AND wos_id>9000000'
+        sql = 'DELETE FROM game WHERE name = "Break-Space" AND zxdb_id>9000000'
         ts.db.execute(sql)
-        sql = 'DELETE FROM game_release WHERE name = "Break-Space" AND wos_id>9000000'
+        sql = 'DELETE FROM game_release WHERE name = "Break-Space" AND zxdb_id>9000000'
         ts.db.execute(sql)
         ts.db.commit()
         ts.paths = ts.generateTOSECPathsArrayFromList([
@@ -290,7 +290,7 @@ class TestTOSECScraper(unittest.TestCase):
         # ts.db.conn.close()
         # restoreDB()
         # ts.db = Database()
-        sql = 'DELETE FROM game_file WHERE game_wos_id=1299 AND notes="[CSSCGC]"'
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id=1299 AND notes="[CSSCGC]"'
         ts.db.execute(sql)
         sql = 'DELETE FROM game WHERE name="Car" and publisher="Yates, Damion"'
         ts.db.execute(sql)
@@ -307,7 +307,7 @@ class TestTOSECScraper(unittest.TestCase):
             self.assertNotIn('[CSSCGC]', file.notes)
 
     def test_game_with_randomness_in_name(self):
-        wos_id = 2247
+        zxdb_id = 2247
         paths = ts.generateTOSECPathsArrayFromDatFiles()
         paths = [path for path in paths if 'H.A.T.E.' in path['path']]
         ts.paths = copy(paths)
@@ -318,8 +318,8 @@ class TestTOSECScraper(unittest.TestCase):
         # ts.getManuallyCorrectedContentDescriptionsAndNotes()
         # ts.getManuallyEnteredTOSECAliases()
 
-        self.scrape(ts.paths, wos_id)
-        game = ts.db.getGameByWosID(wos_id)
+        self.scrape(ts.paths, zxdb_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         for game_file in game.getFiles():
             print(game_file.getTOSECName(), game_file.getMD5())
         # tosec_names = sorted([game_file.getTOSECName() for game_file in game.getFiles()])
@@ -327,13 +327,13 @@ class TestTOSECScraper(unittest.TestCase):
         #     print(name)
 
     def test_duplicate_aka(self):
-        wos_id = 13615
+        zxdb_id = 13615
         paths = ts.generateTOSECPathsArrayFromDatFiles()
         paths = [path for path in paths if 'Semanal - Issue 001' in path['path']]
         ts.paths  = copy(paths)
-        self.scrape(ts.paths, wos_id)
+        self.scrape(ts.paths, zxdb_id)
         ts.db.commit()
-        game = ts.db.getGameByWosID(wos_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         game_file = game.getFiles()[0]
         self.assertFalse('aka' in game_file.notes)
 
@@ -363,9 +363,9 @@ class TestTOSECScraper(unittest.TestCase):
             'c:\\ZX Pokemaster\\tosec\\reviewed files\\vtrdos.ru\Demo_comps\Music\\Unfunny Joke (2011)(Darkman007)(RU)[DiHalt][Beeper].tap'
         ]
         game = ts.db.getGameByFileMD5('1fe31ff48fde8a74d1e1f34fe0694dc8')
-        wos_id = game.wos_id if game else 0
+        zxdb_id = game.zxdb_id if game else 0
         ts.paths = ts.generateTOSECPathsArrayFromList(paths)
-        self.scrape(ts.paths, wos_id)
+        self.scrape(ts.paths, zxdb_id)
         game = ts.db.getGameByFileMD5('1fe31ff48fde8a74d1e1f34fe0694dc8')
         print(game.getGenre())
         self.assertEqual('Music', game.getFiles()[0].getGenre())
@@ -374,17 +374,17 @@ class TestTOSECScraper(unittest.TestCase):
         paths = ts.generateTOSECPathsArrayFromDatFiles()
         paths = [path for path in paths if '\Games Compendium -' in path['path']]
         ts.paths = paths
-        wos_id = 14685
-        self.scrape(paths, wos_id)
-        game = ts.db.getGameByWosID(wos_id)
+        zxdb_id = 14685
+        self.scrape(paths, zxdb_id)
+        game = ts.db.getGameByWosID(zxdb_id)
         for file in game.getFiles():
             # print(file.md5, file.notes)
             self.assertEqual('NONE', file.notes)
         # self.fail()
 
 
-    def scrape(self, paths, wos_id):
-        sql = 'DELETE FROM game_file WHERE game_wos_id={} AND (wos_name="" OR wos_name IS NULL)'.format(wos_id)
+    def scrape(self, paths, zxdb_id):
+        sql = 'DELETE FROM game_file WHERE game_zxdb_id={} AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)
         ts.db.execute(sql)
         ts.db.commit()
         # ts.db.loadCache()

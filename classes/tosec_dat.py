@@ -151,7 +151,7 @@ class TOSECDat():
         root.append(self.header)
         self.files = sorted(self.files, key=lambda file:
             (file.getGameName(),
-             file.game.wos_id,
+             file.game.zxdb_id,
             str(len(re.findall('\[a[0-9]{1,}\]', file.alt_dest))),
             '[a]' in file.alt_dest,
             file.alt_dest))

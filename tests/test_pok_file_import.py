@@ -8,7 +8,7 @@ class PokReader(unittest.TestCase):
     # This test uses WoS scraper, which is outdated.
     # def test_find_ambiguous_pok_file(self):
     #     expected_pok_file_basename = 'Invaders (1983)(DK\'Tronics)(16k).pok'
-    #     game = Game('Invaders', wos_id=2531)
+    #     game = Game('Invaders', zxdb_id=2531)
     #     ws = WosScraper()
     #     ws.scrapeGameData(game)
     #     self.assertEqual(game.publisher, 'DK\'Tronics')
@@ -17,7 +17,7 @@ class PokReader(unittest.TestCase):
     #     self.assertEqual(os.path.basename(pok_file_path), expected_pok_file_basename)
 
     def test_pok_import(self):
-        game = Game(name="Ghost Hunters", wos_id=9350)
+        game = Game(name="Ghost Hunters", zxdb_id=9350)
         game.release = GameRelease(year=1987, publisher='Code Masters')
         game.importPokFile()
         self.assertEqual(18, len(game.cheats))
@@ -36,7 +36,7 @@ class PokReader(unittest.TestCase):
         self.assertEqual(last_cheat_poke.memory_bank, 8)
 
     def test_pok_from_text(self):
-        game = Game(name='Test game', wos_id=99999)
+        game = Game(name='Test game', zxdb_id=99999)
         pok_file_contents ="""
 NCheat 1
 Z 8 22222 120 0

@@ -14,7 +14,7 @@ class GameFileTests(unittest.TestCase):
 
     def test_hashsums(self):
         print(os.getcwd())
-        game = Game(wos_id=1660)
+        game = Game(zxdb_id=1660)
         game_file = GameFile('\pub\sinclair\games\e\E.T.X..tap.zip', game=game)
         expected_md5 = 'b04c5d9bf88eb5a008696d83eeee69ac'
         self.assertEqual(expected_md5, game_file.getMD5())
@@ -105,28 +105,28 @@ class GameFileTests(unittest.TestCase):
         self.assertEqual(file.content_desc, '')
         file = GameFile('Sinclair ZX Spectrum\Applications\[TAP]\HiSoft BASIC v1.0 (1986)(HiSoft)[a].tap')
         game_name = 'HiSoft BASIC'
-        file.game.wos_id=1
+        file.game.zxdb_id=1
         file.game.name = game_name
         file.release.aliases = [game_name]
         file.setContentDesc(os.path.basename(file.path))
         self.assertEqual(file.content_desc, ' v1.0')
         game_name = 'Treasure Island Dizzy'
         file = GameFile('Sinclair ZX Spectrum\Games\[TZX]\Dizzy II - Treasure Island Dizzy (1988)(Codemasters).tap')
-        file.game.wos_id=1
+        file.game.zxdb_id=1
         file.game.name = game_name
         file.release.aliases = [game_name]
         file.setContentDesc(os.path.basename(file.path))
         self.assertEqual(file.content_desc, '')
         file = GameFile('Sinclair ZX Spectrum\Games\[Z80]\\007 - Live and Let Die (1988)(Domark).tap')
         game_name = 'Live and Let Die'
-        file.game.wos_id=1
+        file.game.zxdb_id=1
         file.game.name = game_name
         file.release.aliases = 'Live and Let Die - The Computer Game/Live and Let Die/Aquablast'.split('/')
         file.setContentDesc(os.path.basename(file.path))
         self.assertEqual(file.content_desc, '')
         file = GameFile('Sinclair ZX Spectrum\Games\[Z80]\Hunter II - Olympus-Mons (1985)(David Rushall).tap')
         game_name = 'Hunter II - Olympus-mons'
-        file.game.wos_id=1
+        file.game.zxdb_id=1
         file.game.name = game_name
         file.release.aliases = 'Hunter II - Olympus-mons/Hunter II - Olympus-mons'.split('/')
         file.setContentDesc(os.path.basename(file.path))

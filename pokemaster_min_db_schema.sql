@@ -1,7 +1,7 @@
 BEGIN TRANSACTION;
 DROP TABLE IF EXISTS `game_release`;
 CREATE TABLE IF NOT EXISTS `game_release` (
-	`wos_id`	INTEGER,
+	`zxdb_id`	INTEGER,
 	`release_seq`	INTEGER,
 	`name`	TEXT,
 	`year`	INTEGER,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `game_release` (
 );
 DROP TABLE IF EXISTS `game_file`;
 CREATE TABLE IF NOT EXISTS `game_file` (
-	`game_wos_id`	INT NOT NULL,
+	`game_zxdb_id`	INT NOT NULL,
 	`game_release_seq`	INTEGER,
 	`machine_type`	TEXT,
 	`format`	TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `game_file` (
 );
 DROP TABLE IF EXISTS `game`;
 CREATE TABLE IF NOT EXISTS `game` (
-	`wos_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`zxdb_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`name`	VARCHAR ( 255 ),
 	`publisher`	VARCHAR ( 255 ),
 	`author`	TEXT,

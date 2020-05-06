@@ -181,7 +181,7 @@ class GameFile(object):
     def getEquals(self, collection):
         equals = []
         for other_file in collection:
-            if self.game.wos_id == other_file.game.wos_id and \
+            if self.game.zxdb_id == other_file.game.zxdb_id and \
                 self.getYear() == other_file.getYear() and \
                 self.getPublisher() == other_file.getPublisher() and \
                 self.getReleaseSeq() == other_file.getReleaseSeq() and \
@@ -204,7 +204,7 @@ class GameFile(object):
             dir_path = os.path.split(dest[0])
             self.alt_dest = os.path.join(dir_path[0],
                                          dir_path[1][:(8-len(alt_mod_flag))]+alt_mod_flag+dest[1])
-        elif not self.game.wos_id:
+        elif not self.game.zxdb_id:
             dir_path = os.path.split(dest[0])
             alt_mod_flag = '_'+str(copies_count+1)
             self.alt_dest = os.path.join(dir_path[0], dir_path[1]+alt_mod_flag+dest[1])
@@ -223,7 +223,7 @@ class GameFile(object):
             self.alt_dest = dest[0]+alt_mod_flag+dest[1]
 
     def isAlternate(self):
-        if self.game.wos_id and self.is_alternate:
+        if self.game.zxdb_id and self.is_alternate:
             return True
         else:
             return False
@@ -378,7 +378,7 @@ class GameFile(object):
         self.notes = ''.join('[{}]'.format(x) for x in notes_array)
 
     def setContentDesc(self, filename):
-        if self.game and self.game.wos_id:
+        if self.game and self.game.zxdb_id:
             game_name = filename.split('(')[0].strip()
             aliases = self.game.getAliases()
             alias_found = False

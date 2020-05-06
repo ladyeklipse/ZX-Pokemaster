@@ -22,8 +22,7 @@ if __name__=='__main__':
     zxdb = ZXDBScraper()
     print("Getting all games from ZXDB...")
     games = zxdb.getAllGames()
-    print("Downloading missing files...")
-    zxdb.downloadMissingFilesForGames(games)
+    # zxdb.downloadMissingFilesForGames(games)
     zxdb.getInfoFromLocalFiles(games)
     for game in games:
         db.addGame(game)

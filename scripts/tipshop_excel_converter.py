@@ -6,7 +6,7 @@ if (os.getcwd().endswith('scripts')):
 def db2xlsx():
     import xlsxwriter
     db = Database()
-    sql = "SELECT wos_id, name, pok_file_contents, tipshop_multiface_pokes_section " \
+    sql = "SELECT zxdb_id, name, pok_file_contents, tipshop_multiface_pokes_section " \
           "FROM game WHERE pok_file_contents != ''"
     raw_data = db.execute(sql)
     workbook = xlsxwriter.Workbook(XLSX_FILENAME)
@@ -23,7 +23,7 @@ def db2xlsx():
         pok_contents = game.getPokFileContents(for_xlsx = True)
         multiface_poke_secion = row[3]
         worksheet.write_row(i, 0, [
-            str(row['wos_id']).zfill(7),
+            str(row['zxdb_id']).zfill(7),
                 row['name'],
                 pok_contents,
                 multiface_poke_secion
@@ -36,8 +36,8 @@ def xlsx2db():
     workbook = xlrd.open_workbook(XLSX_FILENAME)
     worksheet = workbook.sheet_by_index(0)
     for i in range(worksheet.nrows):
-        wos_id = int(worksheet.cell_value(rowx=i, colx=0))
-        if wos_id>9000000:
+        zxdb_id = int(worksheet.cell_value(rowx=i, colx=0))
+        if zxdb_id>9000000:
             continue
         pok_file_contents = worksheet.cell_value(rowx=i, colx=2)
         game = Game()
@@ -48,10 +48,10 @@ def xlsx2db():
                     raise(ValueError('Cheat desc is digit!'))
             pok_file_contents = game.getPokFileContents()
         except Exception as e:
-            print(str(wos_id).zfill(7))
+            print(str(zxdb_id).zfill(7))
             #raise e
-        sql = 'UPDATE game SET pok_file_contents = ? WHERE wos_id=?'
-        params = [pok_file_contents, wos_id]
+        sql = 'UPDATE game SET pok_file_contents = ? WHERE zxdb_id=?'
+        params = [pok_file_contents, zxdb_id]
         # print(sql, params)
         db.execute(sql, params)
     db.commit()

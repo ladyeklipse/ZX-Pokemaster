@@ -11,7 +11,7 @@ def chunks(l, n):
         yield l[i:i + n]
 
 def getWosIDsOfTipshopGames(db=None):
-    wos_ids_tipshop_pages_pairs = []
+    zxdb_ids_tipshop_pages_pairs = []
     ts = TipshopScraper()
     db = db if db else Database()
     db.loadCache()
@@ -23,23 +23,23 @@ def getWosIDsOfTipshopGames(db=None):
         for url in urls:
             wos_game_data = ts.getWosIdFromUrl(url)
             if type(wos_game_data)==int:
-                wos_ids_tipshop_pages_pairs.append((url, wos_game_data))
+                zxdb_ids_tipshop_pages_pairs.append((url, wos_game_data))
             else:
                 game = db.getGameByName(wos_game_data)
                 if game:
                     print('Game found:', wos_game_data, game)
-                    wos_ids_tipshop_pages_pairs.append((url, game.wos_id))
+                    zxdb_ids_tipshop_pages_pairs.append((url, game.zxdb_id))
                 elif wos_game_data:
                     missing_data.append(wos_game_data)
     print('\n'.join(missing_data))
-    return wos_ids_tipshop_pages_pairs
+    return zxdb_ids_tipshop_pages_pairs
 
 def games2xlsx(games, xlsx_filename='new_tipshop_pokes.xlsx', new_only=False):
     if new_only:
         games = [game for game in games if game.has_new_pokes]
     import xlsxwriter
     db = Database()
-    sql = "SELECT wos_id, name, pok_file_contents, tipshop_multiface_pokes_section " \
+    sql = "SELECT zxdb_id, name, pok_file_contents, tipshop_multiface_pokes_section " \
           "FROM game WHERE pok_file_contents != ''"
     raw_data = db.execute(sql)
     workbook = xlsxwriter.Workbook(xlsx_filename)
@@ -60,21 +60,21 @@ def games2xlsx(games, xlsx_filename='new_tipshop_pokes.xlsx', new_only=False):
         ], mformat)
     workbook.close()
 
-def updateTipshopPageColumn(wos_ids_tipshop_pages_pairs, db=None):
+def updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs, db=None):
     db = db if db else Database()
-    for pair in wos_ids_tipshop_pages_pairs:
-        sql = 'UPDATE game SET tipshop_page=? WHERE wos_id=?'
+    for pair in zxdb_ids_tipshop_pages_pairs:
+        sql = 'UPDATE game SET tipshop_page=? WHERE zxdb_id=?'
         params = pair
         db.execute(sql, params)
     db.commit()
 
-def getAllPokes(wos_ids=[]):
+def getAllPokes(zxdb_ids=[]):
     db = Database()
     games = db.getAllGames('tipshop_page IS NOT NULL AND tipshop_page!="0"')
     # games = games[:10]
     ts = TipshopScraper()
     for i, game in enumerate(games):
-        if wos_ids and game.wos_id not in wos_ids:
+        if zxdb_ids and game.zxdb_id not in zxdb_ids:
             continue
         old_cheats = [cheat for cheat in game.cheats]
         print(old_cheats)
@@ -88,8 +88,8 @@ def getAllPokes(wos_ids=[]):
                 game.has_new_pokes = True
                 break
         print('left=', len(games)-i)
-    if wos_ids:
-        return [game for game in games if game.wos_id in wos_ids]
+    if zxdb_ids:
+        return [game for game in games if game.zxdb_id in zxdb_ids]
     return games
 
 def updateMods():
@@ -147,11 +147,11 @@ def extractPokFiles():
     with open(os.path.join('AllTipshopPokes', 'zxdb_update.csv'), 'w', encoding='utf-8') as f:
         f.write(csv_contents)
 
-def generateZXDBUpdate(wos_ids):
+def generateZXDBUpdate(zxdb_ids):
     with open('relatedlinks.update.sql', 'w+', encoding='utf-8') as f:
         f.write('INSERT INTO relatedlinks (website_id, entry_id, link) VALUES (\n')
-        for wos_id in wos_ids:
-            f.write('(8, '+str(wos_id)+', "http://www.the-tipshop.co.uk/cgi-bin/info.pl?name='+str(wos_id).zfill(7)+'"),\n')
+        for zxdb_id in zxdb_ids:
+            f.write('(8, '+str(zxdb_id)+', "http://www.the-tipshop.co.uk/cgi-bin/info.pl?name='+str(zxdb_id).zfill(7)+'"),\n')
         f.write(')')
 
 def scrapePokesFromText(text):
@@ -197,8 +197,8 @@ def createPOKTOSECDat():
 
 if __name__=='__main__':
     #FIRST PART
-    # wos_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    # updateTipshopPageColumn(wos_ids_tipshop_pages_pairs)
+    # zxdb_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    # updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs)
     # games = getAllPokes()
     # games2xlsx(games, new_only=True)
     # xlsx2db()

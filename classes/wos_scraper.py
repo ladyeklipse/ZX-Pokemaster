@@ -31,8 +31,8 @@ class WosScraper(Scraper):
             game_name = game_link.xpath('//text()').text()[0]
             game_url = game_link.xpath('//a/@href').extract_first()
             game_url_query_string = game_url.split('?')[1]
-            game_wos_id = int(urllib.parse.parse_qs(game_url_query_string)['id'][0])
-            game = Game(game_name, game_wos_id)
+            game_zxdb_id = int(urllib.parse.parse_qs(game_url_query_string)['id'][0])
+            game = Game(game_name, game_zxdb_id)
             games_list.append(game)
         return games_list
 

@@ -19,7 +19,7 @@ class TestDatabase(unittest.TestCase):
         self.db = db
 
     def test_adding_game(self):
-        game = Game(name='Tujad', wos_id=5448)
+        game = Game(name='Tujad', zxdb_id=5448)
         zxdb = ZXDBScraper()
         game = zxdb.getGames(' AND entries.id=5448')[0]
         game.releases[0].getInfoFromLocalFiles()
@@ -37,13 +37,13 @@ class TestDatabase(unittest.TestCase):
         game_name = 'Abadia Del Crimen, La'
         self.assertEqual(getSearchStringFromGameName(game_name), 'abadiadelcrimen')
 
-    # Irrelevant test, since now each Game with empty wos_id has 9000000+ auto id
-    # def test_adding_broken_wos_id(self):
+    # Irrelevant test, since now each Game with empty zxdb_id has 9000000+ auto id
+    # def test_adding_broken_zxdb_id(self):
     #     game = Game()
     #     with self.assertRaises(Exception):
     #         self.db.addGame(game)
 
-    def test_getting_game_by_wos_id(self):
+    def test_getting_game_by_zxdb_id(self):
         game = self.db.getGameByWosID(5448)
         self.check_if_game_is_tujad(game)
 
@@ -74,28 +74,28 @@ class TestDatabase(unittest.TestCase):
         'He had such a big head that if he were a mouse he would have to toss the mice from under the bed with a brow - Part II'
         filename = 'He Had Such A Big Head That If He Were A Cat He Would Have To Toss The Mice From Under The Bed With A Brow - Part II (2011)(Apenao)[CSSCGC].tap'
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 31193)
+        self.assertEqual(game.zxdb_id, 31193)
         filename = '2048 (2014)(Alone Coder).tap'
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 30134)
+        self.assertEqual(game.zxdb_id, 30134)
         filename = 'Helter Skelter + Editor (1991)(Audiogenic)[h Rajsoft].tap'
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 2291)
+        self.assertEqual(game.zxdb_id, 2291)
         filename = 'Helter Skelter (1991)(Audiogenic)[h Rajsoft].tap'
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 2291)
+        self.assertEqual(game.zxdb_id, 2291)
         filename = '66 (19xx)(Stankisoft)(de).tap'
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 39)
+        self.assertEqual(game.zxdb_id, 39)
         filename = "Giant's Revenge (1984)(Thor Computer Software).tap"
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 2040)
+        self.assertEqual(game.zxdb_id, 2040)
         filename = "Coin-Op Hits (1990)(US Gold).tap"
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 11598)
+        self.assertEqual(game.zxdb_id, 11598)
         filename = "Coin-Op Hits (1990)(U.S. Gold).tap"
         game = self.db.getGameByFilePath(filename)
-        self.assertEqual(game.wos_id, 11598)
+        self.assertEqual(game.zxdb_id, 11598)
 
 
     def test_appending_tosec_file_info(self):
@@ -105,7 +105,7 @@ class TestDatabase(unittest.TestCase):
         file_md5 = game_file.getMD5()
         print(file_md5)
         game = self.db.getGameByFileMD5(file_md5)
-        self.assertEqual(game.wos_id, 2097)
+        self.assertEqual(game.zxdb_id, 2097)
 
     def test_adding_multipart_files(self):
         zxdb = ZXDBScraper()
@@ -152,7 +152,7 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByFilePath('Time of the End, The (1986)(Mandarin).zip')
         self.assertEqual(game.name, 'Time of the End')
         game = self.db.getGameByFilePath('Zipper Flipper (1984)(R.E.D. Sunshine).zip')
-        self.assertEqual(game.wos_id, 5857)
+        self.assertEqual(game.zxdb_id, 5857)
 
     def test_multiple_releases(self):
         game = self.db.getGameByWosID(1)
@@ -201,7 +201,7 @@ class TestDatabase(unittest.TestCase):
     def test_car_game(self):
         game_file = GameFile('tosec\CSSCGC Games Reviewed\\1996\Car (1996)(Yates, Damion)(48K-128K)[CSSCGC].z80')
         game = db.getGameByFile(game_file)
-        self.assertNotEqual(game.wos_id, 1299)
+        self.assertNotEqual(game.zxdb_id, 1299)
 
     def test_xrated(self):
         game = self.db.getGameByWosID(3861)
@@ -222,7 +222,7 @@ class TestDatabase(unittest.TestCase):
     #     db.loadCache()
     #     print('Loaded cache from sql in ', time.clock()-time_start)
     #     # db.saveDiskCache()
-    #     db.cache_by_crc32, db.cache_by_wos_id, db.cache_by_name, db.cache_by_md5 = {}, {}, {}, {}
+    #     db.cache_by_crc32, db.cache_by_zxdb_id, db.cache_by_name, db.cache_by_md5 = {}, {}, {}, {}
     #     time_start = time.clock()
     #     db.loadCacheFromDisk()
     #     print('Loaded cache from disk in ', time.clock()-time_start)

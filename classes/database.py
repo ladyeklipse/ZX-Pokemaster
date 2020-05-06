@@ -9,7 +9,7 @@ import sqlite3
 import traceback
 
 SELECT_GAME_SQL_START = 'SELECT *, ' \
-                        'game.wos_id AS wos_id, ' \
+                        'game.zxdb_id AS zxdb_id, ' \
                         'game_file.machine_type AS file_machine_type, ' \
                         'game_file.language AS file_language, ' \
                         'game_release.name AS aliases, ' \
@@ -18,16 +18,16 @@ SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game_release.country AS release_country ' \
                         'FROM game ' \
               'LEFT JOIN game_release ' \
-              'ON game_release.wos_id==game.wos_id ' \
+              'ON game_release.zxdb_id==game.zxdb_id ' \
               'LEFT JOIN game_file ' \
-              'ON game_file.game_wos_id==game.wos_id AND ' \
+              'ON game_file.game_zxdb_id==game.zxdb_id AND ' \
               'game_file.game_release_seq=game_release.release_seq '
-SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
+SELECT_GAME_SQL_END = ' ORDER BY game.zxdb_id, game_release.release_seq'
 
 class Database():
 
     def __init__(self, path=POKEMASTER_DB_PATH):
-        self.cache_by_wos_id = {}
+        self.cache_by_zxdb_id = {}
         self.cache_by_name = {}
         self.cache_by_md5 = {}
         self.cache_by_crc32 = {}
@@ -52,7 +52,7 @@ class Database():
 
     def loadCache(self, force_reload=False):
         if force_reload:
-            self.cache_by_wos_id = {}
+            self.cache_by_zxdb_id = {}
             self.cache_by_name = {}
             self.cache_by_md5 = {}
             self.cache_by_crc32 = {}
@@ -66,7 +66,7 @@ class Database():
         print('cache loaded')
 
     def loadGameInCache(self, game):
-        self.cache_by_wos_id[game.wos_id]=game
+        self.cache_by_zxdb_id[game.zxdb_id]=game
         for release in game.releases:
             for name in release.getAllAliases():
                 name = getSearchStringFromGameName(name)
@@ -110,10 +110,10 @@ class Database():
                 release.publisher = self.publisher_aliases[release.publisher]
             if not release.publisher or release.publisher=='-':
                 release.publisher = game.publisher
-        if  not game.wos_id:
+        if  not game.zxdb_id:
             for file in game.getFiles():
                 file.sortPublishers()
-        values = [game.wos_id if game.wos_id else None,
+        values = [game.zxdb_id if game.zxdb_id else None,
                   game.name,
                   game.publisher,
                   game.author,
@@ -131,10 +131,10 @@ class Database():
         sql = "INSERT OR REPLACE INTO game VALUES " \
               "({})".format(','.join(['?']*len(values)))
         self.cur.execute(sql, values)
-        if not game.wos_id:
-            game.wos_id = self.cur.lastrowid
+        if not game.zxdb_id:
+            game.zxdb_id = self.cur.lastrowid
         for release in game.releases:
-            values = [game.wos_id,
+            values = [game.zxdb_id,
                       release.release_seq,
                       release.getName(),
                       release.year,
@@ -153,7 +153,7 @@ class Database():
                     continue
                 file.sortModFlags()
                 file.sortNotes()
-                values = [game.wos_id,
+                values = [game.zxdb_id,
                           release.release_seq,
                           file.wos_name,
                           file.wos_path if file.wos_name else '',
@@ -185,7 +185,7 @@ class Database():
         self.conn.commit()
 
     def getGameNameAliases(self):
-        game_names = self.execute('SELECT wos_id, game_name FROM ')
+        game_names = self.execute('SELECT zxdb_id, game_name FROM ')
 
     def getAllGames(self, condition=None):
         sql = SELECT_GAME_SQL_START
@@ -234,8 +234,8 @@ class Database():
         else:
             game_release = '%'+'%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])+'%'
             sql = SELECT_GAME_SQL_START
-            sql += 'WHERE game.wos_id IN ' \
-                   '(SELECT wos_id FROM game_release ' \
+            sql += 'WHERE game.zxdb_id IN ' \
+                   '(SELECT zxdb_id FROM game_release ' \
                    'WHERE game_release.name LIKE ?)'
             sql += SELECT_GAME_SQL_END
             raw_data = self.cur.execute(sql, [game_release]).fetchall()
@@ -282,8 +282,8 @@ class Database():
         game = Game()
         release = GameRelease()
         for row in raw_data:
-            if game.wos_id != row['wos_id']:
-                if game.wos_id:
+            if game.zxdb_id != row['zxdb_id']:
+                if game.zxdb_id:
                     games.append(game)
                 game = self.gameFromRow(row)
                 game.releases = []
@@ -297,17 +297,17 @@ class Database():
                 game.addFile(file, release_seq = row['release_seq'])
                 if file.part > game.parts:
                     game.parts = file.part
-        if game.wos_id:
+        if game.zxdb_id:
             games.append(game)
         return games
 
-    def getGameByWosID(self, wos_id):
-        if self.cache_by_wos_id:
-            return self.cache_by_wos_id.get(wos_id)
+    def getGameByWosID(self, zxdb_id):
+        if self.cache_by_zxdb_id:
+            return self.cache_by_zxdb_id.get(zxdb_id)
         sql = SELECT_GAME_SQL_START + \
-              'WHERE game.wos_id=? ' + \
+              'WHERE game.zxdb_id=? ' + \
             SELECT_GAME_SQL_END
-        raw_data = self.cur.execute(sql, [wos_id]).fetchall()
+        raw_data = self.cur.execute(sql, [zxdb_id]).fetchall()
         return self.gameFromRawData(raw_data)
 
 
@@ -323,8 +323,8 @@ class Database():
         if self.cache_by_crc32:
             return self.cache_by_crc32.get(crc32, [])
         sql = SELECT_GAME_SQL_START
-        sql += 'WHERE game.wos_id IN ' \
-               '(SELECT game_wos_id FROM game_file ' \
+        sql += 'WHERE game.zxdb_id IN ' \
+               '(SELECT game_zxdb_id FROM game_file ' \
                'WHERE game_file.crc32="{}")'.format(crc32)
         sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
@@ -334,8 +334,8 @@ class Database():
         if self.cache_by_md5:
             return self.cache_by_md5.get(md5)
         sql = SELECT_GAME_SQL_START
-        sql += 'WHERE game.wos_id=' \
-               '(SELECT game_wos_id FROM game_file ' \
+        sql += 'WHERE game.zxdb_id=' \
+               '(SELECT game_zxdb_id FROM game_file ' \
                'WHERE game_file.md5="{}")'.format(md5)
         sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
@@ -357,7 +357,7 @@ class Database():
         return game
 
     def gameFromRow(self, row):
-        game = Game(row['name'], int(row['wos_id']))
+        game = Game(row['name'], int(row['zxdb_id']))
         game.setPublisher(row['publisher'])
         if 'author' in row.keys():
             game.setAuthor(row['author'])

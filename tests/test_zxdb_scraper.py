@@ -151,7 +151,7 @@ class TestZXDBScraper(unittest.TestCase):
                 release.getInfoFromLocalFiles()
             game.setContentDescForZXDBFiles(zxdb.manually_corrected_content_descriptions)
             for file in game.getFiles():
-                if game.wos_id==30155:
+                if game.zxdb_id==30155:
                     self.assertGreater(len(file.content_desc), 0)
                 else:
                     self.assertEqual(len(file.content_desc), 0)
@@ -180,11 +180,11 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id IN (30155, 21575, 7727)'
         games = zxdb.getGames(where_clause)
         for game in games:
-            if game.wos_id == 30155:
+            if game.zxdb_id == 30155:
                 self.assertEqual('Grussu, Alessandro', game.getPublisher())
-            elif game.wos_id == 21575:
+            elif game.zxdb_id == 21575:
                 self.assertEqual('Owen, Andrew', game.getPublisher())
-            elif game.wos_id == 7727:
+            elif game.zxdb_id == 7727:
                 self.assertEqual('Mad Max', game.getPublisher())
 
     def test_downloading(self):
@@ -249,7 +249,7 @@ class TestZXDBScraper(unittest.TestCase):
         where_clause = 'AND entries.id in (3861)'
         games = zxdb.getGames(where_clause)
         self.assertGreater(len(games), 0)
-        self.assertEqual(3861, games[0].wos_id)
+        self.assertEqual(3861, games[0].zxdb_id)
 
     def test_lost_in_my_spectrum(self):
         where_clause = 'AND entries.id in (27974)'

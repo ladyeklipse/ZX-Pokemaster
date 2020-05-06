@@ -35,11 +35,11 @@ def copyData():
         old_columns = getTableColumns(old_db, tableName)
         min_columns = getTableColumns(min_db, tableName)
         if tableName=='game':
-            order = 'wos_id'
+            order = 'zxdb_id'
         elif tableName == 'game_release':
-            order = 'wos_id, release_seq'
+            order = 'zxdb_id, release_seq'
         elif tableName == 'game_file':
-            order = 'game_wos_id, game_release_seq'
+            order = 'game_zxdb_id, game_release_seq'
         sql = 'SELECT * FROM {} ORDER BY {}'.format(tableName, order)
         rows = old_db.execute(sql).fetchall()
         for row in rows:

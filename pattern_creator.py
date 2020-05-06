@@ -61,15 +61,15 @@ class PatternCreatorDialog(QDialog):
         self.examples = []
         game_file = GameFile('Tujad (1986)(Ariolasoft UK)[48K].tap')
         game_file.game.setGenre('Arcade Game - Maze')
-        game_file.game.wos_id = 5448
+        game_file.game.zxdb_id = 5448
         self.examples.append(game_file)
         game_file = GameFile('Sinclair ZX Spectrum\Compilations\Games\[TZX]\Coin-Op Hits (1990)(US Gold)(Tape 1 of 2 Side A)[Spy Hunter].tzx')
         game_file.game.setNumberOfPlayers(1)
-        game_file.game.wos_id = 11598
+        game_file.game.zxdb_id = 11598
         self.examples.append(game_file)
         game_file = GameFile('Sinclair ZX Spectrum\Covertapes\[TAP]\Snare (demo) (1992)(Beyond Belief - Sinclair User)[cr][48-128K].tap')
         game_file.game.setGenre('Game - Puzzle')
-        game_file.game.wos_id = 4594
+        game_file.game.zxdb_id = 4594
         self.examples.append(game_file)
 
     def setExamples(self):

@@ -33,9 +33,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).tap'
+        expected_file = 'tests/files/sort_by_author_out/Anderson, David J. - Morrison, Ian - Thorpe, F. David/Zaxxon (1985)(Anderson, David J. - Morrison, Ian - Thorpe, F. David).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/POKES/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).pok'
+        expected_file = 'tests/files/sort_by_author_out/Anderson, David J. - Morrison, Ian - Thorpe, F. David/POKES/Zaxxon (1985)(Anderson, David J. - Morrison, Ian - Thorpe, F. David).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
         self.assertEqual(len(s.errors), 0)
@@ -256,7 +256,7 @@ class TestSorter(unittest.TestCase):
         s.sortFiles()
         expected_file = 'tests/files/sort_winfriendly_out/Cascade Games/19 Part 1 - Boot Camp (1988)(Cascade Games)(48K-128K).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_winfriendly_out/Amigaman, David/Serpes (2003)(Amigaman, David)(es).z80'
+        expected_file = 'tests/files/sort_winfriendly_out/David Amigaman/Serpes (2003)(David Amigaman)(es).z80'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 
@@ -344,7 +344,7 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertEqual(len(s.errors), 0)
-        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).tap'
+        expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/unnecessarily_long_subfolder_name/Mojon Twins, The/Maritrini, Freelance Monster Slayer en - Las/POKES/Maritrini, Freelance Monster Slayer en - Las (2012)(Mojon Twins, The)(ES)(en).pok'
         self.assertTrue(os.path.exists(expected_file))
@@ -727,7 +727,7 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(not_expected_file))
         expected_file = output_location+'/Durell/SaboteurII-AvengingAngel(1987)(Durell)(128K).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = output_location + '/MojonTwinsThe/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(MojonTwinsThe)(ES)(en).tap'
+        expected_file = output_location + '/MojonTwinsThe/MaritriniFreelanceMonsterSlayerEn-LasIncreiblesVicisitudesDeDespertarse(2012)(MojonTwinsThe)(ES).tzx'
         self.assertTrue(os.path.exists(expected_file))
         self.assertEqual(len(s.errors), 0)
 

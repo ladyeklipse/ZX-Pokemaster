@@ -102,7 +102,7 @@ class Sorter():
 
     def checkOutputPath(self):
         gf = GameFile('test.tap')
-        gf.game.wos_id = 9999999
+        gf.game.zxdb_id = 9999999
         try:
             self.getDestination(gf)
             return True
@@ -160,7 +160,7 @@ class Sorter():
                             else:
                                 existing_game_file.alt_src.append(game_file.src)
                             continue
-                        if game_file.game.wos_id:
+                        if game_file.game.zxdb_id:
                             copies_count = game_file.countAlternateDumpsIn(collected_files[game_name])
                         else:
                             copies_count = game_file.countFilesWithSameDestIn(collected_files[game_name])
@@ -274,7 +274,7 @@ class Sorter():
 
     def getDestination(self, game_file, game_name_length=MAX_GAME_NAME_LENGTH):
         #Publisher name will be cropped to 3 words if dest length is too long
-        if game_file.game.wos_id or not self.separate_unknown_files:
+        if game_file.game.zxdb_id or not self.separate_unknown_files:
             kwargs = game_file.getOutputPathFormatKwargs(
                 game_name_length=game_name_length)
             structure = self.output_folder_structure
@@ -282,14 +282,14 @@ class Sorter():
                 kwargs['Type'] not in ['Applications', 'Games']:
                 structure = structure.replace('{Genre}', '')
             dest_dir = structure.format(**kwargs)
-        elif not game_file.game.wos_id and self.retain_relative_structure:
+        elif not game_file.game.zxdb_id and self.retain_relative_structure:
             original_path = os.path.dirname(game_file.src)
             for path in self.input_locations:
                 original_path = original_path.replace(path, '')
             dest_dir = 'Unknown Files\\' + original_path
         else:
             dest_dir = 'Unknown Files'
-        if game_file.game.wos_id:
+        if game_file.game.zxdb_id:
             dest_filename = game_file.getOutputName(structure=self.output_filename_structure,
                                                     game_name_length=game_name_length)
         elif game_file.file_in_archive:
@@ -313,7 +313,7 @@ class Sorter():
         for game_name, files in self.collected_files.items():
             min_release = min([file.getReleaseSeq() for file in files])
             for i, file in enumerate(files):
-                if not self.include_unknown_files and not file.game.wos_id:
+                if not self.include_unknown_files and not file.game.zxdb_id:
                     self.collected_files[game_name][i] = None
                 if not self.include_rereleases and file.getReleaseSeq()>min_release:
                     self.collected_files[game_name][i] = None

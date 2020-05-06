@@ -9,10 +9,10 @@ def getWosSubfolder(filename):
 
 class GameTests(unittest.TestCase):
 
-    def test_wos_id(self):
+    def test_zxdb_id(self):
         g = Game(name='test')
         self.assertTrue(g.getWosID()=='0000000')
-        g = Game(name='test', wos_id=245)
+        g = Game(name='test', zxdb_id=245)
         self.assertTrue(g.getWosID() == '0000245')
 
     def test_tosec_name(self):

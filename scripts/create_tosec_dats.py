@@ -31,7 +31,7 @@ def createTOSECDATs():
     db.loadCache(force_reload=True)
     games = db.getAllGames()
     kolbeck_dict = {}
-    # games = db.getAllGames('game.wos_id=27')
+    # games = db.getAllGames('game.zxdb_id=27')
     for game in games:
         kolbeck_dict[game.getWosID()] = []
         files = game.getFiles()
@@ -55,7 +55,7 @@ def createTOSECDATs():
         print('adding files to DAT')
         dat.addFiles(files)
         for file in files:
-            if file.game.wos_id<9000000:
+            if file.game.zxdb_id<9000000:
                 kolbeck_dirname = dat.getBaseFileName().replace(' - ', '/')
                 kolbeck_filepath = kolbeck_dirname+'/'+file.alt_dest
                 kolbeck_dict[file.game.getWosID()].append(kolbeck_filepath)
@@ -63,9 +63,9 @@ def createTOSECDATs():
         dat.export()
 
     with open('kolbeck.csv', 'w+', encoding='utf-8') as f:
-        for game_wos_id in kolbeck_dict:
-            for filepath in kolbeck_dict[game_wos_id]:
-                f.write(';'.join((game_wos_id, filepath))+'\n')
+        for game_zxdb_id in kolbeck_dict:
+            for filepath in kolbeck_dict[game_zxdb_id]:
+                f.write(';'.join((game_zxdb_id, filepath))+'\n')
 
 createTOSECDATs()
 createPOKTOSECDat()

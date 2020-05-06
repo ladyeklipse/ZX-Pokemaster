@@ -22,11 +22,11 @@ class TOSECScraper():
     file_exclusion_list = []
     wrong_releases = [
         ['Wrong release chosen:'],
-        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
+        ['tosec_path', 'zxdb_path', 'zxdb_id', 'ZXDB TOSEC-compliant name', 'Problem']
     ]
     inconsistencies = [
         ['Presumably wrong game chosen:'],
-        ['tosec_path', 'zxdb_path', 'wos_id', 'ZXDB TOSEC-compliant name', 'Problem']
+        ['tosec_path', 'zxdb_path', 'zxdb_id', 'ZXDB TOSEC-compliant name', 'Problem']
     ]
     unscraped_file_paths = []
 
@@ -173,7 +173,7 @@ class TOSECScraper():
             # print(current_tosec_name, new_tosec_name)
             # print(file_path['name'])
             if current_tosec_name and current_tosec_name != new_tosec_name:
-                if current_game.wos_id:
+                if current_game.zxdb_id:
                     self.addGameToLocalDB(current_game)
                     games_found += 1
                 current_game.files = []
@@ -184,16 +184,16 @@ class TOSECScraper():
             if not current_game:
                 current_game = game_file.game
                 current_tosec_name = current_game.getTOSECName()
-            if current_game.wos_id:
+            if current_game.zxdb_id:
                 game_by_md5 = self.db.getGameByFileMD5(game_file.getMD5())
-                if game_by_md5 and game_by_md5.wos_id!=current_game.wos_id:
+                if game_by_md5 and game_by_md5.zxdb_id!=current_game.zxdb_id:
                     current_game = game_file.game
                     current_tosec_name = current_game.getTOSECName()
-            if not current_game.wos_id:
+            if not current_game.zxdb_id:
                 game_name = game_file.game.getTOSECName()
                 if game_name in self.manually_entered_tosec_aliases.keys():
-                    game_wos_id = int(self.manually_entered_tosec_aliases[game_name])
-                    game_from_db = self.db.getGameByWosID(game_wos_id)
+                    game_zxdb_id = int(self.manually_entered_tosec_aliases[game_name])
+                    game_from_db = self.db.getGameByWosID(game_zxdb_id)
                 else:
                     game_from_db = self.db.getGameByFile(game_file)
                     # print("got game_from_db by file", game_file)

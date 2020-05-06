@@ -105,7 +105,7 @@ def renameDirUsingDAT(dat_path):
             file = game.findFileByMD5(key)
             if not file.crc32:
                 raise Exception("Really missing file found: "+value)
-            print(file.crc32, file.wos_path, file.tosec_path, file.game.wos_id, 'new name='+value)
+            print(file.crc32, file.wos_path, file.tosec_path, file.game.zxdb_id, 'new name='+value)
     return len(md5_dat_files)
 
 def torrentZipEachFile():

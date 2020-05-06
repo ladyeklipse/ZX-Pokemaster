@@ -49,13 +49,13 @@ class TipshopScraper(Scraper):
 
     def getWosIdFromUrl(self, url):
         selector = self.loadUrl(url)
-        wos_id_container = selector.xpath('//font[@size="3"]//a/@href').extract_first()
-        if not wos_id_container:
-            print(url, 'has no wos_id')
+        zxdb_id_container = selector.xpath('//font[@size="3"]//a/@href').extract_first()
+        if not zxdb_id_container:
+            print(url, 'has no zxdb_id')
         else:
-            wos_id = wos_id_container[-7:]
-            if wos_id.isdigit():
-                return int(wos_id)
+            zxdb_id = zxdb_id_container[-7:]
+            if zxdb_id.isdigit():
+                return int(zxdb_id)
         wos_name = selector.xpath('//font[@size="7"]//text()').extract_first()
         if self.name_replace_dict.get(wos_name):
             wos_name = self.name_replace_dict[wos_name]
@@ -64,7 +64,7 @@ class TipshopScraper(Scraper):
         return wos_name
 
     def scrapePokes(self, game=Game()):
-        if not game.wos_id:
+        if not game.zxdb_id:
             return
         url = game.getTipshopUrl()
         print(url)

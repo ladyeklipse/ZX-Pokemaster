@@ -8,7 +8,7 @@ import re
 
 class Game(object):
 
-    wos_id = 0
+    zxdb_id = 0
     name = ''
     publisher = ''
     author = ''
@@ -43,25 +43,25 @@ class Game(object):
     tipshop_multiface_pokes_section = ''
     pok_file_contents = ''
 
-    def __init__(self, name='', wos_id=0, db=None):
+    def __init__(self, name='', zxdb_id=0, db=None):
         self.setName(name)
-        if type(wos_id)!=int:
-            raise ValueError('wos_id is not integer')
-        self.wos_id = wos_id
+        if type(zxdb_id)!=int:
+            raise ValueError('zxdb_id is not integer')
+        self.zxdb_id = zxdb_id
         self.files, self.cheats, self.releases = [], [], []
         if db:
-            self = db.getGameByWosID(wos_id)
+            self = db.getGameByWosID(zxdb_id)
 
     def __repr__(self):
         return '<Game '+self.getWosID()+':'+self.getTOSECName()+'>'
 
     def __eq__(self, other):
-        if self.wos_id and self.wos_id==other.wos_id:
+        if self.zxdb_id and self.zxdb_id==other.zxdb_id:
             return True
         if self.name.replace(' ', '')==other.name.replace(' ', '') and \
             self.year==other.year and \
             self.publisher==other.publisher and \
-            not (not self.wos_id and self.wos_id!=other.wos_id):
+            not (not self.zxdb_id and self.zxdb_id!=other.zxdb_id):
             return True
         return False
 
@@ -79,7 +79,7 @@ class Game(object):
         return [getFileSystemFriendlyName(alias) for alias in aliases]
 
     def getWosID(self):
-        return str(self.wos_id).zfill(7)
+        return str(self.zxdb_id).zfill(7)
 
     def getWosUrl(self):
         return WOS_SITE_ROOT + '/infoseekid.cgi?id=' + self.getWosID()
@@ -300,8 +300,18 @@ class Game(object):
     def setType(self, genre):
         if 'Compilation' in genre:
             self.type = genre.replace(' - ', '/')
-        if 'Utilit' in genre:
+        if 'Box Set' in genre:
+            self.type = 'Compilation'
+        elif 'Domestic' in genre:
             self.type = 'Applications'
+        elif 'Programming' in genre:
+            self.type = 'Applications'
+        elif 'Simulation' in genre:
+            self.type = 'Applications'
+        elif 'Utilit' in genre:
+            self.type = 'Applications'
+        elif 'Education' in genre:
+            self.type = 'Educational'
         elif 'Covertape' in genre:
             self.type = 'Covertapes'
         elif 'Magazine' in genre:
@@ -310,6 +320,8 @@ class Game(object):
             self.type = 'Games'
         elif 'Music' in genre:
             self.type = 'Music'
+        elif 'Demo' in genre:
+            self.type = 'Demos'
         elif 'Book' in genre:
             self.type = 'Books'
         elif 'Hardware' in genre:
@@ -377,7 +389,7 @@ class Game(object):
                     c.addPoke(address=line[2], value=line[3], memory_bank=line[1], original_value=line[4])
                 except Exception as e:
                     print('Cannot add poke:', line, e)
-                    print(self.wos_id)
+                    print(self.zxdb_id)
                     raise e
                 if line[0]=='Z':
                     self.addCheat(c, cheat_source=cheat_source)
@@ -409,6 +421,11 @@ class Game(object):
                 pok_file_contents += '\n'
         pok_file_contents += 'Y'
         return pok_file_contents
+
+    def getSpectrumComputingURL(self):
+        if self.zxdb_id>9000000:
+            return "This file is not in ZXDB"
+        return "https://spectrumcomputing.co.uk/index.php?cat=96&id={}".format(self.zxdb_id)
 
     def findFileByCRC32(self, crc32):
         for file in self.getFiles():

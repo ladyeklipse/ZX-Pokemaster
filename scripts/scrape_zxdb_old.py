@@ -82,4 +82,4 @@ if __name__=='__main__':
         db.addGame(game)
     db.commit()
     print(len(games))
-    print(len(set([game.wos_id for game in games])))
+    print(len(set([game.zxdb_id for game in games])))

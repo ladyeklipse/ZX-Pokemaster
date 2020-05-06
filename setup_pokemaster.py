@@ -100,19 +100,20 @@ def getDatedName(project_name, project_version):
 def getExecutableName(project_name):
     return project_name.replace(' ', '_')
 
-def generatePlist(project_name, project_version):
+def generatePlist(project_name, project_version, project_icon):
     plist_path = "{}/Bundle/{}.app/Contents/info.plist".format(DIST_PATH, project_name)
     exec_name = getExecutableName(project_name)
-    plist_stub_path = "dist-darwin/BundleStub-{}.app/Contents/info.plist.stub".format(exec_name)
+    plist_stub_path = "assets/info.plist.stub".format(exec_name)
     if os.path.exists(plist_path):
         os.unlink(plist_path)
     with open(plist_stub_path, 'r', encoding='utf-8') as f:
         plist_contents = f.read().format(PROJECT_NAME=project_name,
-                                         PROJECT_VERSION=project_version)
+                                         PROJECT_VERSION=project_version,
+                                         PROJECT_ICON=project_icon)
     with open(plist_path, 'w', encoding='utf-8') as f:
         f.write(plist_contents)
 
-def createBundle(project_name, project_version):
+def createBundle(project_name, project_version, project_icon):
     os.chdir(original_folder)
     print(os.getcwd())
     exec_name = getExecutableName(project_name)
@@ -121,10 +122,10 @@ def createBundle(project_name, project_version):
         shutil.rmtree("{}/Bundle/{}.app".format(DIST_PATH, project_name))
     os.makedirs("{}/Bundle/{}.app".format(DIST_PATH, project_name), exist_ok=True)
     os.makedirs("{}/Bundle/{}.app/Contents/Resources".format(DIST_PATH, project_name), exist_ok=True)
-    icon_path = 'assets/pokemaster.icns'
+    icon_path = os.path.join('assets', project_icon)
     shutil.copy(icon_path,
                 "{}/Bundle/{}.app/Contents/Resources/{}".format(DIST_PATH, project_name, icon_name))
-    generatePlist(project_name, project_version)
+    generatePlist(project_name, project_version, project_icon)
     shutil.copytree('{}/{}'.format(DIST_PATH, project_name),
                 "{}/Bundle/{}.app/Contents/MacOS".format(DIST_PATH, project_name))
 
