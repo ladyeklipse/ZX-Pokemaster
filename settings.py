@@ -1,6 +1,6 @@
 ZX_POKEMASTER_VERSION = '1.4'
 POKEMASTER_DB_PATH = 'pokemaster.db'
-POKEMASTER_MIN_DB_PATH = 'pokemaster.min.db'
+POKEMASTER_MIN_DB_PATH = 'minified_database/pokemaster.db'
 DB_DISK_CACHE_FILE = 'hashes.dat'
 LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'

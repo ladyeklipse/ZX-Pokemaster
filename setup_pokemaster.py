@@ -125,7 +125,7 @@ def createBundle(project_name, project_version, project_icon):
     os.makedirs("{}/Bundle/{}.app/Contents/Resources".format(DIST_PATH, project_name), exist_ok=True)
     icon_path = os.path.join('assets', project_icon)
     shutil.copy(icon_path,
-                "{}/Bundle/{}.app/Contents/Resources/{}".format(DIST_PATH, project_name, icon_name))
+                "{}/Bundle/{}.app/Contents/Resources/{}".format(DIST_PATH, project_name, project_icon))
     generatePlist(project_name, project_version, project_icon)
     shutil.copytree('{}/{}'.format(DIST_PATH, project_name),
                 "{}/Bundle/{}.app/Contents/MacOS".format(DIST_PATH, project_name))
@@ -142,8 +142,9 @@ if __name__=='__main__':
     createInstaller(PROJECT_NAME)
     cleanup(PROJECT_NAME)
     if sys.platform == 'darwin':
-        createBundle(PROJECT_NAME, ZX_POKEMASTER_VERSION)
-        createDmg(PROJECT_NAME, ZX_POKEMASTER_VERSION)
+        ZX_POKEMASTER_MAC_ICON = 'pokemaster.icns'
+        # createBundle(PROJECT_NAME, ZX_POKEMASTER_VERSION, ZX_POKEMASTER_MAC_ICON)
+        # createDmg(PROJECT_NAME, ZX_POKEMASTER_VERSION)
     if sys.platform == 'win32':
         createWin32Portable(PROJECT_NAME, ZX_POKEMASTER_VERSION)
         createInnoSetup(INNOSETUP_APP_ID, PROJECT_NAME, ZX_POKEMASTER_VERSION)

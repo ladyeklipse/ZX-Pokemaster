@@ -4,7 +4,7 @@ import os
 
 if hasattr(sys, 'frozen'):
     os.chdir(os.path.dirname(sys.executable))
-
+import settings
 from settings import *
 import itertools
 import stat
@@ -246,18 +246,19 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
         QCoreApplication.instance().processEvents()
 
     def saveSettingsClicked(self):
-        path = QFileDialog.getSaveFileName(self,
+        path, type = QFileDialog.getSaveFileName(self,
                                            self.tr('Save settings to...'),
                                            None,
                                            self.tr('Settings files (*.json)'))
         if not path:
             return
+        print(path)
         path = path.replace('/', os.sep).replace('\\', os.sep)
         kwargs = self.readSettings()
         self.saveSettings(kwargs, path)
 
     def loadSettingsClicked(self):
-        path = QFileDialog.getOpenFileName(self,
+        path, type = QFileDialog.getOpenFileName(self,
                                            self.tr('Load settings from...'),
                                            None,
                                            self.tr('Settings files (*.json)'))
