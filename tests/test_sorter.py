@@ -949,10 +949,6 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.input_locations[0]):
             shutil.rmtree(s.input_locations[0], ignore_errors=True)
         shutil.copytree(backup_location, s.input_locations[0])
-        # if not os.path.exists(s.output_location):
-        #     s.sortFiles()
-            # shutil.rmtree(s.input_locations[0], ignore_errors=True)
-            # shutil.copytree(backup_location, s.input_locations[0])
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
@@ -966,6 +962,22 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists(os.path.join(s.input_locations[0], 'non speccy related stuff'))
         self.assertFileNotExists(os.path.join(s.input_locations[0], 'subdir'))
 
+    # def test_sorting_withing_same_folder(self):
+    #     s = Sorter(cache=False,
+    #                delete_source_files=True,
+    #                include_alternate=True,
+    #                )
+    #     s.input_locations = [
+    #         'tests/files/sort_deleting_in/',
+    #     ]
+    #     s.output_location = 'tests/files/sort_deleting_in/'
+    #     backup_location = 'tests/files/sort_deleting_in_backup'
+    #     if os.path.exists(s.input_locations[0]):
+    #         shutil.rmtree(s.input_locations[0], ignore_errors=True)
+    #     shutil.copytree(backup_location, s.input_locations[0])
+    #     s.sortFiles()
+    #     self.assertFileNotExists(s.input_locations[0]+'_old')
+    #     self.assertFileNotExists(s.input_locations[0])
 
     def assertFilesWithCRCsExist(self, expected_crc, output_location):
         expected_crc_count = len(expected_crc)

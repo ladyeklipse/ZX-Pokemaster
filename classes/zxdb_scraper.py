@@ -180,6 +180,13 @@ class ZXDBScraper():
             # print(row)
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
+            if row['genre']=='Box Set':
+                if row['zxdb_id'] in [8030]:
+                    row['genre'] = 'Compilation - Applications'
+                elif row['zxdb_id'] in [11472]:
+                    row['genre'] = 'Compilation - Educational'
+                else:
+                    row['genre'] = 'Compilation - Games'
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['author_team']:

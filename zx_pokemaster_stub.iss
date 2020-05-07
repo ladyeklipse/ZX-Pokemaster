@@ -26,8 +26,8 @@ Source: "dist-win32\{project_name}\*"; DestDir: "{{app}}"; Flags: ignoreversion 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "\{project_name}"; Filename: "{{app}}\{project_name}.exe"
-Name: "\{{cm:UninstallProgram,{project_name}}}"; Filename: "{{uninstallexe}}"
+Name: "{{group}}\{project_name}"; Filename: "{{app}}\{project_name}.exe"
+Name: "{{group}}\{{cm:UninstallProgram,{project_name}}}"; Filename: "{{uninstallexe}}"
 Name: "{{commondesktop}}\{project_name}"; Filename: "{{app}}\{project_name}.exe"; Tasks: desktopicon
 
 [Run]

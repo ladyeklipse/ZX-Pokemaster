@@ -300,9 +300,9 @@ class Game(object):
     def setType(self, genre):
         if 'Compilation' in genre:
             self.type = genre.replace(' - ', '/')
-        if 'Box Set' in genre:
-            self.type = 'Compilation'
-        elif 'Domestic' in genre:
+        # if 'Box Set' in genre:
+        #     self.type = 'Compilation'
+        if 'Domestic' in genre:
             self.type = 'Applications'
         elif 'Programming' in genre:
             self.type = 'Applications'

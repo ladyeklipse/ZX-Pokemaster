@@ -20,6 +20,7 @@ db = Database()
 class Sorter():
 
     def __init__(self, *args, **kwargs):
+        self.backup_location_name = None
         self.log_path = ''
         self.gui = kwargs.get('gui', None)
         self.files_sorted = 0
@@ -70,7 +71,7 @@ class Sorter():
         if kwargs.get('cache', True):
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
-            db.loadCache()
+            # db.loadCache()
 
     def loadSettings(self):
         if not os.path.exists('settings.json'):
@@ -121,6 +122,9 @@ class Sorter():
             backup_location_name = backup_location_name + '_' + str(i)
         os.rename(self.original_output_location, backup_location_name)
         os.rename(self.output_location, self.original_output_location)
+        self.backup_location_name = backup_location_name
+        if len(os.listdir(self.backup_location_name))==0:
+            os.rmdir(self.backup_location_name)
 
     def getBundleDepth(self):
         self.output_folder_structure = self.output_folder_structure.replace('/', '\\')
