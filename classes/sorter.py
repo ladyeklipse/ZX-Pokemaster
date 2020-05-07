@@ -71,7 +71,7 @@ class Sorter():
         if kwargs.get('cache', True):
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
-            # db.loadCache()
+            db.loadCache()
 
     def loadSettings(self):
         if not os.path.exists('settings.json'):
