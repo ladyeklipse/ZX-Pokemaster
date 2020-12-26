@@ -201,8 +201,12 @@ V. Version history
  - Switched to newer version of PyQt framework;
  - Added Windows installer for easier setup;
  - Compiled and deployed a MacOS version;
- - Fixed 12 files for "Robin of the Wood" game by Odin, incorrectly renamed as "Robin of Sherwood"
- - Added new pokes.
+ - Synchronized with new version of ZXDB, renamed about 2000 and added about 1400 files.
+ - Added new pokes;
+ - The warning pops up when you set to delete original files;
+ - Fixed examples in editing patterns;
+ - Now it's possible to make keys not just "tuj-spa", but, e. g. "tujad-space".
+ - ZX Pokemaster copies files in strictly alphabetic order, so the files are sorted on filesystem. It's crucial for ZX Spectrum Next, which cannot sort files itself.
 
 1.3.
  - Added games from vtrdos.ru;

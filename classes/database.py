@@ -421,7 +421,7 @@ class Database():
 
 if __name__=='__main__':
     os.chdir('..')
-    from scripts.restore_db import *
+    from sandbox.scripts import *
     restoreDB()
     db = Database()
     game_file = GameFile("Sinclair ZX Spectrum\Games\[TAP]\Robin of the Wood (1985)(Odin Computer Graphics).tap")

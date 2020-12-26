@@ -337,11 +337,11 @@ class Game(object):
     def addFile(self, new_file, release_seq=0):
         if not new_file:
             return
-        try:
-            self.releases[release_seq].addFile(new_file)
-        except Exception as e:
-            print(self)
-            raise e
+        # try:
+        self.releases[release_seq].addFile(new_file)
+        # except Exception as e:
+        #     print(self)
+        #     raise e
 
     def getFiles(self):
         files = []

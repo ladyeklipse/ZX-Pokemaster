@@ -19,6 +19,7 @@ from functions.is_pathname_valid import *
 from classes.database import *
 from classes.sorter import *
 import webbrowser
+import subprocess
 
 sys.path.append("ui")
 from PyQt5.QtCore import *
@@ -61,7 +62,11 @@ class MainDialog(QDialog):
         self.exec()
 
     def openReadme(self):
-        os.startfile('README.txt')
+        if sys.platform=='win32':
+            os.startfile('README.txt')
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, 'README.txt'])
 
     def openFacebook(self):
         webbrowser.open('https://www.facebook.com/groups/zxpokemaster/')

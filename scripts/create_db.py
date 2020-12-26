@@ -6,7 +6,7 @@ from scripts.tipshop_excel_converter import *
 if (os.getcwd().endswith('scripts')):
     os.chdir('..')
 
-def scrapeZXDB():
+def scrapeZXDB(download_missing=True):
     LOCAL_FTP_ROOT = os.path.join(os.getcwd(), 'ftp')
     if os.path.exists(POKEMASTER_DB_PATH):
         os.unlink(POKEMASTER_DB_PATH)
@@ -23,7 +23,8 @@ def scrapeZXDB():
     zxdb = ZXDBScraper()
     print("Getting all games from ZXDB...")
     games = zxdb.getAllGames()
-    # zxdb.downloadMissingFilesForGames(games)
+    if download_missing:
+        zxdb.downloadMissingFilesForGames(games)
     zxdb.getInfoFromLocalFiles(games)
     for game in games:
         db.addGame(game)
@@ -34,8 +35,8 @@ def scrapeZXDB():
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
 
 if __name__=='__main__':
-    scrapeZXDB()
-    import scrape_tosec
-    restoreDeletedFiles('pokemaster_v1.3-beta6.db')
-    import scripts.create_tosec_dats
-    import scripts.minify_database
+    scrapeZXDB(download_missing=False)
+    # import scrape_tosec
+    # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
+    # import scripts.create_tosec_dats
+    # import scripts.minify_database

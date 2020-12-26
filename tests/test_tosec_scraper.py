@@ -1,4 +1,3 @@
-from scripts.restore_db import *
 restoreDB()
 from classes.tosec_scraper import *
 import  unittest

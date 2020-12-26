@@ -47,6 +47,10 @@ class TestDatabase(unittest.TestCase):
         game = self.db.getGameByWosID(5448)
         self.check_if_game_is_tujad(game)
 
+    def test_original_publisher(self):
+        game = self.db.getGameByWosID(128)
+        self.assertEqual('Hit-Pak', game.publisher)
+
     def check_if_game_is_tujad(self, game):
         self.assertEqual(game.name, 'Tujad')
         self.assertEqual(game.publisher, 'Ariolasoft UK')
@@ -90,10 +94,10 @@ class TestDatabase(unittest.TestCase):
         filename = "Giant's Revenge (1984)(Thor Computer Software).tap"
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.zxdb_id, 2040)
-        filename = "Coin-Op Hits (1990)(US Gold).tap"
+        filename = "Coin-Op Hits (1989)(US Gold).tap"
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.zxdb_id, 11598)
-        filename = "Coin-Op Hits (1990)(U.S. Gold).tap"
+        filename = "Coin-Op Hits (1989)(U.S. Gold).tap"
         game = self.db.getGameByFilePath(filename)
         self.assertEqual(game.zxdb_id, 11598)
 

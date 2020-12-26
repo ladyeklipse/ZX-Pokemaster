@@ -210,6 +210,15 @@ class TestZXDBScraper(unittest.TestCase):
         self.assertEqual('Baldomero, Garcia', game.author)
         self.assertEqual('Baldomero, Garcia', game.releases[0].publisher)
 
+    def test_original_publisher(self):
+        where_clause = 'AND entries.id IN (128)'
+        games = zxdb.getGames(where_clause)
+        zxdb.getInfoFromLocalFiles(games)
+        db.addGame(games[0])
+        db.commit()
+        game = db.getGameByWosID(128)
+        self.assertEqual('Hit-Pak', game.publisher)
+
     def test_santa_clause(self):
         where_clause = 'AND entries.id IN (12789)'
         games = zxdb.getGames(where_clause)

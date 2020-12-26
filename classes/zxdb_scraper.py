@@ -68,7 +68,26 @@ class ZXDBScraper():
                                 converter_class=RowConverter
                                 )
         self.cur = self.conn.cursor(dictionary=True, buffered=True)
+        # self.createTemporaryTables()
         self.loadLookupTables()
+
+    def createTemporaryTables(self):
+        sql = '''
+        create table tmp_publishers(
+  entry_id int(11) not null,
+  release_seq smallint(6) NOT NULL,
+  publisher_seq smallint(6) NOT NULL,
+  label_id int(11) not null,
+  primary key(entry_id,release_seq,publisher_seq),
+  CONSTRAINT fk_tmp_entry FOREIGN KEY (entry_id) REFERENCES entries(id),
+  CONSTRAINT fk_tmp_label FOREIGN KEY (label_id) REFERENCES labels(id)
+);
+
+insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select entry_id, release_seq, publisher_seq, label_id from publishers);
+
+insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select c.entry_id, 0, p.publisher_seq, p.label_id from compilations c inner join entries e on c.compilation_id = e.id inner join publishers p on p.entry_id = e.id and p.release_seq = 0 where c.is_original = 1 and c.entry_id not in (select entry_id from tmp_publishers where release_seq = 0) group by c.entry_id, p.publisher_seq, p.label_id);'''
+        self.cur.execute(sql, multi=True)
+        self.conn.commit()
 
     def loadLookupTables(self):
         self.file_exclusion_list = []
@@ -127,12 +146,12 @@ class ZXDBScraper():
               'webrefs.link AS tipshop_page, ' \
               'genretypes.text AS genre, ' \
               'entries.max_players AS number_of_players, ' \
-              'entries.idiom_id AS language, ' \
+              'entries.language_id AS language, ' \
               'entries.availabletype_id AS availability, ' \
               'downloads.file_link AS file_link, ' \
               'downloads.file_size AS file_size, ' \
               'downloads.filetype_id AS file_type_id, ' \
-              'downloads.idiom_id AS file_language, ' \
+              'downloads.language_id AS file_language, ' \
               'downloads.comments AS file_version, ' \
               'filetypes.text AS file_type, ' \
               'entry_machinetype.text AS machine_type, ' \
@@ -140,9 +159,11 @@ class ZXDBScraper():
               'schemetypes.text AS protection_scheme, ' \
               'releases.release_seq AS release_id, ' \
               'aliases.library_title AS alt_name, ' \
-              'aliases.idiom_id AS alt_language, ' \
+              'aliases.language_id AS alt_language, ' \
               'publisher_labels.name AS publisher, ' \
               'publisher_labels.labeltype_id AS publisher_type, ' \
+              'compilation_publisher_labels.name AS compilation_publisher_name, ' \
+              'compilation_publisher_labels.labeltype_id AS compilation_publisher_type, ' \
               'author_labels.name AS author, ' \
               'author_labels.labeltype_id AS author_type, ' \
               'author_teams_labels.name AS author_team, ' \
@@ -153,8 +174,11 @@ class ZXDBScraper():
               'LEFT JOIN webrefs ON entries.id=webrefs.entry_id AND webrefs.website_id=9 ' \
               'LEFT JOIN releases ON entries.id=releases.entry_id ' \
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
-              'LEFT JOIN publishers ON publishers.entry_id=entries.id AND publishers.release_seq=releases.release_seq  ' \
-              'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=publishers.label_id ' \
+              'LEFT JOIN tmp_publishers ON (tmp_publishers.entry_id=entries.id AND tmp_publishers.release_seq=releases.release_seq)' \
+              'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=tmp_publishers.label_id ' \
+              'LEFT JOIN compilations ON compilations.entry_id=entries.id '\
+              'LEFT JOIN publishers AS compilation_publishers ON compilation_publishers.entry_id=compilations.compilation_id ' \
+              'LEFT JOIN labels AS compilation_publisher_labels ON compilation_publisher_labels.id=compilation_publishers.label_id ' \
               'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
               'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id  ' \
               'LEFT JOIN labels AS author_teams_labels ON author_teams_labels.id=authors.team_id  ' \
@@ -171,13 +195,14 @@ class ZXDBScraper():
             sql += sql_where+' '
         sql +='ORDER BY zxdb_id, release_seq, entries.title IS NOT NULL ' \
               'LIMIT '+str(sql_limit)
+        print(sql)
         self.cur.execute(sql)
         game = Game()
         release = GameRelease()
         games = []
         for row in self.cur:
             #Skipping ZX80/ZX81 files
-            # print(row)
+            print(row)
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
             if row['genre']=='Box Set':
@@ -187,6 +212,8 @@ class ZXDBScraper():
                     row['genre'] = 'Compilation - Educational'
                 else:
                     row['genre'] = 'Compilation - Games'
+            # if not row['publisher'] and row['release_seq'] == 0:
+            #     row['publisher'] = row['compilation_publisher_name']
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['author_team']:
@@ -352,10 +379,6 @@ class ZXDBScraper():
             publisher = putPrefixToEnd(row['publisher'])
             publisher = publisher_regex.sub('', publisher)
             return publisher.strip()
-        # if row['publisher_is_company'] in (None, 1):
-        #     return putPrefixToEnd(row['publisher'])
-        # elif row['publisher_is_company'] == 0:
-        #     return putInitialsToEnd(row['publisher'])
 
     def authorNameFromRow(self, row):
         if row['author_type']=='+': #person

@@ -197,13 +197,13 @@ def createPOKTOSECDat():
 
 if __name__=='__main__':
     #FIRST PART
-    # zxdb_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    # updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs)
-    # games = getAllPokes()
-    # games2xlsx(games, new_only=True)
-    # xlsx2db()
-    #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
+    zxdb_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs)
+    games = getAllPokes()
+    games2xlsx(games, new_only=True)
     xlsx2db()
+    #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
+    # xlsx2db()
     # updateMods()
-    extractPokFiles()
-    createPOKTOSECDat()
+    # extractPokFiles()
+    # createPOKTOSECDat()

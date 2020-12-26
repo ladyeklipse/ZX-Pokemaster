@@ -136,15 +136,15 @@ def createDmg(project_name, project_version):
     os.system("hdiutil detach /dev/disk2")
     os.system("rm {}.dmg".format(exec_name))
     os.system(executable)
-    os.rename("{}-installer.dmg".format(exec_name), "Output/{}.dmg".format(getDatedName(project_name, project_version)))
+    os.rename("{}.dmg".format(exec_name), "Output/{}-installer.dmg".format(getDatedName(project_name, project_version)))
 
 if __name__=='__main__':
     createInstaller(PROJECT_NAME)
     cleanup(PROJECT_NAME)
     if sys.platform == 'darwin':
         ZX_POKEMASTER_MAC_ICON = 'pokemaster.icns'
-        # createBundle(PROJECT_NAME, ZX_POKEMASTER_VERSION, ZX_POKEMASTER_MAC_ICON)
-        # createDmg(PROJECT_NAME, ZX_POKEMASTER_VERSION)
+        createBundle(PROJECT_NAME, ZX_POKEMASTER_VERSION, ZX_POKEMASTER_MAC_ICON)
+        createDmg(PROJECT_NAME, ZX_POKEMASTER_VERSION)
     if sys.platform == 'win32':
         createWin32Portable(PROJECT_NAME, ZX_POKEMASTER_VERSION)
         createInnoSetup(INNOSETUP_APP_ID, PROJECT_NAME, ZX_POKEMASTER_VERSION)
