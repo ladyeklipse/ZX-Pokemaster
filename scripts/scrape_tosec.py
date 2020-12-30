@@ -16,7 +16,7 @@ for path in ts.paths:
 reviewed_files = ts.generateTOSECPathsArrayFromFolder('tosec\\reviewed files\\')
 ts.paths += reviewed_files
 ts.sortPaths()
-# ts.paths = [path for path in ts.paths if path['name'].startswith('Robin of')]
+# ts.paths = [path for path in ts.paths if 'prolog' in path['name'].lower()]
 ts.scrapeTOSEC()
 ts.addUnscraped()
 # ts.updateContentDescAndNotesLookupTable() #doesn't work well, need to back up the CSV

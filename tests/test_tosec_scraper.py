@@ -1,3 +1,4 @@
+from scripts.restore_db import restoreDB
 restoreDB()
 from classes.tosec_scraper import *
 import  unittest
@@ -22,6 +23,16 @@ class TestTOSECScraper(unittest.TestCase):
             ]
         paths = ts.generateTOSECPathsArrayFromList(paths)
         self.scrape(paths, 133)
+
+    def test_prolog(self):
+        paths = [
+            "tosec\\reviewed files\\reviewed_for_v1.5\\Micro-PROLOG T1.0 (1983)(Sinclair Research).tap",
+        ]
+        zxdb_id = 8429
+        paths = ts.generateTOSECPathsArrayFromList(paths)
+        self.scrape(paths, zxdb_id)
+        game = ts.db.getGameByFileMD5("2970115207f5993ef3751ebce1feadea")
+        self.assertEqual(zxdb_id, game.zxdb_id)
 
     def test_100_km(self):
         paths = [
@@ -286,9 +297,6 @@ class TestTOSECScraper(unittest.TestCase):
                 self.assertEqual('2017-06-14', file.release_date)
 
     def test_csscgc(self):
-        # ts.db.conn.close()
-        # restoreDB()
-        # ts.db = Database()
         sql = 'DELETE FROM game_file WHERE game_zxdb_id=1299 AND notes="[CSSCGC]"'
         ts.db.execute(sql)
         sql = 'DELETE FROM game WHERE name="Car" and publisher="Yates, Damion"'
@@ -310,7 +318,6 @@ class TestTOSECScraper(unittest.TestCase):
         paths = ts.generateTOSECPathsArrayFromDatFiles()
         paths = [path for path in paths if 'H.A.T.E.' in path['path']]
         ts.paths = copy(paths)
-
         # ts.manually_corrected_notes = {}
         # ts.manually_corrected_content_descriptions = {}
         # ts.manually_entered_tosec_aliases = {}
@@ -379,8 +386,6 @@ class TestTOSECScraper(unittest.TestCase):
         for file in game.getFiles():
             # print(file.md5, file.notes)
             self.assertEqual('NONE', file.notes)
-        # self.fail()
-
 
     def scrape(self, paths, zxdb_id):
         sql = 'DELETE FROM game_file WHERE game_zxdb_id={} AND (wos_name="" OR wos_name IS NULL)'.format(zxdb_id)

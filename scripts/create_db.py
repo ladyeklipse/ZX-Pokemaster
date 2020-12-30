@@ -36,7 +36,7 @@ def scrapeZXDB(download_missing=True):
 
 if __name__=='__main__':
     scrapeZXDB(download_missing=False)
-    # import scrape_tosec
-    # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
+    import scrape_tosec
+    restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     # import scripts.create_tosec_dats
     # import scripts.minify_database

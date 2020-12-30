@@ -304,6 +304,12 @@ class Game(object):
         #     self.type = 'Compilation'
         if 'Domestic' in genre:
             self.type = 'Applications'
+        elif 'Business' in genre:
+            self.type = 'Applications'
+        elif 'Industrial' in genre:
+            self.type = 'Applications'
+        elif 'Emulator' in genre:
+            self.type = 'Applications'
         elif 'Programming' in genre:
             self.type = 'Applications'
         elif 'Simulation' in genre:

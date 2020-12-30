@@ -1,6 +1,8 @@
 from classes.database import *
 from classes.database_legacy import Database as OldDatabase
 import os
+import difflib
+
 if (os.getcwd().endswith('scripts')):
     os.chdir('..')
 
@@ -77,34 +79,60 @@ def diffDatabases(old_database_path, new_database_path='pokemaster.db'):
         old_db = OldDatabase(old_database_path)
     old_db.loadCache()
     new_db.loadCache()
+    f_old = open("sandbox/old.txt", 'w', encoding='utf-8')
+    f_new = open("sandbox/new.txt", 'w', encoding='utf-8')
     for md5 in new_db.cache_by_md5.keys():
         new_game = new_db.cache_by_md5[md5]
         new_game_file = new_game.findFileByMD5(md5)
         new_tosec_name = new_game_file.getTOSECName()
         old_game =  old_db.cache_by_md5.get(md5)
+        new_record = new_game.type + '/' + new_tosec_name
         if not old_game:
-            print('Added:', new_game.type + '/' + new_tosec_name)
+            print('Added:', new_record)#new_game.type + '/' + new_tosec_name)
             print(new_game.getSpectrumComputingURL())
+            f_old.write('\n')
+            f_new.write(new_record + '\n')
             continue
         old_game_file = old_game.findFileByMD5(md5)
         old_tosec_name = old_game_file.getTOSECName()
+        old_record = old_game.type + '/' + old_tosec_name
         if old_game.type != new_game.type and new_tosec_name == old_tosec_name:
-            print('Moved:', old_game.type + '/' + old_tosec_name, '->', new_game.type)
+            print('Moved:', old_record, '->', new_game.type)
             print(new_game.getSpectrumComputingURL())
-            # if new_game.type=='Unknown':
-            #     print("Changed genre:", old_game.genre, '->', new_game.genre)
+            f_old.write(old_record + '\n')
+            f_new.write(new_record + '\n')
         elif old_game.type != new_game.type and new_tosec_name != old_tosec_name:
-            print("Moved and renamed:", old_game.type + '/' + old_tosec_name, '->',
-                  new_game.type + '/' + new_tosec_name)
+            print("Moved and renamed:", old_record, '->',
+                  new_record)
             print(new_game.getSpectrumComputingURL())
-            # if new_game.type == 'Unknown':
-            #     print("Changed genre:", old_game.genre, '->', new_game.genre)
+            f_old.write(old_record + '\n')
+            f_new.write(new_record + '\n')
         elif new_tosec_name != old_tosec_name:
-            print('Renamed:', old_game.type + '/' + old_tosec_name, '->', new_game.type + '/' + new_tosec_name)
+            print('Renamed:', old_record, '->', new_record)
             print(new_game.getSpectrumComputingURL())
+            f_old.write(old_record + '\n')
+            f_new.write(new_record + '\n')
+    f_old.close()
+    f_new.close()
+
+def generateDiffFiles(old_db_name, new_db_name):
+    f_old = open("sandbox/old.txt", 'r', encoding='utf-8')
+    f_new = open("sandbox/new.txt", 'r', encoding='utf-8')
+    f_old_contents = f_old.read()
+    f_new_contents = f_new.read()
+    print("contents read.")
+    diff_file_contents = difflib.HtmlDiff(wrapcolumn=50).make_file(
+        f_old_contents.split('\n'),
+        f_new_contents.split('\n'),
+        context=False, numlines=0)
+    f_old.close()
+    f_new.close()
+    with open("sandbox/diff.html", "w", encoding="utf-8") as f:
+        f.write(diff_file_contents)
 
 if __name__=='__main__':
-    diffDatabases('pokemaster_v1.4-RC1.db')
+    diffDatabases('pokemaster_v1.4-rc1.db')
+    # generateDiffFiles("Old DB", "New DB")
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreUnknownTypes('pokemaster_v1.3-beta6.db')

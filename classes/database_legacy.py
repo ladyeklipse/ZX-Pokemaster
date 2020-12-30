@@ -9,7 +9,7 @@ import sqlite3
 import traceback
 
 SELECT_GAME_SQL_START = 'SELECT *, ' \
-                        'game.zxdb_id AS zxdb_id, ' \
+                        'game.wos_id AS wos_id, ' \
                         'game_file.machine_type AS file_machine_type, ' \
                         'game_file.language AS file_language, ' \
                         'game_release.name AS aliases, ' \
@@ -18,11 +18,11 @@ SELECT_GAME_SQL_START = 'SELECT *, ' \
                         'game_release.country AS release_country ' \
                         'FROM game ' \
               'LEFT JOIN game_release ' \
-              'ON game_release.zxdb_id==game.zxdb_id ' \
+              'ON game_release.wos_id==game.wos_id ' \
               'LEFT JOIN game_file ' \
-              'ON game_file.game_zxdb_id==game.zxdb_id AND ' \
+              'ON game_file.game_wos_id==game.wos_id AND ' \
               'game_file.game_release_seq=game_release.release_seq '
-SELECT_GAME_SQL_END = ' ORDER BY game.zxdb_id, game_release.release_seq'
+SELECT_GAME_SQL_END = ' ORDER BY game.wos_id, game_release.release_seq'
 
 class Database():
 
@@ -185,7 +185,7 @@ class Database():
         self.conn.commit()
 
     def getGameNameAliases(self):
-        game_names = self.execute('SELECT zxdb_id, game_name FROM ')
+        game_names = self.execute('SELECT wos_id, game_name FROM ')
 
     def getAllGames(self, condition=None):
         sql = SELECT_GAME_SQL_START
@@ -234,8 +234,8 @@ class Database():
         else:
             game_release = '%'+'%'.join([x for x in game_release.split(' ') if x not in GAME_PREFIXES])+'%'
             sql = SELECT_GAME_SQL_START
-            sql += 'WHERE game.zxdb_id IN ' \
-                   '(SELECT zxdb_id FROM game_release ' \
+            sql += 'WHERE game.wos_id IN ' \
+                   '(SELECT wos_id FROM game_release ' \
                    'WHERE game_release.name LIKE ?)'
             sql += SELECT_GAME_SQL_END
             raw_data = self.cur.execute(sql, [game_release]).fetchall()
@@ -282,7 +282,7 @@ class Database():
         game = Game()
         release = GameRelease()
         for row in raw_data:
-            if game.zxdb_id != row['zxdb_id']:
+            if game.zxdb_id != row['wos_id']:
                 if game.zxdb_id:
                     games.append(game)
                 game = self.gameFromRow(row)
@@ -305,7 +305,7 @@ class Database():
         if self.cache_by_zxdb_id:
             return self.cache_by_zxdb_id.get(zxdb_id)
         sql = SELECT_GAME_SQL_START + \
-              'WHERE game.zxdb_id=? ' + \
+              'WHERE game.wos_id=? ' + \
             SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql, [zxdb_id]).fetchall()
         return self.gameFromRawData(raw_data)
@@ -323,8 +323,8 @@ class Database():
         if self.cache_by_crc32:
             return self.cache_by_crc32.get(crc32, [])
         sql = SELECT_GAME_SQL_START
-        sql += 'WHERE game.zxdb_id IN ' \
-               '(SELECT game_zxdb_id FROM game_file ' \
+        sql += 'WHERE game.wos_id IN ' \
+               '(SELECT game_wos_id FROM game_file ' \
                'WHERE game_file.crc32="{}")'.format(crc32)
         sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
@@ -334,8 +334,8 @@ class Database():
         if self.cache_by_md5:
             return self.cache_by_md5.get(md5)
         sql = SELECT_GAME_SQL_START
-        sql += 'WHERE game.zxdb_id=' \
-               '(SELECT game_zxdb_id FROM game_file ' \
+        sql += 'WHERE game.wos_id=' \
+               '(SELECT game_wos_id FROM game_file ' \
                'WHERE game_file.md5="{}")'.format(md5)
         sql += SELECT_GAME_SQL_END
         raw_data = self.cur.execute(sql).fetchall()
@@ -357,7 +357,7 @@ class Database():
         return game
 
     def gameFromRow(self, row):
-        game = Game(row['name'], int(row['zxdb_id']))
+        game = Game(row['name'], int(row['wos_id']))
         game.setPublisher(row['publisher'])
         if 'author' in row.keys():
             game.setAuthor(row['author'])

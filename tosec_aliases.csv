@@ -1197,6 +1197,9 @@ Your Sinclair - Issue 83 - The Magnificent Seven 20 - Practical Pokes (1992)(You
 Mutants (1991)(Ocean - Sinclair User);3340
 Last Will Dizzy (1993)(Oleg Moenko);12810
 Game, Set and Match 2 - Superbowl (1989)(Ocean);11732
+Micro-PROLOG T1.2 (1983)(Sinclair Research);8429
+Spectrum Micro Prolog T1.0 (1983)(Sinclair Research);8429
+Micro-PROLOG T1.0 (1983)(Sinclair Research);8429
 !ruki_wwerh (2010)(GriV);;Scene Demo
 #AAABOG (2016)(wbr);;Scene Demo
 #z80 01-05 (1999)(4th Dimension - CondorSoft - Phantom Family);;Compilation - Magazines
@@ -1534,9 +1537,6 @@ Alex Gift (19xx)(Flash);;Scene Demo
 Alex Rostov's Music Collection (19xx)(ZXAAA);;Compilation - Demos
 Alff - 27! Gift (2010)(skrju);;Scene Demo
 Alice Demo (19xx)(Atomic Destruction);;Scene Demo
-Alien (1983)(Cascade Games);;Various Games
-Alien (1986)(Load 'n' Run);;Various Games
-Alien (1988)(Load 'n' Run);;Various Games
 Alien (2013)(Entire Group);;Scene Demo
 Alien Storm (1995)(Code Busters);;Scene Demo
 Alien Storm Beta (1991)(Tierex);;Various Games
@@ -1544,7 +1544,6 @@ Alien Syndrome (1994)(Code Busters);;Scene Demo
 Alien Warp (1985)(G.B.Max);;Various Games
 Alienate (2003)(Hooy-Program);;Scene Demo
 Alienate (2003)(HOOY-PROGRAM);;Scene Demo
-Aliens (1987)(Load 'n' Run);;Various Games
 Aliens Coming Again Preview (1993)(Jackson Hollis);;Scene Demo
 Alkash (2002)(Ellipse);;Various Games
 All Paper 01 (19xx)(-);;Electronic Magazine
@@ -1601,7 +1600,6 @@ Anamnesis (1999)(Real Masters);;Scene Demo
 Ancient Runes (2017)(Q-Bone);;Scene Demo
 And Don't Say Anything (2010)(Olly);;Scene Demo
 Andromeda (1983)(PSS);;Various Games
-Andromeda (1984)(MicroHobby);;Covertape
 Andromeda Chess (1984)(Andromeda);;Various Games
 Andy Cappers (19xx)(AY Group);;Scene Demo
 Anecdotes 01 (1997)(-);;Electronic Magazine
@@ -2386,8 +2384,6 @@ Barbarian 1.1,1.2 (1987)(Palace);;Various Games
 Bardel' (2000)(Chervinsky, Andrey);;Books
 Barmen (19xx)(Orion);;Various Games
 Barnaul Demo (19xx)(ZXAAA);;Compilation - Demos
-Baron Rojo (1985)(MicroHobby);;Covertape
-Barquitos (1985)(MicroHobby);;Covertape
 Barrier 1 (1990)(Inforcom);;Various Games
 Barrier 2 (1990)(Inforcom);;Various Games
 Barrier 3 (1990)(Inforcom);;Various Games
@@ -2399,8 +2395,6 @@ Basic 64 (19xx)(-);;Utility
 Basic Code Verifier (19xx)(-);;Utility
 Basic GAMMA 4.1 for Beta Disk 4.12 (19xx)(-);;Firmware
 Basic With Support for Vision (19xx)(-);;Firmware
-Basket (1990)(MicroHobby);;Covertape
-Basketball (1983)(Cascade Games);;Various Games
 Batalla EN (1983)(Joaquin Fuster);;Various Games
 Bateria (1992)(OSG);;Scene Demo
 Batman - The Caped Crusader - Idiots Play to Win (1988)(Crash);;Various Games
@@ -2411,7 +2405,6 @@ Batspil (19xx)(-);;Various Games
 Battle City (1996)(Epsilon);;Various Games
 Battle City (1998)(Kostin, A.);;Various Games
 Battle Command (1990)(Ocean - Sinclair User);;Covertape
-Battle Ships (1987)(Hit-Pak);;Various Games
 Battle Ships - Modem Version (1988)(Encore);;Various Games
 Battle Valley (19xx)(J Wildsmith,C Wood,etc);;Various Games
 Batty 2 (1992)(Alex);;Various Games
@@ -2494,7 +2487,6 @@ Black Crow 06 (2000)(Freestyle);;Electronic Magazine
 Black Crow 06 (2001)(Freestyle);;Electronic Magazine
 Black Crow 07 (2001)(Freestyle);;Electronic Magazine
 Black Fury (1997)(Eternity Industry);;Scene Demo
-Black Jack (1985)(MicroHobby);;Covertape
 Black Metall 01 (2004)(-);;Electronic Magazine
 Black Metall 02 (1970)(-);;Electronic Magazine
 Black Metall 03 (2004)(-);;Electronic Magazine
@@ -2546,9 +2538,7 @@ Bolos (19xx)(-);;Various Games
 Bomb (2007)(ate Bit);;Scene Demo
 Bomb Jack 1, 2 (19xx)(Elite);;Compilation - Games
 Bomba (19xx)(-);;Various Games
-Bombardero (1984)(Microparadise);;Various Games
 Bombardero (1985)(Load 'n' Run);;Covertape
-Bombardero, El (1985)(MicroHobby);;Covertape
 Bombazo (1996)(Laszlo Nyitrai);;Various Games
 Bond Disk Utilites, The (1994)(Bond);;Utility
 Bonus 13 (19xx)(-);;Electronic Magazine
@@ -2634,7 +2624,6 @@ Boulder Dash N (1997)(RVS);;Various Games
 Boulder Dash TJ 1, 2 (19xx)(TJ);;Compilation - Games
 Bounce (2016)(g0blinish);;Scene Demo
 Bouncer (19xx)(Chezron);;Scene Demo
-Bowls (1983)(Cascade Games);;Various Games
 Brain Commander (19xx)(Mr. Brain);;Utility
 Brain Surgery (1996)(Rush!);;Scene Demo
 BrainCrash (1997)(Progress);;Scene Demo
@@ -2642,7 +2631,6 @@ Brainwasher (2009)(Dox);;Scene Demo
 Branch of Mind (19xx)(Flash);;Scene Demo
 Break Space (2016)(thesuper);;Scene Demo
 BreakSpace (2017)(Blerkotronic);;Various Games
-Breakout (1983)(Cascade Games);;Various Games
 Bred - Kirov 01 (19xx)(-);;Electronic Magazine
 Bred - Kirov 02 (19xx)(-);;Electronic Magazine
 Bred - Moscow 03 (19xx)(-);;Electronic Magazine
@@ -2814,9 +2802,7 @@ Captain Fizz 2 (1996)(Ironguys);;Various Games
 Carambola (1985)(Load 'n' Run);;Covertape
 Caratula (19xx)(-);;Utility
 Caratulas (19xx)(-);;Utility
-Cards (1984)(16-48 Tape Magazine);;Covertape
 Cargador Hex (19xx)(-);;Utility
-Cargo (1983)(Cascade Games);;Various Games
 Carousel (2015)(g0blinish);;Scene Demo
 Carreras (19xx)(-);;Various Games
 Cars' Eliminator (1989)(Special Playgames);;Covertape
@@ -2841,7 +2827,6 @@ Catman's Gallery (1994)(exodus);;Scene Demo
 Cats Loves Scene (2008)(Simbols);;Scene Demo
 Cats, The (2010)(AAA Band);;Scene Demo
 Cavalliere di Re Artu, Il (1987)(Load 'n' Run);;Covertape
-Cavern (1983)(Cascade Games);;Various Games
 Caverna, La (1984)(Special Program);;Covertape
 Cavernas de Hielo (1985)(MicroHobby);;Covertape
 Caves of Mines (1986)(Special Playgames);;Various Games
@@ -2853,7 +2838,6 @@ Centrale Nucleare, La (1985)(Load 'n' Run);;Various Games
 Cerius 1, 2 (19xx)(Atlantis);;Compilation - Games
 Ceros en Funcion (19xx)(-);;Utility
 Cezar 3 (2000)(Black Drakon);;Various Games
-Challenge, The (1987)(River);;Various Games
 Chaos (2001)(Brainwave);;Scene Demo
 Chaos 01 (1997)(-);;Electronic Magazine
 Chaos 1, 2 (1985)(Blindmouse);;Compilation - Games
@@ -2910,7 +2894,6 @@ Chaos Constructions Antique 2007 - RealTime Coding - Dss (2007)(vtrdos.ru);;Comp
 Chaos Constructions Antique 2007 - RealTime Graphics (2007)(vtrdos.ru);;Compilation - Demos
 Chaos Megademo (1996)(Andy);;Scene Demo
 Char Keszlet Kezdocime (19xx)(-);;Utility
-Character Generator (1982)(Sinclair Research);;Utility
 Character Set (1989)(Purv);;Utility
 Chars 20 (19xx)(-);;Utility
 Chase H.Q. 1, 2 (19xx)(Ocean);;Compilation - Games
@@ -2954,7 +2937,6 @@ Ciferton (2001)(The Mask);;Various Games
 Ciphertone (1995)(Prol);;Various Games
 Cir$a (19xx)(Jordi Sales);;Various Games
 Circles (1999)(XTM);;Scene Demo
-Circus, Le (1986)(16-48 Tape Magazine);;Covertape
 City Defender (1983)(Vaba);;Various Games
 City Storm (2008)(Shiru);;Scene Demo
 Clangers on the Dancefloor (2007)(HOOY-PROGRAM);;Scene Demo
@@ -3059,6 +3041,7 @@ Consul Commander (19xx)(Phantom Family);;Utility
 Contex Maze (1999)(Rasoft);;Various Games
 Control Trafico Ferroviario (19xx)(-);;Utility
 Controller AT Keyboard (19xx)(Profi);;Firmware
+Conversor Hexa Decimal (19xx)(Quim Soft);;Utility
 Converter (1999)(ART);;Utility
 Convertor Sound Tracker - Digital Studio (1996)(Chemnesoft Group);;Utility
 Cool Demo 1 (1994)(AY Group);;Scene Demo
@@ -3109,10 +3092,7 @@ Crazy Siberian Party '2002 - Warez Pack (2002)(Not Soft);;Compilation - Demos
 Crazy Siberian Party 2015 (2015)(vtrdos.ru);;Compilation - Demos
 Crazy Siberian Party 2016 (2016)(vtrdos.ru);;Compilation - Demos
 Crazy Siberian Party 2017 (2017)(vtrdos.ru);;Compilation - Demos
-Cribbage (1985)(16-48 Tape Magazine);;Covertape
-Cribbage - Intro (1985)(16-48 Tape Magazine);;Covertape
 Crime Santa Claus De Luxe Edition (1996)(ETC);;Various Games
-Crimen Perfecto (1984)(MicroHobby);;Covertape
 Crom Kruack (1986)(Bromba);;Various Games
 Cross and Zero (1999)(Unlimited Land Group);;Various Games
 Crossroads 04 (1999)(-);;Electronic Magazine
@@ -3120,7 +3100,6 @@ Crossroads 05 (1999)(-);;Electronic Magazine
 Crossroads 07 (1999)(-);;Electronic Magazine
 Crossword (1985)(16-48 Tape Magazine);;Covertape
 Crush Up (1984)(ZXS);;Various Games
-Crusher (1986)(Magnum Computing);;Various Games
 Crushers Text Editor (2000)(Crushers);;Utility
 Crypt (19xx)(Wilson-USG);;Utility
 Crypto (2014)(Debris);;Scene Demo
@@ -3168,7 +3147,6 @@ Cybersex 01 (19xx)(Red Limited);;Electronic Magazine
 Cybersex 02 (19xx)(Red Limited);;Electronic Magazine
 Cygnus Font Editor 2 (2008)(Cygnus);;Utility
 Cyku CC (2009)(n-Discovery);;Scene Demo
-Cypher (1983)(Cascade Games);;Various Games
 Cyrus 1, 2 (19xx)(-);;Compilation - Games
 D (19xx)(Flash);;Scene Demo
 D!Halt 2010 ZX Spectrum 1-bit Music (2010)(Shiru);;Scene Demo
@@ -3425,7 +3403,6 @@ Docker (19xx)(-);;Various Games
 Dogma (2000)(Eternity Industry);;Scene Demo
 Doing (2015)(kabardcomp);;Scene Demo
 Domino (1983)(Phipps);;Various Games
-Dominoes (1983)(CCS);;Various Games
 Dominoes (1988)(M.Williams);;Various Games
 Dominoes (19xx)(-);;Various Games
 DonNews 01 (1999)(Omega Hackers Group - Mafia);;Electronic Magazine
@@ -3488,6 +3465,7 @@ Dracula's Castle (1986)(Artur Marques);;Various Games
 Dragon (2014)(g0blinish);;Scene Demo
 Dragonball (1994)(Infoworld);;Various Games
 Dragons of Flame (2000)(CPU);;Scene Demo
+Draw (1982)(Psion);;Utility
 Drawing (2003)(Siberian Group);;Scene Demo
 Dream, The (1997)(naughty Crew);;Scene Demo
 Dreamers (2008)(skrju);;Scene Demo
@@ -3587,7 +3565,6 @@ Educational Compilation 10 (19xx)(-);;Compilation - Educational
 Educational Compilation 11 (19xx)(-);;Compilation - Educational
 Educational Compilation 12 (19xx)(-);;Compilation - Educational
 Educational Compilation 13 (19xx)(-);;Compilation - Educational
-Egg, The (1985)(Automata UK);;Various Games
 Egghead 1, 2 (1989)(Jonathan Cauldwell);;Compilation - Games
 Egghead 1, 2 (19xx)(Jonathan Cauldwell);;Compilation - Games
 Egghead 1, 2, 3 (19xx)(Jonathan Cauldwell);;Compilation - Games
@@ -3925,7 +3902,6 @@ Fenzin 06 (19xx)(-);;Electronic Magazine
 Fenzin 07 (19xx)(-);;Electronic Magazine
 Fenzin 08 (19xx)(-);;Electronic Magazine
 Fenzin 09 (19xx)(-);;Electronic Magazine
-Fichero (1984)(Investronica);;Utility
 Fikus Pikus Demos 001 (19xx)(Flash);;Compilation - Demos
 Fikus Pikus Demos 002 (19xx)(Flash);;Compilation - Demos
 Fikus Pikus Demos 003 (19xx)(Flash);;Compilation - Demos
@@ -4485,7 +4461,6 @@ Fully 2 - Escape From Base (19xx)(Scalesmann);;Various Games
 Fully 3 - Dully and Underland Monster (19xx)(Scalesmann);;Various Games
 Fun Top '98 - Demos Collection (1998)(-);;Compilation - Demos
 FunTopUS (1998)(Eternity Industry);;Scene Demo
-Funciones (1986)(MicroHobby);;Utility
 Funeral 01 (1999)(-);;Electronic Magazine
 Funeral 1.5 (1999)(-);;Electronic Magazine
 Funny Box 01 (1997)(Freeman);;Electronic Magazine
@@ -4783,7 +4758,6 @@ Genetic Error (1998)(K3L);;Scene Demo
 Genie 128k (19xx)(RomanticRobot);;Firmware
 Gens (1987)(HiSoft);;Utility
 Geode (2005)(HOOY-PROGRAM);;Scene Demo
-Geografia (1985)(MicroHobby);;Utility
 Geography 01-22 (19xx)(-);;Compilation - Magazines
 Geography 23-38 (19xx)(-);;Compilation - Magazines
 German Language Tutor (19xx)(-);;General - Education
@@ -4870,7 +4844,6 @@ Gyron Atrium & Gyron Necropolis (1985)(Firebird);;Compilation - Games
 Gyufas jatek (19xx)(Nyitrai, Laszlo);;Various Games
 H-Player (2000)(Vega);;Utility
 H-Relocate (19xx)(-);;Utility
-H.A.R.D. (1986)(Tynesoft);;Various Games
 HB Reader (1985)(Kobrahsoft);;Utility
 HC 128 (19xx)(ICEFelix);;Firmware
 HC 2000 INTERFACE (19xx)(ICEFelix);;Firmware
@@ -4933,7 +4906,6 @@ Harm (2002)(4d - Triebkraft);;Scene Demo
 Harm (2002)(4th Dimension);;Scene Demo
 Harmadik Zenedemo (2004)(Nyitrai, Laszlo);;Scene Demo
 Head Clean (2000)(Nagval);;Utility
-Head the Ball (1992)(Crash);;Covertape
 Header Change II (1986)(Rolf Heinen);;Utility
 Hearer (19xx)(Flash);;Scene Demo
 Heart Beat (2001)(-);;Scene Demo
@@ -5010,7 +4982,6 @@ Horror Word (2003)(Cyberpunks Unity);;Utility
 HorrorFasTest (19xx)(Horrosoft);;Utility
 HorrorWord (19xx)(Horrorsoft-CPU);;Utility
 Horse, a Horse, my Kingdom for a Horse or a Scotsman on a Horse, A (2008)(HOOY-PROGRAM);;Scene Demo
-Horseplay (2002)(Naffsoft);;Various Games
 Hot Speed Championship (1989)(Special Playgames);;Various Games
 Hot Speed Championship (19xx)(G.B.Max);;Various Games
 House (2000)(Oversun Friendship);;Various Games
@@ -5031,8 +5002,6 @@ Hype (2015)(AAA Band);;Scene Demo
 Hypegy 01 (2016)(-);;Electronic Magazine
 Hypegy 02 (19xx)(-);;Electronic Magazine
 Hyper Drive (2012)(Phonex);;Scene Demo
-Hyperbowl (1984)(16-48 Tape Magazine);;Covertape
-Hyperlane (1991)(Sinclair User);;Various Games
 Hypno (2015)(g0blinish);;Scene Demo
 Hytex (19xx)(P'jankov, D.);;Utility
 I Love Oldschool (2017)(Goblin);;Scene Demo
@@ -5108,7 +5077,6 @@ Increase (2002)(Psycho);;Scene Demo
 Increase Intro (2002)(Psycho);;Scene Demo
 Independent Faraon Music Bank (1996)(Queen);;Utility
 Indiana (19xx)(AER);;Music
-Indoor Soccer (1988)(Code Masters Gold);;Various Games
 Infarct (1995)(L.V.V.);;Scene Demo
 Infarct (1997)(Real Masters);;Scene Demo
 Inferno - Info Guide 05 (19xx)(Alone Coder);;Electronic Magazine
@@ -5124,7 +5092,6 @@ Inferno 03 (2002)(-);;Electronic Magazine
 Inferno 04 (2003)(-);;Electronic Magazine
 Info Guide #6 (2004)(alone Coder);;Scene Demo
 Information Issue #1 (2002)(NetSpec);;Electronic Magazine
-Infy - Infinite Lives Finder (1992)(Your Sinclair);;Utility
 Injections (2008)(Milytia);;Scene Demo
 Ink9 (1995)(Vaxalon);;Scene Demo
 Inmost Sun (2004)(CPU);;Scene Demo
@@ -5483,7 +5450,6 @@ Lapiz de Luz (1985)(Ventamatic);;Utility
 Lara Croft Mail Editor (19xx)(KVA-E-mage);;Utility
 Lara Croft Mail Editor (19xx)(KVA-E-Mage);;Utility
 Las Vegas 2 (19xx)(-);;Various Games
-Laser (1983)(Cascade Games);;Various Games
 Laser Attack (1995)(Vaxalon);;Scene Demo
 Laser Compact (1998)(Hrumer);;Utility
 Laser Grid (1995)(Vaxalon);;Scene Demo
@@ -5553,9 +5519,7 @@ Letter for Bell (1997)(OSG);;Scene Demo
 Letter for Tuleby of ESA (1997)(OSG);;Scene Demo
 Letter for eye (1995)(K3L);;Scene Demo
 Letter to Tuleby (1997)(OSG);;Scene Demo
-Liberator (1990)(Crash);;Various Games
 Libro de Diario (1985)(-);;Utility
-Life (1982)(Sinclair Research);;Various Games
 Life (1996)(Ivanov, Alexey);;Various Games
 Life (19xx)(High Style);;Various Games
 Life is Infinite (2004)(volga Soft);;Scene Demo
@@ -5567,7 +5531,6 @@ Lifeforms (2001)(placebo);;Scene Demo
 Lift (19xx)(-);;Various Games
 Light & Sound 10 (19xx)(-);;Scene Demo
 LightStreams (2013)(g0blinish);;Scene Demo
-Lightcycle (1983)(Spectrum Computing);;Covertape
 Lily Gift (1999)(Hackers Design);;Scene Demo
 Lime Tree 01 (1995)(-);;Electronic Magazine
 Lime Tree 02 (1995)(-);;Electronic Magazine
@@ -5596,6 +5559,7 @@ Lime Tree 24 (1996)(-);;Electronic Magazine
 Lime Tree 25 (1996)(-);;Electronic Magazine
 Lime Tree 26 (1996)(-);;Electronic Magazine
 Lime Tree 27 (1996)(-);;Electronic Magazine
+Line Split (19xx)(Chezron);;Utility
 Line of Fire (1999)(CPU);;Scene Demo
 Lines (1997)(Yurochka);;Various Games
 Lines (19xx)(Schekin Aleksej);;Various Games
@@ -5737,11 +5701,6 @@ Lust (2000)(Ruby);;Scene Demo
 Luv Message (2016)(g0blinish);;Scene Demo
 Luxe Copy (19xx)(Maslo, Viktor);;Utility
 Lydnr (19xx)(-);;Utility
-Lyra II Megademo, The - Part 1 (1991)(Sinclair User);;Scene Demo
-Lyra II Megademo, The - Part 2 (1991)(Sinclair User);;Scene Demo
-Lyra II Megademo, The - Part 3 (1991)(Sinclair User);;Scene Demo
-Lyra II Megademo, The - Part 4 (1991)(Sinclair User);;Scene Demo
-Lyra II Megademo, The - Part 5 (1991)(Sinclair User);;Scene Demo
 M-Wizard (1997)(Roshin, Ivan);;Utility
 M11Intro (2015)(Fishbone Crew);;Scene Demo
 MACFACE 2 (19xx)(Muszynski, Artur);;Firmware
@@ -5845,6 +5804,7 @@ Mangy 3 (2009)(Debris);;Scene Demo
 Manic Miner - Fast Version (2002)(Mark Woodmass);;Various Games
 Manic Miner - Level Editor (1992)(Your Sinclair);;Covertape
 Manic Miner - Sprite Editor (1992)(Your Sinclair);;Covertape
+Manic Mower (2016)(Alford, Brendan);;Various Games
 Manifesto (2014)(thesuper);;Scene Demo
 Many Color (19xx)(-);;Utility
 Map Demo (19xx)(Hacker Chris);;Scene Demo
@@ -5927,7 +5887,6 @@ Miao (1985)(Programmi Italiani);;Various Games
 Miao (19xx)(-);;Various Games
 Micro (2014)(Gemba Boys);;Scene Demo
 Micro Font Editor (19xx)(Dener);;Utility
-Micro-PROLOG T1.2 (1983)(Sinclair Research);;Utility
 Micro-Print 85 Demo (1984)(Myrmidon);;Utility
 Micro1k (2014)(Busysoft);;Scene Demo
 MicroByte - Serie Clasicos Spectrum 01 (19xx)(Miguel);;Compilation - Games
@@ -6011,7 +5970,6 @@ Millennium 2000 - 4K Demos (2013)(vtrdos.ru);;Compilation - Demos
 Millennium Magazine 01 (2001)(Millennium Group);;Electronic Magazine
 Mim Intro (19xx)(Mim);;Scene Demo
 Mind Control (1999)(Crazytronic);;Scene Demo
-Mine (2002)(Perspective Group);;Various Games
 Miner (1994)(Wlad Corp);;Various Games
 Miner (1995)(Akimov, A. - Alekseev, O.);;Various Games
 Miner (19xx)(CAV);;Various Games
@@ -6048,7 +6006,6 @@ Mirikom 02 (1994)(-);;Electronic Magazine
 Mirror (1998)(Art Work Creative Group);;Various Games
 Misha Megademo, The (1993)(Resoft);;Scene Demo
 Missile (19xx)(B+H);;Various Games
-Missile Defence (1985)(16-48 Tape Magazine);;Covertape
 Missile Defender (19xx)(-);;Various Games
 Missili (1985)(Load 'n' Run);;Covertape
 Missing in fun (2002)(UVS);;Scene Demo
@@ -6105,7 +6062,6 @@ Mooncat (2011)(AER);;Scene Demo
 Moozik (19xx)(-);;Scene Demo
 Mopas (2014)(kabardcomp);;Scene Demo
 Moran77 (2004)(CPU);;Scene Demo
-Morpheus (2004)(Perspective Group);;Various Games
 Morse (19xx)(Kresimir Rajacic);;Utility
 Morse Code (1995)(Vaxalon);;Scene Demo
 Morskoj Boj (1993)(Vetytnev Alexey);;Various Games
@@ -7029,7 +6985,6 @@ Pong (19xx)(-);;Various Games
 Pong (2011)(-);;Scene Demo
 Ponlas en Raya (1986)(Load 'n' Run);;Covertape
 Pontfalo (1995)(Nyitrai, Laszlo);;Various Games
-Pontoon (1983)(Contrast);;Various Games
 Pool (1989)(Special Playgames);;Covertape
 Poorguy! (19xx)(-);;Scene Demo
 Popcorn Vol. I (1989)(Kassoft);;Scene Demo
@@ -7080,7 +7035,6 @@ Prince of Persia Cheat (1998)(AREAsoft);;Utility
 Prince of Persia Service (1996)(Maxsoft);;Utility
 Print 'n' Plotter Jotter (19xx)(Print 'n' Plotter Productions);;Utility
 Prisas (1985)(Load 'n' Run);;Covertape
-Prison Blues (1991)(The Guild);;Various Games
 Private Detective (1993)(Masterstudio);;Various Games
 Pro Sound Creator (19xx)(KVA-E-Mage);;Utility
 Pro Sound Maker (1995)(Team V);;Utility
@@ -7282,7 +7236,6 @@ Quill Adventure System, The - Hack (19xx)(-);;Utility
 Quill Adventure System, The - Lister (19xx)(-);;Utility
 Quill Adventure System, The - Text (19xx)(-);;Utility
 Quill Database Converter (1983)(Gilsoft International);;Utility
-Quinielas (1985)(MicroHobby);;Utility
 Quiz Game (1995)(Vaxalon);;Scene Demo
 Quorum 128 (19xx)(-);;Firmware
 RAMJET (19xx)(HardMicro - Microsat);;Firmware
@@ -7312,7 +7265,6 @@ RV Print 2.11 last (2002)(Recover);;Utility
 Rabbit Hunting (1989)(Bill Gilbert - Rasher);;Various Games
 Radio Student (1984)(ZOTK Slovenije);;Compilation - Games
 Raiden Greetings (1993)(Raiden);;Scene Demo
-Raiders (1983)(Cascade Games);;Various Games
 Rain (2016)(Life on Mars);;Scene Demo
 Rain Demo (1994)(ESA);;Scene Demo
 Rain ROM Final (19xx)(19xx);;Utility
@@ -7457,7 +7409,6 @@ Ritorno dei Cavoli Assassini, Il (1984)(Special Program);;Various Games
 Riverwash 2017 (2017)(vtrdos.ru);;Compilation - Demos
 Rizc (2000)(XTM);;Scene Demo
 Road (2000)(Roshin, Ivan);;Scene Demo
-Road Race (1987)(Your Sinclair);;Various Games
 Robat 30 HB Gift (2011)(Togyaf);;Scene Demo
 Robi With TR dos 5.03 (19xx)(Intercompex);;Firmware
 Robo Rampus (1984)(S.P.Ralfe);;Various Games
@@ -7482,7 +7433,6 @@ Roto-Zummer (2016)(Pertsovsky, Misha);;Scene Demo
 Rotokiller (19xx)(-);;Various Games
 Rotronics Wafadrive, The (19xx)(Rotronics);;Firmware
 Rottotor (2017)(Lisokryl);;Scene Demo
-Roulette (1985)(Oxford Computer Publishing);;Various Games
 Roulette (19xx)(-);;Various Games
 Roulette (19xx)(Martin Cowie);;Various Games
 Ruairi Says Rectum (2009)(raww Arse);;Scene Demo
@@ -7927,6 +7877,7 @@ Solar Disco (2016)(Serzhsoft);;Scene Demo
 Solnyshko ' Gammi (1992)(Novobranchenko V.E.);;Various Games
 Song in Lines (2012)(Busysoft);;Scene Demo
 Songs From Cruel World (2005)(March Cats);;Music
+Sorcery + Sorcery+ (19xx)(Virgin Games);;Compilation - Games
 Sorrow (2017)(g0blinish);;Scene Demo
 Sorrow News 01 (1998)(-);;Electronic Magazine
 Sorrow News 02 (1998)(-);;Electronic Magazine
@@ -8211,7 +8162,6 @@ Spectrum Globeplotter, The (1986)(Personal Computer World);;Utility
 Spectrum Guide Sprite Generator (1998)(Integer);;Utility
 Spectrum Horoskop (19xx)(-);;Utility
 Spectrum Land 02 (1996)(-);;Electronic Magazine
-Spectrum Micro Prolog T1.0 (1983)(Sinclair Research);;Various Games
 Spectrum News 01 (1993)(-);;Electronic Magazine
 Spectrum OS (2017)(Trevisan, Matteo);;Utility
 Spectrum Progress 01 (1995)(Profsouse);;Electronic Magazine
@@ -8290,7 +8240,6 @@ Stellar Contour (2001)(Brainwave);;Scene Demo
 Stellar one (2011)(Cj Splinter - Mmcm);;Music
 Step by Step Demo 0.1 (1996)(Amigo Trade Group);;Various Games
 Stick Up Game (2004)(evilpaul-4mat-eater);;Scene Demo
-Stick, The (2010)(Perspective Group);;Various Games
 Stikman's World (1997)(naughty Crew);;Scene Demo
 Still Flying (2004)(C-jeff);;Music
 Stop Refresh (2010)(Patisoners);;Scene Demo
@@ -8368,7 +8317,6 @@ Super Text Search (1988)(Purv);;Utility
 Super Text Viewer (1997)(Red Limited);;Utility
 Supercad (1990)(Arcot);;Utility
 Supercode 4 (1985)(Supersoft);;Utility
-Superfile (1985)(Tynesoft);;Utility
 Supermonster (1985)(G.B.Max);;Various Games
 Suprematism Loop (2013)(introspec);;Scene Demo
 Surfcity (2012)(ALKO);;Scene Demo
@@ -8631,8 +8579,6 @@ Tak - Tikl' (1996)(Lone Wolf);;Various Games
 Tales From Crypt 01 (19xx)(-);;Electronic Magazine
 Tank Wars (1995)(Alexey Sokolov);;Various Games
 Tank Zone (1985)(Load 'n' Run);;Covertape
-Tanker (1983)(U.T.S.);;Various Games
-Tanks (1983)(Cascade Games);;Various Games
 Tap 2 Disk Convertor (19xx)(Mav-BW);;Utility
 Tape 2 Tape (19xx)(-);;Utility
 Tape 40 (19xx)(-);;Utility
@@ -8669,6 +8615,7 @@ Teddy Bear (1987)(Traff's);;Various Games
 Tedemo (2005)(OSG);;Scene Demo
 Teenage Mutant Hero Turtles 1, 2 (19xx)(Image Works);;Compilation - Games
 Tejon (1985)(Load 'n' Run);;Covertape
+Tele Zoom (19xx)(-);;Utility
 Teleconf. ZX-Net 09 (1996)(-);;Electronic Magazine
 Telefonnyj Spravochnik (19xx)(Prusak);;Utility
 Teleshow 01 (19xx)(-);;Electronic Magazine
@@ -8889,7 +8836,6 @@ Tusovka - Moscow 0808 (19xx)(-);;Electronic Magazine
 Tusovka - Moscow 1010 (19xx)(-);;Electronic Magazine
 Tusovka - Moscow 1508 (19xx)(-);;Electronic Magazine
 Tusovka - Moscow 1710 (19xx)(-);;Electronic Magazine
-Tutti Fruti (1985)(Ventamatic);;Various Games
 Tutto Spectrum - Issue 01 (198x)(Pubblirome);;Electronic Magazine
 Tutto Spectrum - Issue 02 (198x)(Pubblirome);;Electronic Magazine
 Tutto Spectrum - Issue 03 (198x)(Pubblirome);;Electronic Magazine
@@ -9178,7 +9124,6 @@ Warcraft Demo (19xx)(Dimon);;Various Games
 Warez 01 (19xx)(-);;Electronic Magazine
 Warez 02 (19xx)(-);;Electronic Magazine
 Warez 03 (19xx)(-);;Electronic Magazine
-Wari (1984)(16-48 Tape Magazine);;Covertape
 Warp Designer (1997)(PHD);;Utility
 Warring (19xx)(Flash);;Scene Demo
 Water59 (2013)(g0blinish);;Scene Demo
@@ -9754,7 +9699,6 @@ Zeus Pro (1995)(Real Imagines Programmers Group);;Utility
 Zhizn' (1994)(Smirnov A.);;Various Games
 ZhopAAA (2016)(g0blinish);;Scene Demo
 Zhuki 2003 (19xx)(Wlodek);;Compilation - Demos
-Zig-Zag (1990)(Outlet);;Various Games
 Zlye Zemli (19xx)(Druid);;Various Games
 Zmejka (19xx)(Sopolimer);;Various Games
 Znakostrochnik (2010)(Zhiglov, Andrew);;Scene Demo

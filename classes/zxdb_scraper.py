@@ -121,7 +121,7 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
             "SELECT concat('DROP TABLE IF EXISTS ', table_name, ';' "
             "FROM information_schema.tables WHERE table_schema = 'zxdb'")
         for request in requests:
-            print(request)
+            # print(request)
             self.cur.execute(request)
         self.cur.execute('COMMIT')
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 1')
@@ -200,9 +200,9 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
         game = Game()
         release = GameRelease()
         games = []
+        print("Request completed.")
         for row in self.cur:
             #Skipping ZX80/ZX81 files
-            print(row)
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
             if row['genre']=='Box Set':
@@ -390,13 +390,6 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
             author = putPrefixToEnd(row['author'])
             author  = publisher_regex.sub('', author)
             return putPrefixToEnd(author).strip()
-        # if row['author_is_company'] in (None, 1):
-        #     author = putPrefixToEnd(row['author'])
-        #     if row['author_is_company']:
-        #         author = publisher_regex.sub('', author)
-        #     return author.strip()
-        # elif row['author_is_company'] == 0:
-        #     return putInitialsToEnd(row['author'])
 
     def sanitizeAlias(self, alias):
         round_brackets_contents = re.findall(ROUND_BRACKETS_REGEX, alias)
@@ -405,9 +398,9 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
         alias = alias.replace(' ,', ',')
         alias = alias.replace('AlchNews', 'Alchemist News')
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
-        if alias == 'Pozycje Milosne':
-            alias = '22 Pozycje milosne'
-        elif alias == 'Treasure Island Dizzy':
+        # if alias == 'Pozycje Milosne':
+        #     alias = '22 Pozycje milosne'
+        if alias == 'Treasure Island Dizzy':
             alias = 'Dizzy 2 - '+alias
         elif alias == 'Fantasy World Dizzy':
             alias = 'Dizzy 3 - ' + alias

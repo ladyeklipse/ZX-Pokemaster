@@ -13,8 +13,6 @@ def updateROMVaultDATs():
         break
     for root, dirs, files in os.walk(latest_dats_dir):
         for file in files:
-            # if '[POK]' in file:
-            #     continue
             dat_path = os.path.join(root, file)
             dat_name = os.path.basename(dat_path)
             dir_path = '\\'.join(dat_name.split('(')[0].split(' - ')[1:]).strip()
