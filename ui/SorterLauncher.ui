@@ -315,37 +315,13 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0">
        <property name="spacing">
         <number>7</number>
        </property>
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetMinimumSize</enum>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="chkFormatsPreference">
-           <property name="text">
-            <string>Formats preference:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="txtFormatPreference">
-           <property name="inputMask">
-            <string/>
-           </property>
-           <property name="placeholderText">
-            <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <property name="sizeConstraint">
@@ -717,7 +693,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>btnLoadSettings</tabstop>
   <tabstop>btnSaveSettings</tabstop>
   <tabstop>btnSortFiles</tabstop>
-  <tabstop>txtFormatPreference</tabstop>
   <tabstop>txtLanguages</tabstop>
   <tabstop>chkIncludeAlternate</tabstop>
   <tabstop>chkIncludeDemos</tabstop>

@@ -141,7 +141,7 @@ class MainDialog(QDialog):
         if not is_pathname_valid(kwargs['output_location']):
             QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Invalid output path'))
             return
-        for format in kwargs['formats_preference']:
+        for format in kwargs['include_only']:
             if format not in GAME_EXTENSIONS:
                 QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr('Format %s is not recognized') % format)
                 return
@@ -187,10 +187,10 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
             'input_locations':self.getInputLocations(),
             'traverse_subdirectories':self.ui.chkTraverseSubdirectories.isChecked(),
             'output_location':self.ui.txtOutputPath.text(),
-            'formats_preference':self.getFormatsPreference(),
+            # 'formats_preference':self.getFormatsPreference(),
             'include_only':self.getIncludeOnlyList(),
             'exclude':self.getExcludeList(),
-            'format_filter_on':self.ui.chkFormatsPreference.isChecked(),
+            # 'format_filter_on':self.ui.chkFormatsPreference.isChecked(),
             'include_filter_on':self.ui.chkIncludeExtensions.isChecked(),
             'exclude_filter_on':self.ui.chkExcludeExtensions.isChecked(),
             'languages':self.getLanguages(),
@@ -221,11 +221,11 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
             input_locations.append(self.ui.lstInputPaths.item(i).text())
         return input_locations
 
-    def getFormatsPreference(self):
-        formats = self.ui.txtFormatPreference.text()
-        formats = formats.replace(';', ',').lower()
-        formats = [x.strip() for x in formats.split(',') if x]
-        return formats
+    # def getFormatsPreference(self):
+    #     formats = self.ui.txtFormatPreference.text()
+    #     formats = formats.replace(';', ',').lower()
+    #     formats = [x.strip() for x in formats.split(',') if x]
+    #     return formats
 
     def getIncludeOnlyList(self):
         include_only = self.ui.txtIncludeExtensions.text()
@@ -303,11 +303,11 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
                 self.ui.lstInputPaths.addItems(settings.get('input_locations', []))
                 self.ui.chkTraverseSubdirectories.setChecked(settings.get('traverse_subridrectories', True))
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
-                self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference',
-                  self.getDefaultFormatPreference())))
+                # self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference',
+                #   self.getDefaultFormatPreference())))
                 self.ui.txtIncludeExtensions.setText(','.join(settings.get('include_only', '')))
                 self.ui.txtExcludeExtensions.setText(','.join(settings.get('exclude', '')))
-                self.ui.chkFormatsPreference.setChecked(settings.get('format_filter_on', False))
+                # self.ui.chkFormatsPreference.setChecked(settings.get('format_filter_on', False))
                 self.ui.chkIncludeExtensions.setChecked(settings.get('include_filter_on', False))
                 self.ui.chkExcludeExtensions.setChecked(settings.get('exclude_filter_on', False))
                 self.ui.txtLanguages.setText(','.join(settings.get('languages',

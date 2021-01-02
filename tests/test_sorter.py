@@ -90,8 +90,8 @@ class TestSorter(unittest.TestCase):
         s = Sorter(input_locations=['tests/files/sort_best_candidates_in'],
                    output_location='tests/files/sort_best_candidates_out',
                    output_folder_structure='',
-                   formats_preference=['tap', 'z80', 'dsk', 'trd'],
-                   format_filter_on=True,
+                   include_only=['tap', 'z80', 'dsk', 'trd'],
+                   include_filter_on=True,
                    include_alternate=False,
                    include_alternate_formats=True,
                    cache=False)

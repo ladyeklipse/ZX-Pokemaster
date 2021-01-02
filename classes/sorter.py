@@ -36,12 +36,12 @@ class Sorter():
         self.input_locations = kwargs.get('input_locations', [])
         self.traverse_subfolders= kwargs.get('traverse_subfolders', True)
         self.output_location = kwargs.get('output_location', 'sorted')
-        self.formats_preference = kwargs.get('formats_preference', GAME_EXTENSIONS) \
-            if kwargs.get("format_filter_on") else GAME_EXTENSIONS
+        # self.formats_preference = kwargs.get('formats_preference', GAME_EXTENSIONS) \
+        #     if kwargs.get("format_filter_on") else GAME_EXTENSIONS
         self.include_only = kwargs.get('include_only', GAME_EXTENSIONS) \
             if kwargs.get("include_filter_on") else GAME_EXTENSIONS
         self.exclude = kwargs.get('exclude', []) if kwargs.get("exclude_filter_on") else []
-        print("formats:", self.formats_preference)
+        # print("formats:", self.formats_preference)
         print("include only:", self.include_only)
         print("exclude:", self.exclude)
         # if not self.formats_preference:
@@ -227,7 +227,7 @@ class Sorter():
     def getGameFilesFromInputPath(self, file_path):
         game_files = []
         ext = os.path.splitext(file_path)[1][1:].lower()
-        if ext in self.formats_preference and ext in self.include_only and ext not in self.exclude: #file is not in archive
+        if ext in self.include_only and ext not in self.exclude: #file is not in archive
             game_file = GameFile(file_path)
             game = db.getGameByFile(game_file)
             if game:
@@ -245,7 +245,7 @@ class Sorter():
             for file in archive_files:
                 basename, ext = os.path.splitext(file.path)
                 ext = ext[1:].lower()
-                if ext not in self.formats_preference or ext not in self.include_only or ext in self.exclude:
+                if ext not in self.include_only or ext in self.exclude:
                     continue
                 game_file = GameFile(file_path)
                 game_file.format = ext
@@ -367,7 +367,7 @@ class Sorter():
         return files
 
     def getBestCandidate(self, files):
-        files = sorted(files, key=lambda file: file.getSortIndex(self.formats_preference))
+        files = sorted(files, key=lambda file: file.getSortIndex(self.include_only))
         return files[0]
 
     def redistributeFiles(self):
