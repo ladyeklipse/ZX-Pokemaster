@@ -33,9 +33,9 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = 'tests/files/sort_by_author_out/Anderson, David J. - Morrison, Ian - Thorpe, F. David/Zaxxon (1985)(Anderson, David J. - Morrison, Ian - Thorpe, F. David).tap'
+        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = 'tests/files/sort_by_author_out/Anderson, David J. - Morrison, Ian - Thorpe, F. David/POKES/Zaxxon (1985)(Anderson, David J. - Morrison, Ian - Thorpe, F. David).pok'
+        expected_file = 'tests/files/sort_by_author_out/Platinum Productions - Thorpe, F. David/POKES/Zaxxon (1985)(Platinum Productions - Thorpe, F. David).pok'
         self.assertTrue(os.path.exists(expected_file))
         self.assertGreater(os.path.getsize(expected_file), 0)
         self.assertEqual(len(s.errors), 0)
@@ -91,6 +91,7 @@ class TestSorter(unittest.TestCase):
                    output_location='tests/files/sort_best_candidates_out',
                    output_folder_structure='',
                    formats_preference=['tap', 'z80', 'dsk', 'trd'],
+                   format_filter_on=True,
                    include_alternate=False,
                    include_alternate_formats=True,
                    cache=False)

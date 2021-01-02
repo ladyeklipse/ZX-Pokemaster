@@ -188,6 +188,11 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
             'traverse_subdirectories':self.ui.chkTraverseSubdirectories.isChecked(),
             'output_location':self.ui.txtOutputPath.text(),
             'formats_preference':self.getFormatsPreference(),
+            'include_only':self.getIncludeOnlyList(),
+            'exclude':self.getExcludeList(),
+            'format_filter_on':self.ui.chkFormatsPreference.isChecked(),
+            'include_filter_on':self.ui.chkIncludeExtensions.isChecked(),
+            'exclude_filter_on':self.ui.chkExcludeExtensions.isChecked(),
             'languages':self.getLanguages(),
             'output_folder_structure':output_folder_structure,
             'output_filename_structure':output_filename_structure,
@@ -221,6 +226,18 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
         formats = formats.replace(';', ',').lower()
         formats = [x.strip() for x in formats.split(',') if x]
         return formats
+
+    def getIncludeOnlyList(self):
+        include_only = self.ui.txtIncludeExtensions.text()
+        include_only = include_only.replace(';', ',').lower()
+        include_only = [x.strip() for x in include_only.split(',') if x]
+        return include_only
+
+    def getExcludeList(self):
+        exclude = self.ui.txtExcludeExtensions.text()
+        exclude = exclude.replace(';', ',').lower()
+        exclude = [x.strip() for x in exclude.split(',') if x]
+        return exclude
 
     def getLanguages(self):
         languages = self.ui.txtLanguages.text()
@@ -288,7 +305,12 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
                 self.ui.txtOutputPath.setText(settings.get('output_location', ''))
                 self.ui.txtFormatPreference.setText(','.join(settings.get('formats_preference',
                   self.getDefaultFormatPreference())))
-                self.ui.txtFormatPreference.setText(','.join(settings.get('languages',
+                self.ui.txtIncludeExtensions.setText(','.join(settings.get('include_only', '')))
+                self.ui.txtExcludeExtensions.setText(','.join(settings.get('exclude', '')))
+                self.ui.chkFormatsPreference.setChecked(settings.get('format_filter_on', False))
+                self.ui.chkIncludeExtensions.setChecked(settings.get('include_filter_on', False))
+                self.ui.chkExcludeExtensions.setChecked(settings.get('exclude_filter_on', False))
+                self.ui.txtLanguages.setText(','.join(settings.get('languages',
                   self.getDefaultLanguages())))
                 self.ui.chkCamelCase.setChecked(settings.get('use_camel_case', False))
                 self.ui.chkShortFilenames.setChecked(settings.get('short_filenames', False))
@@ -324,9 +346,10 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
         patterns = [pattern.replace('{Name}', '{GameName}') for pattern in patterns]
         display_items = [self.getDisplayItemFromOutputPattern(pattern) for pattern in
                          patterns]
+        selected_output_path_structure = settings.get('output_folder_structure')+'\\'+settings.get('output_filename_structure')
         for i, display_item in enumerate(display_items):
             self.ui.cmbOutputPathStructure.addItem(*display_item)
-            if display_item[1] == settings.get('output_folder_structure'):
+            if display_item[1] == selected_output_path_structure:
                 self.ui.cmbOutputPathStructure.setCurrentIndex(i)
 
     def getDisplayItemFromOutputPattern(self, pattern):

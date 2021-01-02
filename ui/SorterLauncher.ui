@@ -95,7 +95,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabMainOptions">
       <property name="accessibleName">
@@ -315,7 +315,7 @@
       <attribute name="title">
        <string>File filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,1,1,1,1,1,0,0,0,0,0,0">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0">
        <property name="spacing">
         <number>7</number>
        </property>
@@ -328,7 +328,7 @@
           <enum>QLayout::SetMinimumSize</enum>
          </property>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QCheckBox" name="chkFormatsPreference">
            <property name="text">
             <string>Formats preference:</string>
            </property>
@@ -336,6 +336,54 @@
          </item>
          <item>
           <widget class="QLineEdit" name="txtFormatPreference">
+           <property name="inputMask">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="chkIncludeExtensions">
+           <property name="text">
+            <string>Include only these:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtIncludeExtensions">
+           <property name="inputMask">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string>tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="chkExcludeExtensions">
+           <property name="text">
+            <string>Exclude these:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtExcludeExtensions">
            <property name="inputMask">
             <string/>
            </property>
@@ -552,6 +600,8 @@
       <zorder>chkRetainFoldersForUnknownFiles</zorder>
       <zorder>chkDeleteSourceFiles</zorder>
       <zorder>label_6</zorder>
+      <zorder>layoutWidget</zorder>
+      <zorder>layoutWidget_2</zorder>
      </widget>
      <widget class="QWidget" name="tabAbout">
       <attribute name="title">
@@ -580,7 +630,6 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;For those willing to support ZX Pokemaster, please consider donating:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;BitCoin: &lt;/span&gt;&lt;a href=&quot;bitcoin:1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;LiteCoin: &lt;/span&gt;&lt;a href=&quot;litecoin:LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Etherium: 0xF60Dc0c3d32b12Ae02A68723Af9133AD1938a178&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Special thanks to:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Anna Soloviova for Facebook group logo and moral support;&lt;/span&gt;&lt;/p&gt;

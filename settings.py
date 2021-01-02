@@ -1,4 +1,4 @@
-ZX_POKEMASTER_VERSION = '1.4'
+ZX_POKEMASTER_VERSION = '1.5'
 POKEMASTER_DB_PATH = 'pokemaster.db'
 POKEMASTER_MIN_DB_PATH = 'minified_database/pokemaster.db'
 DB_DISK_CACHE_FILE = 'hashes.dat'
@@ -7,8 +7,6 @@ WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'https://archive.org/download/World_of_Spectrum_June_2017_Mirror/World%20of%20Spectrum%20June%202017%20Mirror.zip/World%20of%20Spectrum%20June%202017%20Mirror',
     'http://spectrumcomputing.co.uk',
-    # 'https://wos.meulie.net',
-    # WOS_SITE_ROOT,
 ]
 WOS_GAME_FILES_DIRECTORY = 'pub/sinclair/games'
 WOS_TRDOS_GAME_FILES_DIRECTORY = 'pub/sinclair/trdos/games'

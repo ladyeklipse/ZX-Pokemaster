@@ -68,26 +68,25 @@ class ZXDBScraper():
                                 converter_class=RowConverter
                                 )
         self.cur = self.conn.cursor(dictionary=True, buffered=True)
-        # self.createTemporaryTables()
         self.loadLookupTables()
 
-    def createTemporaryTables(self):
-        sql = '''
-        create table tmp_publishers(
-  entry_id int(11) not null,
-  release_seq smallint(6) NOT NULL,
-  publisher_seq smallint(6) NOT NULL,
-  label_id int(11) not null,
-  primary key(entry_id,release_seq,publisher_seq),
-  CONSTRAINT fk_tmp_entry FOREIGN KEY (entry_id) REFERENCES entries(id),
-  CONSTRAINT fk_tmp_label FOREIGN KEY (label_id) REFERENCES labels(id)
-);
-
-insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select entry_id, release_seq, publisher_seq, label_id from publishers);
-
-insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select c.entry_id, 0, p.publisher_seq, p.label_id from compilations c inner join entries e on c.compilation_id = e.id inner join publishers p on p.entry_id = e.id and p.release_seq = 0 where c.is_original = 1 and c.entry_id not in (select entry_id from tmp_publishers where release_seq = 0) group by c.entry_id, p.publisher_seq, p.label_id);'''
-        self.cur.execute(sql, multi=True)
-        self.conn.commit()
+#     def createTemporaryTables(self):
+#         sql = '''
+#         create table tmp_publishers(
+#   entry_id int(11) not null,
+#   release_seq smallint(6) NOT NULL,
+#   publisher_seq smallint(6) NOT NULL,
+#   label_id int(11) not null,
+#   primary key(entry_id,release_seq,publisher_seq),
+#   CONSTRAINT fk_tmp_entry FOREIGN KEY (entry_id) REFERENCES entries(id),
+#   CONSTRAINT fk_tmp_label FOREIGN KEY (label_id) REFERENCES labels(id)
+# );
+#
+# insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select entry_id, release_seq, publisher_seq, label_id from publishers);
+#
+# insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select c.entry_id, 0, p.publisher_seq, p.label_id from compilations c inner join entries e on c.compilation_id = e.id inner join publishers p on p.entry_id = e.id and p.release_seq = 0 where c.is_original = 1 and c.entry_id not in (select entry_id from tmp_publishers where release_seq = 0) group by c.entry_id, p.publisher_seq, p.label_id);'''
+#         self.cur.execute(sql, multi=True)
+#         self.conn.commit()
 
     def loadLookupTables(self):
         self.file_exclusion_list = []
@@ -317,7 +316,11 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
         game = Game(game_name, int(row['zxdb_id']))
         publisher = self.publisherNameFromRow(row)
         game.setPublisher(publisher)
-        author = self.authorNameFromRow(row)
+        try:
+            author = self.authorNameFromRow(row)
+        except:
+            print(traceback.format_exc())
+            print("author=", row['author'])
         game.setAuthor(author)
         game.setYear(row['year'])
         pok_file_path = self.pok_file_paths.get(game.zxdb_id)
@@ -371,23 +374,28 @@ insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (sele
         return release
 
     def publisherNameFromRow(self, row):
+        if not row['publisher']:
+            return None
+        publisher = remove_brackets_regex.sub('', row['publisher'])
         if row['publisher_type']=='+': #person
-            return putInitialsToEnd(row['publisher']).strip()
+            return putInitialsToEnd(publisher).strip()
         elif row['publisher_type']=='-': #nickname
-            return row['publisher'].strip()
+            return publisher.strip()
         else: #company
-            publisher = putPrefixToEnd(row['publisher'])
+            publisher = putPrefixToEnd(publisher)
             publisher = publisher_regex.sub('', publisher)
             return publisher.strip()
 
     def authorNameFromRow(self, row):
+        if not row['author']:
+            return None
+        author = remove_brackets_regex.sub('', row['author'])
         if row['author_type']=='+': #person
-            author = remove_brackets_regex.sub('', row['author'])
             return putInitialsToEnd(author).strip()
         elif row['author_type']=='-': #nickname
-            return row['author'].strip()
+            return author.strip()
         else: #company
-            author = putPrefixToEnd(row['author'])
+            author = putPrefixToEnd(author)
             author  = publisher_regex.sub('', author)
             return putPrefixToEnd(author).strip()
 

@@ -31,15 +31,21 @@ class Sorter():
         self.should_cancel = False
         self.original_output_location = None
         self.too_long_path = None
-        # self.fails = []
         if not kwargs:
             kwargs = self.loadSettings()
         self.input_locations = kwargs.get('input_locations', [])
         self.traverse_subfolders= kwargs.get('traverse_subfolders', True)
         self.output_location = kwargs.get('output_location', 'sorted')
-        self.formats_preference = kwargs.get('formats_preference', [])
-        if not self.formats_preference:
-            self.formats_preference = GAME_EXTENSIONS
+        self.formats_preference = kwargs.get('formats_preference', GAME_EXTENSIONS) \
+            if kwargs.get("format_filter_on") else GAME_EXTENSIONS
+        self.include_only = kwargs.get('include_only', GAME_EXTENSIONS) \
+            if kwargs.get("include_filter_on") else GAME_EXTENSIONS
+        self.exclude = kwargs.get('exclude', []) if kwargs.get("exclude_filter_on") else []
+        print("formats:", self.formats_preference)
+        print("include only:", self.include_only)
+        print("exclude:", self.exclude)
+        # if not self.formats_preference:
+        #     self.formats_preference = GAME_EXTENSIONS
         self.languages = kwargs.get('languages', [])
         self.max_files_per_folder = kwargs.get('max_files_per_folder', None)
         self.bundle_key_length = kwargs.get('bundle_key_length', 3)
@@ -145,7 +151,7 @@ class Sorter():
                     self.gui.updateProgressBar(i)
                 game_files = self.getGameFilesFromInputPath(file_path)
                 if not game_files:
-                    print('Nothing found for', file_path)
+                    # print('Nothing found for', file_path)
                     continue
                 if not self.short_filenames:
                     for game_file in game_files:
@@ -221,7 +227,7 @@ class Sorter():
     def getGameFilesFromInputPath(self, file_path):
         game_files = []
         ext = os.path.splitext(file_path)[1][1:].lower()
-        if ext in self.formats_preference: #file is not in archive
+        if ext in self.formats_preference and ext in self.include_only and ext not in self.exclude: #file is not in archive
             game_file = GameFile(file_path)
             game = db.getGameByFile(game_file)
             if game:
@@ -239,7 +245,7 @@ class Sorter():
             for file in archive_files:
                 basename, ext = os.path.splitext(file.path)
                 ext = ext[1:].lower()
-                if ext not in self.formats_preference:
+                if ext not in self.formats_preference or ext not in self.include_only or ext in self.exclude:
                     continue
                 game_file = GameFile(file_path)
                 game_file.format = ext

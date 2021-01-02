@@ -71,14 +71,12 @@ def updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs, db=None):
 def getAllPokes(zxdb_ids=[]):
     db = Database()
     games = db.getAllGames('tipshop_page IS NOT NULL AND tipshop_page!="0"')
-    # games = games[:10]
     ts = TipshopScraper()
     for i, game in enumerate(games):
         if zxdb_ids and game.zxdb_id not in zxdb_ids:
             continue
         old_cheats = [cheat for cheat in game.cheats]
         print(old_cheats)
-        # game.cheats = []
         game.has_new_pokes = False
         ts.scrapePokes(game)
         print(game.cheats, old_cheats, [cheat for cheat in game.cheats if cheat not in old_cheats])
@@ -125,8 +123,6 @@ def updateMods():
                 cheat.description = 'No pitch decrease when life lost'
         db.addGame(mod_game)
     db.commit()
-
-
     db = Database()
 
 def extractPokFiles():
@@ -197,13 +193,13 @@ def createPOKTOSECDat():
 
 if __name__=='__main__':
     #FIRST PART
-    zxdb_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
-    updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs)
-    games = getAllPokes()
-    games2xlsx(games, new_only=True)
-    xlsx2db()
-    #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
+    # zxdb_ids_tipshop_pages_pairs = getWosIDsOfTipshopGames()
+    # updateTipshopPageColumn(zxdb_ids_tipshop_pages_pairs)
+    # games = getAllPokes()
+    # games2xlsx(games, new_only=True)
     # xlsx2db()
+    #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
+    xlsx2db()
     # updateMods()
-    # extractPokFiles()
-    # createPOKTOSECDat()
+    extractPokFiles()
+    createPOKTOSECDat()

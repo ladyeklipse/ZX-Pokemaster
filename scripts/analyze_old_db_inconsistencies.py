@@ -27,7 +27,7 @@ def showDeletedFiles(old_database_path, new_database_path='pokemaster.db'):
 
 def restoreDeletedFiles(old_database_path):
     new_db = Database()
-    if old_database_path>'pokemaster_v1.4-alpha6.db':
+    if old_database_path.lower()>'pokemaster_v1.4-alpha6.db':
         old_db = Database(old_database_path)
     else:
         old_db = OldDatabase(old_database_path)
@@ -72,6 +72,9 @@ def restoreUnknownTypes(old_database_path):
     # new_db.conn.commit()
 
 def diffDatabases(old_database_path, new_database_path='pokemaster.db'):
+    if not os.path.exists(old_database_path):
+        print("DATABASE", old_database_path, "DOES NOT EXIST.")
+        return None
     new_db = Database(new_database_path)
     if old_database_path>'pokemaster_v1.4-alpha6.db':
         old_db = Database(old_database_path)
@@ -122,8 +125,8 @@ def generateDiffFiles(old_db_name, new_db_name):
     f_new_contents = f_new.read()
     print("contents read.")
     diff_file_contents = difflib.HtmlDiff(wrapcolumn=50).make_file(
-        f_old_contents.split('\n'),
-        f_new_contents.split('\n'),
+        f_old_contents,
+        f_new_contents,
         context=False, numlines=0)
     f_old.close()
     f_new.close()
@@ -131,8 +134,9 @@ def generateDiffFiles(old_db_name, new_db_name):
         f.write(diff_file_contents)
 
 if __name__=='__main__':
-    diffDatabases('pokemaster_v1.4-rc1.db')
-    # generateDiffFiles("Old DB", "New DB")
+    # diffDatabases('pokemaster_v1.4-rc1.db')
+    diffDatabases('pokemaster_v1.5-alpha2.db')
+    generateDiffFiles("Old DB", "New DB")
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreUnknownTypes('pokemaster_v1.3-beta6.db')

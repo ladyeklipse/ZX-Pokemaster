@@ -2,9 +2,10 @@
 
 # Form implementation generated from reading ui file 'SorterLauncher.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -155,14 +156,36 @@ class Ui_Dialog(object):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.label_2 = QtWidgets.QLabel(self.tabFileFiltering)
-        self.label_2.setObjectName("label_2")
-        self.horizontalLayout_3.addWidget(self.label_2)
+        self.chkFormatsPreference = QtWidgets.QCheckBox(self.tabFileFiltering)
+        self.chkFormatsPreference.setObjectName("chkFormatsPreference")
+        self.horizontalLayout_3.addWidget(self.chkFormatsPreference)
         self.txtFormatPreference = QtWidgets.QLineEdit(self.tabFileFiltering)
         self.txtFormatPreference.setInputMask("")
         self.txtFormatPreference.setObjectName("txtFormatPreference")
         self.horizontalLayout_3.addWidget(self.txtFormatPreference)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_9.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.chkIncludeExtensions = QtWidgets.QCheckBox(self.tabFileFiltering)
+        self.chkIncludeExtensions.setObjectName("chkIncludeExtensions")
+        self.horizontalLayout_9.addWidget(self.chkIncludeExtensions)
+        self.txtIncludeExtensions = QtWidgets.QLineEdit(self.tabFileFiltering)
+        self.txtIncludeExtensions.setInputMask("")
+        self.txtIncludeExtensions.setObjectName("txtIncludeExtensions")
+        self.horizontalLayout_9.addWidget(self.txtIncludeExtensions)
+        self.verticalLayout.addLayout(self.horizontalLayout_9)
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.chkExcludeExtensions = QtWidgets.QCheckBox(self.tabFileFiltering)
+        self.chkExcludeExtensions.setObjectName("chkExcludeExtensions")
+        self.horizontalLayout_10.addWidget(self.chkExcludeExtensions)
+        self.txtExcludeExtensions = QtWidgets.QLineEdit(self.tabFileFiltering)
+        self.txtExcludeExtensions.setInputMask("")
+        self.txtExcludeExtensions.setObjectName("txtExcludeExtensions")
+        self.horizontalLayout_10.addWidget(self.txtExcludeExtensions)
+        self.verticalLayout.addLayout(self.horizontalLayout_10)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
@@ -245,12 +268,12 @@ class Ui_Dialog(object):
         self.label_6.setText("")
         self.label_6.setObjectName("label_6")
         self.verticalLayout.addWidget(self.label_6)
-        self.verticalLayout.setStretch(3, 1)
-        self.verticalLayout.setStretch(4, 1)
         self.verticalLayout.setStretch(5, 1)
         self.verticalLayout.setStretch(6, 1)
         self.verticalLayout.setStretch(7, 1)
         self.verticalLayout.setStretch(8, 1)
+        self.verticalLayout.setStretch(9, 1)
+        self.verticalLayout.setStretch(10, 1)
         self.chkIncludeAlternate.raise_()
         self.chkIncludeDemos.raise_()
         self.chkIncludeAlternateFileFormats.raise_()
@@ -286,7 +309,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.tabWidget, self.lstInputPaths)
         Dialog.setTabOrder(self.lstInputPaths, self.btnAddPath)
@@ -339,8 +362,12 @@ class Ui_Dialog(object):
         self.chkShortFilenames.setText(_translate("Dialog", "Use 8.3 naming scheme"))
         self.chkPlacePokFilesIntoPOKESSubfolders.setText(_translate("Dialog", "Place .POK files into POKES subfolders"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMainOptions), _translate("Dialog", "Main options"))
-        self.label_2.setText(_translate("Dialog", "Formats preference:"))
+        self.chkFormatsPreference.setText(_translate("Dialog", "Formats preference:"))
         self.txtFormatPreference.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx"))
+        self.chkIncludeExtensions.setText(_translate("Dialog", "Include only these:"))
+        self.txtIncludeExtensions.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx"))
+        self.chkExcludeExtensions.setText(_translate("Dialog", "Exclude these:"))
+        self.txtExcludeExtensions.setPlaceholderText(_translate("Dialog", "tap,z80,sna,dsk,trd,tzx,img,mgt,rom,scl,slt,szx"))
         self.label_3.setText(_translate("Dialog", "Languages:"))
         self.txtLanguages.setPlaceholderText(_translate("Dialog", "en,es,ru,pl,cz,fr,de,nl,hu,cr,pl,sr,sl,sv,no"))
         self.label_4.setText(_translate("Dialog", "Max archive size to look into:"))
@@ -369,7 +396,6 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For those willing to support ZX Pokemaster, please consider donating:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">BitCoin: </span><a href=\"bitcoin:1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">1KLBSzFYBpmwwkiG9VhXV6Hfd6YVsnF9D9</span></a></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">LiteCoin: </span><a href=\"litecoin:LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">LPuLp1dfdZXVdcFdL3ahQCaQwmghxkFuJh</span></a></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Etherium: 0xF60Dc0c3d32b12Ae02A68723Af9133AD1938a178</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Special thanks to:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Anna Soloviova for Facebook group logo and moral support;</span></p>\n"
@@ -386,6 +412,4 @@ class Ui_Dialog(object):
         self.btnFacebook.setText(_translate("Dialog", "Visit Facebook tech support group"))
         self.btnSourceForge.setText(_translate("Dialog", "Check for new version on SourceForge"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabAbout), _translate("Dialog", "Help"))
-
-
 import res_rc
