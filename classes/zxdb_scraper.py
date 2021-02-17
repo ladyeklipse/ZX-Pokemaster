@@ -328,19 +328,23 @@ class ZXDBScraper():
             game.importPokFile(file_path=pok_file_path)
         #TEMPORARY
         if not row['genre']:
-            if game.zxdb_id in [
+            if game.zxdb_id in (
                             32168, 32169, 32170, 32171,
                             32172, 32173, 32174, 32180,
                             30349, 32176, 32201, 32175,
-                            34322
-                            ]:
+                            34322, 35847, 35826, 34775,
+                            35829, 35782, 35783, 36477,
+                            36372, 35874, 35883
+                            ):
                 game.setGenre('Various Games')
-            elif game.zxdb_id in [32176]:
+            elif game.zxdb_id in (32176):
                 game.setGenre('Utilities - Screen')
-            elif game.zxdb_id in [32257, 32258, 32259]:
+            elif game.zxdb_id in (32257, 32258, 32259):
                 game.setGenre('Utilities')
-            elif game.zxdb_id in [27590, 1000246]:
+            elif game.zxdb_id in (27590, 1000246):
                 game.setGenre('Firmware')
+            elif game.zxdb_id in (36062):
+                game.setGenre('Emulator')
         elif game.zxdb_id in [8100]:
             game.setGenre('Compilation - Educational')
         else:

@@ -34,7 +34,8 @@ def cleanup(project_name):
         for file in [
             'PyQt5/Qt/plugins/platforms/qwebgl.dll',
             'PyQt5/Qt/plugins/platforms/qoffscreen.dll',
-            'PyQt5/Qt/plugins/platforms/qminimal.dll'
+            'PyQt5/Qt/plugins/platforms/qminimal.dll',
+            'ZX Pokemaster.exe.manifest'
                 ]:
             if os.path.exists(file):
                 os.remove(file)

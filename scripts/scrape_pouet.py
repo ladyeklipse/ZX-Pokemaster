@@ -28,7 +28,7 @@ def scrape_pouet():
     success = 0
     exceptions = []
     pattern = 'http://www.pouet.net/prodlist.php?platform%5B%5D=ZX+Spectrum&page={}'
-    for i in range(1,68):
+    for i in range(1,20): #only the latest ones.
         print('page ', i)
         url = pattern.format(i)
         print(url)
@@ -68,7 +68,7 @@ def scrape_pouet():
                 '/get/')
             download_link = download_link.replace(
                 'https://files.scene.org/get/',
-                'ftp://ftp.ua.scene.org/pub/mirrors/sceneorg/')
+                'https://files.scene.org/get:jp-http/')
             print(tosec_name)
             print(download_link)
             ext = os.path.splitext(download_link)[1]
@@ -138,5 +138,6 @@ def rename():
                 shutil.copy(src, dest)
 
 if __name__=='__main__':
-    # scrape_pouet()
+    scrape_pouet()
     rename()
+    #After renaming should automate copying to

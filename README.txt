@@ -1,5 +1,5 @@
 ===========================================================
-ZX Pokemaster 1.4 README
+ZX Pokemaster 1.5 README
 ===========================================================
 
 CONTENTS.
@@ -197,6 +197,8 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.5
+ - Updated POKES and added a lot of files up to 2021 to match ZXDB and TOSEC.
 1.4
  - Switched to newer version of PyQt framework;
  - Added Windows installer for easier setup;

@@ -338,7 +338,7 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
                 self.ui.cmbOutputPathStructure.addItem(*item)
             self.ui.cmbOutputPathStructure.setCurrentIndex(0)
             self.ui.txtOutputPath.setText(os.getcwd())
-            self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
+            # self.ui.txtFormatPreference.setText(self.getDefaultFormatPreference())
 
     def loadOutputPathStructures(self, settings):
         self.ui.cmbOutputPathStructure.clear()

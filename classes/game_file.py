@@ -554,7 +554,7 @@ class GameFile(object):
         kwargs = self.getOutputPathFormatKwargs(game_name_length=game_name_length,
                                                 for_filename=True)
         output_name = structure.format(**kwargs)
-        if structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE+'.{Format}':
+        if structure.endswith(TOSEC_COMPLIANT_FILENAME_STRUCTURE+'.{Format}'):
             country = self.getCountry().lower()
             if country==self.getLanguage() or \
                 COUNTRY_LANGUAGE_DICT.get(country.upper())==self.getLanguage() or \

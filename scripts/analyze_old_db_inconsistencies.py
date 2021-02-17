@@ -84,6 +84,7 @@ def diffDatabases(old_database_path, new_database_path='pokemaster.db'):
     new_db.loadCache()
     f_old = open("sandbox/old.txt", 'w', encoding='utf-8')
     f_new = open("sandbox/new.txt", 'w', encoding='utf-8')
+    renamed_tap_conversions = 0
     for md5 in new_db.cache_by_md5.keys():
         new_game = new_db.cache_by_md5[md5]
         new_game_file = new_game.findFileByMD5(md5)
@@ -113,10 +114,13 @@ def diffDatabases(old_database_path, new_database_path='pokemaster.db'):
         elif new_tosec_name != old_tosec_name:
             print('Renamed:', old_record, '->', new_record)
             print(new_game.getSpectrumComputingURL())
+            if '[m tzxtools]' in new_record:
+                renamed_tap_conversions += 1
             f_old.write(old_record + '\n')
             f_new.write(new_record + '\n')
     f_old.close()
     f_new.close()
+    print("renamed tap conversions:", renamed_tap_conversions)
 
 def generateDiffFiles(old_db_name, new_db_name):
     f_old = open("sandbox/old.txt", 'r', encoding='utf-8')
@@ -135,8 +139,8 @@ def generateDiffFiles(old_db_name, new_db_name):
 
 if __name__=='__main__':
     # diffDatabases('pokemaster_v1.4-rc1.db')
-    diffDatabases('pokemaster_v1.5-alpha2.db')
-    generateDiffFiles("Old DB", "New DB")
+    diffDatabases('pokemaster_v1.5-alpha5.db')
+    # generateDiffFiles("Old DB", "New DB")
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreUnknownTypes('pokemaster_v1.3-beta6.db')
