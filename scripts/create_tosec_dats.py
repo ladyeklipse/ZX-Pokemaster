@@ -29,7 +29,7 @@ def createTOSECDATs():
     db.loadCache(force_reload=True)
     games = db.getAllGames()
     kolbeck_dict = {}
-    # games = db.getAllGames('game.zxdb_id=27')
+    # games = db.getAllGames('game.zxdb_id=35827')
     for game in games:
         kolbeck_dict[game.getWosID()] = []
         files = game.getFiles()
