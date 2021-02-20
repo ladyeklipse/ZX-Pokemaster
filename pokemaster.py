@@ -156,6 +156,13 @@ Continue only if you have a backup or uncheck "Delete source files after sorting
 Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
             if reply == QMessageBox.No:
                 return
+        if kwargs['include_supplementary_files']:
+            reply = QMessageBox.warning(self, MESSAGE_BOX_TITLE, self.tr("""Warning!
+You have checked the option "Include supplementary files". It it advised to use it only if you know what you are doing.
+Otherwise you may end up waiting for HOURS instead of MINUTES untill all your files are renamed and sorted.
+Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.No:
+                return
         kwargs['gui'] = self
         self.bar = QProgressDialog(self.tr("Sorting..."),
                               self.tr("Cancel"), 0, 0, self)
@@ -295,6 +302,8 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
             json.dump(kwargs, f, indent=4)
 
     def loadSettings(self, path='settings.json'):
+        if not os.path.exists(path):
+            path = 'default_settings/settings.json'
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 settings = json.load(f)

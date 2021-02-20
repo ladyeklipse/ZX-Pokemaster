@@ -16,7 +16,7 @@ def createInstaller(project_name, python_ver="37"):
     executable = ""
     if 'darwin' in sys.platform:
         # executable = "python3 pyinstaller-dev-2020-01-15/pyinstaller.py"
-        executable = "pyinstaller"
+        executable = "python3 pyinstaller-dev/pyinstaller.py"
     else:
         executable = "C:/python{}/scripts/pyinstaller.exe".format(python_ver)
     launch_string = executable + ' {}.spec --log-level INFO --windowed -y'.format(getExecutableName(project_name))
@@ -133,11 +133,11 @@ def createBundle(project_name, project_version, project_icon):
 
 def createDmg(project_name, project_version):
     exec_name = getExecutableName(project_name)
-    executable = "appdmg {}_dmg.json {}.dmg".format(exec_name, exec_name)
     os.system("hdiutil detach /dev/disk2")
-    os.system("rm {}.dmg".format(exec_name))
+    os.system("rm /tmp/dist-darwin/{}.dmg".format(exec_name))
+    executable = "appdmg {}_dmg.json /tmp/dist-darwin/{}.dmg".format(exec_name, exec_name)
     os.system(executable)
-    os.rename("{}.dmg".format(exec_name), "Output/{}-installer.dmg".format(getDatedName(project_name, project_version)))
+    shutil.copy("/tmp/dist-darwin/{}.dmg".format(exec_name), "Output/{}-installer.dmg".format(getDatedName(project_name, project_version)))
 
 if __name__=='__main__':
     createInstaller(PROJECT_NAME)

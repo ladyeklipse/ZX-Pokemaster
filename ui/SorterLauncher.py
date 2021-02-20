@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(500, 559)
+        Dialog.resize(500, 550)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -202,6 +202,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_8.addWidget(self.label_5)
         self.verticalLayout.addLayout(self.horizontalLayout_8)
         self.chkIncludeAlternate = QtWidgets.QCheckBox(self.tabFileFiltering)
+        self.chkIncludeAlternate.setChecked(False)
         self.chkIncludeAlternate.setObjectName("chkIncludeAlternate")
         self.verticalLayout.addWidget(self.chkIncludeAlternate)
         self.chkIncludeDemos = QtWidgets.QCheckBox(self.tabFileFiltering)
@@ -225,7 +226,7 @@ class Ui_Dialog(object):
         self.chkIncludeXRated.setObjectName("chkIncludeXRated")
         self.verticalLayout.addWidget(self.chkIncludeXRated)
         self.chkIncludeSupplementaryFiles = QtWidgets.QCheckBox(self.tabFileFiltering)
-        self.chkIncludeSupplementaryFiles.setChecked(True)
+        self.chkIncludeSupplementaryFiles.setChecked(False)
         self.chkIncludeSupplementaryFiles.setObjectName("chkIncludeSupplementaryFiles")
         self.verticalLayout.addWidget(self.chkIncludeSupplementaryFiles)
         self.chkIncludeUnknownFiles = QtWidgets.QCheckBox(self.tabFileFiltering)

@@ -197,6 +197,9 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.51
+ - Introduced a Warning message when "Include supplementary files" is checked.
+ - "Include alternate files" is on by default now.
 1.5
  - Updated POKES and added a lot of files up to 2021 to match ZXDB and TOSEC.
 1.4
