@@ -1,0 +1,161 @@
+Exolon (1987)(Hewson Consultants)(48K-128K)[h Nmi-Soft\x7f
+There is a file included in your 2020 release called 'Thunderbirds - Level 1 (1985)(Firebird).tap', however this the game by Grandslam, and not the Firebird game.  There were two games with the same title.
+Add games about Nixy by Bubblesoft.
+Make a list of "copyrighted" games released after 2000 and add them to TOSEC
+Resolve files with same MD5
+death stalker - 3D space ninja is a compilation!
+DONE Add TZX to TAP conversions with adding [m tzxtools] flag.
+
+DONE Remove (), {}, [] from publishers and authors.
+DONE Unknown/Gestao Comercial (1984)(Procompe)(pt).tzx
+DONE Unknown/Gestao Comercial (1984)(Procompe)(pt).tap
+DONE Unknown/Gestao de Stocks (1984)(Procompe)(pt).tzx
+DONE Unknown/Gestao de Stocks (1984)(Procompe)(pt).tzx
+DONE Games/Spectrum Micro Prolog T1.0 (1983)(Sinclair Research).tap - should be Applications
+
+IF game language is (ru) - automatically remove [tr ru] flag. TO HELL WITH IT
+[tr Ru] doesn't make sense at all. Should be lowercase.
+DONE General: business should go to Applications, not Unknown category.
+"Smirnov, Sergei Andreevich" -> "Smirnov, Sergei" TO HELL WITH IT
+SHOW TO EINAR renamed Hungarian "Jatekgyaros" games.
+DONE Neil Parsons: HARDCODE
+DONE Jim Bagley: HARDCODE
+
+Petris (1996)(PTsoft)(ES)(en)[И] - wrong "more data" flag.
+
+panda  7:29 PM
+@ladyeklipse your dats are all good but have a minor issue, the header/descriptor field should not contain the .dat extension but I just batch removed all that :slightly_smiling_face: Also and this doesn't matter much but my DTD structural validator complains about the order of the fields lol, date should be before author :slightly_smiling_face:
+
+- Frank Bruno's Disk Box: Disk 2 of 4? (TO HELL WITH IT)
+- Research why [re-release] tag disappears a lot (TO HELL WITH IT)
+DONE - Why Silva Soft turns into Soft, Silva? - Is person, should be nickname! (report to Einar)
+DONE - Why Nikitin, Paul turns into Paul Nikitin? - Is nickname! Should be person! (report to Einar)
+DONE - Why Dinamic turned into Dinamic Software? There was a discussion about it to omit "Software" from publisher's name. (TO HELL WITH IT)
+There must be an exception to rename Dinamic Software and Dinamic Multimedia to Dinamic, because it's the same company
+DONE - Same for Hueber Software (TO HELL WITH IT)
+- Why CyberPunks Unity (CPU) has brackets? (TO HELL WITH IT)
+DONE - Alkatraz development cartridges lost their description. - A bug in content_desc_aliases.csv. Either use old version unaltered, or fix the bug.
+DONE - Parsons, Neil -> Neil Parsons - Is nickname, should be person, report to Einar.
+DONE - Ashler, Baron -> Baron Ashler - Is nickname, should be left as is.
+DONE - Cause, Rebelstar Without a - Is person, should be nickname (report to Einar)
+- ZxZvm games got weird names (fix via content_desc_aliasWes or TO HELL WITH IT)
+DONE - Check ZX Tunes - are they (RU)(en)? - IT IS CORRECT
+DONE - Remove "," from (Source Solutions,) - Fix regex, Inc. removed, but "," is left! (report to Einar)
+- Why removed aka from Super Nudge 2000? - Should be [aka Hyper Nudge 2000], ZXDB has this name.
+Only 1 file is affected and the game is called now Supernudge 2000.
+The correct name was "Super Nudge 2000 (1989)(Mastertronic)[h San-San][aka Hyper Nudge 2000].tap"
+It's a bug in ZXDB, this game is now listed as a mod. Maybe we just make an exception for this file.
+- file_format table in ZXDB is obsolete, I should have used "extensions" table instead. BUT instead we can just rely on the list of supported extensions of Pokemaster. (TO HELL WITH IT)
+DONE - Remove brackets from authors' names (TO HELL WITH IT)
+
+DONE - Many files were not picked up by ZX Pokemaster because of deletion of file_format column.
+DONE - Some games were replaced with newer versions. I can add older versions again from a specifically made folder, because people will complain.
+I've written a script, which handles these 2 issues by restoring deleted files from previous version of Pokemaster.
+
+DONE - Deploy Mac version;
+DONE - Add InnoSetup installer;
+DONE - Scrape new pokes;
+- Ask Einar where did original_id field go, cannot run updateMods script for pokes.
+- Ask Einar to add Idiom_id for Ad Lunam downloads, based on files
+- Jim Bagley is a person, not nickname (report to Einar)
+- Ask Einar to remove ._Egghead 4 (ULA snow fixed by Ast A. Moore).tap	from /zxdb/sinclair/entries/0015866/Egghead4-EggheadEntertains(BUGFIX).tap.zip
+- Add language to legacy of the white crane: Hungarian and English
+- add machine to Old Towers
+- Add language attribute to Cousin Horace
+- F. David Thorpe looks like an alternate name writing, not a nickname.
+- Report to Einar: These are most likely games: 0031256, 0033360, 0033362, 0034702, 0034803, 0034806, 0034807, 0035214
+- This is most likely a demo: 0034758
+- Box Set compilations: 8030 is Application, 11472 is Educational, all other are games. Does ZXDB represent that?
+
+
+
+Krystyna Gromann --> Gromann, Krystyna
+Steve Baines --> Baines, Steve
+Both in game.author column
+Take care of Unknown TRDs.
+
+Integrity check algorythm.
+1. Write a universal reader for Z80, SNA and SZX based on Skoolkit's code.
+2. Convert all TAP and TZX files to Z80.
+3. Detect machine type from snapshot headers.
+ - Test out converted TAP/TZX files if they contain correct machine type
+ - If machine type is generally correct, import them into lookup table to use in TOSEC
+4. Make a database of CRC hashes of uncompressed snapshots.
+ - Calculate CRC for each 1024 bytes of each snapshot.
+5. Using Levenstein algorythm, make a table of similar files.
+ - At this stage, we need to make several different tables, using different number of similarity percentage, e. g. do we regard files as similar at 70% coincidence, or maybe 70%, or even lower it down to 60%? The table with the most consistent and reliable results wins.
+ - Thus, we determine the best value of a constant - MIN_SIMILARITY. If an unknown file is very similar to an existing one, make it derive its name with [a] flag. If there are several of such files, use the one with the highest similarity value.
+7. Make another similar table, with files of very high coincidense rates (presumably 90% and higher).
+ - Files with major [a*] numbers will go into a separate set of dats - TOSEC-DUPES, which will or will not be included in TOSEC releases - as the team decides.
+ 8. Integrate all known loading screens from ZXDB in .SCR format into TOSEC.
+ 9. Extract loading screens from unknown TAP and TZX files.
+  - If an extracted loading screen is in the database, rename the tap file accordingly.
+
+
+not relevant - 24338 - has double space in publisher name
+not relevant - North & South: always M3 as language.
+done - Hanoi Torony: SHOULD NOT be capitalized
+done - President +: The "+" symbol should not go away
+done - Manually  add [aka] for main Dizzy titles
+done - Ask in Slack about 4th disk of Enlight 2007: coinsides with ZX Chip Demos Collection 152 (19xx)(Newart)(RU)(en).scl
+and contains just one single Demo.
+done - Hardcode 4209 for "The Diamonds" of "Steve Brown" (and possibly Bill Gilbert) in lookup table.
+done - Fix "The" in the game name
+done - For multipublisher games - store BOTH/ALL publishers, possibly as an array, sort alphabetically upon adding to pokemaster.db
+done - Store publishers and authors separately in pokemaster.db
+done - Add {Author} tag in sorter
+done - bug: 9332 Author should be Eldridge, Jon Paul - Oliver Twins, The
+done - bug: 4559 Author should contain Orpheus + 3 other devs
+not relevant - If team is affiliated with independent authors, teams should be shown first, e. g. Orpheus - Lewis, John - Martin, Ian - Redmond, Damon
+done - Do not rename unknown files by default
+done - Add bitcoin credentials in Pokemaster's UI
+done - Rename unknown files with same names, giving them {FileName}_{N} pattern
+done - Retain original folder structure for unknown files (optional)
+ - bundle Pokemaster with common archivers, so it can unrar, un7z, untargz etc.
+done - Option to loosen restriction of avoiding >700K archives
+ - Add ZX80/ZX81 support to ZX Pokemaster
+ - Start managing ZX81 section of TOSEC
+ - deduplicate Z80 files
+ http://www.worldofspectrum.org/faq/reference/z80format.htm
+ - deduplicate sna files
+ - deduplicate tap files
+ - deduplicate tzx files
+ - deduplicate scl files
+ - deduplicate szx files
+
+done 1. WoS scraper.
+done 2. Dump WoS with game info, game files, game screenshots and splash screens.
+done 3. Unzip all files into a separate folder (to retain original zip files as is).
+3.1. Convert ALL tzx files to tap. If a tap file with same name exists, rename to ".tzx.tap".
+Needed because tzx2tap does not always provide the same tap file as can be found on the game's page on WoS.
+done 4. Calculate MD5 hashes for files.
+done 5. Replicate POK file structure via classes.
+done 6. Tipshop scraper.
+done 7. Dump the-tipshop.co.uk by game_wos_id.
+? 8. Write CLI tool to extract .POKs from database and place near every file in a given directory (recursively) OR in pokes folder.
+done 9. Sort files by alphabetical letters.
+done 10. Rename files in accordance to TOSEC.
+? 11. Search for ZX Spectrum files in user-defined locations as well as Documents, Desktop and Downloads folders and MOVE them to collection folder.
+? 12. Autodetect DivIDE/DivMMC-enabled flash card and fill it with files.
+? 13. Use JustSCR to convert screenshots to .scr files (for future usage on DivIDE/DivMMC)
+
+FILE ENTRY SEARCH ALGORYTHM:
+1. Try to find by md5.
+2. Try to create game name from filename:
+ - remove extension;
+ - CamelCase to spaces;
+ - Open text in brackets:
+	- If text is int and >=1980 and <= current year -> retrieve game year;
+	- If text is 2-letter string -> retrieve game language;
+	- if text is string -> retrieve game publisher;
+	- If text is like "Part X" or "Side A", "Side B" -> retrieve game part.
+3. Try to find by game name.
+4. If no game name found, give up.
+5. If more than 1 game found, try to use the longest game name.
+6. If several titles with the same name AND game year retrieved, compare years.
+7. If title and date is same AND game publisher retrieved, compare publishers.
+Return game_wos_id.
+
+FAR FUTURE:
+Write a similar utility for other game systems of interest.
+For other games systems I will write a tool named "Universal TOSEC Sorter", which will not have a thorough database, but will be able to sort files in a similar way.
