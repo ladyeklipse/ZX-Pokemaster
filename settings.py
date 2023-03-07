@@ -6,7 +6,7 @@ LOCAL_FTP_ROOT = 'ftp'
 WOS_SITE_ROOT = 'http://www.worldofspectrum.org'
 WOS_MIRRORS = [
     'https://archive.org/download/World_of_Spectrum_June_2017_Mirror/World%20of%20Spectrum%20June%202017%20Mirror.zip/World%20of%20Spectrum%20June%202017%20Mirror',
-    'http://spectrumcomputing.co.uk',
+    'https://spectrumcomputing.co.uk',
 ]
 WOS_GAME_FILES_DIRECTORY = 'pub/sinclair/games'
 WOS_TRDOS_GAME_FILES_DIRECTORY = 'pub/sinclair/trdos/games'

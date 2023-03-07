@@ -1,9 +1,20 @@
-Exolon (1987)(Hewson Consultants)(48K-128K)[h Nmi-Soft\x7f
-There is a file included in your 2020 release called 'Thunderbirds - Level 1 (1985)(Firebird).tap', however this the game by Grandslam, and not the Firebird game.  There were two games with the same title.
-Add games about Nixy by Bubblesoft.
-Make a list of "copyrighted" games released after 2000 and add them to TOSEC
-Resolve files with same MD5
-death stalker - 3D space ninja is a compilation!
+ - If a file has got a ZXDB record, it should have preference over other files in TOSEC, thus not gaining an [a] marker
+ - Test pokes for koronis rift.
+ - Make pokemaster treat the latest TOSEC release as the default rather than rely on 2017 version
+ - remove duplicate information from game description (after "-")
+ - Файл "Cauldron (1985)(Palace).tap" возможно не оригинал, а чей-то хак
+ - Файл "Nether Earth (1987)(Argus Press).tap" является не оригинальной версии игры, а кем-то русифицированной.
+ - Файл "Renegade (1987)(Imagine)(48K-128K).tap" является другой игрой - "Target - Renegade"
+ - Comando Quatro (1989)(Zigurat)(ES).tzx является другой игрой - Comando Tracer
+
+ - Add miclanhehtle's Sinclair 2021 files.
+
+ - Exolon (1987)(Hewson Consultants)(48K-128K)[h Nmi-Soft\x7f
+ - There is a file included in your 2020 release called 'Thunderbirds - Level 1 (1985)(Firebird).tap', however this the game by Grandslam, and not the Firebird game.  There were two games with the same title.
+ - Add games about Nixy by Bubblesoft.
+ - Make a list of "copyrighted" games released after 2000 and add them to TOSEC
+ - Resolve files with same MD5
+ - death stalker - 3D space ninja is a compilation!
 DONE Add TZX to TAP conversions with adding [m tzxtools] flag.
 
 DONE Remove (), {}, [] from publishers and authors.
@@ -13,8 +24,8 @@ DONE Unknown/Gestao de Stocks (1984)(Procompe)(pt).tzx
 DONE Unknown/Gestao de Stocks (1984)(Procompe)(pt).tzx
 DONE Games/Spectrum Micro Prolog T1.0 (1983)(Sinclair Research).tap - should be Applications
 
-IF game language is (ru) - automatically remove [tr ru] flag. TO HELL WITH IT
-[tr Ru] doesn't make sense at all. Should be lowercase.
+ - IF game language is (ru) - automatically remove [tr ru] flag.
+ - [tr Ru] doesn't make sense at all. Should be lowercase.
 DONE General: business should go to Applications, not Unknown category.
 "Smirnov, Sergei Andreevich" -> "Smirnov, Sergei" TO HELL WITH IT
 SHOW TO EINAR renamed Hungarian "Jatekgyaros" games.

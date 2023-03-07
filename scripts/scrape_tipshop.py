@@ -16,7 +16,7 @@ def getWosIDsOfTipshopGames(db=None):
     db = db if db else Database()
     db.loadCache()
     letters = ['0123']+[x for x in 'abcdefghijklmnopqrstuvwxyz']
-    # letters='g'
+    # letters='d'
     missing_data = []
     for letter in letters:
         urls = ts.getList(letter)
@@ -30,7 +30,12 @@ def getWosIDsOfTipshopGames(db=None):
                     print('Game found:', wos_game_data, game)
                     zxdb_ids_tipshop_pages_pairs.append((url, game.zxdb_id))
                 elif wos_game_data:
-                    missing_data.append(wos_game_data)
+                    game = Game(wos_game_data, zxdb_id=99999999)
+                    game.tipshop_page = url
+                    ts.scrapePokes(game)
+                    if game.cheats:
+                        missing_data.append(wos_game_data)
+    print("MISSING ZXDB IDS:")
     print('\n'.join(missing_data))
     return zxdb_ids_tipshop_pages_pairs
 
@@ -93,8 +98,8 @@ def getAllPokes(zxdb_ids=[]):
 def updateMods():
     zxdb = ZXDBScraper()
     zxdb.cur.execute('''
-    SELECT id, original_id FROM entries
-    WHERE is_mod=1;
+    SELECT entry_id as id, original_id FROM relations
+    WHERE relationtype_id='m';
     ''')
     db = Database()
     for mod in zxdb.cur:
@@ -200,6 +205,6 @@ if __name__=='__main__':
     # xlsx2db()
     #SECOND PART (after new_tipshop_pokes.xlsx edited and MANUALLY renamed to pokes.xlsx)
     xlsx2db()
-    # updateMods()
+    updateMods()
     extractPokFiles()
     createPOKTOSECDat()

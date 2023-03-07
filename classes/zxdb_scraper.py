@@ -139,6 +139,7 @@ class ZXDBScraper():
     def getGames(self, sql_where='', sql_limit=9999999):
         sql = 'SELECT entries.id AS zxdb_id, ' \
               'releases.release_seq AS release_seq, ' \
+              'releases.publisher AS release_publisher, ' \
               'entries.title AS name, ' \
               'entries.library_title AS tosec_compliant_name, ' \
               'entries.is_xrated AS x_rated, ' \
@@ -175,8 +176,9 @@ class ZXDBScraper():
               'LEFT JOIN downloads ON downloads.entry_id=entries.id AND downloads.release_seq=releases.release_seq ' \
               'LEFT JOIN tmp_publishers ON (tmp_publishers.entry_id=entries.id AND tmp_publishers.release_seq=releases.release_seq)' \
               'LEFT JOIN labels AS publisher_labels ON publisher_labels.id=tmp_publishers.label_id ' \
-              'LEFT JOIN compilations ON compilations.entry_id=entries.id '\
-              'LEFT JOIN publishers AS compilation_publishers ON compilation_publishers.entry_id=compilations.compilation_id ' \
+              'LEFT JOIN contents ON contents.entry_id=entries.id '\
+              'LEFT JOIN publishers AS compilation_publishers ON ' \
+              'compilation_publishers.entry_id=contents.container_id ' \
               'LEFT JOIN labels AS compilation_publisher_labels ON compilation_publisher_labels.id=compilation_publishers.label_id ' \
               'LEFT JOIN authors ON authors.entry_id=entries.id  ' \
               'LEFT JOIN labels AS author_labels ON author_labels.id=authors.label_id  ' \
@@ -213,6 +215,9 @@ class ZXDBScraper():
                     row['genre'] = 'Compilation - Games'
             # if not row['publisher'] and row['release_seq'] == 0:
             #     row['publisher'] = row['compilation_publisher_name']
+            if not row['publisher']:
+                row['publisher'] = row['release_publisher']
+                print(row['publisher'])
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['author_team']:
@@ -480,7 +485,7 @@ class ZXDBScraper():
                     if os.path.exists(local_path) and \
                             os.path.getsize(local_path) != file.size_zipped:
                         print('wrong file size after download:', local_path)
-                    time.sleep(.5)
+                    # time.sleep(.5)
                 except:
                     print(traceback.format_exc())
 

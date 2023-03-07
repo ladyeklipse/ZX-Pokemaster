@@ -91,7 +91,7 @@ class TOSECScraper():
     def generateTOSECPathsArrayFromDatFiles(self, dat_files=[]):
         paths = []
         if not dat_files:
-            root, dirs, files = next(os.walk('tosec\\official dats'))
+            root, dirs, files = next(os.walk('tosec\\2017 official dats'))
             dat_files = [file for file in files if file.endswith('.dat')]
         else:
             root = ''
@@ -157,7 +157,7 @@ class TOSECScraper():
         current_game = None
         current_tosec_name = ''
         for i, file_path in enumerate(self.paths):
-            # print(file_path)
+            # print('file_path=', file_path)
             if type(file_path)==str:
                 game_file = self.getGameFileFromFilePath(file_path)
             elif type(file_path)==dict:
@@ -178,7 +178,7 @@ class TOSECScraper():
                     games_found += 1
                 current_game.files = []
                 current_game = None
-                if games_found % 1000 == 0:
+                if games_found and games_found % 1000 == 0:
                     print('Committing ', games_found)
                     self.db.commit()
             if not current_game:
@@ -228,7 +228,7 @@ class TOSECScraper():
                          file_tosec_name))
                 else:
                     current_release.addFile(game_file)
-                # print(game_file.game)
+                # print('game_File.game=',game_file.game)
                 self.addGameToLocalDB(current_game)
         self.addGameToLocalDB(current_game)
         self.db.commit()
@@ -266,7 +266,7 @@ class TOSECScraper():
                 game_names.append(game_name)
         game_names = sorted(set(game_names))
         for game_name in game_names:
-            print(game_name)
+            print(f'game_name={game_name}')
         print('Total:', len(self.paths), 'Unscraped files:', len(unscraped_paths),
               'Games with unscraped files:', len(game_names))
         return unscraped_paths

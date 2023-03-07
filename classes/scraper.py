@@ -35,8 +35,8 @@ class Scraper(object):
     parent = None
     session = None
     login_url = None
-    min_timeout_between_requests = 0
-    max_timeout_between_requests = 0.1
+    min_timeout_between_requests = .1
+    max_timeout_between_requests = 1
     webdriver = 'requests'
 
     def __init__(self, parent=None,
