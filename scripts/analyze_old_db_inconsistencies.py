@@ -44,6 +44,10 @@ def restoreDeletedFiles(old_database_path):
             if zxdb_id not in new_db.cache_by_zxdb_id:
                 print("GAME ", zxdb_id, "WAS DELETED")
                 continue
+            if row[2]: #wos_name is present:
+                row.insert(16, 0) #priority=0
+            else:
+                row.insert(16,1) #priority=1
             sql = "INSERT INTO game_file VALUES " \
                   "({})".format(','.join(['?'] * len(row)))
             new_db.cur.execute(sql, row)

@@ -13,37 +13,43 @@ def get_win_friendly_alias(alias):
     win_friendly_alias = filepath_regex.sub('-', alias)
     return win_friendly_alias
 
+CURRENCY_IDS_TO_CHARACTERS = {
+    'USD':'$',
+    'EUR':'€',
+    'GBP':'£'
+    }
+
 IDIOM_IDS_TO_TOSEC_LANGS = {
-    '?0':'en-hr',
-    '?1':'cz-en',
-    '?2':'en-nl',
-    '?3':'de-en',
-    '?4':'en-pl',
-    '?5':'en-pt',
-    '?6':'en-ru',
-    '?7':'en-sk',
-    '?8':'en-es',
-    '?9':'ca-es',
-    '?a':'M3',
-    '?b':'M3',
-    '?c':'M5',
-    '?d':'M5',
-    '?e':'M3',
-    '?f':'M4',
-    '?g':'M3',
-    '?h':'M4',
-    '?i':'M4',
-    '?j':'es-la',
-    '?k':'en-fr',
-    '?l':'M4',
-    '?m':'M4',
-    '?n':'M6',
-    '?o':'M3',
-    '?p':'M5',
-    '?q':'M6',
-    '?r':'M3',
-    '?s':'M8',
-    '?t':'en-it'
+    '!0':'en-hr',
+    '!1':'cz-en',
+    '!2':'en-nl',
+    '!3':'de-en',
+    '!4':'en-pl',
+    '!5':'en-pt',
+    '!6':'en-ru',
+    '!7':'en-sk',
+    '!8':'en-es',
+    '!9':'ca-es',
+    '!a':'M3',
+    '!b':'M3',
+    '!c':'M5',
+    '!d':'M5',
+    '!e':'M3',
+    '!f':'M4',
+    '!g':'M3',
+    '!h':'M4',
+    '!i':'M4',
+    '!j':'es-la',
+    '!k':'en-fr',
+    '!l':'M4',
+    '!m':'M4',
+    '!n':'M6',
+    '!o':'M3',
+    '!p':'M5',
+    '!q':'M6',
+    '!r':'M3',
+    '!s':'M8',
+    '!t':'en-it'
 }
 
 class RowConverter(connector.conversion.MySQLConverter):
@@ -69,24 +75,6 @@ class ZXDBScraper():
                                 )
         self.cur = self.conn.cursor(dictionary=True, buffered=True)
         self.loadLookupTables()
-
-#     def createTemporaryTables(self):
-#         sql = '''
-#         create table tmp_publishers(
-#   entry_id int(11) not null,
-#   release_seq smallint(6) NOT NULL,
-#   publisher_seq smallint(6) NOT NULL,
-#   label_id int(11) not null,
-#   primary key(entry_id,release_seq,publisher_seq),
-#   CONSTRAINT fk_tmp_entry FOREIGN KEY (entry_id) REFERENCES entries(id),
-#   CONSTRAINT fk_tmp_label FOREIGN KEY (label_id) REFERENCES labels(id)
-# );
-#
-# insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select entry_id, release_seq, publisher_seq, label_id from publishers);
-#
-# insert into tmp_publishers(entry_id, release_seq, publisher_seq, label_id) (select c.entry_id, 0, p.publisher_seq, p.label_id from compilations c inner join entries e on c.compilation_id = e.id inner join publishers p on p.entry_id = e.id and p.release_seq = 0 where c.is_original = 1 and c.entry_id not in (select entry_id from tmp_publishers where release_seq = 0) group by c.entry_id, p.publisher_seq, p.label_id);'''
-#         self.cur.execute(sql, multi=True)
-#         self.conn.commit()
 
     def loadLookupTables(self):
         self.file_exclusion_list = []
@@ -169,7 +157,10 @@ class ZXDBScraper():
               'author_teams_labels.name AS author_team, ' \
               'author_teams_labels.labeltype_id AS author_team_type, ' \
               'releases.release_year AS year,' \
-              'publisher_labels.country_id AS country ' \
+              'publisher_labels.country_id AS country, ' \
+              'support_dev.link AS publisher_url, ' \
+              'support_dev.currency_id AS currency_id, ' \
+              'support_dev.release_price AS price ' \
               'FROM entries ' \
               'LEFT JOIN webrefs ON entries.id=webrefs.entry_id AND webrefs.website_id=9 ' \
               'LEFT JOIN releases ON entries.id=releases.entry_id ' \
@@ -189,6 +180,7 @@ class ZXDBScraper():
               'LEFT JOIN machinetypes download_machinetype ON download_machinetype.id=downloads.machinetype_id ' \
               'LEFT JOIN machinetypes entry_machinetype ON entry_machinetype.id=entries.machinetype_id ' \
               'LEFT JOIN schemetypes ON schemetypes.id=downloads.schemetype_id   ' \
+              'LEFT JOIN support_dev ON entries.id=support_dev.id   ' \
               'WHERE (entries.id>4000000 OR entries.id<2000000) AND ' \
               '(downloads.filetype_id IS NULL OR downloads.filetype_id!=-1) and '\
               '(authors.author_seq<=3 OR authors.author_seq IS NULL) '
@@ -213,8 +205,6 @@ class ZXDBScraper():
                     row['genre'] = 'Compilation - Educational'
                 else:
                     row['genre'] = 'Compilation - Games'
-            # if not row['publisher'] and row['release_seq'] == 0:
-            #     row['publisher'] = row['compilation_publisher_name']
             if not row['publisher']:
                 row['publisher'] = row['release_publisher']
                 print(row['publisher'])
@@ -321,6 +311,9 @@ class ZXDBScraper():
         game = Game(game_name, int(row['zxdb_id']))
         publisher = self.publisherNameFromRow(row)
         game.setPublisher(publisher)
+        game.publisher_url = row['publisher_url']
+        if row['price']:
+            game.price = CURRENCY_IDS_TO_CHARACTERS[row['currency_id']] + f"{row['price']:.02f}"
         try:
             author = self.authorNameFromRow(row)
         except:
@@ -457,12 +450,15 @@ class ZXDBScraper():
         if row['file_version'] and row['file_version'].lower().startswith('v') \
                 and row['file_version'][1].isdigit():
             game_file.content_desc = ' '+remove_brackets_regex.sub('', row['file_version']).strip()
-
+        game_file.priority = 0
         return game_file
 
     def downloadMissingFilesForGames(self, games):
         print("Downloading missing files...")
         s = Scraper()
+        #spectrumcomputing.co.uk bans IP if less than 10 seconds pass between 2 download requests.
+        s.min_timeout_between_requests = 10
+        s.max_timeout_between_requests = 10
         for game in games:
             for file in game.getFiles():
                 local_path = file.getLocalPath()

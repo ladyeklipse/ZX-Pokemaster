@@ -51,6 +51,7 @@ class GameFile(object):
     file_is_alone_in_archive = False
     file_in_archive = None
     # alt_files_in_archives = []
+    priority = 1
 
     def __init__(self, path='', size=0, game=None, release=None,
                  source=None):

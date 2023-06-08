@@ -42,6 +42,8 @@ class Game(object):
     has_new_pokes = False
     tipshop_multiface_pokes_section = ''
     pok_file_contents = ''
+    publisher_url = ''
+    price = ''
 
     def __init__(self, name='', zxdb_id=0, db=None):
         self.setName(name)

@@ -429,11 +429,12 @@ class TestSorter(unittest.TestCase):
         if os.path.exists(s.output_location):
             shutil.rmtree(s.output_location)
         s.sortFiles()
-        expected_file = s.output_location+'/Groot, H. de/Spectrum Automatic Copier/Spectrum Automatic Copier (1985)(Groot, H. de).z80'
+        expected_file = s.output_location+'/Groot, Henk de/Spectrum Automatic Copier/Spectrum Automatic Copier (' \
+                                          '1985)(Groot, Henk de)[aka Autocopy].z80'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/Creative Radical Alternative\Super Advanced Lawnmower Simulator Adventure 2 - The Sequel/Super Advanced Lawnmower Simulator Adventure 2 - The Sequel (1993)(Creative Radical Alternative).tap'
         self.assertTrue(os.path.exists(expected_file))
-        expected_file = s.output_location+'/Proxima/Fuxoft Uvadi/Fuxoft Uvadi... (1992)(Proxima)(CZ)(en).tzx'
+        expected_file = s.output_location+'/Proxima/Fuxoft Uvadi/Fuxoft Uvadi... (1992)(Proxima)(CZ).tzx'
         self.assertTrue(os.path.exists(expected_file))
         expected_file = s.output_location+'/Zenobi\Why is the World Round Anyway\Why is the World Round Anyway ... (demo) (1995)(Zenobi)(Side B).tzx'
         self.assertTrue(os.path.exists(expected_file))
@@ -587,10 +588,11 @@ class TestSorter(unittest.TestCase):
         self.assertFalse(os.path.exists(unwanted_location))
         for root, dirs, files in os.walk(output_location):
             self.assertGreater(len(dirs)+len(files), 0)
-            self.assertLessEqual(len(files), s.max_files_per_folder)
-            if len(dirs)>s.max_files_per_folder:
+            self.assertLessEqual(len(files), s.max_files_per_folder+1)
+            if len(dirs)>s.max_files_per_folder+1:
                 print(root)
-            self.assertLessEqual(len(dirs), s.max_files_per_folder)
+            #+1 accounts for possible POKES subfolder
+            self.assertLessEqual(len(dirs), s.max_files_per_folder+1)
 
     def test_files_by_language_per_folder(self):
         input_location = 'tests/files/sort_files_by_language_per_folder_in'
@@ -895,7 +897,8 @@ class TestSorter(unittest.TestCase):
             shutil.rmtree(s.output_location)
         s.sortFiles()
         self.assertFileExists('tests/files/sort_other_archives_out/Zaxxon (1985)(U.S. Gold).tap')
-        self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)(Barskiy, Evgeniy - Origin, Oleg - Ponomarjov, Dmitri)(128K)(RU)(en)[v1.0.4].tap')
+        self.assertFileExists('tests/files/sort_other_archives_out/Crystal Kingdom Dizzy 2017 v1.0.4 (2017-04-15)('
+                              'Barskiy, Evgeniy)(128K)(RU)(en).tap')
         self.assertFileExists('tests/files/sort_other_archives_out/Arkos (1988)(Zigurat)(ES)(Part 1 of 3).z80')
         self.assertFileExists('tests/files/sort_other_archives_out/Unknown files/LASTHERO.TRD')
         self.assertFileExists('tests/files/sort_other_archives_out/Unknown files/SPCOM9 - alt.TAP')

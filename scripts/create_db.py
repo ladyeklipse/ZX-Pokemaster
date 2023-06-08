@@ -35,7 +35,7 @@ def scrapeZXDB(download_missing=True):
     shutil.copy('pokemaster.db', 'zxdb/pokemaster_zxdb_only.db')
 
 if __name__=='__main__':
-    scrapeZXDB(download_missing=False)
+    scrapeZXDB(download_missing=True)
     import scrape_tosec
     restoreDeletedFiles('pokemaster_v1.4-rc1.db')
     import scripts.create_tosec_dats

@@ -127,7 +127,9 @@ class Database():
                   game.availability,
                   game.tipshop_page,
                   game.getPokFileContents(),
-                  game.tipshop_multiface_pokes_section]
+                  game.tipshop_multiface_pokes_section,
+                  game.publisher_url,
+                  game.price]
         sql = "INSERT OR REPLACE INTO game VALUES " \
               "({})".format(','.join(['?']*len(values)))
         self.cur.execute(sql, values)
@@ -169,6 +171,7 @@ class Database():
                           file.language,
                           file.mod_flags,
                           file.notes,
+                          file.priority,
                           file.getMD5(),
                           file.getCRC32(),
                           file.getSHA1()
