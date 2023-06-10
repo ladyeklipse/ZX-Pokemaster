@@ -1,24 +1,35 @@
- - add a column to pokemaster.db: game_file.priority. Set to 0 if wos_name exists. This file shouldn't get [a] flag.
- - add game.publisher_url (mostly to itch.io, zxonline and the likes) and game.price (string with currency ID)
- - add a possibility to generate an HTML page with game names, prices and publisher URLs for sorted game files.
- - Sort out multilanguage games again (starting with !)
- - prevent Moved and renamed: Applications/Devast Ace II (1992)(Proxima)(CZ)(en).tap -> Games/ZZZ-UNK-devastac (19xx)(-).tap
- - If a file has got a ZXDB record, it should have preference over other files in TOSEC, thus not gaining an [a] marker
+ - generate missing tap files with tzxtools
+done - Remove unicode from game names, publishers and authors!
+ (Games/Logik (1984)(Pobříslo, Jiří)(CZ).tap is wrong)
+ done - Krakout renamed to Krakout II (PL)(en). Seems not right.
+(Krakout II is a MOD of Krakout)
+ - Death Zone got "country" field = "RU". Why? Same for "Egghead to the rescue"
+ - Same for Games/Dicey (1985)(ZX Computing)(RU)(en).tap
+ - Games/Specimen II - The Apple Quest (1991)(Remsoft Arcade Designs)(RU)(en)[Crash Covertape].z80
+ - Games/Rana-Real (1985)(Libreria de Software Spectrum issue 05)(RU)[aka Saper].trd
+ - Games/Dizzy 3 and a Half (1991)(Crash issue 84 - Presents 20)(48K-128K)(RU)(en)[Crash Covertape].tap
+ - Games/Ethnipod (1991)(Your Sinclair issue 65 - Magnificent Seven 2)(128K)(RU)(en).z80
+done and removed - add a column to pokemaster.db: game_file.priority. Set to 0 if wos_name exists. This file shouldn't get [a] flag.
+done - add game.publisher_url (mostly to itch.io, zxonline and the likes) and game.price (string with currency ID)
+won't do - add a possibility to generate an HTML page with game names, prices and publisher URLs for sorted game files.
+done - Sort out multilanguage games again (starting with !)
+done - prevent Moved and renamed: Applications/Devast Ace II (1992)(Proxima)(CZ)(en).tap -> Games/ZZZ-UNK-devastac (19xx)(-).tap
+done - If a file has got a ZXDB record, it should have preference over other files in TOSEC, thus not gaining an [a] marker
  - Test pokes for koronis rift.
 won't do - Make pokemaster treat the latest TOSEC release as the default rather than rely on 2017 version (too complex)
  - remove duplicate information from game description (after "-")
  УДАЛИТЬ ЭТИ ФАЙЛЫ ИЗ REVIEWED FILES:
- - Файл "Cauldron (1985)(Palace).tap" возможно не оригинал, а чей-то хак
- - Файл "Nether Earth (1987)(Argus Press).tap" является не оригинальной версии игры, а кем-то русифицированной.
- - Файл "Renegade (1987)(Imagine)(48K-128K).tap" является другой игрой - "Target - Renegade"
- - Comando Quatro (1989)(Zigurat)(ES).tzx является другой игрой - Comando Tracer
+done - Файл "Cauldron (1985)(Palace).tap" возможно не оригинал, а чей-то хак
+done - Файл "Nether Earth (1987)(Argus Press).tap" является не оригинальной версии игры, а кем-то русифицированной.
+done - Файл "Renegade (1987)(Imagine)(48K-128K).tap" является другой игрой - "Target - Renegade"
+done - Comando Quatro (1989)(Zigurat)(ES).tzx является другой игрой - Comando Tracer
 
- - Add miclanhehtle's Sinclair 2021 files.
+done - Add miclanhehtle's Sinclair 2021 files.
 
- - Exolon (1987)(Hewson Consultants)(48K-128K)[h Nmi-Soft\x7f
+done - Exolon (1987)(Hewson Consultants)(48K-128K)[h Nmi-Soft\x7f
  - There is a file included in your 2020 release called 'Thunderbirds - Level 1 (1985)(Firebird).tap', however this the game by Grandslam, and not the Firebird game.  There were two games with the same title.
 done - Add games about Nixy by Bubblesoft.
- - Make a list of "copyrighted" games released after 2000 and add them to TOSEC
+done - Make a list of "copyrighted" games released after 2000 and add them to TOSEC
  - Resolve files with same MD5
  - death stalker - 3D space ninja is a compilation!
 DONE Add TZX to TAP conversions with adding [m tzxtools] flag.

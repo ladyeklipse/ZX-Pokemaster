@@ -966,6 +966,30 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists(os.path.join(s.input_locations[0], 'non speccy related stuff'))
         self.assertFileNotExists(os.path.join(s.input_locations[0], 'subdir'))
 
+    # def test_sort_alternate_files(self):
+    #     '''
+    #     The [a] parameter is assigned randomly in ZX Pokemaster sorting. It is really only important for TOSEC.
+    #     '''
+    #     s = Sorter(cache=False,
+    #                include_alternate=True)
+    #     s.input_locations = [
+    #         'tests/files/sort_alternate_files_in/',
+    #         ]
+    #     s.output_location = 'tests/files/sort_alternate_files_out/'
+    #     s.sortFiles()
+    #     self.assertFileExists('tests/files/sort_alternate_files_out/Licence to Kill (1989)(Domark)(48K-128K).tap')
+    #     self.assertFileExists('tests/files/sort_alternate_files_out/Licence to Kill (1989)(Domark)(48K-128K)[a].tap')
+    #     for root, dirs, files in os.walk(s.output_location):
+    #         for file in files:
+    #             if file.endswith('.pok'):
+    #                 continue
+    #             gf = GameFile(os.path.join(root, file))
+    #             if '[a]' in file:
+    #                 expected_crc = 'bfe04de9'
+    #             else:
+    #                 expected_crc = '8b0de117'
+    #             self.assertEqual(gf.getCRC32(), expected_crc)
+
     # def test_sorting_withing_same_folder(self):
     #     s = Sorter(cache=False,
     #                delete_source_files=True,

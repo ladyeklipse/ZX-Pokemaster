@@ -26,15 +26,19 @@ def updateROMVaultDATs():
 def createTOSECDATs():
     dats_files = {}
     db = Database()
-    db.loadCache(force_reload=True)
-    games = db.getAllGames()
+    # db.loadCache(force_reload=True)
+    # games = db.getAllGames()
     kolbeck_dict = {}
-    # games = db.getAllGames('game.zxdb_id=35827')
+    games = db.getAllGames()
     for game in games:
+        if game.getYear()>'2020' and game.availability=='S':
+            print("Skipping", game)
+            continue
         kolbeck_dict[game.getWosID()] = []
         files = game.getFiles()
         files = sorted(files, key = lambda file:
-        (file.tosec_path.startswith('Sinclair ZX Spectrum'),
+        (not file.wos_name,
+         file.tosec_path.startswith('Sinclair ZX Spectrum'),
          str(len(re.findall('\[a[0-9]{1,}\]', file.tosec_path))),
          '[a]' in file.tosec_path,
          file.wos_path,
@@ -65,6 +69,6 @@ def createTOSECDATs():
             for filepath in kolbeck_dict[game_zxdb_id]:
                 f.write(';'.join((game_zxdb_id, filepath))+'\n')
 
-createTOSECDATs()
+# createTOSECDATs()
 createPOKTOSECDat()
 updateROMVaultDATs()

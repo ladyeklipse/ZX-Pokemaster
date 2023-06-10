@@ -143,7 +143,6 @@ class Sorter():
         tosec_compliant = \
             self.output_filename_structure==TOSEC_COMPLIANT_FILENAME_STRUCTURE or \
             self.output_filename_structure=='{TOSECName}'
-        #TODO: sort input files by putting ones with known wos_name first!
         for i, file_path in enumerate(input_files):
             if self.should_cancel:
                 break

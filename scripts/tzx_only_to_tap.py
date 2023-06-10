@@ -7,9 +7,9 @@ if (os.getcwd().endswith('scripts')):
 
 from classes.database import *
 
-db = Database('pokemaster_v1.5-alpha3.db')
-# games = db.getAllGames()
-games = db.getAllGames("game.zxdb_id=2176")
+db = Database('pokemaster.db')
+games = db.getAllGames()
+# games = db.getAllGames("game.zxdb_id=2176")
 print(len(games))
 conversion_list = {}
 for game in games:
@@ -23,7 +23,7 @@ for game in games:
         elif game_file.format == 'tzx':
             tzx_found = True
     if tzx_found and not tap_found:
-        # print("TZX without TAP found:", game)
+        print("TZX without TAP found:", game)
         for game_file in game.getFiles():
             if game_file.format == 'tzx':
                 # if game_file.wos_path:
@@ -53,9 +53,7 @@ for game in games:
                                      game_file.getOutputName("{Type}\\{TOSECName}").replace('.tzx', '[m tzxtools].tap'))
                 # print(value)
                 conversion_list[key]=value
-# print(conversion_list)
 print(len(conversion_list))
-# sys.exit()
 existing_tap_convertions = [value for value in conversion_list.values() if os.path.exists(value)]
 for root, dirs, files in os.walk("tosec\\reviewed files\\tzx2tap"):
     for file in files:
@@ -63,7 +61,7 @@ for root, dirs, files in os.walk("tosec\\reviewed files\\tzx2tap"):
         for value in existing_tap_convertions:
             if os.path.abspath(path)==os.path.abspath(value):
                 print("Should delete", value)
-sys.exit()
+# sys.exit()
 for key, value in conversion_list.items():
     os.makedirs(os.path.dirname(value), exist_ok=True)
     if os.path.exists(value):

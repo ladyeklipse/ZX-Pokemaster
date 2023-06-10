@@ -7,6 +7,7 @@ from classes.scraper import *
 from functions.game_name_functions import *
 from mysql import connector
 import time
+from unidecode import unidecode
 
 def get_win_friendly_alias(alias):
     alias = ' '.join([x for x in alias.replace(':', ' : ').split(' ') if x])
@@ -19,38 +20,68 @@ CURRENCY_IDS_TO_CHARACTERS = {
     'GBP':'£'
     }
 
-IDIOM_IDS_TO_TOSEC_LANGS = {
-    '!0':'en-hr',
-    '!1':'cz-en',
-    '!2':'en-nl',
-    '!3':'de-en',
-    '!4':'en-pl',
-    '!5':'en-pt',
-    '!6':'en-ru',
-    '!7':'en-sk',
-    '!8':'en-es',
-    '!9':'ca-es',
-    '!a':'M3',
-    '!b':'M3',
-    '!c':'M5',
-    '!d':'M5',
-    '!e':'M3',
-    '!f':'M4',
-    '!g':'M3',
-    '!h':'M4',
-    '!i':'M4',
-    '!j':'es-la',
-    '!k':'en-fr',
-    '!l':'M4',
-    '!m':'M4',
-    '!n':'M6',
-    '!o':'M3',
-    '!p':'M5',
-    '!q':'M6',
-    '!r':'M3',
-    '!s':'M8',
-    '!t':'en-it'
+MAGAZINES_COUNTRIES = {
+    'Sinclair User':"GB",
+    'C&VG':'GB',
+    'Computer Gamer':'GB',
+    'Your Sinclair':'GB',
+    'Your Computer':'GB',
+    'VideoSpectrum':'GB',
+    'Stars Spectrum':'GB',
+    'Special Playgames':'GB',
+    'Joystick':'GB',
+    'Outlet':'GB',
+    'Ordenador Educativo':'ES',
+    'MicroHobby':'ES',
+    'Libreria de Software':'ES',
+    'Crash':'GB',
+    "Load 'n' Run":'IT',
+    "Spectrum Load'n'Run":'ES',
+    '48K':'ES',
+    'Espectro':'BR'
 }
+
+IDIOM_IDS_TO_TOSEC_LANGS = {
+    '01':'M3',
+    '02':'M4',
+    '03':'ca-es',
+    '04':'hr-en',
+    '05':'cs-en',
+    '06':'M6',
+    '07':'M4',
+    '08':'M3',
+    '09':'cs-sk',
+    '10':'nl-en',
+    '11':'M3',
+    '12':'en-fr',
+    '13':'M3',
+    '14':'M7',
+    '15':'M8',
+    '16':'M6',
+    '17':'M5',
+    '18':'M3',
+    '19':'en-de',
+    '20':'M4',
+    '21':'M6',
+    '22':'M4',
+    '23':'en-hu',
+    '24':'en-it',
+    '25':'M5',
+    '26':'M3',
+    '27':'en-pl',
+    '28':'M4',
+    '29':'en-pt',
+    '30':'M3',
+    '31':'en-ru',
+    '32':'M3',
+    '33':'en-sk',
+    '34':'en-es',
+    '35':'M3',
+    '36':'la-es',
+    '37':'M3',
+    '38':'M4',
+    '39':'M3',
+    }
 
 class RowConverter(connector.conversion.MySQLConverter):
 
@@ -124,6 +155,7 @@ class ZXDBScraper():
     def getAllGames(self):
         return self.getGames()
 
+    # def getGames(self, sql_where=' and entries.id=1301', sql_limit=9999999):
     def getGames(self, sql_where='', sql_limit=9999999):
         sql = 'SELECT entries.id AS zxdb_id, ' \
               'releases.release_seq AS release_seq, ' \
@@ -195,6 +227,7 @@ class ZXDBScraper():
         games = []
         print("Request completed.")
         for row in self.cur:
+            # print(row)
             #Skipping ZX80/ZX81 files
             if row['machine_type'] and row['machine_type'].startswith('ZX8'):
                 continue
@@ -207,7 +240,7 @@ class ZXDBScraper():
                     row['genre'] = 'Compilation - Games'
             if not row['publisher']:
                 row['publisher'] = row['release_publisher']
-                print(row['publisher'])
+                # print(f"{row['publisher']}=")
             if row['publisher'] == 'Creative.Radical.Alternative.Production Games':
                 row['publisher'] = 'Creative Radical Alternative Production Games'
             if row['author_team']:
@@ -335,14 +368,14 @@ class ZXDBScraper():
                             36372, 35874, 35883, 35827
                             ):
                 game.setGenre('Various Games')
-            elif game.zxdb_id in (32176,):
-                game.setGenre('Utilities - Screen')
-            elif game.zxdb_id in (32257, 32258, 32259):
-                game.setGenre('Utilities')
+            elif game.zxdb_id in (32257, 32258, 32259, 32176, 36591, 28242, 28271):
+                game.setGenre('Utility')
             elif game.zxdb_id in (27590, 1000246):
                 game.setGenre('Firmware')
             elif game.zxdb_id in (36062,):
                 game.setGenre('Emulator')
+            elif game.zxdb_id in (37682,):
+                game.setGenre('Arcade Game - Beat-em-up-Gang')
         elif game.zxdb_id in (8100,):
             game.setGenre('Compilation - Educational')
         else:
@@ -371,6 +404,10 @@ class ZXDBScraper():
                               game,
                               [release_name])
         release.raw_publisher = [row['publisher']]
+        for magazine, country in MAGAZINES_COUNTRIES.items():
+            if release.publisher.startswith(magazine):
+                release.publisher = magazine
+                release.country = country
         if release.release_seq>0:
             release.addAlias(game.name)
         return release
@@ -379,6 +416,10 @@ class ZXDBScraper():
         if not row['publisher']:
             return None
         publisher = remove_brackets_regex.sub('', row['publisher'])
+        publisher = unidecode(publisher)
+        for magazine in MAGAZINES_COUNTRIES.keys():
+            if publisher.startswith(magazine):
+                publisher = magazine
         if row['publisher_type']=='+': #person
             return putInitialsToEnd(publisher).strip()
         elif row['publisher_type']=='-': #nickname
@@ -392,6 +433,7 @@ class ZXDBScraper():
         if not row['author']:
             return None
         author = remove_brackets_regex.sub('', row['author'])
+        author = unidecode(author)
         if row['author_type']=='+': #person
             return putInitialsToEnd(author).strip()
         elif row['author_type']=='-': #nickname
@@ -450,7 +492,7 @@ class ZXDBScraper():
         if row['file_version'] and row['file_version'].lower().startswith('v') \
                 and row['file_version'][1].isdigit():
             game_file.content_desc = ' '+remove_brackets_regex.sub('', row['file_version']).strip()
-        game_file.priority = 0
+        # game_file.priority = 0
         return game_file
 
     def downloadMissingFilesForGames(self, games):

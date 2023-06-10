@@ -14,9 +14,12 @@ CREATE TABLE "game" (
 	`availability`	CHAR(1), -- ZXDB entries.availabletype_id
 	`tipshop_page`	TEXT, -- Retrieved by scraping the-tipshop.co.uk Database Index: "0123.htm" and "%s.html" where %s=[a-z]
 	`pok_file_contents`	BLOB, -- Retrieved by scraping the-tipshop.co.uk and manual correction
-	`tipshop_multiface_pokes_section` BLOB -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
+	`tipshop_multiface_pokes_section` BLOB, -- Retrieved by scraping the-tipshop.co.uk with the only purpose of making manual checking easier.
+	`publisher_url` TEXT, --link where to buy the game to support the developer
+	`price` VARCHAR(20) -- game price if the game is still on sale behind a hard paywall
+
 );
-INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO game VALUES (9000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 DELETE FROM game WHERE zxdb_id = 9000000;
 CREATE TABLE "game_release" (
 	`zxdb_id`	INTEGER, -- ZXDB entries.entry_id
@@ -54,6 +57,7 @@ CREATE TABLE "game_file" (
 	`language`	CHAR(2), -- TOSEC - 2-letter language code in round brackets "()"
 	`mod_flags`	VARCHAR(255), -- TOSEC - Data in square brackets, starting with c, m, f, h, b
 	`notes`	VARCHAR(255), -- TOSEC - All data in square brackets "[]" except machine_type and those in mod_flags
+	--`priority` INTEGER DEFAULT 0, -- files with lesser priority will be less likely to get an [a] flag. 0 will mean the file is in ZXDB and has wos_name
 	`md5`	CHAR(32), -- MD5 of unzipped file, retrieved by reading the file
 	`crc32`	TEXT, -- CRC32 of unzipped file, retrieved by reading the file
 	`sha1`	TEXT -- SHA1 of unzipped file, retrieved by reading the file

@@ -44,15 +44,21 @@ def restoreDeletedFiles(old_database_path):
             if zxdb_id not in new_db.cache_by_zxdb_id:
                 print("GAME ", zxdb_id, "WAS DELETED")
                 continue
-            if row[2]: #wos_name is present:
-                row.insert(16, 0) #priority=0
-            else:
-                row.insert(16,1) #priority=1
             sql = "INSERT INTO game_file VALUES " \
                   "({})".format(','.join(['?'] * len(row)))
             new_db.cur.execute(sql, row)
             print("executed.")
     new_db.conn.commit()
+
+def restorePublishers(old_database_path):
+    new_db = Database()
+    if old_database_path.lower()>'pokemaster_v1.4-alpha6.db':
+        old_db = Database(old_database_path)
+    else:
+        old_db = OldDatabase(old_database_path)
+    # sql = "SELECT FROM game_release VALUES
+    # old_db.loadCache()
+    # new_db.loadCache()
 
 def restoreUnknownTypes(old_database_path):
     new_db = Database()
@@ -144,6 +150,7 @@ def generateDiffFiles(old_db_name, new_db_name):
 if __name__=='__main__':
     # diffDatabases('pokemaster_v1.4-rc1.db')
     diffDatabases('pokemaster_v1.51.db')
+    # diffDatabases('pokemaster_v1.6-alpha1.db')
     # generateDiffFiles("Old DB", "New DB")
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreDeletedFiles('pokemaster_v1.3-beta6.db')

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `game_file` (
 	`language`	CHAR ( 2 ),
 	`mod_flags`	VARCHAR ( 255 ),
 	`notes`	VARCHAR ( 255 ),
+	--`priority` INTEGER DEFAULT 0,
 	`md5`	CHAR ( 32 ),
 	`crc32`	TEXT,
 	`sha1`	TEXT
@@ -41,5 +42,7 @@ CREATE TABLE IF NOT EXISTS `game` (
 	`language`	CHAR ( 2 ),
 	`availability`	CHAR ( 1 ),
 	`pok_file_contents`	BLOB
+	`publisher_url` TEXT,
+	`price` VARCHAR(20)
 );
 COMMIT;

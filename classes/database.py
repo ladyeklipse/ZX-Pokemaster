@@ -171,7 +171,7 @@ class Database():
                           file.language,
                           file.mod_flags,
                           file.notes,
-                          file.priority,
+                          # file.priority,
                           file.getMD5(),
                           file.getCRC32(),
                           file.getSHA1()
