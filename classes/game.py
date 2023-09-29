@@ -284,7 +284,10 @@ class Game(object):
     def setLanguage(self, language):
         if not language:
             language='en'
-        self.language = language.lower()[:2]
+        if language[-1].isdigit():
+            self.language= language
+        else:
+            self.language = language.lower()[:2]
 
     def getLanguage(self):
         if self.language.startswith('?') or self.language.endswith('-'):

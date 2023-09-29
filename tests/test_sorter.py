@@ -966,6 +966,21 @@ class TestSorter(unittest.TestCase):
         self.assertFileExists(os.path.join(s.input_locations[0], 'non speccy related stuff'))
         self.assertFileNotExists(os.path.join(s.input_locations[0], 'subdir'))
 
+    def test_one_pok_file_per_game_per_folder(self):
+        s = Sorter(cache=False,
+                   include_alternate=True,
+                   output_folder_structure='{GameName}/{Format}',
+                   place_pok_files_in_pokes_subfolders=False,
+                   )
+        s.input_locations = [
+            'tests/files/sort_one_pok_file_per_folder_in/',
+        ]
+        s.output_location = 'tests/files/sort_one_pok_file_per_folder_out/'
+        if os.path.exists(s.output_location):
+            shutil.rmtree(s.output_location)
+        s.sortFiles()
+
+
     # def test_sort_alternate_files(self):
     #     '''
     #     The [a] parameter is assigned randomly in ZX Pokemaster sorting. It is really only important for TOSEC.

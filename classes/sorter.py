@@ -78,6 +78,7 @@ class Sorter():
             if self.gui:
                 self.gui.updateProgressBar(0, 0, 'Loading database cache...')
             db.loadCache()
+        self.directories_pokes_games_dict = {}
 
     def loadSettings(self):
         if not os.path.exists('settings.json'):
@@ -479,12 +480,19 @@ class Sorter():
         dest = file.getDestPath()
         if file.game.cheats:
             pok_dir_path = os.path.dirname(dest)
-            pok_file_name = os.path.splitext(os.path.basename(dest))[0] + '.pok'
             if self.place_pok_files_in_pokes_subfolders:
                 pok_dir_path = os.path.join(pok_dir_path, 'POKES')
                 os.makedirs(pok_dir_path, exist_ok=True)
+                pok_file_name = os.path.splitext(os.path.basename(dest))[0] + '.pok'
+            else:
+                pok_file_name = file.game.getTOSECName() + '.pok'
+                if pok_dir_path not in self.directories_pokes_games_dict:
+                    self.directories_pokes_games_dict[pok_dir_path] = []
+                if file.game.zxdb_id in self.directories_pokes_games_dict[pok_dir_path]:
+                    return
             pok_file_path = os.path.join(pok_dir_path, pok_file_name)
             file.game.exportPokFile(pok_file_path)
+            self.directories_pokes_games_dict[pok_dir_path].append(file.game.zxdb_id)
 
     def getFilesArray(self):
         files_array = []
