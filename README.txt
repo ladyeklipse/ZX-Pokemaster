@@ -197,6 +197,11 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.6
+ - Upgraded the database to September, 2023.
+ - Only one .POK file per game is now created in every folder unless .POK files are sorted into the POKES subfolders.
+ - Removed links to crypto donations.
+ - settings are now saved in %APPDATA% due to Windows OS restrictions.
 1.51
  - Introduced a Warning message when "Include supplementary files" is checked.
  - "Include alternate files" is on by default now.
@@ -269,23 +274,14 @@ VI. Contacts.
 ===========================================================
 You can always download the latest version of ZX Pokemaster from Sourceforge:
 https://sourceforge.net/projects/zx-pokemaster/
-Or visit the project's website (currently in development):
-https://zx-pokemaster.sourceforge.io/
 You're welcome to join the Facebook group and post bug reports.
 All questions will be answered.
 https://www.facebook.com/groups/zxpokemaster/
-Follow me on Twitter:
-https://twitter.com/lady_eklipse
 You are welcome to contact me personally via email:
 mailto:eklipse2009@gmail.com
 or write to me on Facebook:
 https://www.facebook.com/ladyeklipse
-or on VK.com:
-https://vk.com/lady_eklipse
 I speak Russian, English and German.
-
-If you're interested in hiring me as a programmer, you're welcome to contact me via Upwork:
-https://www.upwork.com/freelancers/~01621f640af26c1cb3
 
 Sincerely yours,
 Elia Iliashenko aka Lady Eklipse.

@@ -9,11 +9,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{9D553812-52CF-4FAF-8C56-AD2F573F5EB5}
 AppName=ZX Pokemaster
-AppVersion=1.51
+AppVersion=1.6
 DefaultDirName={commonpf}\ZX Pokemaster\
 DefaultGroupName=ZX Pokemaster
 AllowNoIcons=yes
-OutputBaseFilename=ZX_Pokemaster-1.51
+OutputBaseFilename=ZX_Pokemaster-1.6
 Compression=lzma
 SolidCompression=yes
 DisableDirPage=no

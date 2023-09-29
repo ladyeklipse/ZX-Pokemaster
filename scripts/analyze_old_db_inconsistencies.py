@@ -149,8 +149,8 @@ def generateDiffFiles(old_db_name, new_db_name):
 
 if __name__=='__main__':
     # diffDatabases('pokemaster_v1.4-rc1.db')
-    diffDatabases('pokemaster_v1.51.db')
-    # diffDatabases('pokemaster_v1.6-alpha1.db')
+    # diffDatabases('pokemaster_v1.51.db')
+    diffDatabases('pokemaster_v1.6-alpha2.db')
     # generateDiffFiles("Old DB", "New DB")
     # showDeletedFiles('pokemaster_v1.3-beta6.db')
     # restoreDeletedFiles('pokemaster_v1.3-beta6.db')

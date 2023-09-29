@@ -1,3 +1,14 @@
+in Sinclair ZX Spectrum - Games - [TAP] (TOSEC-v2023-06-10_CM) dat there is a double description  <game name="Adventurer (1992)(Proxima)(CZ)(M3)">
+        <description>Adventurer (1992)(Proxima)(CZ)(M3)</description>
+        <rom name="Adventurer (1992)(Proxima)(CZ)(M3).tap" size="37322" crc="6f603ca3" md5="d6b65db255832a9a4c3a1fdb0c1fd69f" sha1="697d0945c9f8d6d0e51ee20c15f8fbb45556eecc"/>
+    </game>
+    <game name="Adventurer (1992)(Proxima)(CZ)(m3)">
+        <description>Adventurer (1992)(Proxima)(CZ)(m3)</description>
+        <rom name="Adventurer (1992)(Proxima)(CZ)(m3).tap" size="35009" crc="6c127d57" md5="79eb455757d39a6ea0f35796da96d80f" sha1="08534dc47158943763009af4dbd307b612c70d81"/>
+
+ - capitalize "m?" in language column in "game" table.
+ - add files from https://mega.nz/folder/TthliJAL#3GDd55zfYpLOri09fPJLyA
+ - deduplicate DATs: look for files with same names (when lowercased).
  - generate missing tap files with tzxtools
 done - Remove unicode from game names, publishers and authors!
  (Games/Logik (1984)(Pobříslo, Jiří)(CZ).tap is wrong)

@@ -16,6 +16,7 @@ import json
 import traceback
 from functions.game_name_functions import *
 from functions.is_pathname_valid import *
+from functions.paths import getDefaultSettingsPath
 from classes.database import *
 from classes.sorter import *
 import webbrowser
@@ -296,12 +297,17 @@ Do you wish to continue?"""), QMessageBox.Yes | QMessageBox.No)
         path = path.replace('/', os.sep).replace('\\', os.sep)
         self.loadSettings(path)
 
-    def saveSettings(self, kwargs, path='settings.json'):
+    def saveSettings(self, kwargs, path=''):
+        if not path:
+            path = getDefaultSettingsPath()
         kwargs['patterns'] = self.getOutputFolderStructurePatterns()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w+', encoding='utf-8') as f:
             json.dump(kwargs, f, indent=4)
 
-    def loadSettings(self, path='settings.json'):
+    def loadSettings(self, path=''):
+        if not path:
+            path = getDefaultSettingsPath()
         if not os.path.exists(path):
             path = 'default_settings/settings.json'
         try:
