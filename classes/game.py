@@ -274,7 +274,8 @@ class Game(object):
             if 'TC20' in machine_type or 'TS20' in machine_type:
                 machine_type = 'TC2048-TS2068'
             else:
-                machine_type = machine_type.replace('ZX-Spectrum', '').replace('/', '-').strip()
+                machine_type = (machine_type.replace('ZX-Spectrum', '').replace('Coupé', 'Coupe').
+                                replace('/', '-').strip())
                 if '+2' in machine_type or '+3' in machine_type:
                     machine_type = machine_type.replace('128 ', '')
         else:

@@ -448,6 +448,13 @@ class ZXDBScraper():
         alias = remove_brackets_regex.sub('', alias).strip()
         alias = alias.replace('Lerm ', '').replace('LERM ', '')
         alias = alias.replace(' ,', ',')
+        # alias = alias.replace('’', "'")
+        # alias = alias.replace('æ', 'ae')
+        alias = alias.replace('ð', 'th')
+        # alias = alias.replace('ø', 'o')
+        # alias = alias.replace('°', '')
+        # alias = alias.replace('μ', 'mu')
+        alias = unidecode(alias)
         alias = alias.replace('AlchNews', 'Alchemist News')
         alias = alias.replace('Zx Spectrum +', 'ZX Spectrum+')
         # if alias == 'Pozycje Milosne':
@@ -468,6 +475,8 @@ class ZXDBScraper():
         alias = alias.replace('F-14 Afterburner', 'Afterburner')
         alias = alias.replace('Santa Clause', 'Santa Claus')
         alias = alias.replace('Trooper -Point', 'Trooper Point')
+        # alias = alias.replace('Wh££ler Dealer', 'Wheeler Dealer')
+        alias = alias.replace('WhPSPSler Dealer', 'Wheeler Dealer')
         if 'Dalek Attack' in alias or 'the Daleks' in alias:
             alias = 'Dalek Attack'
         alias = ' - '.join([alias]+round_brackets_contents)

@@ -485,14 +485,17 @@ class Sorter():
                 os.makedirs(pok_dir_path, exist_ok=True)
                 pok_file_name = os.path.splitext(os.path.basename(dest))[0] + '.pok'
             else:
-                pok_file_name = file.game.getTOSECName() + '.pok'
+                #TODO: rename according to the general scheme.
+                # pok_file_name = file.game.getTOSECName() + '.pok'
+                pok_file_name = os.path.splitext(file.getOutputName(structure=self.output_filename_structure))[0] + '.pok'
                 if pok_dir_path not in self.directories_pokes_games_dict:
                     self.directories_pokes_games_dict[pok_dir_path] = []
                 if file.game.zxdb_id in self.directories_pokes_games_dict[pok_dir_path]:
                     return
+                else:
+                    self.directories_pokes_games_dict[pok_dir_path].append(file.game.zxdb_id)
             pok_file_path = os.path.join(pok_dir_path, pok_file_name)
             file.game.exportPokFile(pok_file_path)
-            self.directories_pokes_games_dict[pok_dir_path].append(file.game.zxdb_id)
 
     def getFilesArray(self):
         files_array = []

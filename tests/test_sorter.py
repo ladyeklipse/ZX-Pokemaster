@@ -970,7 +970,7 @@ class TestSorter(unittest.TestCase):
         s = Sorter(cache=False,
                    include_alternate=True,
                    output_folder_structure='{GameName}/{Format}',
-                   place_pok_files_in_pokes_subfolders=False,
+                   #place_pok_files_in_pokes_subfolders=False,
                    )
         s.input_locations = [
             'tests/files/sort_one_pok_file_per_folder_in/',

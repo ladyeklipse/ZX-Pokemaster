@@ -197,6 +197,8 @@ Alas, my British friends seem to be oblivious of this awesome game, probably bec
 ===========================================================
 V. Version history
 ===========================================================
+1.61
+ - Fixed a bug with renaming .pok files when a custom file naming scheme is used.
 1.6
  - Upgraded the database to September, 2023.
  - Only one .POK file per game is now created in every folder unless .POK files are sorted into the POKES subfolders.

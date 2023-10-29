@@ -8,8 +8,9 @@
     "short_filenames": false, 
     "output_location": "", 
     "patterns": [
+        "{Type}\\{GameName}\\{TOSECName}",
+        "{GameName}\\{TOSECName}",
 		"{Letter}\\{TOSECName}",
-        "{GameName}\\{TOSECName}", 
 		"{TOSECName}",
         "{Letter}\\{TOSECName}[ZXDB={ZXDB_ID}]", 
         "{Letter}\\{GameName}\\{TOSECName}", 

@@ -21,7 +21,17 @@ def updateROMVaultDATs():
             if os.path.exists(new_dat_dir):
                 shutil.rmtree(new_dat_dir)
             os.makedirs(new_dat_dir, exist_ok=True)
+            with open(dat_path, 'r') as f:
+                contents = f.readlines()
+                for line in contents:
+                    try:
+                        line.encode('ascii')
+                    except UnicodeEncodeError as e:
+                        print("file", dat_path, "has errors:", e)
+                        print("line=", line)
+
             shutil.copy(dat_path, new_dat_path)
+            # print("copied", dat_path, new_dat_path)
 
 def createTOSECDATs():
     dats_files = {}
@@ -69,6 +79,6 @@ def createTOSECDATs():
             for filepath in kolbeck_dict[game_zxdb_id]:
                 f.write(';'.join((game_zxdb_id, filepath))+'\n')
 
-# createTOSECDATs()
+createTOSECDATs()
 createPOKTOSECDat()
 updateROMVaultDATs()
