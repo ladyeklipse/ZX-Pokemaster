@@ -1,3 +1,9 @@
+IMPORTANT MESSAGE:
+This project is CLOSED.
+Do no expect any updates from me.
+I DO NOT do programming projects anymore.
+The source code is available here, you're welcome to fork it and take over development.
+
 ===========================================================
 ZX Pokemaster 1.5 README
 ===========================================================
@@ -271,19 +277,3 @@ V. Version history
  
 1.0. First version.
 
-===========================================================
-VI. Contacts.
-===========================================================
-You can always download the latest version of ZX Pokemaster from Sourceforge:
-https://sourceforge.net/projects/zx-pokemaster/
-You're welcome to join the Facebook group and post bug reports.
-All questions will be answered.
-https://www.facebook.com/groups/zxpokemaster/
-You are welcome to contact me personally via email:
-mailto:eklipse2009@gmail.com
-or write to me on Facebook:
-https://www.facebook.com/ladyeklipse
-I speak Russian, English and German.
-
-Sincerely yours,
-Elia Iliashenko aka Lady Eklipse.
